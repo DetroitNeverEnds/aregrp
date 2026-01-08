@@ -8,7 +8,7 @@ on:
 env:
     # Имя образа: ghcr.io/ваш-юзер/ваш-репо
     REGISTRY: ghcr.io
-    REGISTRY_PREFIX: ghcr.io/DetroitNeverEnds/aregrp/
+    REGISTRY_PREFIX: ghcr.io/detroitneverends/aregrp/
     TAG: ${{ github.event.pull_request.number && format('pr-{0}-{1}', github.event.pull_request.number, github.run_number) || format('{0}-{1}', github.ref_name, github.run_number) }}
 
 jobs:
