@@ -114,7 +114,7 @@ jobs:
               # Останавливаем текущие контейнеры
               echo "Stopping current containers..."
               cd current
-              docker-compose down || true
+              docker compose down || true
               cd ..
               
               # Удаляем старые бэкапы (оставляем последние 5)
@@ -143,8 +143,8 @@ jobs:
 
             # Собираем и запускаем контейнеры
             echo "Building and starting containers..."
-            docker-compose build --no-cache
-            docker-compose up -d
+            docker compose build --no-cache
+            docker compose up -d
 
             # Ждем запуска контейнеров
             echo "Waiting for containers to start..."
@@ -152,7 +152,7 @@ jobs:
 
             # Проверяем статус контейнеров
             echo "Checking container status..."
-            docker-compose ps
+            docker compose ps
 
             # Очистка
             rm /tmp/deployment.tar.gz

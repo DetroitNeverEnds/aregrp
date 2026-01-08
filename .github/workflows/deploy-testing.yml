@@ -34,7 +34,7 @@ jobs:
             #       # cache-from: type=gha
             #       # cache-to: type=gha,mode=max
             - name: Build and Push
-              run: docker-compose build && docker-compose push
+              run: docker compose build && docker compose push
     deploy:
         needs: build-and-push
         runs-on: ubuntu-latest
@@ -74,8 +74,8 @@ jobs:
                       # ВАЖНО: Приводим имя репозитория к нижнему регистру (bash трюк)
                       export DOCKER_IMAGE=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]'):${{ github.ref_name }}
 
-                      docker-compose pull
-                      docker-compose up -d --remove-orphans
+                      docker compose pull
+                      docker compose up -d --remove-orphans
 
                       # Чистим старые неиспользуемые образы, чтобы не забить диск
                       docker image prune -f
