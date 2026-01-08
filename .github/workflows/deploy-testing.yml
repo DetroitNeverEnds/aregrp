@@ -8,10 +8,14 @@ on:
 env:
     # Имя образа: ghcr.io/ваш-юзер/ваш-репо
     REGISTRY: ghcr.io
+    TAG: ${{ github.ref_name }}
 
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -34,6 +38,9 @@ jobs:
             #       # cache-from: type=gha
             #       # cache-to: type=gha,mode=max
             - name: Build and Push
+              env:
+                  REGISTRY: ${{ env.REGISTRY }}
+                  TAG: ${{ env.TAG }}
               run: docker compose build && docker compose push
     deploy:
         needs: build-and-push
