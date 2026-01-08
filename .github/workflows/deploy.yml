@@ -8,7 +8,14 @@ on:
       - "backend/**"
       - "nginx/**"
       - "docker-compose.yml"
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to deploy (e.g., v1.0.0)'
+        required: false
+        type: string
 
 jobs:
   deploy:
@@ -17,14 +24,48 @@ jobs:
 
     environment:
       name: production
-      url: ${{ secrets.PRODUCTION_URL }}
 
     steps:
+      - name: Determine deployment source
+        id: deploy_source
+        run: |
+          if [ "${{ github.event_name }}" == "release" ]; then
+            echo "source=release" >> $GITHUB_OUTPUT
+            echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            echo "📦 Deploying from release: ${{ github.event.release.tag_name }}"
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ github.event.inputs.release_tag }}" ]; then
+            echo "source=manual_release" >> $GITHUB_OUTPUT
+            echo "tag=${{ github.event.inputs.release_tag }}" >> $GITHUB_OUTPUT
+            echo "📦 Deploying from manual release: ${{ github.event.inputs.release_tag }}"
+          else
+            echo "source=branch" >> $GITHUB_OUTPUT
+            echo "tag=" >> $GITHUB_OUTPUT
+            echo "🔄 Deploying from branch: ${{ github.ref_name }}"
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.deploy_source.outputs.tag || github.ref }}
 
-      - name: Create deployment package
+      - name: Download release assets (if deploying from release)
+        if: steps.deploy_source.outputs.source == 'release' || steps.deploy_source.outputs.source == 'manual_release'
         run: |
+          TAG="${{ steps.deploy_source.outputs.tag }}"
+          echo "📥 Downloading release assets for $TAG"
+          
+          # Скачиваем готовый пакет для деплоя
+          curl -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -o deployment.tar.gz \
+            "https://github.com/${{ github.repository }}/releases/download/$TAG/aregrp-deploy-$TAG.tar.gz"
+          
+          echo "✅ Downloaded deployment package"
+          ls -lh deployment.tar.gz
+
+      - name: Create deployment package (if deploying from branch)
+        if: steps.deploy_source.outputs.source == 'branch'
+        run: |
+          echo "📦 Creating deployment package from branch"
           # Создаем архив с необходимыми файлами для деплоя
           tar -czf deployment.tar.gz \
             docker-compose.yml \
@@ -37,6 +78,9 @@ jobs:
             --exclude='backend/.git' \
             --exclude='**/dist' \
             --exclude='**/.DS_Store'
+          
+          echo "✅ Created deployment package"
+          ls -lh deployment.tar.gz
 
       - name: Copy deployment package to VPS
         uses: appleboy/scp-action@v0.1.7
@@ -176,13 +220,47 @@ jobs:
             exit 1
           fi
 
-      - name: Notify deployment status
+      - name: Save deployment info
+        if: success()
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            cd ${{ secrets.VPS_DEPLOY_PATH }}/current
+            
+            # Сохраняем информацию о деплое
+            if [ -n "${{ steps.deploy_source.outputs.tag }}" ]; then
+              echo "${{ steps.deploy_source.outputs.tag }}" > DEPLOYED_VERSION
+              echo "📌 Deployed version: ${{ steps.deploy_source.outputs.tag }}"
+            else
+              echo "${{ github.sha }}" > DEPLOYED_VERSION
+              echo "📌 Deployed commit: ${{ github.sha }}"
+            fi
+
+      - name: Create deployment summary
         if: always()
         run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
           if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ Deployment successful!"
-            echo "🚀 Application is now running at ${{ secrets.PRODUCTION_URL }}"
+            echo "### ✅ Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Application URL:** ${{ secrets.PRODUCTION_URL }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ -n "${{ steps.deploy_source.outputs.tag }}" ]; then
+              echo "**Deployed Version:** ${{ steps.deploy_source.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+              echo "**Source:** Release" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "**Deployed Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+              echo "**Source:** Branch (\`${{ github.ref_name }}\`)" >> $GITHUB_STEP_SUMMARY
+            fi
           else
-            echo "❌ Deployment failed!"
-            echo "Please check the logs for more details."
+            echo "### ❌ Deployment Failed!" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please check the logs for more details." >> $GITHUB_STEP_SUMMARY
           fi

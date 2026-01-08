@@ -1,0 +1,22 @@
+# Логи (они создаются в runtime)
+logs/
+*.log
+
+# Git файлы
+.git/
+.gitignore
+
+# Документация и README
+*.md
+README*
+
+# Временные файлы
+*.tmp
+*.swp
+*~
+.DS_Store
+
+# IDE файлы
+.vscode/
+.idea/
+*.iml
