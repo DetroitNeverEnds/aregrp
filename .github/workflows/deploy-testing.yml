@@ -5,6 +5,7 @@ on:
         branches: [main]
         paths:
             - "**/*"
+
 env:
     # Имя образа: ghcr.io/ваш-юзер/ваш-репо
     REGISTRY: ghcr.io
@@ -30,7 +31,7 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
             - name: Build and Push
               env:
-                  REGISTRY: ${{ env.REGISTRY }}
+                  REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}
                   TAG: ${{ env.TAG }}
               run: docker compose build && docker compose push
     deploy:
@@ -58,17 +59,26 @@ jobs:
                   host: ${{ secrets.VPS_HOST }}
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_SSH_KEY }}
-                  # Здесь мы передаем имя образа как переменную окружения
                   script: |
                       cd ~/aregrp/
 
                       # Логинимся в реестр GitHub на самом VPS, чтобы скачать приватный образ
                       echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-                      # Останавливаем, скачиваем и запускаем
-                      # ВАЖНО: Приводим имя репозитория к нижнему регистру (bash трюк)
-                      export DOCKER_IMAGE=ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]'):${{ github.ref_name }}
+                      # Экспортируем переменные окружения для docker-compose
+                      export REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
+                      export TAG=${{ env.TAG }}
 
+                      # Отладочная информация
+                      echo "=== Deployment Configuration ==="
+                      echo "REGISTRY_PREFIX: $REGISTRY_PREFIX"
+                      echo "TAG: $TAG"
+                      echo "Expected images:"
+                      echo "  - ${REGISTRY_PREFIX}aregrp-frontend:${TAG}"
+                      echo "  - ${REGISTRY_PREFIX}aregrp-nginx:${TAG}"
+                      echo "================================"
+
+                      # Останавливаем, скачиваем и запускаем
                       docker compose pull
                       docker compose up -d --remove-orphans
 
