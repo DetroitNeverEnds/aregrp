@@ -69,15 +69,6 @@ jobs:
                       export REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
                       export TAG=${{ env.TAG }}
 
-                      # Отладочная информация
-                      echo "=== Deployment Configuration ==="
-                      echo "REGISTRY_PREFIX: $REGISTRY_PREFIX"
-                      echo "TAG: $TAG"
-                      echo "Expected images:"
-                      echo "  - ${REGISTRY_PREFIX}aregrp-frontend:${TAG}"
-                      echo "  - ${REGISTRY_PREFIX}aregrp-nginx:${TAG}"
-                      echo "================================"
-
                       # Останавливаем, скачиваем и запускаем
                       docker compose pull
                       docker compose up -d --remove-orphans
