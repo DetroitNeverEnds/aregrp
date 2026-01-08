@@ -1,68 +1,69 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # Frontend контейнер
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: aregrp-frontend
-    restart: unless-stopped
-    networks:
-      - frontend-network
-    volumes:
-      # Для hot reload в development режиме (опционально)
-      - ./frontend/src:/app/src:ro
-    environment:
-      - NODE_ENV=production
+    # Frontend контейнер
+    frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        container_name: aregrp-frontend
+        restart: unless-stopped
+        networks:
+            - frontend-network
+        volumes:
+            # Для hot reload в development режиме (опционально)
+            - ./frontend/src:/app/src:ro
+        environment:
+            - NODE_ENV=production
 
-  # Backend контейнер
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: aregrp-backend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    networks:
-      - backend-network
-    volumes:
-      # Для hot reload в development режиме (опционально)
-      - ./backend:/app:ro
-      - /app/node_modules
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
+    # Backend контейнер
+    #   backend:
+    #     build:
+    #       context: ./backend
+    #       dockerfile: Dockerfile
+    #     container_name: aregrp-backend
+    #     restart: unless-stopped
+    #     ports:
+    #       - "3000:3000"
+    #     networks:
+    #       - backend-network
+    #     volumes:
+    #       # Для hot reload в development режиме (опционально)
+    #       - ./backend:/app:ro
+    #       - /app/node_modules
+    #     environment:
+    #       - NODE_ENV=production
+    #       - PORT=3000
 
-  # Nginx reverse proxy
-  nginx:
-    image: nginx:alpine
-    container_name: aregrp-nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./nginx/includes:/etc/nginx/includes:ro
-      - ./nginx/error-templates:/etc/nginx/error-templates:ro
-      - ./nginx/logs:/var/log/nginx
-      - nginx-cache:/var/cache/nginx
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - frontend-network
-      - backend-network
+    # Nginx reverse proxy
+    nginx:
+        image: nginx:alpine
+        container_name: aregrp-nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            # Переписываем только изменения (ост авляем все дефолтное)
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./nginx/conf.d:/etc/nginx/conf.d:ro
+            - ./nginx/includes:/etc/nginx/includes:ro
+            - ./nginx/error-templates:/etc/nginx/error-templates:ro
+            - ./nginx/logs:/var/log/nginx
+            - nginx-cache:/var/cache/nginx
+        depends_on:
+            - frontend
+            # - backend
+        networks:
+            - frontend-network
+            - backend-network
 
 networks:
-  frontend-network:
-    driver: bridge
-  backend-network:
-    driver: bridge
+    frontend-network:
+        driver: bridge
+    backend-network:
+        driver: bridge
 
 volumes:
-  nginx-cache:
-    driver: local
+    nginx-cache:
+        driver: local
