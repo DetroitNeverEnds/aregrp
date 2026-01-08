@@ -8,6 +8,7 @@ on:
 env:
     # Имя образа: ghcr.io/ваш-юзер/ваш-репо
     REGISTRY: ghcr.io
+    REGISTRY_PERFIX: ghcr.io/
     TAG: ${{ github.ref_name }}
 
 jobs:
