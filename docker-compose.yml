@@ -1,7 +1,7 @@
 services:
     # Frontend контейнер
     frontend:
-        image: ${REGISTRY_PERFIX:-}aregrp-frontend:${TAG:-local}
+        image: ${REGISTRY_PREFIX:-}aregrp-frontend:${TAG:-local}
         build: frontend
         container_name: aregrp-frontend
         restart: unless-stopped
@@ -34,7 +34,7 @@ services:
 
     # Nginx reverse proxy
     nginx:
-        image: ${REGISTRY_PERFIX:-}aregrp-nginx:${TAG:-local}
+        image: ${REGISTRY_PREFIX:-}aregrp-nginx:${TAG:-local}
         build: nginx
         container_name: aregrp-nginx
         restart: unless-stopped
