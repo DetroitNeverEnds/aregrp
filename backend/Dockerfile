@@ -1,19 +1,19 @@
-# Базовый образ Node.js
-FROM node:20-alpine
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app
+ENV PYTHONPATH="/app"
 
-# Копируем package.json и package-lock.json (когда они появятся)
-COPY package*.json ./
+# Install system dependencies (suppose to use Postgres by default)
+RUN apt-get update && apt-get install -y build-essential libpq-dev curl && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем зависимости
-RUN npm ci --only=production || echo "No package.json found"
+# Copy dependency files and install project dependencies
+COPY pyproject.toml uv.lock /app/
 
-# Копируем исходный код
-COPY . .
+RUN uv sync --frozen --no-dev
 
-# Открываем порт для API
-EXPOSE 3000
+# Copy the rest of the project source code
+COPY . /app/
 
-# Запускаем приложение
-CMD ["node", "index.js"]
+# Expose the port and define the application start command
+EXPOSE 8000
+CMD ["/app/scripts/run.sh"]
