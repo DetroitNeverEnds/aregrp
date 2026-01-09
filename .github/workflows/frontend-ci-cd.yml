@@ -27,13 +27,6 @@ jobs:
         uses: ./.github/workflows/frontend-storybook.yml
         needs: code-quality
 
-    deploy:
-        name: Deploy
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        needs: [build, storybook]
-        uses: ./.github/workflows/deploy.yml
-        secrets: inherit
-
     summary:
         name: Pipeline Summary
         runs-on: ubuntu-latest
