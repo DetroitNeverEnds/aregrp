@@ -27,6 +27,7 @@ env:
 
 jobs:
     build-and-push:
+        name: Build and Push
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -49,6 +50,7 @@ jobs:
                   TAG: ${{ env.TAG }}
               run: docker compose build && docker compose push
     deploy:
+        name: Deploy
         needs: build-and-push
         runs-on: ubuntu-latest
 
