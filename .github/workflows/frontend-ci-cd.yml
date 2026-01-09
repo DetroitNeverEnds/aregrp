@@ -23,8 +23,8 @@ jobs:
         needs: test
 
     storybook:
-        name: Storybook
-        uses: ./.github/workflows/frontend-storybook.yml
+        name: Storybook Build
+        uses: ./.github/workflows/frontend-storybook-build.yml
         needs: code-quality
 
     summary:
