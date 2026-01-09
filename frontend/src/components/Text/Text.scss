@@ -1,0 +1,126 @@
+@use '../../styles/variables' as vars;
+
+// Базовые переменные для типографики
+$font-montserrat: 'Montserrat', vars.$font-family-base;
+
+// Цвета текста
+$text-color-primary: #1e2023;
+
+// Веса шрифтов
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+
+// Базовый класс
+.text {
+    margin: 0;
+    padding: 0;
+    font-family: $font-montserrat;
+    color: $text-color-primary;
+
+    // Заголовки
+    &--h2 {
+        font-size: 46px;
+        line-height: 110%;
+        letter-spacing: 0;
+        font-weight: $font-weight-medium;
+    }
+
+    &--h3 {
+        font-size: 40px;
+        line-height: 110%;
+        letter-spacing: 0;
+        font-weight: $font-weight-medium;
+    }
+
+    &--h4 {
+        font-size: 34px;
+        line-height: 110%;
+        letter-spacing: 0;
+        font-weight: $font-weight-medium;
+    }
+
+    &--h5 {
+        font-size: 24px;
+        line-height: 110%;
+        letter-spacing: 0;
+        font-weight: $font-weight-medium;
+    }
+
+    // 12px варианты
+    &--12-reg {
+        font-size: 12px;
+        line-height: 120%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--12-med {
+        @extend .text--12-reg;
+        font-weight: $font-weight-medium;
+    }
+
+    // 14px варианты
+    &--14-reg {
+        font-size: 14px;
+        line-height: 120%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--14-med {
+        @extend .text--14-reg;
+        font-weight: $font-weight-medium;
+    }
+
+    // 16px варианты
+    &--16-reg {
+        font-size: 16px;
+        line-height: 140%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--16-med {
+        @extend .text--16-reg;
+        font-weight: $font-weight-medium;
+    }
+
+    // 18px варианты
+    &--18-reg {
+        font-size: 18px;
+        line-height: 120%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--18-med {
+        @extend .text--18-reg;
+        font-weight: $font-weight-medium;
+    }
+
+    // 20px варианты
+    &--20-reg {
+        font-size: 20px;
+        line-height: 120%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--20-med {
+        @extend .text--20-reg;
+        font-weight: $font-weight-medium;
+    }
+
+    // 24px варианты
+    &--24-reg {
+        font-size: 24px;
+        line-height: 120%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--24-med {
+        @extend .text--24-reg;
+        font-weight: $font-weight-medium;
+    }
+}

@@ -14,16 +14,9 @@ const config: StorybookConfig = {
         builder: '@storybook/builder-vite',
     },
     async viteFinal(config) {
-        // Поддержка SCSS/SASS
+        // Поддержка SCSS/SASS через @use в файлах компонентов
         return {
             ...config,
-            css: {
-                preprocessorOptions: {
-                    scss: {
-                        additionalData: `@import "./src/styles/variables.scss";`,
-                    },
-                },
-            },
         };
     },
 };

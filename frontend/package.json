@@ -14,7 +14,7 @@
         "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
         "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,scss,md}\"",
         "preview": "vite preview",
-        "storybook": "storybook dev -p 6006",
+        "storybook-dev": "storybook dev -p 6006",
         "build-storybook": "storybook build"
     },
     "dependencies": {
