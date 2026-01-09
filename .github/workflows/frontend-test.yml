@@ -1,14 +1,7 @@
 name: Tests
 
 on:
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - "frontend/**"
-  push:
-    branches: [main, develop]
-    paths:
-      - "frontend/**"
+  workflow_call:
   workflow_dispatch:
 
 defaults:
