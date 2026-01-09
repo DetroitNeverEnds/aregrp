@@ -1,11 +1,7 @@
-name: CI/CD Pipeline
+name: Frontend CI/CD Pipeline
 
 on:
     pull_request:
-        branches: [main, develop]
-        paths:
-            - "frontend/**"
-    push:
         branches: [main, develop]
         paths:
             - "frontend/**"
