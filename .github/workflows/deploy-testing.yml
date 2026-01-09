@@ -9,8 +9,6 @@ on:
                 required: true
             VPS_SSH_KEY:
                 required: true
-            GITHUB_TOKEN:
-                required: true
     pull_request:
         branches: [main]
         paths:
