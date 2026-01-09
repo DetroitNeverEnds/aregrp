@@ -32,16 +32,3 @@ jobs:
 
       - name: Run Vitest tests
         run: npm run test
-
-      - name: Generate coverage report
-        run: npm run test:coverage
-        continue-on-error: true
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          files: ./frontend/coverage/coverage-final.json
-          flags: frontend
-          name: frontend-coverage
-        continue-on-error: true

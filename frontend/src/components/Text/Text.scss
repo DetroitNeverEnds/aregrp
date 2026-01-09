@@ -1,7 +1,7 @@
 @use '../../styles/variables' as vars;
 
 // Базовые переменные для типографики
-$font-montserrat: 'Montserrat', vars.$font-family-base;
+$font-montserrat: vars.$font-family-base;
 
 // Цвета текста
 $text-color-primary: #1e2023;

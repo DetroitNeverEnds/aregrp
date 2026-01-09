@@ -1,4 +1,57 @@
-// Цвета
+// Цвета Primary
+$primary-yellow: #faca3e;
+$primary-mute: #a5c0db; // TODO: check by designer
+$primary-200: #c3d6e0;
+$primary-300: #a1bfcf;
+$primary-400: #7fabbe;
+$primary-500: #5d91ad;
+$primary-600: #48768f;
+$primary-700: #375a6d;
+$primary-800: #263e4b;
+$primary-900: #22303d;
+$primary-1000: #152229;
+
+// Цвета Error
+$error-default: #e53740;
+$error-hover: #cb3a3a;
+$error-active: #a73030;
+$error-bg-disable: #445371; // TODO: check by designer
+$error-text-disable: #445371; // TODO: check by designer
+
+// Цвета Gray
+$gray-0: #ffffff;
+$gray-5: #fcfdff;
+$gray-10: #f2f3f7;
+$gray-20: #dadde2;
+$gray-30: #cdd1d5;
+$gray-50: #989fa7;
+$gray-70: #646c76;
+$gray-100: #1e2023;
+
+// Opacity (rgba)
+$gray-opacity-5: rgba(255, 255, 255, 0.05);
+$gray-opacity-10: rgba(255, 255, 255, 0.1);
+$gray-opacity-20: rgba(255, 255, 255, 0.2);
+$gray-opacity-40: rgba(255, 255, 255, 0.4);
+$gray-opacity-50: rgba(255, 255, 255, 0.5);
+$gray-opacity-70: rgba(255, 255, 255, 0.7);
+$gray-opacity-80: rgba(255, 255, 255, 0.8);
+$gray-opacity-20-dark: rgba(218, 221, 226, 0.2);
+$gray-opacity-40-dark: rgba(218, 221, 226, 0.4);
+$gray-opacity-70-dark: rgba(218, 221, 226, 0.6);
+$gray-opacity-50-alt: rgba(152, 159, 167, 0.4);
+$gray-opacity-70-alt: rgba(100, 108, 118, 0.5);
+$gray-opacity-80-alt: rgba(100, 108, 118, 0.8);
+$gray-opacity-100-10: rgba(30, 32, 35, 0.1);
+$gray-opacity-100-60: rgba(30, 32, 35, 0.6);
+$gray-opacity-100-70: rgba(30, 32, 35, 0.7);
+$gray-opacity-100-80: rgba(30, 32, 35, 0.8);
+
+// Градиенты
+$gradient-primary-700-900: linear-gradient(180deg, $primary-700 0%, $primary-900 100%);
+$gradient-gray-100: linear-gradient(180deg, $gray-100 0%, rgba($gray-100, 0) 100%);
+
+// Устаревшие цвета (для обратной совместимости)
 $primary-color: #007bff;
 $secondary-color: #6c757d;
 $success-color: #28a745;
@@ -10,36 +63,15 @@ $dark-color: #343a40;
 
 // Шрифты
 $font-family-base:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-$font-size-base: 16px;
-$line-height-base: 1.5;
-
-// Отступы
-$spacing-xs: 4px;
-$spacing-sm: 8px;
-$spacing-md: 16px;
-$spacing-lg: 24px;
-$spacing-xl: 32px;
-
-// Радиусы
-$border-radius-sm: 4px;
-$border-radius-md: 8px;
-$border-radius-lg: 12px;
-
-// Тени
-$box-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$box-shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$box-shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-// Брейкпоинты
-$breakpoint-xs: 0;
-$breakpoint-sm: 576px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 992px;
-$breakpoint-xl: 1200px;
-$breakpoint-xxl: 1400px;
+    'Montserrat',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
