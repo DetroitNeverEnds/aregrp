@@ -1,0 +1,72 @@
+@use '../../styles/variables.scss' as *;
+
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 0;
+
+    svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+
+        // По умолчанию устанавливаем цвет из переменной
+        path,
+        circle,
+        rect,
+        line,
+        polyline,
+        polygon {
+            &[fill='inherit'] {
+                fill: $gray-100;
+            }
+
+            &[stroke='inherit'] {
+                stroke: $gray-100;
+            }
+        }
+    }
+
+    // Применяем кастомный цвет через currentColor
+    &--colored {
+        svg {
+            path,
+            circle,
+            rect,
+            line,
+            polyline,
+            polygon {
+                &[fill='inherit'] {
+                    fill: currentColor;
+                }
+
+                &[stroke='inherit'] {
+                    stroke: currentColor;
+                }
+            }
+        }
+    }
+
+    // Размеры
+    &--size-16 {
+        width: 16px;
+        height: 16px;
+    }
+
+    &--size-20 {
+        width: 20px;
+        height: 20px;
+    }
+
+    &--size-24 {
+        width: 24px;
+        height: 24px;
+    }
+
+    &--size-32 {
+        width: 32px;
+        height: 32px;
+    }
+}
