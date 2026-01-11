@@ -143,4 +143,56 @@ describe('Text Component', () => {
         expect(element.className).toContain(styles['text--20-med']);
         expect(element.className).toContain('extra');
     });
+
+    it('применяет цвет gray-100 по умолчанию', () => {
+        render(<Text>Текст с цветом по умолчанию</Text>);
+        const element = screen.getByText('Текст с цветом по умолчанию');
+        expect(element.className).toContain(styles['text--color-gray-100']);
+    });
+
+    it('применяет цвет primary-500', () => {
+        render(<Text color="primary-500">Текст primary цвета</Text>);
+        const element = screen.getByText('Текст primary цвета');
+        expect(element.className).toContain(styles['text--color-primary-500']);
+    });
+
+    it('применяет цвет error-default', () => {
+        render(<Text color="error-default">Текст ошибки</Text>);
+        const element = screen.getByText('Текст ошибки');
+        expect(element.className).toContain(styles['text--color-error-default']);
+    });
+
+    it('применяет все цвета primary', () => {
+        const colors = [
+            'primary-200',
+            'primary-300',
+            'primary-400',
+            'primary-500',
+            'primary-600',
+            'primary-700',
+            'primary-800',
+            'primary-900',
+            'primary-1000',
+        ] as const;
+
+        colors.forEach((color) => {
+            const { container } = render(<Text color={color}>Текст {color}</Text>);
+            const element = screen.getByText(`Текст ${color}`);
+            expect(element.className).toContain(styles[`text--color-${color}`]);
+            container.remove();
+        });
+    });
+
+    it('применяет вариант и цвет одновременно', () => {
+        render(
+            <Text variant="20-med" color="primary-500" className="extra">
+                Комплексный текст с цветом
+            </Text>,
+        );
+        const element = screen.getByText('Комплексный текст с цветом');
+        expect(element.className).toContain(styles.text);
+        expect(element.className).toContain(styles['text--20-med']);
+        expect(element.className).toContain(styles['text--color-primary-500']);
+        expect(element.className).toContain('extra');
+    });
 });

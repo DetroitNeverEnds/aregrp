@@ -31,6 +31,23 @@ const meta = {
             ],
             description: 'Вариант текста (размер-вес или заголовок)',
         },
+        color: {
+            control: 'select',
+            options: [
+                'gray-100',
+                'primary-200',
+                'primary-300',
+                'primary-400',
+                'primary-500',
+                'primary-600',
+                'primary-700',
+                'primary-800',
+                'primary-900',
+                'primary-1000',
+                'error-default',
+            ],
+            description: 'Цвет текста',
+        },
         children: {
             control: 'text',
             description: 'Содержимое текста',
@@ -180,12 +197,44 @@ export const AllVariants: Story = {
     ),
 };
 
-export const CustomColor: Story = {
-    args: {
-        variant: '20-med',
-        style: { color: '#007bff' },
-        children: 'Текст с пользовательским цветом',
-    },
+export const AllColors: Story = {
+    render: () => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <Text variant="16-med" color="gray-100">
+                Gray 100 (по умолчанию)
+            </Text>
+            <Text variant="16-med" color="primary-200">
+                Primary 200
+            </Text>
+            <Text variant="16-med" color="primary-300">
+                Primary 300
+            </Text>
+            <Text variant="16-med" color="primary-400">
+                Primary 400
+            </Text>
+            <Text variant="16-med" color="primary-500">
+                Primary 500
+            </Text>
+            <Text variant="16-med" color="primary-600">
+                Primary 600
+            </Text>
+            <Text variant="16-med" color="primary-700">
+                Primary 700
+            </Text>
+            <Text variant="16-med" color="primary-800">
+                Primary 800
+            </Text>
+            <Text variant="16-med" color="primary-900">
+                Primary 900
+            </Text>
+            <Text variant="16-med" color="primary-1000">
+                Primary 1000
+            </Text>
+            <Text variant="16-med" color="error-default">
+                Error Default
+            </Text>
+        </div>
+    ),
 };
 
 export const Typography: Story = {

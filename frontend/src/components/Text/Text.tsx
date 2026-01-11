@@ -20,13 +20,38 @@ export type TextVariant =
     | '24-reg'
     | '24-med';
 
+export type TextColor =
+    | 'gray-100'
+    | 'primary-200'
+    | 'primary-300'
+    | 'primary-400'
+    | 'primary-500'
+    | 'primary-600'
+    | 'primary-700'
+    | 'primary-800'
+    | 'primary-900'
+    | 'primary-1000'
+    | 'error-default';
+
 export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
     /** Вариант текста (определяет размер и толщину шрифта) */
     variant?: TextVariant;
+    /** Цвет текста */
+    color?: TextColor;
 }
 
-export const Text: React.FC<TextProps> = ({ variant = '16-reg', className = '', ...props }) => {
-    const textClassNames = classNames(styles.text, styles[`text--${variant}`], className);
+export const Text: React.FC<TextProps> = ({
+    variant = '16-reg',
+    color = 'gray-100',
+    className = '',
+    ...props
+}) => {
+    const textClassNames = classNames(
+        styles.text,
+        styles[`text--${variant}`],
+        styles[`text--color-${color}`],
+        className,
+    );
 
     return <span className={textClassNames} {...props} />;
 };
