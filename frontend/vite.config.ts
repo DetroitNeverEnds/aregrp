@@ -22,6 +22,9 @@ export default defineConfig({
         setupFiles: ['./src/test/setup.ts'],
         include: ['src/**/*.{test,spec}.{ts,tsx}'],
         exclude: ['node_modules', 'dist', '.storybook'],
+        typecheck: {
+            tsconfig: './tsconfig.test.json',
+        },
     },
     resolve: {
         alias: {
