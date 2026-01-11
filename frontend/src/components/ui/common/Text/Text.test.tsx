@@ -175,7 +175,7 @@ describe('Text Component', () => {
             'primary-1000',
         ] as const;
 
-        colors.forEach((color) => {
+        colors.forEach(color => {
             const { container } = render(<Text color={color}>Текст {color}</Text>);
             const element = screen.getByText(`Текст ${color}`);
             expect(element.className).toContain(styles[`text--color-${color}`]);

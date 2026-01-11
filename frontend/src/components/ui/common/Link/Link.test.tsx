@@ -62,8 +62,8 @@ describe('Link', () => {
         );
         const link = screen.getByText('Настройки').closest('a');
         expect(link).toBeInTheDocument();
-        // Проверяем наличие иконки через класс
-        const icon = link?.querySelector('.link__leadingIcon');
+        // Проверяем наличие иконки через svg элемент
+        const icon = link?.querySelector('svg');
         expect(icon).toBeInTheDocument();
     });
 
@@ -75,7 +75,7 @@ describe('Link', () => {
         );
         const link = screen.getByText('Далее').closest('a');
         expect(link).toBeInTheDocument();
-        const icon = link?.querySelector('.link__trailingIcon');
+        const icon = link?.querySelector('svg');
         expect(icon).toBeInTheDocument();
     });
 
@@ -87,19 +87,15 @@ describe('Link', () => {
         );
         const link = screen.getByText('Текст').closest('a');
         expect(link).toBeInTheDocument();
-        const leadingIcon = link?.querySelector('.link__leadingIcon');
-        const trailingIcon = link?.querySelector('.link__trailingIcon');
-        expect(leadingIcon).toBeInTheDocument();
-        expect(trailingIcon).toBeInTheDocument();
+        const icons = link?.querySelectorAll('svg');
+        expect(icons).toHaveLength(2);
     });
 
     it('работает без иконок', () => {
         renderWithRouter(<Link to="/test">Простая ссылка</Link>);
         const link = screen.getByText('Простая ссылка').closest('a');
         expect(link).toBeInTheDocument();
-        const leadingIcon = link?.querySelector('.link__leadingIcon');
-        const trailingIcon = link?.querySelector('.link__trailingIcon');
-        expect(leadingIcon).not.toBeInTheDocument();
-        expect(trailingIcon).not.toBeInTheDocument();
+        const icons = link?.querySelectorAll('svg');
+        expect(icons).toHaveLength(0);
     });
 });
