@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Icon.module.scss';
 import { iconMap, type IconName } from './iconConfig';
 
-export type IconSize = 16 | 20 | 24 | 32;
+export type IconSize = 14 | 16 | 20 | 24 | 32;
 
 export interface IconProps extends React.SVGAttributes<SVGElement> {
     /** Название иконки */
