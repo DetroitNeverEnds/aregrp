@@ -92,7 +92,11 @@ export const Checkbox: React.FC<CheckboxProps> = ({
                 {label && <Text variant={textVariant}>{label}</Text>}
             </label>
 
-            {errorMessage && <Text variant="12-reg">{errorMessage}</Text>}
+            {errorMessage && (
+                <Text variant="12-reg" color="error-default">
+                    {errorMessage}
+                </Text>
+            )}
         </div>
     );
 };
