@@ -29,7 +29,7 @@ const meta = {
                 'benefit-10',
                 'benefit-11',
                 'benefit-12',
-                'check',
+                'sample',
                 'chevron-down',
                 'chevron-left',
                 'chevron-right',
@@ -63,10 +63,6 @@ const meta = {
             options: [16, 20, 24, 32],
             description: 'Размер иконки в пикселях',
         },
-        color: {
-            control: 'color',
-            description: 'Цвет иконки',
-        },
     },
 } satisfies Meta<typeof Icon>;
 
@@ -76,7 +72,7 @@ type Story = StoryObj<typeof meta>;
 // Базовые примеры
 export const Default: Story = {
     args: {
-        name: 'check',
+        name: 'sample',
     },
 };
 
@@ -89,14 +85,18 @@ export const WithCustomSize: Story = {
 
 export const WithCustomColor: Story = {
     args: {
-        name: 'check',
-        color: '#ff0000ff',
+        name: 'sample',
     },
+    render: () => (
+        <span style={{ color: 'red' }}>
+            <Icon name="sample" />
+        </span>
+    ),
 };
 
 // Все размеры
 export const AllSizes: Story = {
-    args: { name: 'check' },
+    args: { name: 'sample' },
     render: () => (
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
             {([16, 20, 24, 32] as IconSize[]).map(size => (
@@ -106,37 +106,9 @@ export const AllSizes: Story = {
     ),
 };
 
-// Цветовые варианты
-export const ColorVariants: Story = {
-    args: { name: 'check' },
-    render: () => (
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            {[
-                { color: '#48768f', text: 'Primary' },
-                { color: '#e53740', text: 'Error' },
-                { color: '#28a745', text: 'Success' },
-                { color: '#989fa7', text: 'Gray' },
-            ].map(({ color, text }) => (
-                <div
-                    key={color}
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '8px',
-                    }}
-                >
-                    <Icon name="check" size={32} color={color} />
-                    <span style={{ fontSize: '12px' }}>{text}</span>
-                </div>
-            ))}
-        </div>
-    ),
-};
-
 // Все иконки
 export const AllIcons: Story = {
-    args: { name: 'check' },
+    args: { name: 'sample' },
     render: () => (
         <div
             style={{

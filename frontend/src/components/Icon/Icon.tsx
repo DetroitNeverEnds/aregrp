@@ -1,5 +1,5 @@
 import React from 'react';
-import './Icon.scss';
+import styles from './Icon.module.scss';
 import { iconMap, type IconName } from './iconConfig';
 
 export type IconSize = 16 | 20 | 24 | 32;
@@ -9,8 +9,6 @@ export interface IconProps extends React.SVGAttributes<SVGElement> {
     name: IconName;
     /** Размер иконки в пикселях */
     size?: IconSize;
-    /** Цвет иконки (CSS цвет или переменная) */
-    color?: string;
     /** Дополнительный CSS класс */
     className?: string;
     /** Описание иконки для accessibility */
@@ -24,7 +22,6 @@ export interface IconProps extends React.SVGAttributes<SVGElement> {
 export const Icon: React.FC<IconProps> = ({
     name,
     size = 24,
-    color,
     className = '',
     style,
     'aria-label': ariaLabel,
@@ -39,14 +36,9 @@ export const Icon: React.FC<IconProps> = ({
         return null;
     }
 
-    const classNames = ['icon', `icon--size-${size}`, color && 'icon--colored', className]
+    const classNames = [styles.icon, styles[`icon--size-${size}`], className]
         .filter(Boolean)
         .join(' ');
-
-    const iconStyle: React.CSSProperties = {
-        ...style,
-        ...(color && { color }),
-    };
 
     // Определяем aria-атрибуты
     const ariaProps: React.AriaAttributes & { role?: string } = {};
@@ -61,7 +53,7 @@ export const Icon: React.FC<IconProps> = ({
     }
 
     return (
-        <span className={classNames} style={iconStyle} {...ariaProps}>
+        <span className={classNames} style={style} {...ariaProps}>
             <IconComponent {...props} />
         </span>
     );

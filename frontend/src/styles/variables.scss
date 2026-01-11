@@ -15,8 +15,8 @@ $primary-1000: #152229;
 $error-default: #e53740;
 $error-hover: #cb3a3a;
 $error-active: #a73030;
-$error-bg-disable: #445371; // TODO: check by designer
-$error-text-disable: #445371; // TODO: check by designer
+$error-bg-disable: rgba(68, 83, 113, 0.14);
+$error-text-disable: rgba(152, 159, 167, 0.5);
 
 // Цвета Gray
 $gray-0: #ffffff;
@@ -29,19 +29,19 @@ $gray-70: #646c76;
 $gray-100: #1e2023;
 
 // Opacity (rgba)
-$gray-opacity-5: rgba(255, 255, 255, 0.05);
-$gray-opacity-10: rgba(255, 255, 255, 0.1);
-$gray-opacity-20: rgba(255, 255, 255, 0.2);
-$gray-opacity-40: rgba(255, 255, 255, 0.4);
-$gray-opacity-50: rgba(255, 255, 255, 0.5);
-$gray-opacity-70: rgba(255, 255, 255, 0.7);
-$gray-opacity-80: rgba(255, 255, 255, 0.8);
-$gray-opacity-20-dark: rgba(218, 221, 226, 0.2);
-$gray-opacity-40-dark: rgba(218, 221, 226, 0.4);
-$gray-opacity-70-dark: rgba(218, 221, 226, 0.6);
-$gray-opacity-50-alt: rgba(152, 159, 167, 0.4);
-$gray-opacity-70-alt: rgba(100, 108, 118, 0.5);
-$gray-opacity-80-alt: rgba(100, 108, 118, 0.8);
+$gray-opacity-0-5: rgba(255, 255, 255, 0.05);
+$gray-opacity-0-10: rgba(255, 255, 255, 0.1);
+$gray-opacity-0-20: rgba(255, 255, 255, 0.2);
+$gray-opacity-0-40: rgba(255, 255, 255, 0.4);
+$gray-opacity-0-50: rgba(255, 255, 255, 0.5);
+$gray-opacity-0-70: rgba(255, 255, 255, 0.7);
+$gray-opacity-0-80: rgba(255, 255, 255, 0.8);
+$gray-opacity-20-20: rgba(218, 221, 226, 0.2);
+$gray-opacity-20-40: rgba(218, 221, 226, 0.4);
+$gray-opacity-20-70: rgba(218, 221, 226, 0.7);
+$gray-opacity-50-40: rgba(152, 159, 167, 0.4);
+$gray-opacity-70-50: rgba(100, 108, 118, 0.5);
+$gray-opacity-70-80: rgba(100, 108, 118, 0.8);
 $gray-opacity-100-10: rgba(30, 32, 35, 0.1);
 $gray-opacity-100-60: rgba(30, 32, 35, 0.6);
 $gray-opacity-100-70: rgba(30, 32, 35, 0.7);

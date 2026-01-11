@@ -12,7 +12,7 @@
         height: 100%;
         display: block;
 
-        // По умолчанию устанавливаем цвет из переменной
+        // Используем currentColor для всех элементов
         path,
         circle,
         rect,
@@ -20,31 +20,11 @@
         polyline,
         polygon {
             &[fill='inherit'] {
-                fill: $gray-100;
+                fill: currentColor;
             }
 
             &[stroke='inherit'] {
-                stroke: $gray-100;
-            }
-        }
-    }
-
-    // Применяем кастомный цвет через currentColor
-    &--colored {
-        svg {
-            path,
-            circle,
-            rect,
-            line,
-            polyline,
-            polygon {
-                &[fill='inherit'] {
-                    fill: currentColor;
-                }
-
-                &[stroke='inherit'] {
-                    stroke: currentColor;
-                }
+                stroke: currentColor;
             }
         }
     }

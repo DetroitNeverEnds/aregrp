@@ -1,0 +1,122 @@
+@use '../../styles/variables.scss' as *;
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 40px;
+    font-family: $font-family-base;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    max-width: 100%;
+
+    &__content {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    // Ширина
+    &--width-auto {
+        width: max-content;
+    }
+
+    &--width-max {
+        width: 100%;
+    }
+
+    // Размеры
+    &--lg {
+        padding: 15px 20px;
+    }
+
+    &--md {
+        padding: 10px 20px;
+    }
+
+    // Кнопка только с иконкой
+    &--only-icon {
+        &.button--lg {
+            padding: 15px;
+        }
+
+        &.button--md {
+            padding: 10px;
+        }
+    }
+
+    // Варианты
+    &--primary {
+        background: $primary-700;
+        color: $gray-0;
+
+        &:hover:not(:disabled) {
+            background: $primary-800;
+        }
+
+        &:active:not(:disabled),
+        &:focus:active:not(:disabled) {
+            background: $primary-900;
+        }
+
+        &:focus:not(:disabled) {
+            outline: 2px solid $primary-400;
+            outline-offset: 2px;
+        }
+        &:disabled {
+            background: $error-bg-disable;
+            color: $error-text-disable;
+        }
+    }
+
+    &--outlined {
+        background: transparent;
+        color: $gray-70;
+        border: 2px solid $gray-20;
+
+        &:hover:not(:disabled) {
+            background: $gray-opacity-20-70;
+            color: $gray-100;
+        }
+
+        &:active:not(:disabled),
+        &:focus:active:not(:disabled) {
+            background: $gray-20;
+            color: $gray-70;
+        }
+
+        &:focus:not(:disabled) {
+            border-color: $primary-600;
+        }
+    }
+
+    // TODO: Разобраться с цветами, уточнить, какие вообще кнопки бывают
+    &--secondary {
+        background: $primary-900;
+        color: $gray-0;
+
+        &:hover:not(:disabled) {
+            background: $primary-800;
+        }
+
+        &:active:not(:disabled),
+        &:focus:active:not(:disabled) {
+            background: $primary-700;
+        }
+
+        &:focus:not(:disabled) {
+            outline: 2px solid $primary-400;
+            outline-offset: 2px;
+        }
+    }
+}
