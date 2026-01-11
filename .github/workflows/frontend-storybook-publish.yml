@@ -100,6 +100,7 @@ jobs:
               uses: actions/deploy-pages@v4
 
             - name: Add deployment summary
+              working-directory: .
               run: |
                   ENV_TYPE="${{ inputs.environment }}"
 
