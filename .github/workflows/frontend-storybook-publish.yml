@@ -1,11 +1,32 @@
 name: Storybook Publish
 
 on:
-    push:
-        branches: [main]
-        paths:
-            - "frontend/**"
+    workflow_call:
+        inputs:
+            environment:
+                description: "Deployment environment (testing or production)"
+                required: true
+                type: string
+            retention-days:
+                description: "Artifact retention days"
+                required: false
+                type: number
+                default: 7
     workflow_dispatch:
+        inputs:
+            environment:
+                description: "Deployment environment"
+                required: true
+                type: choice
+                options:
+                    - testing
+                    - production
+                default: testing
+            retention-days:
+                description: "Artifact retention days"
+                required: false
+                type: number
+                default: 7
 
 defaults:
     run:
@@ -31,14 +52,19 @@ jobs:
               run: npm ci
 
             - name: Build Storybook
-              run: npm run build-storybook
+              run: |
+                  if [ "${{ inputs.environment }}" == "production" ]; then
+                    npm run build-storybook -- -o storybook-static
+                  else
+                    npm run build-storybook -- -o storybook-static/testing
+                  fi
 
             - name: Upload Storybook artifacts
               uses: actions/upload-artifact@v4
               with:
-                  name: storybook-static
+                  name: storybook-static-${{ inputs.environment }}
                   path: frontend/storybook-static
-                  retention-days: 7
+                  retention-days: ${{ inputs.retention-days }}
 
     publish-storybook:
         name: Publish to GitHub Pages
@@ -52,13 +78,13 @@ jobs:
 
         environment:
             name: github-pages
-            url: ${{ steps.deployment.outputs.page_url }}
+            url: ${{ inputs.environment == 'production' && steps.deployment.outputs.page_url || format('{0}testing/', steps.deployment.outputs.page_url) }}
 
         steps:
             - name: Download Storybook artifacts
               uses: actions/download-artifact@v4
               with:
-                  name: storybook-static
+                  name: storybook-static-${{ inputs.environment }}
                   path: storybook-static
 
             - name: Setup Pages
@@ -74,9 +100,37 @@ jobs:
               uses: actions/deploy-pages@v4
 
             - name: Add deployment summary
+              working-directory: .
               run: |
-                  echo "## Storybook Deployment" >> $GITHUB_STEP_SUMMARY
+                  ENV_TYPE="${{ inputs.environment }}"
+
+                  if [ "$ENV_TYPE" == "production" ]; then
+                    echo "## 🚀 Storybook Production Deployment" >> $GITHUB_STEP_SUMMARY
+                    echo "" >> $GITHUB_STEP_SUMMARY
+                    echo "✅ Storybook successfully deployed to GitHub Pages (Production)" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "## 🧪 Storybook Testing Deployment" >> $GITHUB_STEP_SUMMARY
+                    echo "" >> $GITHUB_STEP_SUMMARY
+                    echo "✅ Storybook successfully deployed to GitHub Pages (Testing)" >> $GITHUB_STEP_SUMMARY
+                  fi
+
                   echo "" >> $GITHUB_STEP_SUMMARY
-                  echo "✅ Storybook successfully deployed to GitHub Pages" >> $GITHUB_STEP_SUMMARY
+                  echo "🔗 **URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
                   echo "" >> $GITHUB_STEP_SUMMARY
-                  echo "🔗 URL: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+                  echo "📦 **Environment:** $ENV_TYPE" >> $GITHUB_STEP_SUMMARY
+
+                  if [ "${{ github.event_name }}" == "pull_request" ]; then
+                    echo "🔀 **PR:** #${{ github.event.pull_request.number }}" >> $GITHUB_STEP_SUMMARY
+                    echo "📝 **Title:** ${{ github.event.pull_request.title }}" >> $GITHUB_STEP_SUMMARY
+                  elif [ "${{ github.event_name }}" == "push" ]; then
+                    echo "🌿 **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+                    echo "📝 **Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  echo "" >> $GITHUB_STEP_SUMMARY
+
+                  if [ "$ENV_TYPE" == "production" ]; then
+                    echo "> ✨ This is the production deployment. All components are stable and ready for use." >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "> ⚠️ This is a testing deployment. Changes may be overwritten by subsequent deployments." >> $GITHUB_STEP_SUMMARY
+                  fi

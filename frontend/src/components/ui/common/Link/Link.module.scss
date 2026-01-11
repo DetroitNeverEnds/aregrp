@@ -1,0 +1,33 @@
+@use '../../../../styles/variables' as vars;
+
+.link {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    // Применяем состояния для цвета primary-700
+    span {
+        color: vars.$primary-700 !important;
+    }
+
+    &:hover span {
+        color: vars.$primary-800 !important;
+    }
+
+    &:active span {
+        color: vars.$primary-900 !important;
+    }
+
+    // Стили для иконок
+    &__leadingIcon {
+        margin-right: 8px;
+        flex-shrink: 0;
+    }
+
+    &__trailingIcon {
+        margin-left: 8px;
+        flex-shrink: 0;
+    }
+}

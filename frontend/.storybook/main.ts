@@ -1,4 +1,6 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import { mergeConfig } from 'vite';
+import svgr from 'vite-plugin-svgr';
 
 const config: StorybookConfig = {
     stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -14,17 +16,15 @@ const config: StorybookConfig = {
         builder: '@storybook/builder-vite',
     },
     async viteFinal(config) {
-        // Поддержка SCSS/SASS
-        return {
-            ...config,
-            css: {
-                preprocessorOptions: {
-                    scss: {
-                        additionalData: `@import "./src/styles/variables.scss";`,
-                    },
-                },
-            },
-        };
+        // Поддержка SCSS/SASS через @use в файлах компонентов
+        // Добавляем поддержку SVG как React компонентов
+        return mergeConfig(config, {
+            plugins: [
+                svgr({
+                    include: '**/*.svg?react',
+                }),
+            ],
+        });
     },
 };
 export default config;

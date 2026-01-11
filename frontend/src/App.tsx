@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
+import { Text } from './components/ui/common/Text';
 
 function App() {
     const [count, setCount] = useState(0);
@@ -27,14 +28,16 @@ function App() {
                 </button>
                 <button onClick={() => changeLanguage('en')}>English</button>
             </div>
-            <h1>{t('app.title')}</h1>
+            <Text variant="h2">{t('app.title')}</Text>
             <div className="card">
                 <button onClick={() => setCount(count => count + 1)}>
                     {t('app.count', { count })}
                 </button>
-                <p>{t('app.edit')}</p>
+                <Text variant="16-reg">{t('app.edit')}</Text>
             </div>
-            <p className="read-the-docs">{t('app.learnMore')}</p>
+            <Text variant="14-reg" className="read-the-docs">
+                {t('app.learnMore')}
+            </Text>
         </>
     );
 }

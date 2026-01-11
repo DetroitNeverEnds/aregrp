@@ -1,0 +1,127 @@
+@use '../../../../../styles/variables' as *;
+
+.checkbox-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+
+    &:has(.checkbox-input:disabled) {
+        cursor: not-allowed;
+    }
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    border: 2px solid $gray-30;
+    background: $gray-0;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    color: white;
+
+    // Размеры
+    &--lg {
+        width: 24px;
+        height: 24px;
+    }
+
+    &--md {
+        width: 20px;
+        height: 20px;
+    }
+
+    &--sm {
+        width: 16px;
+        height: 16px;
+    }
+
+    // Состояние checked
+    &--checked {
+        background: $primary-700;
+        border-color: $primary-700;
+
+        &:hover:not(.checkbox--disabled) {
+            background: $primary-800;
+            border-color: $primary-800;
+        }
+
+        &:active:not(.checkbox--disabled) {
+            background: $primary-900;
+            border-color: $primary-900;
+        }
+    }
+
+    // Состояние unchecked hover
+    &:not(.checkbox--checked):not(.checkbox--disabled):not(.checkbox--error):hover {
+        border-color: $primary-600;
+    }
+
+    // Состояние disabled
+    &--disabled {
+        background: $error-bg-disable;
+        color: $error-text-disable;
+        border-color: $gray-20;
+        cursor: not-allowed;
+
+        &.checkbox--checked {
+            background: $gray-30;
+            border-color: $gray-30;
+        }
+    }
+
+    // Состояние error
+    &--error {
+        border-color: $error-default;
+
+        &:hover:not(.checkbox--disabled) {
+            border-color: $error-hover;
+        }
+
+        &.checkbox--checked {
+            background: $error-default;
+            border-color: $error-default;
+
+            &:hover:not(.checkbox--disabled) {
+                background: $error-hover;
+                border-color: $error-hover;
+            }
+
+            &:active:not(.checkbox--disabled) {
+                background: $error-active;
+                border-color: $error-active;
+            }
+        }
+    }
+
+    // Focus состояние
+    .checkbox-input:focus-visible + & {
+        outline: 2px solid $primary-400;
+        outline-offset: 2px;
+    }
+}
