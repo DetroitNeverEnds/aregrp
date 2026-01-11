@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import styles from './FlatButton.module.scss';
 
 export interface FlatButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -12,10 +13,10 @@ export const FlatButton: React.FC<FlatButtonProps> = ({
     type = 'button',
     ...props
 }) => {
-    const classNames = [styles.flatButton, className].filter(Boolean).join(' ');
+    const buttonClassNames = classNames(styles.flatButton, className);
 
     return (
-        <button className={classNames} type={type} {...props}>
+        <button className={buttonClassNames} type={type} {...props}>
             {children}
         </button>
     );

@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import styles from './Icon.module.scss';
 import { iconMap, type IconName } from './iconConfig';
 
@@ -36,9 +37,7 @@ export const Icon: React.FC<IconProps> = ({
         return null;
     }
 
-    const classNames = [styles.icon, styles[`icon--size-${size}`], className]
-        .filter(Boolean)
-        .join(' ');
+    const iconClassNames = classNames(styles.icon, styles[`icon--size-${size}`], className);
 
     // Определяем aria-атрибуты
     const ariaProps: React.AriaAttributes & { role?: string } = {};
@@ -53,7 +52,7 @@ export const Icon: React.FC<IconProps> = ({
     }
 
     return (
-        <span className={classNames} style={style} {...ariaProps}>
+        <span className={iconClassNames} style={style} {...ariaProps}>
             <IconComponent {...props} />
         </span>
     );

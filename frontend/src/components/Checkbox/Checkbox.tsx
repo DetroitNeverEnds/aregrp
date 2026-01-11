@@ -1,4 +1,5 @@
 import React, { useMemo, useRef } from 'react';
+import classNames from 'classnames';
 import styles from './Checkbox.module.scss';
 import { Icon, type IconSize } from '../Icon';
 import { Text, type TextVariant } from '../Text';
@@ -51,23 +52,19 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     const iconSize = useMemo(() => ICON_SIZE_MAPPING[size], [size]);
     const textVariant = useMemo(() => TEXT_VARIANT_MAPPING[size], [size]);
 
-    const containerClassNames = [
+    const containerClassNames = classNames(
         styles['checkbox-container'],
-        hasError && styles['checkbox-container--error'],
+        {
+            [styles['checkbox-container--error']]: hasError,
+        },
         className,
-    ]
-        .filter(Boolean)
-        .join(' ');
+    );
 
-    const checkboxClassNames = [
-        styles.checkbox,
-        styles[`checkbox--${size}`],
-        checked && styles['checkbox--checked'],
-        disabled && styles['checkbox--disabled'],
-        hasError && styles['checkbox--error'],
-    ]
-        .filter(Boolean)
-        .join(' ');
+    const checkboxClassNames = classNames(styles.checkbox, styles[`checkbox--${size}`], {
+        [styles['checkbox--checked']]: checked,
+        [styles['checkbox--disabled']]: disabled,
+        [styles['checkbox--error']]: hasError,
+    });
 
     return (
         <div className={containerClassNames}>

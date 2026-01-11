@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import styles from './Button.module.scss';
 import { Icon, type IconName } from '../Icon';
 
@@ -33,23 +34,23 @@ export const Button: React.FC<ButtonProps> = ({
     type = 'button',
     ...props
 }) => {
-    const classNames = [
+    const buttonClassNames = classNames(
         styles.button,
         styles[`button--${variant}`],
         styles[`button--${size}`],
         styles[`button--width-${width}`],
-        onlyIcon && styles['button--only-icon'],
+        {
+            [styles['button--only-icon']]: onlyIcon,
+        },
         className,
-    ]
-        .filter(Boolean)
-        .join(' ');
+    );
 
     // Автоматически используем children как title, если title не передан явно
     const tooltipTitle = typeof children === 'string' ? children : undefined;
 
     return (
         <button
-            className={classNames}
+            className={buttonClassNames}
             disabled={disabled}
             type={type}
             title={tooltipTitle}

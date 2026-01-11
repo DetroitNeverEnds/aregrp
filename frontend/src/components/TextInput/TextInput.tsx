@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
+import classNames from 'classnames';
 import styles from './TextInput.module.scss';
 import { Icon, type IconName } from '../Icon';
 import { FlatButton } from '../FlatButton';
@@ -62,20 +63,20 @@ export const TextInput: React.FC<TextInputProps> = ({
     // Определяем, есть ли ошибка
     const hasError = useMemo(() => Boolean(errorMessage), [errorMessage]);
 
-    const classNames = [
+    const containerClassNames = classNames(
         styles['input-container'],
         styles[`input-container--${size}`],
-        hasError && styles['input-container--error'],
-        disabled && styles['input-container--disabled'],
-        leadingIcon && styles['input--with-leading-icon'],
+        {
+            [styles['input-container--error']]: hasError,
+            [styles['input-container--disabled']]: disabled,
+            [styles['input--with-leading-icon']]: leadingIcon,
+        },
         className,
-    ]
-        .filter(Boolean)
-        .join(' ');
+    );
 
     return (
         <div className={styles['input-wrapper']}>
-            <div className={classNames}>
+            <div className={containerClassNames}>
                 {leadingIcon && <Icon name={leadingIcon} size={20} />}
 
                 <input

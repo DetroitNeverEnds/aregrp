@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import styles from './Text.module.scss';
 
 export type TextVariant =
@@ -25,11 +26,9 @@ export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export const Text: React.FC<TextProps> = ({ variant = '16-reg', className = '', ...props }) => {
-    const classNames = [styles.text, styles[`text--${variant}`], className]
-        .filter(Boolean)
-        .join(' ');
+    const textClassNames = classNames(styles.text, styles[`text--${variant}`], className);
 
-    return <span className={classNames} {...props} />;
+    return <span className={textClassNames} {...props} />;
 };
 
 export default Text;
