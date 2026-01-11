@@ -1,0 +1,105 @@
+import { describe, it, expect } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { Link } from './Link';
+
+describe('Link', () => {
+    const renderWithRouter = (ui: React.ReactElement) => {
+        return render(<BrowserRouter>{ui}</BrowserRouter>);
+    };
+
+    it('рендерится с текстом по умолчанию', () => {
+        renderWithRouter(<Link to="/test">Тестовая ссылка</Link>);
+        expect(screen.getByText('Тестовая ссылка')).toBeInTheDocument();
+    });
+
+    it('применяет правильный путь', () => {
+        renderWithRouter(<Link to="/about">О нас</Link>);
+        const link = screen.getByText('О нас').closest('a');
+        expect(link).toHaveAttribute('href', '/about');
+    });
+
+    it('использует variant по умолчанию 16-reg', () => {
+        renderWithRouter(<Link to="/test">Текст</Link>);
+        const text = screen.getByText('Текст');
+        expect(text.tagName).toBe('SPAN');
+    });
+
+    it('применяет кастомный variant', () => {
+        renderWithRouter(
+            <Link to="/test" variant="20-med">
+                Большой текст
+            </Link>,
+        );
+        expect(screen.getByText('Большой текст')).toBeInTheDocument();
+    });
+
+    it('применяет дополнительный className', () => {
+        renderWithRouter(
+            <Link to="/test" className="custom-class">
+                Текст
+            </Link>,
+        );
+        const link = screen.getByText('Текст').closest('a');
+        expect(link).toHaveClass('custom-class');
+    });
+
+    it('поддерживает children как ReactNode', () => {
+        renderWithRouter(
+            <Link to="/test">
+                <span>Сложный</span> <strong>контент</strong>
+            </Link>,
+        );
+        expect(screen.getByText('Сложный')).toBeInTheDocument();
+        expect(screen.getByText('контент')).toBeInTheDocument();
+    });
+
+    it('рендерит leadingIcon', () => {
+        renderWithRouter(
+            <Link to="/test" leadingIcon="settings">
+                Настройки
+            </Link>,
+        );
+        const link = screen.getByText('Настройки').closest('a');
+        expect(link).toBeInTheDocument();
+        // Проверяем наличие иконки через класс
+        const icon = link?.querySelector('.link__leadingIcon');
+        expect(icon).toBeInTheDocument();
+    });
+
+    it('рендерит trailingIcon', () => {
+        renderWithRouter(
+            <Link to="/test" trailingIcon="arrow-narrow-right">
+                Далее
+            </Link>,
+        );
+        const link = screen.getByText('Далее').closest('a');
+        expect(link).toBeInTheDocument();
+        const icon = link?.querySelector('.link__trailingIcon');
+        expect(icon).toBeInTheDocument();
+    });
+
+    it('рендерит обе иконки одновременно', () => {
+        renderWithRouter(
+            <Link to="/test" leadingIcon="arrow-narrow-left" trailingIcon="arrow-narrow-right">
+                Текст
+            </Link>,
+        );
+        const link = screen.getByText('Текст').closest('a');
+        expect(link).toBeInTheDocument();
+        const leadingIcon = link?.querySelector('.link__leadingIcon');
+        const trailingIcon = link?.querySelector('.link__trailingIcon');
+        expect(leadingIcon).toBeInTheDocument();
+        expect(trailingIcon).toBeInTheDocument();
+    });
+
+    it('работает без иконок', () => {
+        renderWithRouter(<Link to="/test">Простая ссылка</Link>);
+        const link = screen.getByText('Простая ссылка').closest('a');
+        expect(link).toBeInTheDocument();
+        const leadingIcon = link?.querySelector('.link__leadingIcon');
+        const trailingIcon = link?.querySelector('.link__trailingIcon');
+        expect(leadingIcon).not.toBeInTheDocument();
+        expect(trailingIcon).not.toBeInTheDocument();
+    });
+});
