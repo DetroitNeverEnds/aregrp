@@ -124,3 +124,21 @@ export const AllIcons: Story = {
         </div>
     ),
 };
+
+export const AllIconsColor: Story = {
+    args: { name: 'sample' },
+    render: () => (
+        <div
+            style={{
+                display: 'flex',
+                width: '100%',
+                gap: '16px',
+                flexWrap: 'wrap',
+            }}
+        >
+            {iconNames.map(iconName => (
+                <Icon key={iconName} name={iconName} size={24} color="red" />
+            ))}
+        </div>
+    ),
+};

@@ -1,8 +1,8 @@
 import React, { useMemo, useRef } from 'react';
 import classNames from 'classnames';
 import styles from './Checkbox.module.scss';
-import { Icon, type IconSize } from '../Icon';
-import { Text, type TextVariant } from '../Text';
+import { Icon, type IconSize } from '../../Icon';
+import { Text, type TextVariant } from '../../Text';
 
 export type CheckboxSize = 'lg' | 'md' | 'sm';
 

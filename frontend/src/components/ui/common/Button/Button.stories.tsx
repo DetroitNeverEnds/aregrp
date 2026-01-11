@@ -36,7 +36,8 @@ const meta = {
         icon: {
             control: 'select',
             description: 'Название иконки для отображения',
-            options: iconNames,
+            options: [...iconNames, undefined],
+            required: false,
         },
         onlyIcon: {
             control: 'boolean',
@@ -66,7 +67,7 @@ export const Primary: Story = {
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {(['lg', 'md'] as ButtonSize[]).map(size => (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div key={size} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <Button variant="primary" size={size} icon="sample">
                         Button
                     </Button>
@@ -86,7 +87,7 @@ export const Outlined: Story = {
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {(['lg', 'md'] as ButtonSize[]).map(size => (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div key={size} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <Button variant="outlined" size={size} icon="sample">
                         Button
                     </Button>
@@ -106,7 +107,7 @@ export const Secondary: Story = {
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {(['lg', 'md'] as ButtonSize[]).map(size => (
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div key={size} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <Button variant="secondary" size={size} icon="sample">
                         Button
                     </Button>

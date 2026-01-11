@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
-import { Text } from './components/Text';
+import { Text } from './components/ui/common/Text';
 
 function App() {
     const [count, setCount] = useState(0);

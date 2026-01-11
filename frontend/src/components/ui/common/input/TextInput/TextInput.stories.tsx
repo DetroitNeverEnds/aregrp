@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TextInput, type TextInputProps, type TextInputSize } from './TextInput';
-import { iconNames } from '../Icon';
+import { iconNames } from '../../Icon';
 import { useState } from 'react';
 
 const meta = {
