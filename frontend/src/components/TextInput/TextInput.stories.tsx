@@ -50,8 +50,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Контролируемый компонент для stories
-const ControlledTextInput = (props: TextInputProps) => {
-    const [val, setVal] = useState<string>();
+const ControlledTextInput = ({ value, ...props }: TextInputProps) => {
+    const [val, setVal] = useState(value);
     return <TextInput name="test" {...props} value={val} onChange={e => setVal(e.target.value)} />;
 };
 
