@@ -1,0 +1,83 @@
+@use '../../styles/variables.scss' as *;
+
+.input-wrapper {
+    // TODO: Подумать про ширину
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-container {
+    color: $gray-100;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    border: 2px solid $gray-20;
+    border-radius: 40px;
+    color: $gray-100;
+    background: $gray-0;
+    font-family: $font-family-base;
+    transition: border-color 0.2s ease;
+
+    // Размеры
+    &--lg {
+        padding: 15px 20px 15px 20px;
+        padding-left: 20px;
+    }
+
+    &--md {
+        padding: 10px 20px 10px 20px;
+    }
+
+    // Состояния
+    &:hover:not(&--disabled) {
+        border-color: $gray-30;
+    }
+
+    &:focus-within:not(&--disabled) {
+        border-color: $primary-800;
+    }
+
+    &--error {
+        border-color: $error-default;
+
+        &:hover:not(&--disabled) {
+            border-color: $error-hover;
+        }
+
+        &:focus-within:not(&--disabled) {
+            border-color: $error-active;
+        }
+    }
+
+    &--disabled {
+        background: $gray-10;
+        border-color: $gray-20;
+        cursor: not-allowed;
+    }
+}
+
+.input {
+    border: 0;
+    background: transparent;
+    flex-grow: 1;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    outline: none;
+
+    &::placeholder {
+        color: $gray-50;
+    }
+
+    &:disabled {
+        color: $gray-50;
+        cursor: not-allowed;
+
+        &::placeholder {
+            color: $gray-opacity-50-40;
+        }
+    }
+}
