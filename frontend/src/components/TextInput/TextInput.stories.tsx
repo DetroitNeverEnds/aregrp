@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TextInput, type TextInputProps, type TextInputSize } from './TextInput';
 import { iconNames } from '../Icon';
+import { useState } from 'react';
 
 const meta = {
     title: 'Components/TextInput',
@@ -50,7 +51,8 @@ type Story = StoryObj<typeof meta>;
 
 // Контролируемый компонент для stories
 const ControlledTextInput = (props: TextInputProps) => {
-    return <TextInput name="test" {...props} />;
+    const [val, setVal] = useState<string>();
+    return <TextInput name="test" {...props} value={val} onChange={e => setVal(e.target.value)} />;
 };
 
 export const Default: Story = {

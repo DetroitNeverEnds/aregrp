@@ -96,7 +96,6 @@ export const TextInput: React.FC<TextInputProps> = ({
                 )}
             </div>
 
-            {/* {errorMessage && <div className={styles['input__caption--error']}>{errorMessage}</div>} */}
             {errorMessage && (
                 <Text variant="12-reg" color="red">
                     {errorMessage}
