@@ -26,7 +26,7 @@ describe('FlatButton', () => {
         render(
             <FlatButton onClick={handleClick} disabled>
                 Кнопка
-            </FlatButton>
+            </FlatButton>,
         );
 
         await user.click(screen.getByRole('button'));
@@ -43,7 +43,7 @@ describe('FlatButton', () => {
         render(
             <FlatButton data-testid="test-button" aria-label="Тестовая кнопка">
                 Кнопка
-            </FlatButton>
+            </FlatButton>,
         );
         const button = screen.getByTestId('test-button');
         expect(button).toHaveAttribute('aria-label', 'Тестовая кнопка');

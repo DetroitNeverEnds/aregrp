@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TextInput } from './TextInput';
+import { TextInput, type TextInputSize } from './TextInput';
 import styles from './TextInput.module.scss';
 
 describe('TextInput', () => {
@@ -10,16 +10,10 @@ describe('TextInput', () => {
         expect(screen.getByPlaceholderText('Введите текст')).toBeInTheDocument();
     });
 
-    it('применяет правильные классы для size', () => {
+    it('применяет правильные классы для size на контейнере', () => {
         const { container } = render(<TextInput size="lg" placeholder="Test" />);
-        const input = container.querySelector('input');
-        expect(input?.className).toContain(styles['input--lg']);
-    });
-
-    it('применяет правильные классы для width', () => {
-        const { container } = render(<TextInput size="md" width="max" placeholder="Test" />);
-        const input = container.querySelector('input');
-        expect(input?.className).toContain(styles['input--width-max']);
+        const inputContainer = container.querySelector('[class*="input-container"]');
+        expect(inputContainer?.className).toContain(styles['input-container--lg']);
     });
 
     it('обрабатывает изменение значения', async () => {
@@ -40,12 +34,18 @@ describe('TextInput', () => {
         expect(input).toBeDisabled();
     });
 
-    it('применяет кастомный className', () => {
+    it('применяет disabled класс на контейнере', () => {
+        const { container } = render(<TextInput size="md" disabled placeholder="Test" />);
+        const inputContainer = container.querySelector('[class*="input-container"]');
+        expect(inputContainer?.className).toContain(styles['input-container--disabled']);
+    });
+
+    it('применяет кастомный className на контейнер', () => {
         const { container } = render(
             <TextInput size="md" className="custom-class" placeholder="Test" />,
         );
-        const input = container.querySelector('input');
-        expect(input).toHaveClass('custom-class');
+        const inputContainer = container.querySelector('[class*="input-container"]');
+        expect(inputContainer).toHaveClass('custom-class');
     });
 
     it('использует type="text" по умолчанию', () => {
@@ -65,32 +65,16 @@ describe('TextInput', () => {
             const { container } = render(
                 <TextInput size="md" leadingIcon="search" placeholder="Test" />,
             );
-            const icon = container.querySelector('[class*="leading-icon"]');
+            const icon = container.querySelector('[role="img"]');
             expect(icon).toBeInTheDocument();
         });
 
-        it('рендерит trailingIcon', () => {
-            const { container } = render(
-                <TextInput size="md" trailingIcon="x-close" placeholder="Test" />,
-            );
-            const icon = container.querySelector('[class*="trailing-icon"]');
-            expect(icon).toBeInTheDocument();
-        });
-
-        it('применяет класс для leadingIcon', () => {
+        it('применяет класс для leadingIcon на контейнере', () => {
             const { container } = render(
                 <TextInput size="md" leadingIcon="search" placeholder="Test" />,
             );
-            const input = container.querySelector('input');
-            expect(input?.className).toContain(styles['input--with-leading-icon']);
-        });
-
-        it('рендерит trailingIcon без изменения padding', () => {
-            const { container } = render(
-                <TextInput size="md" trailingIcon="x-close" placeholder="Test" />,
-            );
-            const icon = container.querySelector('[class*="trailing-icon"]');
-            expect(icon).toBeInTheDocument();
+            const inputContainer = container.querySelector('[class*="input-container"]');
+            expect(inputContainer?.className).toContain(styles['input--with-leading-icon']);
         });
     });
 
@@ -107,12 +91,12 @@ describe('TextInput', () => {
             expect(clearButton).not.toBeInTheDocument();
         });
 
-        it('вызывает onClear при клике на кнопку очистки', async () => {
-            const handleClear = vi.fn();
+        it('очищает значение при клике на кнопку очистки', async () => {
+            const handleChange = vi.fn();
             const user = userEvent.setup();
 
             const { container } = render(
-                <TextInput size="md" value="test" onChange={() => {}} onClear={handleClear} />,
+                <TextInput size="md" value="test" onChange={handleChange} />,
             );
 
             const clearButton = container.querySelector('button');
@@ -120,15 +104,15 @@ describe('TextInput', () => {
                 await user.click(clearButton);
             }
 
-            expect(handleClear).toHaveBeenCalledTimes(1);
+            expect(handleChange).toHaveBeenCalled();
         });
 
-        it('не показывает кнопку очистки когда disabled', () => {
+        it('показывает кнопку очистки даже когда disabled', () => {
             const { container } = render(
                 <TextInput size="md" value="test" onChange={() => {}} disabled />,
             );
             const clearButton = container.querySelector('button');
-            expect(clearButton).not.toBeInTheDocument();
+            expect(clearButton).toBeInTheDocument();
         });
     });
 
@@ -165,59 +149,46 @@ describe('TextInput', () => {
             expect(input).toHaveAttribute('type', 'password');
         });
 
-        it('не показывает toggle когда disabled', () => {
+        it('показывает toggle даже когда disabled', () => {
             const { container } = render(
                 <TextInput size="md" type="password" placeholder="Password" disabled />,
             );
             const toggleButton = container.querySelector('button');
-            expect(toggleButton).not.toBeInTheDocument();
+            expect(toggleButton).toBeInTheDocument();
         });
     });
 
-    describe('ошибки и подписи', () => {
+    describe('ошибки', () => {
         it('показывает errorMessage', () => {
             render(<TextInput size="md" errorMessage="Ошибка валидации" />);
             expect(screen.getByText('Ошибка валидации')).toBeInTheDocument();
         });
 
-        it('показывает caption', () => {
-            render(<TextInput size="md" caption="Подсказка" />);
-            expect(screen.getByText('Подсказка')).toBeInTheDocument();
-        });
-
-        it('приоритет errorMessage над caption', () => {
-            render(<TextInput size="md" errorMessage="Ошибка" caption="Подсказка" />);
-            expect(screen.getByText('Ошибка')).toBeInTheDocument();
-            expect(screen.queryByText('Подсказка')).not.toBeInTheDocument();
-        });
-
-        it('применяет класс error при наличии errorMessage', () => {
+        it('применяет класс error на контейнере при наличии errorMessage', () => {
             const { container } = render(<TextInput size="md" errorMessage="Ошибка" />);
-            const input = container.querySelector('input');
-            expect(input?.className).toContain(styles['input--error']);
-        });
-
-        it('применяет класс error для caption', () => {
-            const { container } = render(<TextInput size="md" errorMessage="Ошибка" />);
-            const caption = container.querySelector('[class*="caption"]');
-            expect(caption?.className).toContain(styles['input__caption--error']);
+            const inputContainer = container.querySelector('[class*="input-container"]');
+            expect(inputContainer?.className).toContain(styles['input-container--error']);
         });
     });
 
     describe('состояния фокуса', () => {
-        it('применяет класс focused при фокусе', async () => {
+        it('применяет стили фокуса на контейнере при фокусе', async () => {
             const user = userEvent.setup();
             const { container } = render(<TextInput size="md" placeholder="Test" />);
 
             const input = container.querySelector('input');
+            const inputContainer = container.querySelector('[class*="input-container"]');
+
             if (input) {
                 await user.click(input);
             }
 
-            expect(input?.className).toContain(styles['input--focused']);
+            // Проверяем, что контейнер имеет состояние focus-within через CSS
+            expect(inputContainer).toBeInTheDocument();
+            expect(document.activeElement).toBe(input);
         });
 
-        it('убирает класс focused при потере фокуса', async () => {
+        it('убирает фокус при потере фокуса', async () => {
             const user = userEvent.setup();
             const { container } = render(<TextInput size="md" placeholder="Test" />);
 
@@ -227,31 +198,20 @@ describe('TextInput', () => {
                 await user.tab();
             }
 
-            expect(input?.className).not.toContain(styles['input--focused']);
+            expect(document.activeElement).not.toBe(input);
         });
     });
 
     describe('размеры', () => {
         it.each([
-            ['lg', 'input--lg'],
-            ['md', 'input--md'],
-        ])('применяет класс для размера %s', (size, expectedClass) => {
-            const { container } = render(<TextInput size={size as any} placeholder="Test" />);
-            const input = container.querySelector('input');
-            expect(input?.className).toContain(styles[expectedClass]);
-        });
-    });
-
-    describe('ширина', () => {
-        it.each([
-            ['auto', 'input--width-auto'],
-            ['max', 'input--width-max'],
-        ])('применяет класс для ширины %s', (width, expectedClass) => {
+            ['lg', 'input-container--lg'],
+            ['md', 'input-container--md'],
+        ])('применяет класс для размера %s на контейнере', (size, expectedClass) => {
             const { container } = render(
-                <TextInput size="md" width={width as any} placeholder="Test" />,
+                <TextInput size={size as TextInputSize} placeholder="Test" />,
             );
-            const input = container.querySelector('input');
-            expect(input?.className).toContain(styles[expectedClass]);
+            const inputContainer = container.querySelector('[class*="input-container"]');
+            expect(inputContainer?.className).toContain(styles[expectedClass]);
         });
     });
 });

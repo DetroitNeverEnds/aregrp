@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useState } from 'react';
-import { TextInput, type TextInputSize, type TextInputWidth } from './TextInput';
+import { TextInput, type TextInputProps, type TextInputSize } from './TextInput';
 import { iconNames } from '../Icon';
 
 const meta = {
@@ -34,18 +33,9 @@ const meta = {
             description: 'Иконка слева',
             options: [undefined, ...iconNames],
         },
-        // trailingIcon: {
-        //     control: 'select',
-        //     description: 'Иконка справа',
-        //     options: [undefined, ...iconNames],
-        // },
         errorMessage: {
             control: 'text',
             description: 'Сообщение об ошибке',
-        },
-        caption: {
-            control: 'text',
-            description: 'Текст подписи',
         },
         type: {
             control: 'select',
@@ -59,18 +49,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Контролируемый компонент для stories
-const ControlledTextInput = (props: any) => {
-    const [value, setValue] = useState(props.value || '');
-
-    return (
-        <TextInput
-            name="test"
-            {...props}
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            onClear={() => setValue('')}
-        />
-    );
+const ControlledTextInput = (props: TextInputProps) => {
+    return <TextInput name="test" {...props} />;
 };
 
 export const Default: Story = {
@@ -84,6 +64,9 @@ export const Default: Story = {
 
 // Размеры
 export const Sizes: Story = {
+    args: {
+        size: 'md',
+    },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '400px' }}>
             {(['lg', 'md'] as TextInputSize[]).map(size => (
@@ -95,6 +78,9 @@ export const Sizes: Story = {
 
 // С иконками
 export const WithIcons: Story = {
+    args: {
+        size: 'md',
+    },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '400px' }}>
             <ControlledTextInput size="md" leadingIcon="search" placeholder="Поиск..." />
@@ -115,6 +101,9 @@ export const WithIcons: Story = {
 
 // Password
 export const Password: Story = {
+    args: {
+        size: 'md',
+    },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '400px' }}>
             <ControlledTextInput size="md" type="password" placeholder="Введите пароль" />
@@ -137,6 +126,9 @@ export const Password: Story = {
 
 // Состояния
 export const States: Story = {
+    args: {
+        size: 'md',
+    },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '400px' }}>
             <ControlledTextInput size="md" placeholder="Обычное состояние" />
@@ -160,6 +152,9 @@ export const States: Story = {
 
 // Примеры использования
 export const Examples: Story = {
+    args: {
+        size: 'md',
+    },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '500px' }}>
             <div>
@@ -194,12 +189,7 @@ export const Examples: Story = {
             <div>
                 <h3 style={{ marginBottom: '8px' }}>Форма с валидацией</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    <ControlledTextInput
-                        size="md"
-                        width="max"
-                        placeholder="Имя"
-                        caption="Введите ваше имя"
-                    />
+                    <ControlledTextInput size="md" width="max" placeholder="Имя" />
                     <ControlledTextInput
                         size="md"
                         width="max"

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button } from './Button';
+import { Button, type ButtonSize, type ButtonVariant } from './Button';
 import styles from './Button.module.scss';
 
 describe('Button', () => {
@@ -136,9 +136,7 @@ describe('Button', () => {
     });
 
     it('применяет класс button--only-icon когда onlyIcon=true', () => {
-        const { container } = render(
-            <Button variant="primary" size="md" icon="plus" onlyIcon />,
-        );
+        const { container } = render(<Button variant="primary" size="md" icon="plus" onlyIcon />);
         const button = container.querySelector('button');
         expect(button?.className).toContain(styles['button--only-icon']);
     });
@@ -180,7 +178,7 @@ describe('Button', () => {
             ['secondary', 'button--secondary'],
         ])('применяет класс для варианта %s', (variant, expectedClass) => {
             const { container } = render(
-                <Button variant={variant as any} size="md">
+                <Button variant={variant as ButtonVariant} size="md">
                     Button
                 </Button>,
             );
@@ -195,7 +193,7 @@ describe('Button', () => {
             ['md', 'button--md'],
         ])('применяет класс для размера %s', (size, expectedClass) => {
             const { container } = render(
-                <Button variant="primary" size={size as any}>
+                <Button variant="primary" size={size as ButtonSize}>
                     Button
                 </Button>,
             );
