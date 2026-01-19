@@ -43,6 +43,15 @@
             "submit": "Sign Up",
             "hasAccount": "Already have an account?",
             "loginLink": "Sign In"
+        },
+        "forgotPassword": {
+            "title": "Password Reset",
+            "description": "Enter your email and we will send you a code to reset your password",
+            "submit": "Reset Password",
+            "hasAccount": "Already have an account?",
+            "loginLink": "Sign In",
+            "noAccount": "Don't have an account yet?",
+            "registerLink": "Register"
         }
     }
 }

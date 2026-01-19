@@ -1,17 +1,14 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from '../../../components/ui/common/Link';
-import { Button } from '../../../components/ui/common/Button';
+import { Controller, useForm } from 'react-hook-form';
+import { AuthForm } from '../../../components/ui/auth/AuthForm';
 import { TextInput } from '../../../components/ui/common/input/TextInput';
 import { Checkbox } from '../../../components/ui/common/input/Checkbox';
+import { Link } from '../../../components/ui/common/Link';
 import { Text } from '../../../components/ui/common/Text';
-import styles from './Login.module.scss';
-import { Divider } from '../../../components/ui/common/Divider';
-import { Form } from '../../../components/ui/common/Form';
-import { Controller, useForm } from 'react-hook-form';
 import { Flex } from '../../../components/ui/common/Flex';
 
-type PasswordFormData = {
+type LoginFormData = {
     email: string;
     password: string;
     rememberMe: boolean;
@@ -19,91 +16,80 @@ type PasswordFormData = {
 
 export const Login: React.FC = () => {
     const { t } = useTranslation();
-    const { handleSubmit, control, formState } = useForm<PasswordFormData>({
+    const { handleSubmit, control, formState } = useForm<LoginFormData>({
         defaultValues: { rememberMe: true },
     });
-    const onSubmit = useCallback((data: PasswordFormData) => console.log(data), []);
+    const onSubmit = useCallback((data: LoginFormData) => console.log(data), []);
 
     return (
-        <Flex gap={20} fullWidth>
-            <Form onSubmit={handleSubmit(onSubmit)} className={styles.login__form}>
-                <Text variant="h3">{t('auth.login.title')}</Text>
-                <Flex gap={20}>
-                    <Flex gap={10}>
-                        <Controller
-                            control={control}
-                            name="email"
-                            rules={{
-                                required: t('auth.errors.emailRequired'),
-                            }}
-                            render={({ field, fieldState }) => (
-                                <TextInput
-                                    size="lg"
-                                    type="email"
-                                    placeholder={t('auth.placeholders.email')}
-                                    errorMessage={fieldState.error?.message}
-                                    {...field}
-                                />
-                            )}
-                        />
-                        <Controller
-                            control={control}
-                            name="password"
-                            rules={{
-                                required: t('auth.errors.passwordRequired'),
-                            }}
-                            render={({ field, fieldState }) => (
-                                <TextInput
-                                    size="lg"
-                                    type="password"
-                                    placeholder={t('auth.placeholders.password')}
-                                    errorMessage={fieldState.error?.message}
-                                    {...field}
-                                />
-                            )}
-                        />
-                    </Flex>
-                    <div className={styles.login__form__input__options}>
-                        <Controller
-                            control={control}
-                            name="rememberMe"
-                            render={({ field: { value, ...fieldValues } }) => (
-                                <Checkbox
-                                    size="lg"
-                                    label={t('auth.login.rememberMe')}
-                                    checked={value}
-                                    {...fieldValues}
-                                />
-                            )}
-                        />
-                        <Link to="/forgot-password" size="lg" theme="black">
-                            {t('auth.login.forgotPassword')}
-                        </Link>
-                    </div>
-                </Flex>
-
-                <Button
-                    variant="primary"
-                    size="lg"
-                    width="max"
-                    type="submit"
-                    disabled={formState.isSubmitting || !formState.isReady}
-                >
-                    {t('auth.login.submit')}
-                </Button>
-            </Form>
-
-            <Divider />
-
-            <Flex align="end">
-                <Text variant="16-reg" color="gray-50">
-                    {t('auth.login.noAccount')}{' '}
-                    <Link to="/auth/register" size="lg" theme="black">
-                        {t('auth.login.registerLink')}
+        <AuthForm
+            title={t('auth.login.title')}
+            submitText={t('auth.login.submit')}
+            onSubmit={handleSubmit(onSubmit)}
+            isSubmitting={formState.isSubmitting}
+            additionalOptions={
+                <Flex direction="row" justify="between">
+                    <Controller
+                        control={control}
+                        name="rememberMe"
+                        render={({ field: { value, ...fieldValues } }) => (
+                            <Checkbox
+                                size="lg"
+                                label={t('auth.login.rememberMe')}
+                                checked={value}
+                                {...fieldValues}
+                            />
+                        )}
+                    />
+                    <Link to="/auth/forgot-password" size="lg" theme="black">
+                        {t('auth.login.forgotPassword')}
                     </Link>
-                </Text>
-            </Flex>
-        </Flex>
+                </Flex>
+            }
+            footer={
+                <Flex align="end">
+                    <Text variant="16-reg" color="gray-50">
+                        {t('auth.login.noAccount')}{' '}
+                        <Link to="/auth/register" size="lg" theme="black">
+                            {t('auth.login.registerLink')}
+                        </Link>
+                    </Text>
+                </Flex>
+            }
+        >
+            <Controller
+                control={control}
+                name="email"
+                rules={{
+                    required: t('auth.errors.emailRequired'),
+                }}
+                render={({ field, fieldState }) => (
+                    <TextInput
+                        size="lg"
+                        type="email"
+                        placeholder={t('auth.placeholders.email')}
+                        errorMessage={fieldState.error?.message}
+                        {...field}
+                    />
+                )}
+            />
+            <Controller
+                control={control}
+                name="password"
+                rules={{
+                    required: t('auth.errors.passwordRequired'),
+                }}
+                render={({ field, fieldState }) => (
+                    <TextInput
+                        size="lg"
+                        type="password"
+                        placeholder={t('auth.placeholders.password')}
+                        errorMessage={fieldState.error?.message}
+                        {...field}
+                    />
+                )}
+            />
+        </AuthForm>
     );
 };
 
