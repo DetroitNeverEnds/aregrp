@@ -38,7 +38,7 @@ export const Register: React.FC = () => {
 
     return (
         <Flex gap={20} fullWidth>
-            <Form onSubmit={handleSubmit(onSubmit)} className={styles.login__form}>
+            <Form onSubmit={handleSubmit(onSubmit)} className={styles.register__form}>
                 <Text variant="h3">{t('auth.register.title')}</Text>
                 <Flex gap={20}>
                     <Flex gap={10}>
@@ -127,7 +127,7 @@ export const Register: React.FC = () => {
                             </>
                         )}
                     </Flex>
-                    <div className={styles.login__form__input__options}>
+                    <div className={styles.register__form__input__options}>
                         <Controller
                             control={control}
                             name="policyAggrement"
