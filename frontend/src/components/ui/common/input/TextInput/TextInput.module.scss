@@ -42,6 +42,7 @@
 
     &--error {
         border-color: $error-default;
+        background: transparent;
 
         &:hover:not(&--disabled) {
             border-color: $error-hover;
