@@ -24,6 +24,13 @@ const config: StorybookConfig = {
                     include: '**/*.svg?react',
                 }),
             ],
+            css: {
+                preprocessorOptions: {
+                    scss: {
+                        additionalData: `@use "src/styles/variables.scss" as *;`,
+                    },
+                },
+            },
         });
     },
 };

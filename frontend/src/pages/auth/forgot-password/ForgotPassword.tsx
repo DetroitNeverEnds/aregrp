@@ -13,7 +13,11 @@ type ForgotPasswordFormData = {
 
 export const ForgotPassword: React.FC = () => {
     const { t } = useTranslation();
-    const { handleSubmit, control, formState } = useForm<ForgotPasswordFormData>();
+    const { handleSubmit, control, formState } = useForm<ForgotPasswordFormData>({
+        defaultValues: {
+            email: '',
+        },
+    });
     const onSubmit = useCallback((data: ForgotPasswordFormData) => console.log(data), []);
 
     return (
@@ -44,11 +48,7 @@ export const ForgotPassword: React.FC = () => {
                 control={control}
                 name="email"
                 rules={{
-                    required: t('auth.errors.emailRequired'),
-                    pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: t('auth.errors.emailInvalid'),
-                    },
+                    required: t('auth.errors.fieldRequired'),
                 }}
                 render={({ field, fieldState }) => (
                     <TextInput

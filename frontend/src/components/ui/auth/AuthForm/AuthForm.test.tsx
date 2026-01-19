@@ -8,7 +8,7 @@ describe('AuthForm', () => {
         render(
             <AuthForm title="Тестовый заголовок" submitText="Отправить" onSubmit={vi.fn()}>
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.getByText('Тестовый заголовок')).toBeInTheDocument();
@@ -23,7 +23,7 @@ describe('AuthForm', () => {
                 onSubmit={vi.fn()}
             >
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.getByText('Тестовое описание')).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe('AuthForm', () => {
         render(
             <AuthForm title="Заголовок" submitText="Отправить" onSubmit={vi.fn()}>
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.queryByText('Тестовое описание')).not.toBeInTheDocument();
@@ -43,7 +43,7 @@ describe('AuthForm', () => {
         render(
             <AuthForm title="Заголовок" submitText="Отправить" onSubmit={vi.fn()}>
                 <div>Тестовый контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.getByText('Тестовый контент')).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe('AuthForm', () => {
                 additionalOptions={<div>Дополнительные опции</div>}
             >
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.getByText('Дополнительные опции')).toBeInTheDocument();
@@ -68,7 +68,7 @@ describe('AuthForm', () => {
         render(
             <AuthForm title="Заголовок" submitText="Отправить" onSubmit={vi.fn()}>
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.queryByText('Дополнительные опции')).not.toBeInTheDocument();
@@ -78,20 +78,20 @@ describe('AuthForm', () => {
         render(
             <AuthForm title="Заголовок" submitText="Войти" onSubmit={vi.fn()}>
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.getByRole('button', { name: 'Войти' })).toBeInTheDocument();
     });
 
     it('вызывает onSubmit при отправке формы', async () => {
-        const handleSubmit = vi.fn((e) => e.preventDefault());
+        const handleSubmit = vi.fn(e => e.preventDefault());
         const user = userEvent.setup();
 
         render(
             <AuthForm title="Заголовок" submitText="Отправить" onSubmit={handleSubmit}>
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         const button = screen.getByRole('button', { name: 'Отправить' });
@@ -104,7 +104,7 @@ describe('AuthForm', () => {
         render(
             <AuthForm title="Заголовок" submitText="Отправить" onSubmit={vi.fn()} isSubmitting>
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         const button = screen.getByRole('button', { name: 'Отправить' });
@@ -120,7 +120,7 @@ describe('AuthForm', () => {
                 footer={<div>Тестовый футер</div>}
             >
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.getByText('Тестовый футер')).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe('AuthForm', () => {
         render(
             <AuthForm title="Заголовок" submitText="Отправить" onSubmit={vi.fn()}>
                 <div>Контент</div>
-            </AuthForm>
+            </AuthForm>,
         );
 
         expect(screen.queryByText('Тестовый футер')).not.toBeInTheDocument();

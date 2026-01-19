@@ -22,15 +22,27 @@ type RegisterFormData = {
     password2: string;
 
     // other
-    policyAggrement: boolean;
+    policyAgrement: boolean;
 };
 
 type RegisterTypeChoice = 'physical' | 'agent';
 
 export const Register: React.FC = () => {
     const { t } = useTranslation();
-    const { handleSubmit, control, formState } = useForm<RegisterFormData>();
-    const [registerTypeChoice, setRegisterTypeChoice] = useState<RegisterTypeChoice>('physical');
+    const { handleSubmit, control, formState } = useForm<RegisterFormData>({
+        defaultValues: {
+            name: '',
+            organisationName: '',
+            INN: '',
+            email: '',
+            phone: '',
+            password1: '',
+            password2: '',
+            policyAgrement: false,
+        },
+    });
+    // TODO: Choice for agent
+    const [registerTypeChoice, _] = useState<RegisterTypeChoice>('physical');
     const onSubmit = useCallback((data: RegisterFormData) => console.log(data), []);
 
     return (
@@ -42,19 +54,18 @@ export const Register: React.FC = () => {
             additionalOptions={
                 <Controller
                     control={control}
-                    name="policyAggrement"
+                    name="policyAgrement"
                     rules={{
-                        validate: value =>
-                            value !== true && t('auth.errors.policyAggrementRequired'),
+                        required: t('auth.errors.policyAgrementRequired'),
                     }}
                     render={({ field: { value, ...fieldValues }, fieldState }) => (
                         <Checkbox
                             size="lg"
                             label={
                                 <Text variant="14-reg">
-                                    {t('auth.register.policyAggrement.text')}{' '}
+                                    {t('auth.register.policyAgrement.text')}{' '}
                                     <Link to="/policy" size="md">
-                                        {t('auth.register.policyAggrement.link')}
+                                        {t('auth.register.policyAgrement.link')}
                                     </Link>
                                 </Text>
                             }

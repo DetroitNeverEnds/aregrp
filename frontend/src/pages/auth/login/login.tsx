@@ -17,7 +17,11 @@ type LoginFormData = {
 export const Login: React.FC = () => {
     const { t } = useTranslation();
     const { handleSubmit, control, formState } = useForm<LoginFormData>({
-        defaultValues: { rememberMe: true },
+        defaultValues: {
+            email: '',
+            password: '',
+            rememberMe: true,
+        },
     });
     const onSubmit = useCallback((data: LoginFormData) => console.log(data), []);
 

@@ -92,11 +92,11 @@ export const TextInput: React.FC<TextInputProps> = ({
 
                 <input
                     type={actualType}
-                    ref={ref}
                     value={value}
                     disabled={disabled}
                     onChange={handleChange}
                     {...props}
+                    ref={ref}
                     className={styles.input}
                 />
                 {hasValue && !isPasswordField && (

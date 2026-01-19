@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Form } from './Form';
 import { TextInput } from '../input/TextInput';
 import { Button } from '../Button';

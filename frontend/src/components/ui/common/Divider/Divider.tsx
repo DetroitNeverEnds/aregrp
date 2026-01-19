@@ -11,10 +11,7 @@ export interface DividerProps {
     className?: string;
 }
 
-export const Divider: React.FC<DividerProps> = ({
-    orientation = 'horizontal',
-    className = '',
-}) => {
+export const Divider: React.FC<DividerProps> = ({ orientation = 'horizontal', className = '' }) => {
     const dividerClassNames = classNames(
         styles.divider,
         styles[`divider--${orientation}`],

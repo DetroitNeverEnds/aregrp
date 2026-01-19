@@ -27,7 +27,7 @@
         },
         "errors": {
             "fieldRequired": "Заполните это поле",
-            "policyAggrementRequired": "Подтвердите, что вы согласны с политикой конфиденциальности",
+            "policyAgrementRequired": "Подтвердите, что вы согласны с политикой конфиденциальности",
             "emailInvalid": "Некорректный email",
             "passwordsNotMatch": "Пароли не совпадают"
         },
@@ -45,7 +45,7 @@
             "submit": "Зарегистрироваться",
             "hasAccount": "Уже есть аккаунт?",
             "loginLink": "Войти",
-            "policyAggrement": {
+            "policyAgrement": {
                 "text": "Я соглашаюсь с ",
                 "link": "политикой конфиденциальности"
             }

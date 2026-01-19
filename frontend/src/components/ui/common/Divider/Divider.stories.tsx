@@ -87,9 +87,7 @@ export const InCard: Story = {
         >
             <h3 style={{ margin: '0 0 16px 0' }}>Заголовок карточки</h3>
             <Divider />
-            <p style={{ margin: '16px 0' }}>
-                Содержимое карточки с текстом и другой информацией.
-            </p>
+            <p style={{ margin: '16px 0' }}>Содержимое карточки с текстом и другой информацией.</p>
             <Divider />
             <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
                 <button>Действие 1</button>
