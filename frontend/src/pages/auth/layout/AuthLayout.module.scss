@@ -1,0 +1,25 @@
+// @use '../../../styles/variables' as *;
+
+.body {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.logo {
+    width: 461px;
+    background: $gradient-primary-700-900;
+}
+
+.auth {
+    &__wrapperOuter {
+        padding: 30px;
+        flex-grow: 1;
+    }
+    &__wrapperInner {
+        height: 100%;
+        width: 450px;
+    }
+    &__content {
+        flex-grow: 1;
+    }
+}

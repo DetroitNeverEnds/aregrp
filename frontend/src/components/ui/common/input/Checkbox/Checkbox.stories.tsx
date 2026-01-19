@@ -39,15 +39,7 @@ type Story = StoryObj<typeof meta>;
 
 // Контролируемый компонент для stories
 const ControlledCheckboxInput = ({ checked, ...props }: CheckboxProps) => {
-    const [val, setVal] = useState(checked);
-    return (
-        <Checkbox
-            name="test"
-            {...props}
-            checked={val}
-            onChange={e => setVal(Boolean(e.target.checked))}
-        />
-    );
+    return <Checkbox name="test" {...props} defaultValue={checked} />;
 };
 
 export const Default: Story = {

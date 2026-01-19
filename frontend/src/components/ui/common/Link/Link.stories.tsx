@@ -22,27 +22,15 @@ const meta = {
             control: 'text',
             description: 'Путь для навигации',
         },
-        variant: {
+        size: {
             control: 'select',
-            options: [
-                'h2',
-                'h3',
-                'h4',
-                'h5',
-                '12-reg',
-                '12-med',
-                '14-reg',
-                '14-med',
-                '16-reg',
-                '16-med',
-                '18-reg',
-                '18-med',
-                '20-reg',
-                '20-med',
-                '24-reg',
-                '24-med',
-            ],
-            description: 'Вариант текста (размер и толщина шрифта)',
+            options: ['sm', 'md', 'lg'],
+            description: 'Размер ссылки',
+        },
+        theme: {
+            control: 'select',
+            options: ['blue', 'black'],
+            description: 'Тема ссылки',
         },
         children: {
             control: 'text',
@@ -71,6 +59,43 @@ export const Default: Story = {
     },
 };
 
+export const AllSizes: Story = {
+    args: {
+        to: '',
+        children: '',
+    },
+    render: () => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <Link to="/example" size="sm">
+                Маленькая ссылка (small)
+            </Link>
+            <Link to="/example" size="md">
+                Средняя ссылка (medium, по умолчанию)
+            </Link>
+            <Link to="/example" size="lg">
+                Большая ссылка (large)
+            </Link>
+        </div>
+    ),
+};
+
+export const AllThemes: Story = {
+    args: {
+        to: '',
+        children: '',
+    },
+    render: () => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <Link to="/example" theme="blue">
+                Синяя тема (blue, по умолчанию)
+            </Link>
+            <Link to="/example" theme="black">
+                Черная тема (black)
+            </Link>
+        </div>
+    ),
+};
+
 export const WithIcons: Story = {
     args: {
         to: '',
@@ -91,65 +116,61 @@ export const WithIcons: Story = {
     ),
 };
 
-export const AllVariants: Story = {
+export const SizesWithIcons: Story = {
     args: {
         to: '',
         children: '',
     },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <Link to="/example" variant="12-reg">
-                12-reg: Очень маленькая ссылка
+            <Link to="/example" size="sm" leadingIcon="settings">
+                Маленькая ссылка с иконкой
             </Link>
-            <Link to="/example" variant="14-reg">
-                14-reg: Маленькая ссылка
+            <Link to="/example" size="md" leadingIcon="settings">
+                Средняя ссылка с иконкой
             </Link>
-            <Link to="/example" variant="16-reg">
-                16-reg: Обычная ссылка (по умолчанию)
-            </Link>
-            <Link to="/example" variant="18-reg">
-                18-reg: Средняя ссылка
-            </Link>
-            <Link to="/example" variant="20-med">
-                20-med: Большая жирная ссылка
-            </Link>
-            <Link to="/example" variant="24-med">
-                24-med: Очень большая жирная ссылка
+            <Link to="/example" size="lg" leadingIcon="settings">
+                Большая ссылка с иконкой
             </Link>
         </div>
     ),
 };
 
-export const WithComplexChildren: Story = {
-    args: {
-        to: '',
-        children: (
-            <>
-                Ссылка с <strong>жирным</strong> и <em>курсивным</em> текстом
-            </>
-        ),
-    },
-};
-
-export const DifferentSizes: Story = {
+export const ThemesComparison: Story = {
     args: {
         to: '',
         children: '',
     },
     render: () => (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <Link to="/example" variant="14-reg" leadingIcon="settings">
-                Маленькая ссылка с иконкой
-            </Link>
-            <Link to="/example" variant="16-reg" leadingIcon="settings">
-                Обычная ссылка с иконкой
-            </Link>
-            <Link to="/example" variant="20-med" leadingIcon="settings">
-                Большая ссылка с иконкой
-            </Link>
-            <Link to="/example" variant="24-med" leadingIcon="settings">
-                Очень большая ссылка с иконкой
-            </Link>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div>
+                <h4 style={{ marginBottom: '8px' }}>Синяя тема (blue)</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <Link to="/example" size="sm" theme="blue">
+                        Маленькая синяя ссылка
+                    </Link>
+                    <Link to="/example" size="md" theme="blue">
+                        Средняя синяя ссылка
+                    </Link>
+                    <Link to="/example" size="lg" theme="blue">
+                        Большая синяя ссылка
+                    </Link>
+                </div>
+            </div>
+            <div>
+                <h4 style={{ marginBottom: '8px' }}>Черная тема (black)</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <Link to="/example" size="sm" theme="black">
+                        Маленькая черная ссылка
+                    </Link>
+                    <Link to="/example" size="md" theme="black">
+                        Средняя черная ссылка
+                    </Link>
+                    <Link to="/example" size="lg" theme="black">
+                        Большая черная ссылка
+                    </Link>
+                </div>
+            </div>
         </div>
     ),
 };

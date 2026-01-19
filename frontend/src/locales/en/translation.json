@@ -8,5 +8,41 @@
     },
     "button": {
         "click": "Click"
+    },
+    "auth": {
+        "fields": {
+            "email": "Email",
+            "password": "Password",
+            "confirmPassword": "Confirm Password"
+        },
+        "placeholders": {
+            "email": "Enter your email",
+            "password": "Enter password",
+            "confirmPassword": "Repeat password"
+        },
+        "errors": {
+            "emailRequired": "Email is required",
+            "emailInvalid": "Invalid email",
+            "passwordRequired": "Password is required",
+            "passwordTooShort": "Password must be at least 8 characters",
+            "confirmPasswordRequired": "Password confirmation is required",
+            "passwordsNotMatch": "Passwords do not match"
+        },
+        "login": {
+            "title": "Login",
+            "backToSite": "Back to site",
+            "submit": "Sign In",
+            "rememberMe": "Remember password",
+            "forgotPassword": "Forgot password?",
+            "noAccount": "Don't have an account yet?",
+            "registerLink": "Register"
+        },
+        "register": {
+            "title": "Register",
+            "subtitle": "Create a new account",
+            "submit": "Sign Up",
+            "hasAccount": "Already have an account?",
+            "loginLink": "Sign In"
+        }
     }
 }

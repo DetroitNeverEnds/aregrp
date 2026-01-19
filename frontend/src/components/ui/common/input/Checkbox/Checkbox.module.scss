@@ -39,7 +39,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 4px;
-    border: 2px solid $gray-30;
+    border: 1px solid $gray-30;
     background: $gray-0;
     transition: all 0.2s ease;
     flex-shrink: 0;
@@ -121,7 +121,7 @@
 
     // Focus состояние
     .checkbox-input:focus-visible + & {
-        outline: 2px solid $primary-400;
-        outline-offset: 2px;
+        outline: 1px solid $primary-400;
+        outline-offset: 1px;
     }
 }

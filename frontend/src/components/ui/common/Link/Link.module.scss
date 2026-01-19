@@ -7,17 +7,47 @@
     cursor: pointer;
     transition: color 0.2s ease;
 
-    // Применяем состояния для цвета primary-700
-    span {
-        color: vars.$primary-700 !important;
+    // Тема blue (по умолчанию)
+    &--blue {
+        span {
+            color: vars.$primary-700 !important;
+        }
+
+        &:hover span {
+            color: vars.$primary-800 !important;
+        }
+
+        &:active span {
+            color: vars.$primary-900 !important;
+        }
     }
 
-    &:hover span {
-        color: vars.$primary-800 !important;
+    // Тема black
+    &--black {
+        span {
+            color: vars.$gray-100 !important;
+        }
+
+        &:hover span {
+            color: vars.$gray-70 !important;
+        }
+
+        &:active span {
+            color: vars.$gray-50 !important;
+        }
     }
 
-    &:active span {
-        color: vars.$primary-900 !important;
+    // Размеры (для будущего расширения)
+    &--small {
+        // Дополнительные стили для маленького размера при необходимости
+    }
+
+    &--medium {
+        // Дополнительные стили для среднего размера при необходимости
+    }
+
+    &--large {
+        // Дополнительные стили для большого размера при необходимости
     }
 
     // Стили для иконок

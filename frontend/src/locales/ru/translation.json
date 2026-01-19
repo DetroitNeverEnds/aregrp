@@ -8,5 +8,47 @@
     },
     "button": {
         "click": "Нажать"
+    },
+    "auth": {
+        "common": {
+            "backToSite": "Вернуться на сайт"
+        },
+        "fields": {
+            "email": "Email",
+            "password": "Пароль",
+            "confirmPassword": "Подтвердите пароль"
+        },
+        "placeholders": {
+            "name": "Ваше имя",
+            "email": "Email",
+            "phone": "Номер телефона",
+            "password": "Пароль",
+            "confirmPassword": "Повторите пароль"
+        },
+        "errors": {
+            "fieldRequired": "Заполните это поле",
+            "policyAggrementRequired": "Подтвердите, что вы согласны с политикой конфиденциальности",
+            "emailInvalid": "Некорректный email",
+            "passwordsNotMatch": "Пароли не совпадают"
+        },
+        "login": {
+            "title": "Вход",
+            "submit": "Войти",
+            "rememberMe": "Запомнить пароль",
+            "forgotPassword": "Забыли пароль?",
+            "noAccount": "Ещё нет аккаунта?",
+            "registerLink": "Регистрация"
+        },
+        "register": {
+            "title": "Регистрация",
+            "subtitle": "Создайте новый аккаунт",
+            "submit": "Зарегистрироваться",
+            "hasAccount": "Уже есть аккаунт?",
+            "loginLink": "Войти",
+            "policyAggrement": {
+                "text": "Я соглашаюсь с ",
+                "link": "политикой конфиденциальности"
+            }
+        }
     }
 }
