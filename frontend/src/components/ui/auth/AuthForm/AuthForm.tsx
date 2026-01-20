@@ -57,7 +57,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
                     {/* Содержимое формы */}
                     <Flex gap={20}>
-                        {children}
+                        <Flex gap={10}>{children}</Flex>
                         {additionalOptions && <div>{additionalOptions}</div>}
                     </Flex>
 

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Link } from './Link';
+import styles from './Link.module.scss';
 
 describe('Link', () => {
     const renderWithRouter = (ui: React.ReactElement) => {
@@ -37,7 +38,7 @@ describe('Link', () => {
     it('применяет тему blue по умолчанию', () => {
         renderWithRouter(<Link to="/test">Текст</Link>);
         const link = screen.getByText('Текст').closest('a');
-        expect(link).toHaveClass('link--blue');
+        expect(link).toHaveClass(styles['link--blue']);
     });
 
     it('применяет кастомную тему black', () => {
@@ -47,7 +48,7 @@ describe('Link', () => {
             </Link>,
         );
         const link = screen.getByText('Черная ссылка').closest('a');
-        expect(link).toHaveClass('link--black');
+        expect(link).toHaveClass(styles['link--black']);
     });
 
     it('применяет дополнительный className', () => {

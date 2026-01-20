@@ -1,5 +1,3 @@
-@use '../../../../styles/variables' as vars;
-
 .link {
     display: inline-flex;
     align-items: center;
@@ -10,30 +8,30 @@
     // Тема blue (по умолчанию)
     &--blue {
         span {
-            color: vars.$primary-700 !important;
+            color: $primary-700 !important;
         }
 
         &:hover span {
-            color: vars.$primary-800 !important;
+            color: $primary-800 !important;
         }
 
         &:active span {
-            color: vars.$primary-900 !important;
+            color: $primary-900 !important;
         }
     }
 
     // Тема black
     &--black {
         span {
-            color: vars.$gray-100 !important;
+            color: $gray-100 !important;
         }
 
         &:hover span {
-            color: vars.$primary-700 !important;
+            color: $primary-700 !important;
         }
 
         &:active span {
-            color: vars.$gray-50 !important;
+            color: $gray-50 !important;
         }
     }
 

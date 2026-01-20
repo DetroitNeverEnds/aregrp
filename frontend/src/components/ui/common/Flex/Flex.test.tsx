@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Flex } from './Flex';
+import styles from './Flex.module.scss';
 
 describe('Flex', () => {
     it('рендерится с children', () => {
@@ -16,14 +17,14 @@ describe('Flex', () => {
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--direction-column');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--direction-column']);
 
         rerender(
             <Flex data-testid="flex" direction="row-reverse">
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--direction-row-reverse');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--direction-row-reverse']);
     });
 
     it('применяет правильные классы для justify', () => {
@@ -32,14 +33,14 @@ describe('Flex', () => {
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--justify-center');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--justify-center']);
 
         rerender(
             <Flex data-testid="flex" justify="between">
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--justify-between');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--justify-between']);
     });
 
     it('применяет правильные классы для align', () => {
@@ -48,14 +49,14 @@ describe('Flex', () => {
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--align-center');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--align-center']);
 
         rerender(
             <Flex data-testid="flex" align="end">
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--align-end');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--align-end']);
     });
 
     it('применяет правильные классы для wrap', () => {
@@ -64,14 +65,14 @@ describe('Flex', () => {
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--wrap-wrap');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--wrap-wrap']);
 
         rerender(
             <Flex data-testid="flex" wrap="wrap-reverse">
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--wrap-wrap-reverse');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--wrap-wrap-reverse']);
     });
 
     it('применяет gap через style', () => {
@@ -96,7 +97,7 @@ describe('Flex', () => {
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--inline');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--inline']);
     });
 
     it('применяет класс fullWidth', () => {
@@ -105,7 +106,7 @@ describe('Flex', () => {
                 Content
             </Flex>,
         );
-        expect(screen.getByTestId('flex')).toHaveClass('flex--full-width');
+        expect(screen.getByTestId('flex')).toHaveClass(styles['flex--full-width']);
     });
 
     it('применяет дополнительный className', () => {

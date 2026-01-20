@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import styles from './Form.module.scss';
 
 export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
@@ -8,8 +9,8 @@ export interface FormProps extends React.FormHTMLAttributes<HTMLFormElement> {
 
 export const Form: React.FC<FormProps> = ({ children, className = '', ...props }) => {
     return (
-        <form className={styles.form} {...props}>
-            <div className={className}>{children}</div>
+        <form className={classNames(styles.form, className)} {...props}>
+            {children}
         </form>
     );
 };

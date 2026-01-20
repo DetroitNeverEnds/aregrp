@@ -1,7 +1,5 @@
-@use '../../../../styles/variables' as vars;
-
 // Базовые переменные для типографики
-$font-montserrat: vars.$font-family-base;
+$font-montserrat: $font-family-base;
 
 // Веса шрифтов
 $font-weight-regular: 400;
@@ -15,50 +13,50 @@ $font-weight-medium: 500;
 
     // Цвета текста
     &--color-gray-50 {
-        color: vars.$gray-50;
+        color: $gray-50;
     }
     &--color-gray-100 {
-        color: vars.$gray-100;
+        color: $gray-100;
     }
 
     &--color-primary-200 {
-        color: vars.$primary-200;
+        color: $primary-200;
     }
 
     &--color-primary-300 {
-        color: vars.$primary-300;
+        color: $primary-300;
     }
 
     &--color-primary-400 {
-        color: vars.$primary-400;
+        color: $primary-400;
     }
 
     &--color-primary-500 {
-        color: vars.$primary-500;
+        color: $primary-500;
     }
 
     &--color-primary-600 {
-        color: vars.$primary-600;
+        color: $primary-600;
     }
 
     &--color-primary-700 {
-        color: vars.$primary-700;
+        color: $primary-700;
     }
 
     &--color-primary-800 {
-        color: vars.$primary-800;
+        color: $primary-800;
     }
 
     &--color-primary-900 {
-        color: vars.$primary-900;
+        color: $primary-900;
     }
 
     &--color-primary-1000 {
-        color: vars.$primary-1000;
+        color: $primary-1000;
     }
 
     &--color-error-default {
-        color: vars.$error-default;
+        color: $error-default;
     }
 
     // Заголовки
