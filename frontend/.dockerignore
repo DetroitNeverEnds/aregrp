@@ -27,5 +27,4 @@ vitest.shims.d.ts
 .prettierignore
 .prettierrc.json
 eslint.config.js
-tsconfig.test.json
 COMPONENTS_TO_ADD.md
