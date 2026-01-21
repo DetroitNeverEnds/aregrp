@@ -79,7 +79,7 @@ export const Register: React.FC = () => {
                     name="registerType"
                     render={({ field, fieldState }) => (
                         <RadioButtons
-                            size="md"
+                            size="lg"
                             direction="horizontal"
                             errorMessage={fieldState.error?.message}
                             options={[

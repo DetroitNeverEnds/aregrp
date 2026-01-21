@@ -32,7 +32,7 @@
 
 .radio-buttons-group {
     display: flex;
-    gap: 12px;
+    gap: 20px;
 
     &--vertical {
         flex-direction: column;
@@ -83,26 +83,23 @@
     flex-shrink: 0;
     position: relative;
 
-    // CSS переменные для размеров внутреннего круга
-    --inner-circle-size: 12px;
-
     // Размеры
     &--lg {
         width: 24px;
         height: 24px;
-        --inner-circle-size: 16px;
+        --inner-circle-size: 18px;
     }
 
     &--md {
         width: 20px;
         height: 20px;
-        --inner-circle-size: 12px;
+        --inner-circle-size: 14px;
     }
 
     &--sm {
         width: 16px;
         height: 16px;
-        --inner-circle-size: 10px;
+        --inner-circle-size: 12px;
     }
 
     // Состояние checked
