@@ -49,19 +49,34 @@ describe('AuthForm', () => {
         expect(screen.getByText('Тестовый контент')).toBeInTheDocument();
     });
 
-    it('рендерит additionalOptions, если они переданы', () => {
+    it('рендерит additionalOptionsUpper, если они переданы', () => {
         render(
             <AuthForm
                 title="Заголовок"
                 submitText="Отправить"
                 onSubmit={vi.fn()}
-                additionalOptions={<div>Дополнительные опции</div>}
+                additionalOptionsUpper={<div>Дополнительные опции сверху</div>}
             >
                 <div>Контент</div>
             </AuthForm>,
         );
 
-        expect(screen.getByText('Дополнительные опции')).toBeInTheDocument();
+        expect(screen.getByText('Дополнительные опции сверху')).toBeInTheDocument();
+    });
+
+    it('рендерит additionalOptionsLower, если они переданы', () => {
+        render(
+            <AuthForm
+                title="Заголовок"
+                submitText="Отправить"
+                onSubmit={vi.fn()}
+                additionalOptionsLower={<div>Дополнительные опции снизу</div>}
+            >
+                <div>Контент</div>
+            </AuthForm>,
+        );
+
+        expect(screen.getByText('Дополнительные опции снизу')).toBeInTheDocument();
     });
 
     it('не рендерит additionalOptions, если они не переданы', () => {
@@ -71,7 +86,8 @@ describe('AuthForm', () => {
             </AuthForm>,
         );
 
-        expect(screen.queryByText('Дополнительные опции')).not.toBeInTheDocument();
+        expect(screen.queryByText('Дополнительные опции сверху')).not.toBeInTheDocument();
+        expect(screen.queryByText('Дополнительные опции снизу')).not.toBeInTheDocument();
     });
 
     it('рендерит кнопку отправки с правильным текстом', () => {
