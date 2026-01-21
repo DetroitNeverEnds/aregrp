@@ -30,15 +30,15 @@ export const ForgotPassword: React.FC = () => {
             footer={
                 <Flex gap={10} align="end">
                     <Text variant="16-reg" color="gray-50">
-                        {t('auth.forgotPassword.hasAccount')}{' '}
+                        {t('auth.common.hasAccount')}{' '}
                         <Link to="/auth/login" size="lg" theme="black">
-                            {t('auth.forgotPassword.loginLink')}
+                            {t('auth.common.login')}
                         </Link>
                     </Text>
                     <Text variant="16-reg" color="gray-50">
-                        {t('auth.forgotPassword.noAccount')}{' '}
+                        {t('auth.common.noAccount')}{' '}
                         <Link to="/auth/register" size="lg" theme="black">
-                            {t('auth.forgotPassword.registerLink')}
+                            {t('auth.common.register')}
                         </Link>
                     </Text>
                 </Flex>

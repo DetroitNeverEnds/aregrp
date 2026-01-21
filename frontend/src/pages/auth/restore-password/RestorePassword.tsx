@@ -32,15 +32,15 @@ export const RestorePassword: React.FC = () => {
             footer={
                 <Flex gap={10} align="end">
                     <Text variant="16-reg" color="gray-50">
-                        {t('auth.restorePassword.hasAccount')}{' '}
+                        {t('auth.common.hasAccount')}{' '}
                         <Link to="/auth/login" size="lg" theme="black">
-                            {t('auth.restorePassword.loginLink')}
+                            {t('auth.common.login')}
                         </Link>
                     </Text>
                     <Text variant="16-reg" color="gray-50">
-                        {t('auth.restorePassword.noAccount')}{' '}
+                        {t('auth.common.noAccount')}{' '}
                         <Link to="/auth/register" size="lg" theme="black">
-                            {t('auth.restorePassword.registerLink')}
+                            {t('auth.common.register')}
                         </Link>
                     </Text>
                 </Flex>

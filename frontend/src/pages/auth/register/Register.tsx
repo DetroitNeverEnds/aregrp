@@ -79,9 +79,9 @@ export const Register: React.FC = () => {
             footer={
                 <Flex align="end">
                     <Text variant="16-reg" color="gray-50">
-                        {t('auth.register.hasAccount')}{' '}
+                        {t('auth.common.hasAccount')}{' '}
                         <Link to="/auth/login" size="lg" theme="black">
-                            {t('auth.register.loginLink')}
+                            {t('auth.common.login')}
                         </Link>
                     </Text>
                 </Flex>

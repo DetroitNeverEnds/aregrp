@@ -11,7 +11,11 @@
     },
     "auth": {
         "common": {
-            "backToSite": "Вернуться на сайт"
+            "backToSite": "Вернуться на сайт",
+            "hasAccount": "Уже есть аккаунт?",
+            "login": "Войти",
+            "noAccount": "Ещё нет аккаунта?",
+            "register": "Регистрация"
         },
         "fields": {
             "email": "Email",
@@ -37,16 +41,12 @@
             "title": "Вход",
             "submit": "Войти",
             "rememberMe": "Запомнить пароль",
-            "forgotPassword": "Забыли пароль?",
-            "noAccount": "Ещё нет аккаунта?",
-            "registerLink": "Регистрация"
+            "forgotPassword": "Забыли пароль?"
         },
         "register": {
             "title": "Регистрация",
             "subtitle": "Создайте новый аккаунт",
             "submit": "Зарегистрироваться",
-            "hasAccount": "Уже есть аккаунт?",
-            "loginLink": "Войти",
             "policyAgrement": {
                 "text": "Я соглашаюсь с ",
                 "link": "политикой конфиденциальности"
@@ -55,20 +55,12 @@
         "forgotPassword": {
             "title": "Сброс пароля",
             "description": "Введите свой email и мы отправим вам код для восстановления пароля",
-            "submit": "Сбросить пароль",
-            "hasAccount": "Уже есть аккаунт?",
-            "loginLink": "Войти",
-            "noAccount": "Ещё нет аккаунта?",
-            "registerLink": "Регистрация"
+            "submit": "Сбросить пароль"
         },
         "restorePassword": {
             "title": "Сброс пароля",
             "description": "Введите новый пароль",
-            "submit": "Сбросить пароль",
-            "hasAccount": "Уже есть аккаунт?",
-            "loginLink": "Войти",
-            "noAccount": "Ещё нет аккаунта?",
-            "registerLink": "Регистрация"
+            "submit": "Сбросить пароль"
         }
     }
 }

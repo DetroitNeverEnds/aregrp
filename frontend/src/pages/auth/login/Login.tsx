@@ -53,9 +53,9 @@ export const Login: React.FC = () => {
             footer={
                 <Flex align="end">
                     <Text variant="16-reg" color="gray-50">
-                        {t('auth.login.noAccount')}{' '}
+                        {t('auth.common.noAccount')}{' '}
                         <Link to="/auth/register" size="lg" theme="black">
-                            {t('auth.login.registerLink')}
+                            {t('auth.common.register')}
                         </Link>
                     </Text>
                 </Flex>
