@@ -1,0 +1,181 @@
+@use '@/styles/variables.scss' as *;
+
+.radio-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.radio-buttons-group {
+    display: flex;
+    gap: 12px;
+
+    &--vertical {
+        flex-direction: column;
+    }
+
+    &--horizontal {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+
+    &--disabled {
+        cursor: not-allowed;
+    }
+}
+
+.radio-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.radio-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.radio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid $primary-800;
+    background: $gray-0;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: relative;
+
+    // Размеры
+    &--lg {
+        width: 24px;
+        height: 24px;
+    }
+
+    &--md {
+        width: 20px;
+        height: 20px;
+    }
+
+    &--sm {
+        width: 16px;
+        height: 16px;
+    }
+
+    // Состояние checked
+    &--checked {
+        background: $gray-0;
+        border-color: $primary-800;
+
+        &:hover:not(.radio--disabled) {
+            border-color: $primary-900;
+        }
+
+        &:active:not(.radio--disabled) {
+            border-color: $primary-900;
+        }
+    }
+
+    // Состояние unchecked hover
+    &:not(.radio--checked):not(.radio--disabled):not(.radio--error):hover {
+        border-color: $primary-700;
+    }
+
+    // Состояние disabled
+    &--disabled {
+        background: $gray-10;
+        border-color: $gray-30;
+        cursor: not-allowed;
+
+        &.radio--checked {
+            background: $gray-10;
+            border-color: $gray-30;
+        }
+    }
+
+    // Состояние error
+    &--error {
+        border-color: $error-default;
+
+        &:hover:not(.radio--disabled) {
+            border-color: $error-hover;
+        }
+
+        &.radio--checked {
+            background: $gray-0;
+            border-color: $error-default;
+
+            &:hover:not(.radio--disabled) {
+                border-color: $error-hover;
+            }
+
+            &:active:not(.radio--disabled) {
+                border-color: $error-active;
+            }
+        }
+    }
+
+    // Focus состояние
+    .radio-input:focus-visible + & {
+        outline: 1px solid $primary-400;
+        outline-offset: 1px;
+    }
+}
+
+.radio-inner-circle {
+    border-radius: 50%;
+    background: $primary-800;
+    transition: background 0.2s ease;
+
+    // Размеры внутреннего круга для каждого размера радиокнопки
+    .radio--lg & {
+        width: 16px;
+        height: 16px;
+    }
+
+    .radio--md & {
+        width: 12px;
+        height: 12px;
+    }
+
+    .radio--sm & {
+        width: 10px;
+        height: 10px;
+    }
+
+    // Цвет при hover
+    .radio--checked:hover:not(.radio--disabled) & {
+        background: $primary-900;
+    }
+
+    // Цвет при disabled
+    .radio--disabled & {
+        background: $gray-50;
+    }
+
+    // Цвет при error
+    .radio--error & {
+        background: $error-default;
+    }
+
+    .radio--error:hover:not(.radio--disabled) & {
+        background: $error-hover;
+    }
+
+    .radio--error:active:not(.radio--disabled) & {
+        background: $error-active;
+    }
+}

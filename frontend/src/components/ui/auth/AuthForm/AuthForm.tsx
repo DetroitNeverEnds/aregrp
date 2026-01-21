@@ -16,7 +16,9 @@ export interface AuthFormProps {
     children: React.ReactNode;
 
     /** Дополнительные опции между полями и кнопкой (чекбоксы, ссылки) */
-    additionalOptions?: React.ReactNode;
+    additionalOptionsUpper?: React.ReactNode;
+    /** Дополнительные опции между полями и кнопкой (чекбоксы, ссылки) */
+    additionalOptionsLower?: React.ReactNode;
 
     /** Обработчик отправки формы */
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -35,7 +37,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     title,
     description,
     children,
-    additionalOptions,
+    additionalOptionsUpper,
+    additionalOptionsLower,
     onSubmit,
     submitText,
     footer,
@@ -57,8 +60,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
                     {/* Содержимое формы */}
                     <Flex gap={20}>
+                        {additionalOptionsUpper && <div>{additionalOptionsUpper}</div>}
                         <Flex gap={10}>{children}</Flex>
-                        {additionalOptions && <div>{additionalOptions}</div>}
+                        {additionalOptionsLower && <div>{additionalOptionsLower}</div>}
                     </Flex>
 
                     {/* Кнопка отправки */}

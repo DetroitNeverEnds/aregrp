@@ -24,6 +24,8 @@
         },
         "placeholders": {
             "name": "Ваше имя",
+            "organisationName": "Название организации",
+            "INN": "ИНН",
             "email": "Email",
             "phone": "Номер телефона",
             "password": "Пароль",

@@ -7,8 +7,13 @@ import { Checkbox } from '../../../components/ui/common/input/Checkbox';
 import { Link } from '../../../components/ui/common/Link';
 import { Text } from '../../../components/ui/common/Text';
 import { Flex } from '../../../components/ui/common/Flex';
+import RadioButtons from '../../../components/ui/common/input/RadioButtons';
+
+type RegisterTypeChoice = 'physical' | 'agent';
 
 type RegisterFormData = {
+    registerType: RegisterTypeChoice;
+
     // physical
     name: string;
     // agent
@@ -25,12 +30,11 @@ type RegisterFormData = {
     policyAgrement: boolean;
 };
 
-type RegisterTypeChoice = 'physical' | 'agent';
-
 export const Register: React.FC = () => {
     const { t } = useTranslation();
-    const { handleSubmit, control, formState } = useForm<RegisterFormData>({
+    const { handleSubmit, control, formState, setValue, watch } = useForm<RegisterFormData>({
         defaultValues: {
+            registerType: 'physical',
             name: '',
             organisationName: '',
             INN: '',
@@ -42,8 +46,26 @@ export const Register: React.FC = () => {
         },
     });
     // TODO: Choice for agent
-    const [registerTypeChoice, _] = useState<RegisterTypeChoice>('physical');
     const onSubmit = useCallback((data: RegisterFormData) => console.log(data), []);
+
+    const changeRegisterTypeChoice = useCallback(
+        (type: RegisterTypeChoice) => {
+            switch (type) {
+                case 'physical':
+                    setValue('organisationName', '');
+                    setValue('INN', '');
+                    break;
+                case 'agent':
+                    setValue('name', '');
+                    break;
+            }
+            setValue('registerType', type);
+        },
+        [setValue],
+    );
+
+    // eslint-disable-next-line react-hooks/incompatible-library
+    const registerType = watch('registerType');
 
     return (
         <AuthForm
@@ -51,7 +73,32 @@ export const Register: React.FC = () => {
             submitText={t('auth.register.submit')}
             onSubmit={handleSubmit(onSubmit)}
             isSubmitting={formState.isSubmitting}
-            additionalOptions={
+            additionalOptionsUpper={
+                <Controller
+                    control={control}
+                    name="registerType"
+                    render={({ field, fieldState }) => (
+                        <RadioButtons
+                            size="md"
+                            direction="horizontal"
+                            errorMessage={fieldState.error?.message}
+                            options={[
+                                {
+                                    value: 'physical',
+                                    label: 'Физическое лицо',
+                                },
+                                {
+                                    value: 'agent',
+                                    label: 'Агент',
+                                },
+                            ]}
+                            {...field}
+                            onChange={val => changeRegisterTypeChoice(val as RegisterTypeChoice)}
+                        />
+                    )}
+                />
+            }
+            additionalOptionsLower={
                 <Controller
                     control={control}
                     name="policyAgrement"
@@ -88,7 +135,8 @@ export const Register: React.FC = () => {
             }
         >
             <Flex gap={10}>
-                {registerTypeChoice === 'physical' && (
+                {}
+                {registerType === 'physical' && (
                     <>
                         <Controller
                             control={control}
@@ -106,17 +154,22 @@ export const Register: React.FC = () => {
                                 />
                             )}
                         />
+                    </>
+                )}
+
+                {registerType === 'agent' && (
+                    <>
                         <Controller
                             control={control}
-                            name="email"
+                            name="organisationName"
                             rules={{
                                 required: t('auth.errors.fieldRequired'),
                             }}
                             render={({ field, fieldState }) => (
                                 <TextInput
                                     size="lg"
-                                    type="email"
-                                    placeholder={t('auth.placeholders.email')}
+                                    type="text"
+                                    placeholder={t('auth.placeholders.organisationName')}
                                     errorMessage={fieldState.error?.message}
                                     {...field}
                                 />
@@ -124,47 +177,15 @@ export const Register: React.FC = () => {
                         />
                         <Controller
                             control={control}
-                            name="phone"
+                            name="INN"
                             rules={{
                                 required: t('auth.errors.fieldRequired'),
                             }}
                             render={({ field, fieldState }) => (
                                 <TextInput
                                     size="lg"
-                                    type="tel"
-                                    placeholder={t('auth.placeholders.phone')}
-                                    errorMessage={fieldState.error?.message}
-                                    {...field}
-                                />
-                            )}
-                        />
-                        <Controller
-                            control={control}
-                            name="password1"
-                            rules={{
-                                required: t('auth.errors.fieldRequired'),
-                            }}
-                            render={({ field, fieldState }) => (
-                                <TextInput
-                                    size="lg"
-                                    type="password"
-                                    placeholder={t('auth.placeholders.password')}
-                                    errorMessage={fieldState.error?.message}
-                                    {...field}
-                                />
-                            )}
-                        />
-                        <Controller
-                            control={control}
-                            name="password2"
-                            rules={{
-                                required: t('auth.errors.fieldRequired'),
-                            }}
-                            render={({ field, fieldState }) => (
-                                <TextInput
-                                    size="lg"
-                                    type="password"
-                                    placeholder={t('auth.placeholders.confirmPassword')}
+                                    type="text"
+                                    placeholder={t('auth.placeholders.INN')}
                                     errorMessage={fieldState.error?.message}
                                     {...field}
                                 />
@@ -172,6 +193,70 @@ export const Register: React.FC = () => {
                         />
                     </>
                 )}
+                <Controller
+                    control={control}
+                    name="email"
+                    rules={{
+                        required: t('auth.errors.fieldRequired'),
+                    }}
+                    render={({ field, fieldState }) => (
+                        <TextInput
+                            size="lg"
+                            type="email"
+                            placeholder={t('auth.placeholders.email')}
+                            errorMessage={fieldState.error?.message}
+                            {...field}
+                        />
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="phone"
+                    rules={{
+                        required: t('auth.errors.fieldRequired'),
+                    }}
+                    render={({ field, fieldState }) => (
+                        <TextInput
+                            size="lg"
+                            type="tel"
+                            placeholder={t('auth.placeholders.phone')}
+                            errorMessage={fieldState.error?.message}
+                            {...field}
+                        />
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="password1"
+                    rules={{
+                        required: t('auth.errors.fieldRequired'),
+                    }}
+                    render={({ field, fieldState }) => (
+                        <TextInput
+                            size="lg"
+                            type="password"
+                            placeholder={t('auth.placeholders.password')}
+                            errorMessage={fieldState.error?.message}
+                            {...field}
+                        />
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="password2"
+                    rules={{
+                        required: t('auth.errors.fieldRequired'),
+                    }}
+                    render={({ field, fieldState }) => (
+                        <TextInput
+                            size="lg"
+                            type="password"
+                            placeholder={t('auth.placeholders.confirmPassword')}
+                            errorMessage={fieldState.error?.message}
+                            {...field}
+                        />
+                    )}
+                />
             </Flex>
         </AuthForm>
     );

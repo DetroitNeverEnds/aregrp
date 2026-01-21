@@ -31,7 +31,7 @@ export const Login: React.FC = () => {
             submitText={t('auth.login.submit')}
             onSubmit={handleSubmit(onSubmit)}
             isSubmitting={formState.isSubmitting}
-            additionalOptions={
+            additionalOptionsLower={
                 <Flex direction="row" justify="between">
                     <Controller
                         control={control}
