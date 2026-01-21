@@ -65,7 +65,7 @@ export const Login: React.FC = () => {
                 control={control}
                 name="email"
                 rules={{
-                    required: t('auth.errors.emailRequired'),
+                    required: t('auth.errors.fieldRequired'),
                 }}
                 render={({ field, fieldState }) => (
                     <TextInput
@@ -81,7 +81,7 @@ export const Login: React.FC = () => {
                 control={control}
                 name="password"
                 rules={{
-                    required: t('auth.errors.passwordRequired'),
+                    required: t('auth.errors.fieldRequired'),
                 }}
                 render={({ field, fieldState }) => (
                     <TextInput
