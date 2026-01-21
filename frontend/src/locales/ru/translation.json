@@ -23,7 +23,9 @@
             "email": "Email",
             "phone": "Номер телефона",
             "password": "Пароль",
-            "confirmPassword": "Повторите пароль"
+            "confirmPassword": "Повторите пароль",
+            "newPassword": "Новый пароль",
+            "confirmNewPassword": "Подтвердите новый пароль"
         },
         "errors": {
             "fieldRequired": "Заполните это поле",
@@ -53,6 +55,15 @@
         "forgotPassword": {
             "title": "Сброс пароля",
             "description": "Введите свой email и мы отправим вам код для восстановления пароля",
+            "submit": "Сбросить пароль",
+            "hasAccount": "Уже есть аккаунт?",
+            "loginLink": "Войти",
+            "noAccount": "Ещё нет аккаунта?",
+            "registerLink": "Регистрация"
+        },
+        "restorePassword": {
+            "title": "Сброс пароля",
+            "description": "Введите новый пароль",
             "submit": "Сбросить пароль",
             "hasAccount": "Уже есть аккаунт?",
             "loginLink": "Войти",

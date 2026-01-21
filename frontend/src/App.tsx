@@ -3,6 +3,7 @@ import { AuthLayout } from './pages/auth/layout';
 import Login from './pages/auth/login';
 import Register from './pages/auth/register';
 import ForgotPassword from './pages/auth/forgot-password';
+import RestorePassword from './pages/auth/restore-password';
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
+                <Route path="restore-password" element={<RestorePassword />} />
             </Route>
         </Routes>
     );
