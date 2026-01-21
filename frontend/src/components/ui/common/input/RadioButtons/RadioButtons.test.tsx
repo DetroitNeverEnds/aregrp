@@ -195,22 +195,22 @@ describe('RadioButtons', () => {
         expect(radios[1]?.className).toContain(styles['radio--checked']);
     });
 
-    it('отображает иконку check на выбранной опции', () => {
+    it('отображает внутренний круг на выбранной опции', () => {
         const { container } = render(
             <RadioButtons size="md" options={defaultOptions} value="option1" onChange={() => {}} />,
         );
 
-        const icon = container.querySelector(`.${styles['radio-icon']}`);
-        expect(icon).toBeInTheDocument();
+        const innerCircle = container.querySelector(`.${styles['radio-inner-circle']}`);
+        expect(innerCircle).toBeInTheDocument();
     });
 
-    it('не отображает иконку check на невыбранных опциях', () => {
+    it('не отображает внутренний круг на невыбранных опциях', () => {
         const { container } = render(
             <RadioButtons size="md" options={defaultOptions} value="option1" onChange={() => {}} />,
         );
 
-        const icons = container.querySelectorAll(`.${styles['radio-icon']}`);
-        expect(icons).toHaveLength(1);
+        const innerCircles = container.querySelectorAll(`.${styles['radio-inner-circle']}`);
+        expect(innerCircles).toHaveLength(1);
     });
 
     describe('accessibility', () => {

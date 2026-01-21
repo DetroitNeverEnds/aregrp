@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import styles from './RadioButtons.module.scss';
 import { Text, type TextVariant } from '../../Text';
@@ -15,9 +15,9 @@ export interface RadioButtonOption {
     disabled?: boolean;
 }
 
-type AdditionalRadioButtonsProps = {
+export interface RadioButtonsProps {
     /** Размер радио-кнопок: lg (24px), md (20px), sm (16px) */
-    size: RadioButtonSize;
+    size?: RadioButtonSize;
     /** Массив опций для выбора */
     options: RadioButtonOption[];
     /** Сообщение об ошибке (при наличии компонент становится в состоянии error) */
@@ -25,18 +25,16 @@ type AdditionalRadioButtonsProps = {
     /** Направление расположения кнопок */
     direction?: RadioButtonDirection;
     /** Выбранное значение */
-    value: string;
+    value?: string;
     /** Обработчик изменения значения */
-    onChange: (value: string) => void;
+    onChange?: (value: string) => void;
     /** Имя группы радио-кнопок */
     name?: string;
     /** Отключить весь компонент */
     disabled?: boolean;
     /** Дополнительный CSS класс */
     className?: string;
-};
-
-export type RadioButtonsProps = AdditionalRadioButtonsProps;
+}
 
 const TEXT_VARIANT_MAPPING: Record<RadioButtonSize, TextVariant> = {
     lg: '16-reg',
@@ -45,7 +43,7 @@ const TEXT_VARIANT_MAPPING: Record<RadioButtonSize, TextVariant> = {
 };
 
 export const RadioButtons: React.FC<RadioButtonsProps> = ({
-    size,
+    size = 'md',
     options,
     errorMessage,
     direction = 'vertical',
@@ -56,15 +54,15 @@ export const RadioButtons: React.FC<RadioButtonsProps> = ({
     className = '',
 }) => {
     // Определяем, есть ли ошибка
-    const hasError = useMemo(() => Boolean(errorMessage), [errorMessage]);
+    const hasError = Boolean(errorMessage);
 
     // Размер текста в зависимости от размера радио-кнопки
-    const textVariant = useMemo(() => TEXT_VARIANT_MAPPING[size], [size]);
+    const textVariant = TEXT_VARIANT_MAPPING[size];
 
     // Обработчик изменения для конкретной опции
     const handleChange = useCallback(
         (optionValue: string) => {
-            if (!disabled) {
+            if (!disabled && onChange) {
                 onChange(optionValue);
             }
         },

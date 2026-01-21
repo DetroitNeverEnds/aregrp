@@ -1,4 +1,28 @@
-@use '@/styles/variables.scss' as *;
+// Миксин для интерактивных состояний
+@mixin interactive-state($border-color, $hover-color, $active-color: $hover-color) {
+    border-color: $border-color;
+
+    &:hover:not(.radio--disabled) {
+        border-color: $hover-color;
+    }
+
+    &:active:not(.radio--disabled) {
+        border-color: $active-color;
+    }
+}
+
+// Миксин для цвета внутреннего круга
+@mixin inner-circle-color($color, $hover-color: $color, $active-color: $hover-color) {
+    background: $color;
+
+    .radio--checked:hover:not(.radio--disabled) & {
+        background: $hover-color;
+    }
+
+    .radio--checked:active:not(.radio--disabled) & {
+        background: $active-color;
+    }
+}
 
 .radio-buttons-container {
     display: flex;
@@ -59,39 +83,37 @@
     flex-shrink: 0;
     position: relative;
 
+    // CSS переменные для размеров внутреннего круга
+    --inner-circle-size: 12px;
+
     // Размеры
     &--lg {
         width: 24px;
         height: 24px;
+        --inner-circle-size: 16px;
     }
 
     &--md {
         width: 20px;
         height: 20px;
+        --inner-circle-size: 12px;
     }
 
     &--sm {
         width: 16px;
         height: 16px;
+        --inner-circle-size: 10px;
     }
 
     // Состояние checked
     &--checked {
         background: $gray-0;
-        border-color: $primary-800;
-
-        &:hover:not(.radio--disabled) {
-            border-color: $primary-900;
-        }
-
-        &:active:not(.radio--disabled) {
-            border-color: $primary-900;
-        }
+        @include interactive-state($primary-700, $primary-800);
     }
 
     // Состояние unchecked hover
     &:not(.radio--checked):not(.radio--disabled):not(.radio--error):hover {
-        border-color: $primary-700;
+        border-color: $primary-800;
     }
 
     // Состояние disabled
@@ -108,23 +130,11 @@
 
     // Состояние error
     &--error {
-        border-color: $error-default;
-
-        &:hover:not(.radio--disabled) {
-            border-color: $error-hover;
-        }
+        @include interactive-state($error-default, $error-hover, $error-active);
 
         &.radio--checked {
             background: $gray-0;
-            border-color: $error-default;
-
-            &:hover:not(.radio--disabled) {
-                border-color: $error-hover;
-            }
-
-            &:active:not(.radio--disabled) {
-                border-color: $error-active;
-            }
+            @include interactive-state($error-default, $error-hover, $error-active);
         }
     }
 
@@ -137,29 +147,12 @@
 
 .radio-inner-circle {
     border-radius: 50%;
-    background: $primary-800;
+    width: var(--inner-circle-size);
+    height: var(--inner-circle-size);
     transition: background 0.2s ease;
 
-    // Размеры внутреннего круга для каждого размера радиокнопки
-    .radio--lg & {
-        width: 16px;
-        height: 16px;
-    }
-
-    .radio--md & {
-        width: 12px;
-        height: 12px;
-    }
-
-    .radio--sm & {
-        width: 10px;
-        height: 10px;
-    }
-
-    // Цвет при hover
-    .radio--checked:hover:not(.radio--disabled) & {
-        background: $primary-900;
-    }
+    // Цвет по умолчанию (checked состояние)
+    @include inner-circle-color($primary-700, $primary-800);
 
     // Цвет при disabled
     .radio--disabled & {
@@ -168,14 +161,6 @@
 
     // Цвет при error
     .radio--error & {
-        background: $error-default;
-    }
-
-    .radio--error:hover:not(.radio--disabled) & {
-        background: $error-hover;
-    }
-
-    .radio--error:active:not(.radio--disabled) & {
-        background: $error-active;
+        @include inner-circle-color($error-default, $error-hover, $error-active);
     }
 }

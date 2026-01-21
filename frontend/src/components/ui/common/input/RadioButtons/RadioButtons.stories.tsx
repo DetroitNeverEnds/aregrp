@@ -60,12 +60,14 @@ export const Default: Story = {
         size: 'lg',
         options: defaultOptions,
         value: 'option1',
+        onChange: () => {},
     },
     render: args => <ControlledRadioButtons {...args} />,
 };
 
 // Все размеры
 export const AllSizes: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {(['lg', 'md', 'sm'] as RadioButtonSize[]).map(size => (
@@ -82,6 +84,7 @@ export const AllSizes: Story = {
 
 // Направления
 export const Directions: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {(['vertical', 'horizontal'] as RadioButtonDirection[]).map(direction => (
@@ -103,6 +106,7 @@ export const Directions: Story = {
 
 // Состояние disabled
 export const DisabledStates: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
@@ -136,6 +140,7 @@ export const DisabledStates: Story = {
 
 // Состояние error
 export const ErrorState: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <ControlledRadioButtons
@@ -150,6 +155,7 @@ export const ErrorState: Story = {
 
 // С кастомными метками
 export const WithCustomLabels: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <ControlledRadioButtons
             size="lg"
@@ -182,6 +188,7 @@ export const WithCustomLabels: Story = {
 
 // Все состояния для большого размера
 export const AllStatesLarge: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
@@ -223,6 +230,7 @@ export const AllStatesLarge: Story = {
 
 // Все состояния для среднего размера
 export const AllStatesMedium: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
@@ -264,6 +272,7 @@ export const AllStatesMedium: Story = {
 
 // Все состояния для маленького размера
 export const AllStatesSmall: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div>
@@ -305,6 +314,7 @@ export const AllStatesSmall: Story = {
 
 // Матрица всех комбинаций
 export const AllCombinations: Story = {
+    args: { options: defaultOptions },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             <div>
