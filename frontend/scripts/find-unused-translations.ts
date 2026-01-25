@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 
 const LOCALES_DIR = path.join(__dirname, '../src/locales');
 const SRC_DIR = path.join(__dirname, '../src');
-const LANGUAGES = ['ru', 'en'];
+// const LANGUAGES = ['ru', 'en'];
 
 interface TranslationObject {
     [key: string]: string | TranslationObject;
