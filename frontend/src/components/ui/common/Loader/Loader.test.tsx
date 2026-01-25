@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Loader } from './Loader';
+import styles from './Loader.module.scss';
 
 describe('Loader', () => {
     it('рендерится с дефолтными пропсами', () => {
-        render(<Loader />);
-        const loader = screen.getByRole('status');
+        const { container } = render(<Loader />);
+        const loader = container.querySelector(`.${styles.loader}`);
         expect(loader).toBeInTheDocument();
+        expect(loader).toHaveAttribute('role', 'status');
     });
 
     it('отображает текст, если передан', () => {
@@ -28,8 +30,11 @@ describe('Loader', () => {
 
     it('передает размер спиннера', () => {
         const { container } = render(<Loader spinnerSize="sm" />);
-        const spinner = container.querySelector('.spinner--sm');
+        const spinner = container.querySelector('svg');
         expect(spinner).toBeInTheDocument();
+        // Проверяем, что класс размера применен (CSS модули добавляют хеш)
+        const classAttr = spinner?.getAttribute('class') || '';
+        expect(classAttr).toContain('spinner--sm');
     });
 
     it('передает цвет спиннера', () => {

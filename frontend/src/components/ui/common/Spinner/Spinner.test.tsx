@@ -12,7 +12,9 @@ describe('Spinner', () => {
     it('применяет правильный размер', () => {
         const { container } = render(<Spinner size="lg" />);
         const spinner = container.querySelector('svg');
-        expect(spinner).toHaveClass('spinner--lg');
+        // Проверяем, что класс размера применен (CSS модули добавляют хеш)
+        const classAttr = spinner?.getAttribute('class') || '';
+        expect(classAttr).toContain('spinner--lg');
     });
 
     it('применяет кастомный className', () => {
