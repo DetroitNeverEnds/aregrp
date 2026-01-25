@@ -91,49 +91,21 @@ jobs:
             if [ ! -f .env ]; then
               echo "Creating .env file..."
               cat > .env << EOF
-            NODE_ENV=production
-            FRONTEND_PORT=80
-            BACKEND_PORT=3000
-            EOF
+NODE_ENV=production
+FRONTEND_PORT=80
+BACKEND_PORT=3000
+EOF
             fi
 
-            # Создаем backend/.env файл из GitHub Secrets
-            echo "Creating backend/.env file..."
+            # Создаем environment файлы из GitHub Secrets
+            echo "Creating environment files..."
             mkdir -p backend
-            cat > backend/.env << EOF
-            COMPOSE_BAKE=${{ secrets.COMPOSE_BAKE || 'true' }}
-            DEBUG=${{ secrets.DEBUG || 'False' }}
-            ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
-            CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
-            CORS_ALLOW_ALL_ORIGINS=${{ secrets.CORS_ALLOW_ALL_ORIGINS || 'False' }}
-            CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}
-            DATABASE_URL=${{ secrets.DATABASE_URL }}
-            DJANGO_SUPERUSER_USERNAME=${{ secrets.DJANGO_SUPERUSER_USERNAME }}
-            DJANGO_SUPERUSER_PASSWORD=${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
-            DJANGO_SUPERUSER_EMAIL=${{ secrets.DJANGO_SUPERUSER_EMAIL }}
-            DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
-            ACCESS_TOKEN_LIFETIME_MINUTES=${{ secrets.ACCESS_TOKEN_LIFETIME_MINUTES || '15' }}
-            REFRESH_TOKEN_LIFETIME_DAYS=${{ secrets.REFRESH_TOKEN_LIFETIME_DAYS || '7' }}
-            PASSWORD_RESET_TOKEN_LIFETIME_HOURS=${{ secrets.PASSWORD_RESET_TOKEN_LIFETIME_HOURS || '24' }}
-            EMAIL_BACKEND=${{ secrets.EMAIL_BACKEND || 'django.core.mail.backends.smtp.EmailBackend' }}
-            EMAIL_HOST=${{ secrets.EMAIL_HOST }}
-            EMAIL_PORT=${{ secrets.EMAIL_PORT || '587' }}
-            EMAIL_USE_TLS=${{ secrets.EMAIL_USE_TLS || 'True' }}
-            EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }}
-            EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }}
-            DEFAULT_FROM_EMAIL=${{ secrets.DEFAULT_FROM_EMAIL }}
-            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-            EOF
-
-                        # Создаем backend/.env.postgres файл из GitHub Secrets
-                        echo "Creating backend/.env.postgres file..."
-                        cat > backend/.env.postgres << EOF
-            TZ=${{ secrets.TZ || 'UTC' }}
-            PGTZ=${{ secrets.PGTZ || 'UTC' }}
-            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            EOF
+            
+            # Создаем backend/.env из секрета
+            echo "${{ secrets.ENV_FILE }}" > backend/.env
+            
+            # Создаем backend/.env.postgres из секрета
+            echo "${{ secrets.ENV_POSTGRES_FILE }}" > backend/.env.postgres
 
             # Собираем и запускаем контейнеры
             echo "Building and starting containers..."

@@ -54,6 +54,8 @@ MANIFEST
 .env
 .env.*
 !.env.example
+!.env.prod.example
+!.env.postgres.prod.example
 .venv
 env/
 venv/
