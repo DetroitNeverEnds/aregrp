@@ -1,0 +1,161 @@
+# ============================================
+# Общий .gitignore для всего проекта
+# ============================================
+
+# ============================================
+# IDE и редакторы
+# ============================================
+
+# PyCharm / IntelliJ IDEA / JetBrains IDEs
+# Игнорируется во всем проекте (включая backend и frontend)
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# ============================================
+# Python (общие правила)
+# ============================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.env.*
+!.env.example
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# ============================================
+# Django (общие правила)
+# ============================================
+
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# ============================================
+# Backend-специфичные правила
+# ============================================
+# Детальные правила для backend находятся в backend/.gitignore
+
+# Статические файлы Django (собираются через collectstatic)
+# Игнорируем корневую папку static (если есть)
+/static/
+!/static/.gitkeep
+# backend/static/ игнорируется в backend/.gitignore
+
+# ============================================
+# Frontend-специфичные правила
+# ============================================
+
+# Node modules
+frontend/node_modules/
+node_modules/
+
+# Build outputs
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/out/
+
+# Frontend coverage
+frontend/coverage/
+
+# ============================================
+# Docker
+# ============================================
+
+# Docker volumes и данные
+*.log
+
+# ============================================
+# OS
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ============================================
+# Временные файлы
+# ============================================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
