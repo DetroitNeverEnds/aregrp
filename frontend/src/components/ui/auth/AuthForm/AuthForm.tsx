@@ -4,6 +4,8 @@ import { Form } from '../../common/Form';
 import { Text } from '../../common/Text';
 import { Button } from '../../common/Button';
 import { Divider } from '../../common/Divider';
+import { Loader } from '../../common/Loader';
+import styles from './AuthForm.module.scss';
 
 export interface AuthFormProps {
     /** Заголовок формы */
@@ -45,47 +47,52 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     isSubmitting = false,
 }) => {
     return (
-        <Flex gap={20} fullWidth>
-            <Form onSubmit={onSubmit}>
-                <Flex gap={40}>
-                    {/* Заголовок и описание */}
-                    <Flex gap={20}>
-                        <Text variant="h3">{title}</Text>
-                        {description && (
-                            <Text variant="16-reg" color="gray-50">
-                                {description}
-                            </Text>
-                        )}
+        <div className={styles.formWrapper}>
+            <Flex gap={20} fullWidth>
+                <Form onSubmit={onSubmit}>
+                    <Flex gap={40}>
+                        {/* Заголовок и описание */}
+                        <Flex gap={20}>
+                            <Text variant="h3">{title}</Text>
+                            {description && (
+                                <Text variant="16-reg" color="gray-50">
+                                    {description}
+                                </Text>
+                            )}
+                        </Flex>
+
+                        {/* Содержимое формы */}
+                        <Flex gap={20}>
+                            {additionalOptionsUpper && <div>{additionalOptionsUpper}</div>}
+                            <Flex gap={10}>{children}</Flex>
+                            {additionalOptionsLower && <div>{additionalOptionsLower}</div>}
+                        </Flex>
+
+                        {/* Кнопка отправки */}
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            width="max"
+                            type="submit"
+                            disabled={isSubmitting}
+                        >
+                            {submitText}
+                        </Button>
                     </Flex>
+                </Form>
 
-                    {/* Содержимое формы */}
-                    <Flex gap={20}>
-                        {additionalOptionsUpper && <div>{additionalOptionsUpper}</div>}
-                        <Flex gap={10}>{children}</Flex>
-                        {additionalOptionsLower && <div>{additionalOptionsLower}</div>}
-                    </Flex>
+                {/* Футер */}
+                {footer && (
+                    <>
+                        <Divider />
+                        {footer}
+                    </>
+                )}
+            </Flex>
 
-                    {/* Кнопка отправки */}
-                    <Button
-                        variant="primary"
-                        size="lg"
-                        width="max"
-                        type="submit"
-                        disabled={isSubmitting}
-                    >
-                        {submitText}
-                    </Button>
-                </Flex>
-            </Form>
-
-            {/* Футер */}
-            {footer && (
-                <>
-                    <Divider />
-                    {footer}
-                </>
-            )}
-        </Flex>
+            {/* Лоадер при отправке */}
+            {isSubmitting && <Loader spinnerSize="lg" aria-label="Отправка формы" />}
+        </div>
     );
 };
 
