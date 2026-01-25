@@ -10,48 +10,59 @@
         "click": "Click"
     },
     "auth": {
+        "common": {
+            "backToSite": "Back to site",
+            "hasAccount": "Already have an account?",
+            "login": "Sign In",
+            "noAccount": "Don't have an account yet?",
+            "register": "Register"
+        },
         "fields": {
             "email": "Email",
             "password": "Password",
             "confirmPassword": "Confirm Password"
         },
         "placeholders": {
-            "email": "Enter your email",
-            "password": "Enter password",
-            "confirmPassword": "Repeat password"
+            "name": "Your name",
+            "organisationName": "Organization name",
+            "INN": "TIN",
+            "email": "Email",
+            "phone": "Phone number",
+            "password": "Password",
+            "confirmPassword": "Repeat password",
+            "newPassword": "New password",
+            "confirmNewPassword": "Confirm new password"
         },
         "errors": {
-            "emailRequired": "Email is required",
+            "fieldRequired": "Please fill in this field",
+            "policyAgrementRequired": "Please confirm that you agree with the privacy policy",
             "emailInvalid": "Invalid email",
-            "passwordRequired": "Password is required",
-            "passwordTooShort": "Password must be at least 8 characters",
-            "confirmPasswordRequired": "Password confirmation is required",
             "passwordsNotMatch": "Passwords do not match"
         },
         "login": {
             "title": "Login",
-            "backToSite": "Back to site",
             "submit": "Sign In",
             "rememberMe": "Remember password",
-            "forgotPassword": "Forgot password?",
-            "noAccount": "Don't have an account yet?",
-            "registerLink": "Register"
+            "forgotPassword": "Forgot password?"
         },
         "register": {
             "title": "Register",
             "subtitle": "Create a new account",
             "submit": "Sign Up",
-            "hasAccount": "Already have an account?",
-            "loginLink": "Sign In"
+            "policyAgrement": {
+                "text": "I agree with ",
+                "link": "privacy policy"
+            }
         },
         "forgotPassword": {
             "title": "Password Reset",
             "description": "Enter your email and we will send you a code to reset your password",
-            "submit": "Reset Password",
-            "hasAccount": "Already have an account?",
-            "loginLink": "Sign In",
-            "noAccount": "Don't have an account yet?",
-            "registerLink": "Register"
+            "submit": "Reset Password"
+        },
+        "restorePassword": {
+            "title": "Password Reset",
+            "description": "Enter new password",
+            "submit": "Reset Password"
         }
     }
 }
