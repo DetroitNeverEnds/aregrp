@@ -16,24 +16,35 @@ services:
         environment:
             - NODE_ENV=production
 
-    # Backend контейнер
-    #   backend:
-    #     build:
-    #       context: ./backend
-    #       dockerfile: Dockerfile
-    #     container_name: aregrp-backend
-    #     restart: unless-stopped
-    #     ports:
-    #       - "3000:3000"
-    #     networks:
-    #       - backend-network
-    #     volumes:
-    #       # Для hot reload в development режиме (опционально)
-    #       - ./backend:/app:ro
-    #       - /app/node_modules
-    #     environment:
-    #       - NODE_ENV=production
-    #       - PORT=3000
+    db:
+        image: postgres:17
+        volumes:
+            - ./postgres_data:/var/lib/postgresql/data
+        env_file:
+            - ./backend/.env.postgres
+        networks:
+            - django-network
+        restart: always
+
+    backend:
+        build:
+           context: ./backend
+           dockerfile: Dockerfile
+        container_name: aregrp-backend
+        ports:
+            - "8000:8000"
+        depends_on:
+            - db
+        volumes:
+            - ./media:/app/media
+            - ./static:/app/static
+        env_file:
+            - ./backend/.env
+            - ./backend/.env.postgres
+        networks:
+            - backend-network
+            - django-network
+        restart: always
 
     # Nginx reverse proxy
     nginx:
@@ -53,7 +64,7 @@ services:
             - nginx-cache:/var/cache/nginx
         depends_on:
             - frontend
-            # - backend
+            - backend
         networks:
             - frontend-network
             - backend-network
@@ -62,6 +73,8 @@ networks:
     frontend-network:
         driver: bridge
     backend-network:
+        driver: bridge
+    django-network:
         driver: bridge
 
 volumes:
