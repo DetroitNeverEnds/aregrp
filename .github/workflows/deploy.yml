@@ -1,0 +1,196 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - "backend/**"
+      - "nginx/**"
+      - "docker-compose.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: ${{ secrets.PRODUCTION_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create deployment package
+        run: |
+          # Создаем архив с необходимыми файлами для деплоя
+          tar -czf deployment.tar.gz \
+            docker-compose.yml \
+            frontend/ \
+            backend/ \
+            nginx/ \
+            --exclude='frontend/node_modules' \
+            --exclude='backend/node_modules' \
+            --exclude='frontend/.git' \
+            --exclude='backend/.git' \
+            --exclude='**/dist' \
+            --exclude='**/.DS_Store'
+
+      - name: Copy deployment package to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          source: "deployment.tar.gz"
+          target: "/tmp/"
+
+      - name: Deploy with Docker Compose on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+
+            # Переходим в директорию проекта
+            cd ${{ secrets.VPS_DEPLOY_PATH }}
+
+            # Создаем резервную копию текущей версии
+            if [ -d "current" ]; then
+              echo "Creating backup..."
+              BACKUP_DIR="backup_$(date +%Y%m%d_%H%M%S)"
+              cp -r current "$BACKUP_DIR"
+              
+              # Останавливаем текущие контейнеры
+              echo "Stopping current containers..."
+              cd current
+              docker-compose down || true
+              cd ..
+              
+              # Удаляем старые бэкапы (оставляем последние 5)
+              ls -t | grep "backup_" | tail -n +6 | xargs -r rm -rf
+            fi
+
+            # Создаем директорию для новой версии
+            mkdir -p current
+
+            # Распаковываем новую версию
+            echo "Extracting new version..."
+            tar -xzf /tmp/deployment.tar.gz -C current/
+
+            # Переходим в директорию с новой версией
+            cd current
+
+            # Создаем .env файл если его нет
+            if [ ! -f .env ]; then
+              echo "Creating .env file..."
+              echo "NODE_ENV=production" > .env
+              echo "FRONTEND_PORT=80" >> .env
+              echo "BACKEND_PORT=3000" >> .env
+            fi
+
+            # Создаем environment файлы из GitHub Secrets
+            echo "Creating environment files..."
+            mkdir -p backend
+            
+            # Создаем backend/.env из секрета
+            echo "${{ secrets.ENV_FILE }}" > backend/.env
+            
+            # Создаем backend/.env.postgres из секрета
+            echo "${{ secrets.ENV_POSTGRES_FILE }}" > backend/.env.postgres
+
+            # Собираем и запускаем контейнеры
+            echo "Building and starting containers..."
+            docker-compose build --no-cache
+            docker-compose up -d
+
+            # Ждем запуска контейнеров
+            echo "Waiting for containers to start..."
+            sleep 10
+
+            # Проверяем статус контейнеров
+            echo "Checking container status..."
+            docker-compose ps
+
+            # Очистка
+            rm /tmp/deployment.tar.gz
+
+            # Удаляем неиспользуемые образы
+            echo "Cleaning up unused images..."
+            docker image prune -f
+
+            echo "✅ Deployment completed successfully!"
+
+      - name: Health check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            # Проверяем доступность сервисов
+            echo "Running health checks..."
+
+            # Проверка nginx
+            if docker ps | grep -q "aregrp-nginx"; then
+              echo "✅ Nginx container is running"
+            else
+              echo "❌ Nginx container is not running"
+              exit 1
+            fi
+
+            # Проверка frontend
+            if docker ps | grep -q "aregrp-frontend"; then
+              echo "✅ Frontend container is running"
+            else
+              echo "❌ Frontend container is not running"
+              exit 1
+            fi
+
+            # Проверка backend
+            if docker ps | grep -q "aregrp-backend"; then
+              echo "✅ Backend container is running"
+            else
+              echo "❌ Backend container is not running"
+              exit 1
+            fi
+
+            # Проверка HTTP доступности
+            sleep 5
+            if curl -f -s http://localhost > /dev/null; then
+              echo "✅ HTTP endpoint is accessible"
+            else
+              echo "❌ HTTP endpoint is not accessible"
+              exit 1
+            fi
+
+      - name: Verify deployment
+        run: |
+          echo "Verifying deployment..."
+          sleep 5
+
+          # Проверяем доступность production URL
+          if curl -f -s ${{ secrets.PRODUCTION_URL }} > /dev/null; then
+            echo "✅ Production URL is accessible"
+          else
+            echo "❌ Production URL is not accessible"
+            exit 1
+          fi
+
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Deployment successful!"
+            echo "🚀 Application is now running at ${{ secrets.PRODUCTION_URL }}"
+          else
+            echo "❌ Deployment failed!"
+            echo "Please check the logs for more details."
+          fi

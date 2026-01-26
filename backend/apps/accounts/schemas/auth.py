@@ -1,16 +1,23 @@
 from ninja import Schema
+from typing import Optional
 
 
 class UserRegistrationIn(Schema):
-    username: str
+    user_type: str  # 'individual' или 'agent'
+    full_name: str
     email: str
+    phone: str
     password1: str
     password2: str
     use_cookies: bool = False
+    
+    # Поля для агентов (опциональные)
+    organization_name: Optional[str] = None
+    inn: Optional[str] = None
 
 
 class UserLoginIn(Schema):
-    username: str
+    email: str
     password: str
     use_cookies: bool = False
 
@@ -19,6 +26,11 @@ class UserOut(Schema):
     id: int
     username: str
     email: str
+    user_type: str
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    organization_name: Optional[str] = None
+    inn: Optional[str] = None
 
 
 class AuthOut(Schema):
@@ -37,9 +49,4 @@ class PasswordResetConfirmIn(Schema):
     token: str
     new_password1: str
     new_password2: str
-
-
-class ErrorOut(Schema):
-    error: str
-    message: str
 

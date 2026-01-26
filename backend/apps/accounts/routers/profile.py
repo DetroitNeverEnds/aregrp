@@ -3,8 +3,11 @@ from asgiref.sync import sync_to_async
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 
+from api.schemas import ProblemDetail
+from ..errors import create_accounts_error, AccountsErrorCodes
+
 from ..schemas.profile import (
-    UserOut, UpdateProfileIn, UpdatePasswordIn, ErrorOut
+    UserOut, UpdateProfileIn, UpdatePasswordIn
 )
 from ..services.auth_service import jwt_auth
 from ..services.utils import get_user_data
@@ -13,7 +16,7 @@ from ..services.utils import get_user_data
 profile_router = Router()
 
 
-@profile_router.get("/user", response={200: UserOut, 401: ErrorOut}, auth=jwt_auth)
+@profile_router.get("/user", response={200: UserOut, 401: ProblemDetail}, auth=jwt_auth)
 async def get_user(request):
     """
     Получить данные текущего пользователя
@@ -44,19 +47,22 @@ async def get_user(request):
     return 200, get_user_data(request.auth)
 
 
-@profile_router.put("/profile", response={200: UserOut, 400: ErrorOut, 401: ErrorOut}, auth=jwt_auth)
+@profile_router.put("/profile", response={200: UserOut, 400: ProblemDetail, 401: ProblemDetail}, auth=jwt_auth)
 async def update_profile(request, data: UpdateProfileIn):
     """
     Обновить профиль пользователя
     
     Обновляет информацию профиля текущего авторизованного пользователя.
-    Можно обновить имя пользователя и/или email адрес.
+    Можно обновить имя, email, телефон и другие данные.
     
     **Требует аутентификации:** Bearer JWT токен в заголовке Authorization
     
     **Параметры:**
-    - `username`: Новое имя пользователя (опционально)
+    - `full_name`: Полное имя (опционально)
     - `email`: Новый email адрес (опционально)
+    - `phone`: Номер телефона (опционально)
+    - `organization_name`: Название организации (опционально, для агентов)
+    - `inn`: ИНН (опционально, для агентов)
     
     **Пример запроса:**
     ```
@@ -65,8 +71,9 @@ async def update_profile(request, data: UpdateProfileIn):
     Content-Type: application/json
     
     {
-        "username": "newusername",
-        "email": "newemail@example.com"
+        "full_name": "Новое имя",
+        "email": "newemail@example.com",
+        "phone": "+79991234567"
     }
     ```
     
@@ -74,32 +81,50 @@ async def update_profile(request, data: UpdateProfileIn):
     ```json
     {
         "id": 1,
-        "username": "newusername",
-        "email": "newemail@example.com"
+        "username": "user",
+        "email": "newemail@example.com",
+        "user_type": "individual",
+        "full_name": "Новое имя",
+        "phone": "+79991234567"
     }
     ```
     
     **Коды ошибок:**
-    - `400`: Ошибка обновления (например, имя пользователя уже занято)
+    - `400`: Ошибка обновления (например, email уже занят)
     - `401`: Не авторизован
     """
     try:
         user = request.auth
         
-        if data.username:
-            user.username = data.username
+        if data.full_name:
+            user.full_name = data.full_name
         if data.email:
             user.email = data.email
+        if data.phone:
+            user.phone = data.phone
+        
+        # Обновляем поля для агентов
+        if user.user_type == 'agent':
+            if data.organization_name:
+                user.organization_name = data.organization_name
+            if data.inn:
+                user.inn = data.inn
         
         await user.asave()  # Async save
         
         return 200, get_user_data(user)
         
     except Exception as e:
-        return 400, {"error": "update_error", "message": f"Update failed: {str(e)}"}
+        return 400, create_accounts_error(
+            status=400,
+            code=AccountsErrorCodes.REGISTRATION_ERROR,
+            title="Update failed",
+            detail=f"Update failed: {str(e)}",
+            instance="/api/v1/profile/profile"
+        )
 
 
-@profile_router.post("/change-password", response={200: dict, 400: ErrorOut, 401: ErrorOut}, auth=jwt_auth)
+@profile_router.post("/change-password", response={200: dict, 400: ProblemDetail, 401: ProblemDetail}, auth=jwt_auth)
 async def change_password(request, data: UpdatePasswordIn):
     """
     Смена пароля авторизованным пользователем
@@ -145,26 +170,35 @@ async def change_password(request, data: UpdatePasswordIn):
         is_valid = await sync_to_async(user.check_password)(data.current_password)
         
         if not is_valid:
-            return 400, {
-                "error": "invalid_current_password",
-                "message": "Current password is incorrect"
-            }
+            return 400, create_accounts_error(
+                status=400,
+                code=AccountsErrorCodes.INVALID_CURRENT_PASSWORD,
+                title="Invalid current password",
+                detail="Current password is incorrect",
+                instance="/api/v1/profile/change-password"
+            )
         
         # Проверяем совпадение новых паролей
         if data.new_password1 != data.new_password2:
-            return 400, {
-                "error": "password_mismatch",
-                "message": "New passwords do not match"
-            }
+            return 400, create_accounts_error(
+                status=400,
+                code=AccountsErrorCodes.PASSWORD_MISMATCH,
+                title="Passwords do not match",
+                detail="New passwords do not match",
+                instance="/api/v1/profile/change-password"
+            )
         
         # Валидируем новый пароль
         try:
             validate_password(data.new_password1, user)
         except ValidationError as e:
-            return 400, {
-                "error": "password_validation",
-                "message": f"Password validation failed: {'; '.join(e.messages)}"
-            }
+            return 400, create_accounts_error(
+                status=400,
+                code=AccountsErrorCodes.PASSWORD_VALIDATION_FAILED,
+                title="Password validation failed",
+                detail=f"Password validation failed: {'; '.join(e.messages)}",
+                instance="/api/v1/profile/change-password"
+            )
         
         # Устанавливаем новый пароль и сохраняем асинхронно
         user.set_password(data.new_password1)
@@ -173,8 +207,11 @@ async def change_password(request, data: UpdatePasswordIn):
         return 200, {"message": "Password changed successfully"}
         
     except Exception as e:
-        return 400, {
-            "error": "change_password_error",
-            "message": f"Password change failed: {str(e)}"
-        }
+        return 400, create_accounts_error(
+            status=400,
+            code=AccountsErrorCodes.REGISTRATION_ERROR,
+            title="Password change failed",
+            detail=f"Password change failed: {str(e)}",
+            instance="/api/v1/profile/change-password"
+        )
 

@@ -6,20 +6,23 @@ class UserOut(Schema):
     id: int
     username: str
     email: str
+    user_type: str
+    full_name: Optional[str] = None
+    phone: Optional[str] = None
+    organization_name: Optional[str] = None
+    inn: Optional[str] = None
 
 
 class UpdateProfileIn(Schema):
-    username: Optional[str] = None
+    full_name: Optional[str] = None
     email: Optional[str] = None
+    phone: Optional[str] = None
+    organization_name: Optional[str] = None
+    inn: Optional[str] = None
 
 
 class UpdatePasswordIn(Schema):
     current_password: str
     new_password1: str
     new_password2: str
-
-
-class ErrorOut(Schema):
-    error: str
-    message: str
 
