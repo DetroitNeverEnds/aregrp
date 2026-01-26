@@ -46,7 +46,7 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
             - name: Create dummy .env files for build
               run: |
-                  # Создаем .env файлы для сборки на основе примеров (они не используются при build, только при run)
+                  # Создаем env файлы для сборки на основе примеров (они не используются при build, только при run)
                   mkdir -p backend
                   if [ -f backend/env.example ]; then
                       cp backend/env.example backend/.env
