@@ -44,6 +44,13 @@ jobs:
                   registry: ${{ env.REGISTRY }}
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create dummy .env files for build
+              run: |
+                  # Создаем пустые .env файлы для сборки (они не используются при build, только при run)
+                  mkdir -p backend
+                  touch backend/.env backend/.env.postgres
+                  echo "Created dummy .env files for build phase"
+            
             - name: Build and Push
               env:
                   REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}
