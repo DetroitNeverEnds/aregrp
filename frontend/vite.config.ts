@@ -31,4 +31,11 @@ export default defineConfig({
             '@': path.resolve(dirname, './src'),
         },
     },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                additionalData: `@use "@/styles/variables.scss" as *;`,
+            },
+        },
+    },
 });

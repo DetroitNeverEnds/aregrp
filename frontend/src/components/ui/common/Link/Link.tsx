@@ -5,11 +5,16 @@ import { Text, type TextProps } from '../Text';
 import { Icon, type IconName } from '../Icon';
 import styles from './Link.module.scss';
 
+export type LinkSize = 'sm' | 'md' | 'lg';
+export type LinkTheme = 'blue' | 'black';
+
 export interface LinkProps extends Omit<RouterLinkProps, 'to'> {
     /** Путь для навигации */
     to: string;
-    /** Вариант текста (по умолчанию '16-reg') */
-    variant?: TextProps['variant'];
+    /** Размер ссылки (по умолчанию 'medium') */
+    size?: LinkSize;
+    /** Тема ссылки (по умолчанию 'blue') */
+    theme?: LinkTheme;
     /** Содержимое ссылки */
     children: React.ReactNode;
     /** Иконка слева от текста */
@@ -22,34 +27,44 @@ export interface LinkProps extends Omit<RouterLinkProps, 'to'> {
 
 export const Link: React.FC<LinkProps> = ({
     to,
-    variant = '16-reg',
+    size = 'md',
+    theme = 'blue',
     children,
     leadingIcon,
     trailingIcon,
     className = '',
     ...props
 }) => {
-    const linkClassNames = classNames(styles.link, className);
-
-    // Определяем размер иконки в зависимости от варианта текста
-    const getIconSize = (): 14 | 16 | 20 | 24 => {
-        if (variant?.startsWith('12') || variant?.startsWith('14')) return 16;
-        if (variant?.startsWith('16') || variant?.startsWith('18')) return 20;
-        if (variant?.startsWith('20') || variant?.startsWith('24')) return 24;
-        if (variant?.startsWith('h')) return 24;
-        return 20;
+    // Маппинг размеров на варианты текста
+    const sizeToVariant: Record<LinkSize, TextProps['variant']> = {
+        sm: '12-med',
+        md: '14-med',
+        lg: '16-med',
     };
 
-    const iconSize = getIconSize();
+    // Маппинг размеров на размеры иконок
+    const sizeToIconSize: Record<LinkSize, 14 | 16 | 20 | 24> = {
+        sm: 16,
+        md: 20,
+        lg: 20,
+    };
+
+    const variant = sizeToVariant[size];
+    const iconSize = sizeToIconSize[size];
+
+    const linkClassNames = classNames(
+        styles.link,
+        styles[`link--${size}`],
+        styles[`link--${theme}`],
+        className,
+    );
 
     return (
         <RouterLink to={to} className={linkClassNames} {...props}>
             {leadingIcon && (
                 <Icon name={leadingIcon} size={iconSize} className={styles.link__leadingIcon} />
             )}
-            <Text variant={variant} color="primary-700">
-                {children}
-            </Text>
+            <Text variant={variant}>{children}</Text>
             {trailingIcon && (
                 <Icon name={trailingIcon} size={iconSize} className={styles.link__trailingIcon} />
             )}

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Checkbox, type CheckboxProps, type CheckboxSize } from './Checkbox';
-import { useState } from 'react';
 
 const meta = {
     title: 'Components/Checkbox',
@@ -39,15 +38,7 @@ type Story = StoryObj<typeof meta>;
 
 // Контролируемый компонент для stories
 const ControlledCheckboxInput = ({ checked, ...props }: CheckboxProps) => {
-    const [val, setVal] = useState(checked);
-    return (
-        <Checkbox
-            name="test"
-            {...props}
-            checked={val}
-            onChange={e => setVal(Boolean(e.target.checked))}
-        />
-    );
+    return <Checkbox name="test" {...props} checked={checked} />;
 };
 
 export const Default: Story = {

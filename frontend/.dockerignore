@@ -15,3 +15,16 @@ coverage
 .env.test.local
 .env.production.local
 storybook-static
+*.test.tsx
+*.test.ts
+*.spec.tsx
+*.spec.ts
+*.stories.tsx
+*.stories.ts
+vitest.shims.d.ts
+.husky
+.lintstagedrc.json
+.prettierignore
+.prettierrc.json
+eslint.config.js
+COMPONENTS_TO_ADD.md

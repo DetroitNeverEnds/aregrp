@@ -1,6 +1,11 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import { mergeConfig } from 'vite';
 import svgr from 'vite-plugin-svgr';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const dirname =
+    typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
     stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -24,6 +29,18 @@ const config: StorybookConfig = {
                     include: '**/*.svg?react',
                 }),
             ],
+            resolve: {
+                alias: {
+                    '@': path.resolve(dirname, '../src'),
+                },
+            },
+            css: {
+                preprocessorOptions: {
+                    scss: {
+                        additionalData: `@use "@/styles/variables.scss" as *;`,
+                    },
+                },
+            },
         });
     },
 };

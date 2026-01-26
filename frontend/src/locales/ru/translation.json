@@ -8,5 +8,61 @@
     },
     "button": {
         "click": "Нажать"
+    },
+    "auth": {
+        "common": {
+            "backToSite": "Вернуться на сайт",
+            "hasAccount": "Уже есть аккаунт?",
+            "login": "Войти",
+            "noAccount": "Ещё нет аккаунта?",
+            "register": "Регистрация"
+        },
+        "fields": {
+            "email": "Email",
+            "password": "Пароль",
+            "confirmPassword": "Подтвердите пароль"
+        },
+        "placeholders": {
+            "name": "Ваше имя",
+            "organisationName": "Название организации",
+            "INN": "ИНН",
+            "email": "Email",
+            "phone": "Номер телефона",
+            "password": "Пароль",
+            "confirmPassword": "Повторите пароль",
+            "newPassword": "Новый пароль",
+            "confirmNewPassword": "Подтвердите новый пароль"
+        },
+        "errors": {
+            "fieldRequired": "Заполните это поле",
+            "policyAgrementRequired": "Подтвердите, что вы согласны с политикой конфиденциальности",
+            "emailInvalid": "Некорректный email",
+            "passwordsNotMatch": "Пароли не совпадают"
+        },
+        "login": {
+            "title": "Вход",
+            "submit": "Войти",
+            "rememberMe": "Запомнить пароль",
+            "forgotPassword": "Забыли пароль?"
+        },
+        "register": {
+            "title": "Регистрация",
+            "subtitle": "Создайте новый аккаунт",
+            "submit": "Зарегистрироваться",
+            "policyAgrement": {
+                "text": "Я соглашаюсь с ",
+                "link": "политикой конфиденциальности"
+            }
+        },
+        "forgotPassword": {
+            "title": "Сброс пароля",
+            "description": "Введите свой email и мы отправим вам код для восстановления пароля",
+            "submit": "Сбросить пароль"
+        },
+        "restorePassword": {
+            "title": "Сброс пароля",
+            "description": "Введите новый пароль",
+            "submit": "Сбросить пароль"
+        }
     }
 }

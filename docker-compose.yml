@@ -7,9 +7,6 @@ services:
         restart: unless-stopped
         networks:
             - frontend-network
-        volumes:
-            # Для hot reload в development режиме (опционально)
-            - ./frontend/src:/app/src:ro
         environment:
             - NODE_ENV=production
 

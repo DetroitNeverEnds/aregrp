@@ -1,0 +1,14 @@
+.divider {
+    background-color: $gray-50;
+    border: none;
+
+    &--horizontal {
+        width: 100%;
+        height: 1px;
+    }
+
+    &--vertical {
+        width: 1px;
+        height: 100%;
+    }
+}

@@ -44,6 +44,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     ...props
 }) => {
     const inputRef = useRef<HTMLInputElement>(null);
+    const [isChecked, setIsChecked] = React.useState(checked);
 
     // Определяем, есть ли ошибка
     const hasError = Boolean(errorMessage);
@@ -51,6 +52,15 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     // Размеры иконки в зависимости от размера чекбокса
     const iconSize = useMemo(() => ICON_SIZE_MAPPING[size], [size]);
     const textVariant = useMemo(() => TEXT_VARIANT_MAPPING[size], [size]);
+
+    // Обработчик изменения для отслеживания состояния
+    const handleChange = React.useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setIsChecked(e.target.checked);
+            onChange?.(e);
+        },
+        [onChange],
+    );
 
     const containerClassNames = classNames(
         styles['checkbox-container'],
@@ -61,7 +71,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     );
 
     const checkboxClassNames = classNames(styles.checkbox, styles[`checkbox--${size}`], {
-        [styles['checkbox--checked']]: checked,
+        [styles['checkbox--checked']]: isChecked,
         [styles['checkbox--disabled']]: disabled,
         [styles['checkbox--error']]: hasError,
     });
@@ -76,11 +86,11 @@ export const Checkbox: React.FC<CheckboxProps> = ({
                         className={styles['checkbox-input']}
                         checked={checked}
                         disabled={disabled}
-                        onChange={onChange}
+                        onChange={handleChange}
                         {...props}
                     />
                     <div className={checkboxClassNames}>
-                        {checked && (
+                        {isChecked && (
                             <Icon
                                 name="check"
                                 size={iconSize}

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Link } from './Link';
+import styles from './Link.module.scss';
 
 describe('Link', () => {
     const renderWithRouter = (ui: React.ReactElement) => {
@@ -19,19 +20,35 @@ describe('Link', () => {
         expect(link).toHaveAttribute('href', '/about');
     });
 
-    it('использует variant по умолчанию 16-reg', () => {
+    it('использует size по умолчанию medium', () => {
         renderWithRouter(<Link to="/test">Текст</Link>);
         const text = screen.getByText('Текст');
         expect(text.tagName).toBe('SPAN');
     });
 
-    it('применяет кастомный variant', () => {
+    it('применяет кастомный size', () => {
         renderWithRouter(
-            <Link to="/test" variant="20-med">
+            <Link to="/test" size="large">
                 Большой текст
             </Link>,
         );
         expect(screen.getByText('Большой текст')).toBeInTheDocument();
+    });
+
+    it('применяет тему blue по умолчанию', () => {
+        renderWithRouter(<Link to="/test">Текст</Link>);
+        const link = screen.getByText('Текст').closest('a');
+        expect(link).toHaveClass(styles['link--blue']);
+    });
+
+    it('применяет кастомную тему black', () => {
+        renderWithRouter(
+            <Link to="/test" theme="black">
+                Черная ссылка
+            </Link>,
+        );
+        const link = screen.getByText('Черная ссылка').closest('a');
+        expect(link).toHaveClass(styles['link--black']);
     });
 
     it('применяет дополнительный className', () => {

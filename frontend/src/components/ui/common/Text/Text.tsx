@@ -21,6 +21,7 @@ export type TextVariant =
     | '24-med';
 
 export type TextColor =
+    | 'gray-50'
     | 'gray-100'
     | 'primary-200'
     | 'primary-300'

@@ -34,6 +34,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     ...props
 }) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [hasValue, setHasValue] = useState(Boolean(props.defaultValue) || Boolean(value));
     const ref = useRef<HTMLInputElement>(null);
 
     // Определяем, показывать ли toggle для пароля
@@ -44,19 +45,29 @@ export const TextInput: React.FC<TextInputProps> = ({
         () => (isPasswordField && isPasswordVisible ? 'text' : type),
         [isPasswordField, isPasswordVisible, type],
     );
+
+    // Обработчик изменения для отслеживания наличия значения
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            setHasValue(e.target.value.length > 0);
+            onChange?.(e);
+        },
+        [onChange, setHasValue],
+    );
+
     const onClear = useCallback(() => {
-        if (ref.current && onChange) {
+        if (ref.current) {
             // Устанавливаем пустое значение
             ref.current.value = '';
+            setHasValue(false);
 
-            // Создаем синтетическое событие для совместимости с react-hook-form
             const syntheticEvent = {
                 target: ref.current,
                 currentTarget: ref.current,
             } as React.ChangeEvent<HTMLInputElement>;
 
             // Вызываем onChange с синтетическим событием
-            onChange(syntheticEvent);
+            onChange?.(syntheticEvent);
         }
     }, [onChange, ref]);
 
@@ -81,11 +92,14 @@ export const TextInput: React.FC<TextInputProps> = ({
 
                 <input
                     type={actualType}
-                    {...{ ref, value, disabled, onChange }}
+                    value={value}
+                    disabled={disabled}
+                    onChange={handleChange}
                     {...props}
+                    ref={ref}
                     className={styles.input}
                 />
-                {value && !isPasswordField && (
+                {hasValue && !isPasswordField && (
                     <FlatButton onClick={onClear}>
                         <Icon name="xmark-gray-circle" size={20} />
                     </FlatButton>
