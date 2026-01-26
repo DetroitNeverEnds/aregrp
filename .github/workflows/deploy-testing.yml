@@ -46,10 +46,19 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
             - name: Create dummy .env files for build
               run: |
-                  # Создаем пустые .env файлы для сборки (они не используются при build, только при run)
+                  # Создаем .env файлы для сборки на основе примеров (они не используются при build, только при run)
                   mkdir -p backend
-                  touch backend/.env backend/.env.postgres
-                  echo "Created dummy .env files for build phase"
+                  if [ -f backend/env.example ]; then
+                      cp backend/env.example backend/.env
+                  else
+                      touch backend/.env
+                  fi
+                  if [ -f backend/env.postgres.example ]; then
+                      cp backend/env.postgres.example backend/.env.postgres
+                  else
+                      touch backend/.env.postgres
+                  fi
+                  echo "Created .env files for build phase"
             
             - name: Build and Push
               env:
@@ -84,6 +93,17 @@ jobs:
                   key: ${{ secrets.VPS_SSH_KEY }}
                   script: |
                       cd ~/aregrp/
+
+                      # Создаем .env файлы если их нет (для docker-compose)
+                      mkdir -p backend
+                      if [ ! -f backend/.env ]; then
+                          echo "Creating backend/.env file..."
+                          touch backend/.env
+                      fi
+                      if [ ! -f backend/.env.postgres ]; then
+                          echo "Creating backend/.env.postgres file..."
+                          touch backend/.env.postgres
+                      fi
 
                       # Логинимся в реестр GitHub на самом VPS, чтобы скачать приватный образ
                       echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
