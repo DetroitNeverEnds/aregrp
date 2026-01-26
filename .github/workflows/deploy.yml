@@ -26,16 +26,16 @@ jobs:
         run: |
           # Создаем архив с необходимыми файлами для деплоя
           tar -czf deployment.tar.gz \
-            docker-compose.yml \
-            frontend/ \
-            backend/ \
-            nginx/ \
             --exclude='frontend/node_modules' \
             --exclude='backend/node_modules' \
             --exclude='frontend/.git' \
             --exclude='backend/.git' \
             --exclude='**/dist' \
-            --exclude='**/.DS_Store'
+            --exclude='**/.DS_Store' \
+            docker-compose.yml \
+            frontend/ \
+            backend/ \
+            nginx/
 
       - name: Copy deployment package to VPS
         uses: appleboy/scp-action@v0.1.7
