@@ -1,9 +1,8 @@
 services:
     # Frontend контейнер
     frontend:
-        build:
-            context: ./frontend
-            dockerfile: Dockerfile
+        image: ${REGISTRY_PREFIX:-}aregrp-frontend:${TAG:-local}
+        build: frontend
         container_name: aregrp-frontend
         restart: unless-stopped
         networks:
@@ -25,9 +24,8 @@ services:
         restart: always
 
     backend:
-        build:
-           context: ./backend
-           dockerfile: Dockerfile
+        image: ${REGISTRY_PREFIX:-}aregrp-backend:${TAG:-local}
+        build: backend
         container_name: aregrp-backend
         ports:
             - "8000:8000"
@@ -46,7 +44,8 @@ services:
 
     # Nginx reverse proxy
     nginx:
-        image: nginx:alpine
+        image: ${REGISTRY_PREFIX:-}aregrp-nginx:${TAG:-local}
+        build: nginx
         container_name: aregrp-nginx
         restart: unless-stopped
         ports:
