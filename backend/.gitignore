@@ -6,10 +6,17 @@
 
 # PostgreSQL данные
 postgres_data/
+../postgres_data/
 
 # Django static files (собираются через collectstatic)
 static/
 !static/.gitkeep
+../static/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
 
 # Media files (загружаемые пользователями)
 media/
@@ -17,7 +24,10 @@ media/
 
 # Локальные настройки
 local_settings.py
+.env
 .env.local
+.env.postgres
+.env.*
 
 # Миграции (опционально, если хотите игнорировать)
 # migrations/

@@ -1,6 +1,39 @@
-/.idea/inspectionProfiles/profiles_settings.xml
-/.idea/inspectionProfiles/Project_Default.xml
-/.idea/aregrp.iml
-/.idea/prettier.xml
-/.idea/vcs.xml
-/.idea/workspace.xml
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.sqlite3
+*.sqlite3-journal
+postgres_data/
+
+# Static files (collected by collectstatic)
+static/
+!static/.gitkeep
+
+# Media files
+media/
+!media/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
