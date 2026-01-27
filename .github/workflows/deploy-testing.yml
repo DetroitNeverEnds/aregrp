@@ -104,9 +104,6 @@ jobs:
             - name: Create environment files from secrets
               id: create-env-files
               uses: appleboy/ssh-action@master
-              env:
-                  ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
-                  ENV_POSTGRES_FILE_CONTENT: ${{ secrets.ENV_POSTGRES_FILE }}
               with:
                   host: ${{ secrets.VPS_HOST }}
                   username: ${{ secrets.VPS_USER }}
@@ -117,40 +114,44 @@ jobs:
                       mkdir -p backend
                       
                       # Создаем backend/.env из секрета
-                      if [ -n "$ENV_FILE_CONTENT" ]; then
-                          echo "$ENV_FILE_CONTENT" > backend/.env
+                      # Используем echo с перенаправлением для безопасной передачи секретов
+                      echo "${{ secrets.ENV_FILE }}" > backend/.env
+                      
+                      # Проверяем, что файл создан и не пустой
+                      if [ -s backend/.env ]; then
                           echo "✅ Created backend/.env from GitHub Secrets"
                           echo "File size: $(wc -c < backend/.env) bytes, lines: $(wc -l < backend/.env)"
-                          # Показываем первые несколько строк (без секретов, только ключи)
-                          echo "First few lines:"
+                          echo "First few lines (keys only):"
                           head -n 3 backend/.env | sed 's/=.*/=***/' || true
                       else
-                          echo "⚠️  ERROR: ENV_FILE secret is not set!"
-                          echo "Please configure ENV_FILE secret in:"
-                          echo "  - Repository Settings → Secrets and variables → Actions (for pull_request/workflow_dispatch)"
-                          echo "  - Or pass it via workflow_call secrets (for reusable workflows)"
-                          echo ""
-                          echo "Creating empty backend/.env file (containers will not work properly!)"
-                          touch backend/.env
+                          echo "⚠️  ERROR: backend/.env is empty!"
+                          echo "Please configure ENV_FILE secret in Repository Settings → Secrets and variables → Actions"
+                          exit 1
                       fi
                       
                       # Создаем backend/.env.postgres из секрета
-                      if [ -n "$ENV_POSTGRES_FILE_CONTENT" ]; then
-                          echo "$ENV_POSTGRES_FILE_CONTENT" > backend/.env.postgres
+                      echo "${{ secrets.ENV_POSTGRES_FILE }}" > backend/.env.postgres
+                      
+                      # Проверяем, что файл создан и не пустой
+                      if [ -s backend/.env.postgres ]; then
                           echo "✅ Created backend/.env.postgres from GitHub Secrets"
                           echo "File size: $(wc -c < backend/.env.postgres) bytes, lines: $(wc -l < backend/.env.postgres)"
-                          # Показываем первые несколько строк (без секретов, только ключи)
-                          echo "First few lines:"
+                          echo "First few lines (keys only):"
                           head -n 3 backend/.env.postgres | sed 's/=.*/=***/' || true
                       else
-                          echo "⚠️  ERROR: ENV_POSTGRES_FILE secret is not set!"
-                          echo "Please configure ENV_POSTGRES_FILE secret in:"
-                          echo "  - Repository Settings → Secrets and variables → Actions (for pull_request/workflow_dispatch)"
-                          echo "  - Or pass it via workflow_call secrets (for reusable workflows)"
-                          echo ""
-                          echo "Creating empty backend/.env.postgres file (database will not work!)"
-                          touch backend/.env.postgres
+                          echo "⚠️  ERROR: backend/.env.postgres is empty!"
+                          echo "Please configure ENV_POSTGRES_FILE secret in Repository Settings → Secrets and variables → Actions"
+                          exit 1
                       fi
+                      
+                      # Проверяем, что файлы созданы
+                      echo ""
+                      echo "Verifying files exist:"
+                      ls -lh backend/.env* || echo "ERROR: .env files not found!"
+                      echo ""
+                      echo "Full path to files:"
+                      echo "  $(pwd)/backend/.env"
+                      echo "  $(pwd)/backend/.env.postgres"
                       
                       # Проверяем, что файлы созданы
                       echo ""
