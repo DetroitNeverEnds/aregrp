@@ -80,34 +80,74 @@ jobs:
                   target: "/home/${{ secrets.VPS_USER }}/aregrp/"
 
             # Создаем .env файлы на сервере из GitHub Secrets (безопасно, не попадают в Docker образ)
+            # Передаем секреты через переменные окружения для надежной работы
             - name: Create environment files from secrets
               uses: appleboy/ssh-action@master
+              env:
+                  ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
+                  ENV_POSTGRES_FILE_CONTENT: ${{ secrets.ENV_POSTGRES_FILE }}
               with:
                   host: ${{ secrets.VPS_HOST }}
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_SSH_KEY }}
                   script: |
                       cd ~/aregrp/
+                      echo "Current directory: $(pwd)"
                       mkdir -p backend
                       
-                      # Создаем backend/.env из секрета (если секрет не задан, файл будет пустым)
-                      if [ -n "${{ secrets.ENV_FILE }}" ]; then
-                          echo "${{ secrets.ENV_FILE }}" > backend/.env
+                      # Создаем backend/.env из секрета
+                      if [ -n "$ENV_FILE_CONTENT" ]; then
+                          echo "$ENV_FILE_CONTENT" > backend/.env
                           echo "✅ Created backend/.env from GitHub Secrets"
+                          echo "File size: $(wc -c < backend/.env) bytes, lines: $(wc -l < backend/.env)"
+                          # Показываем первые несколько строк (без секретов, только ключи)
+                          echo "First few lines:"
+                          head -n 3 backend/.env | sed 's/=.*/=***/' || true
                       else
-                          echo "⚠️  Warning: ENV_FILE secret is empty or not set"
-                          echo "Creating empty backend/.env file. Please configure ENV_FILE secret."
+                          echo "⚠️  ERROR: ENV_FILE secret is not set!"
+                          echo "Please configure ENV_FILE secret in:"
+                          echo "  - Repository Settings → Secrets and variables → Actions (for pull_request/workflow_dispatch)"
+                          echo "  - Or pass it via workflow_call secrets (for reusable workflows)"
+                          echo ""
+                          echo "Creating empty backend/.env file (containers will not work properly!)"
                           touch backend/.env
                       fi
                       
-                      # Создаем backend/.env.postgres из секрета (если секрет не задан, файл будет пустым)
-                      if [ -n "${{ secrets.ENV_POSTGRES_FILE }}" ]; then
-                          echo "${{ secrets.ENV_POSTGRES_FILE }}" > backend/.env.postgres
+                      # Создаем backend/.env.postgres из секрета
+                      if [ -n "$ENV_POSTGRES_FILE_CONTENT" ]; then
+                          echo "$ENV_POSTGRES_FILE_CONTENT" > backend/.env.postgres
                           echo "✅ Created backend/.env.postgres from GitHub Secrets"
+                          echo "File size: $(wc -c < backend/.env.postgres) bytes, lines: $(wc -l < backend/.env.postgres)"
+                          # Показываем первые несколько строк (без секретов, только ключи)
+                          echo "First few lines:"
+                          head -n 3 backend/.env.postgres | sed 's/=.*/=***/' || true
                       else
-                          echo "⚠️  Warning: ENV_POSTGRES_FILE secret is empty or not set"
-                          echo "Creating empty backend/.env.postgres file. Please configure ENV_POSTGRES_FILE secret."
+                          echo "⚠️  ERROR: ENV_POSTGRES_FILE secret is not set!"
+                          echo "Please configure ENV_POSTGRES_FILE secret in:"
+                          echo "  - Repository Settings → Secrets and variables → Actions (for pull_request/workflow_dispatch)"
+                          echo "  - Or pass it via workflow_call secrets (for reusable workflows)"
+                          echo ""
+                          echo "Creating empty backend/.env.postgres file (database will not work!)"
                           touch backend/.env.postgres
+                      fi
+                      
+                      # Проверяем, что файлы созданы
+                      echo ""
+                      echo "Verifying files exist:"
+                      ls -lh backend/.env* || echo "ERROR: .env files not found!"
+                      echo ""
+                      echo "Full path to files:"
+                      echo "  $(pwd)/backend/.env"
+                      echo "  $(pwd)/backend/.env.postgres"
+                      
+                      # Проверяем, что файлы не пустые
+                      if [ ! -s backend/.env ]; then
+                          echo "❌ ERROR: backend/.env is empty! Containers will fail!"
+                          exit 1
+                      fi
+                      if [ ! -s backend/.env.postgres ]; then
+                          echo "❌ ERROR: backend/.env.postgres is empty! Database will fail!"
+                          exit 1
                       fi
 
             # Подключаемся по SSH и обновляем контейнеры
@@ -120,6 +160,29 @@ jobs:
                   script: |
                       cd ~/aregrp/
 
+                      # Проверяем, что .env файлы созданы и доступны
+                      echo "Checking .env files before starting containers..."
+                      if [ -f backend/.env ]; then
+                          echo "✅ backend/.env exists ($(wc -l < backend/.env) lines)"
+                          echo "First line: $(head -n 1 backend/.env | cut -c1-50)..."
+                      else
+                          echo "❌ ERROR: backend/.env NOT FOUND!"
+                          exit 1
+                      fi
+                      
+                      if [ -f backend/.env.postgres ]; then
+                          echo "✅ backend/.env.postgres exists ($(wc -l < backend/.env.postgres) lines)"
+                          echo "First line: $(head -n 1 backend/.env.postgres | cut -c1-50)..."
+                      else
+                          echo "❌ ERROR: backend/.env.postgres NOT FOUND!"
+                          exit 1
+                      fi
+                      
+                      # Показываем текущую директорию и структуру
+                      echo "Current directory: $(pwd)"
+                      echo "Files in backend/:"
+                      ls -la backend/ | grep -E '\.env' || echo "No .env files found!"
+
                       # Логинимся в реестр GitHub на самом VPS, чтобы скачать приватный образ
                       echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
@@ -131,5 +194,9 @@ jobs:
                       docker compose pull
                       docker compose up -d --remove-orphans
 
+                      # Проверяем, что контейнеры запустились и переменные окружения загружены
+                      echo "Checking if containers are running..."
+                      docker compose ps
+                      
                       # Чистим старые неиспользуемые образы, чтобы не забить диск
                       docker image prune -f
