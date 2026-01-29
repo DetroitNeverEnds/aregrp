@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.site_settings',
     'apps.feedback',
+    'apps.re_objects',
 ]
 
 MIDDLEWARE = [
