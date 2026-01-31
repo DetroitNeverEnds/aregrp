@@ -2,7 +2,6 @@
 Модели для объектов недвижимости (здания, помещения).
 """
 from django.db import models
-from django.db.models import Max
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.conf import settings
@@ -431,7 +430,6 @@ class PremiseImage(MediaFilesMixin, models.Model):
         verbose_name = "Изображение помещения"
         verbose_name_plural = "Изображения помещений"
         ordering = ['premise', 'order', 'created_at']
-        unique_together = [['premise', 'order']]
         indexes = [
             models.Index(fields=['premise', 'is_primary']),
         ]
@@ -442,8 +440,7 @@ class PremiseImage(MediaFilesMixin, models.Model):
     
     def clean(self):
         """Валидация на уровне модели."""
-        from django.core.exceptions import ValidationError
-        
+        # Если помещение еще не сохранено, пропускаем валидацию
         if not self.premise_id:
             return
         
@@ -453,40 +450,8 @@ class PremiseImage(MediaFilesMixin, models.Model):
                 premise=self.premise,
                 is_primary=True
             ).exclude(pk=self.pk if self.pk else None).update(is_primary=False)
-        
-        # Проверка уникальности порядка
-        existing = PremiseImage.objects.filter(
-            premise=self.premise,
-            order=self.order
-        ).exclude(pk=self.pk if self.pk else None)
-        
-        if existing.exists():
-            raise ValidationError({
-                'order': f'Порядок {self.order} уже используется для этого помещения. Порядок должен быть уникальным.'
-            })
-        
-        # Проверка последовательности порядка (не должно быть пропусков)
-        max_order = PremiseImage.objects.filter(
-            premise=self.premise
-        ).exclude(pk=self.pk if self.pk else None).aggregate(
-            max_order=Max('order')
-        )['max_order'] or 0
-        
-        if self.order > max_order + 1:
-            raise ValidationError({
-                'order': f'Порядок должен быть последовательным. Максимальный порядок: {max_order}, следующий должен быть: {max_order + 1}'
-            })
     
     def save(self, *args, **kwargs):
-        # Автоматически устанавливаем порядок, если не указан
-        if not self.order and self.premise_id:
-            max_order = PremiseImage.objects.filter(
-                premise=self.premise
-            ).exclude(pk=self.pk if self.pk else None).aggregate(
-                max_order=Max('order')
-            )['max_order'] or 0
-            self.order = max_order + 1
-        
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -529,7 +494,6 @@ class BuildingImage(MediaFilesMixin, models.Model):
         verbose_name = "Изображение здания"
         verbose_name_plural = "Изображения зданий"
         ordering = ['building', 'order', 'created_at']
-        unique_together = [['building', 'order']]
         indexes = [
             models.Index(fields=['building', 'is_primary']),
             models.Index(fields=['building', 'category']),
@@ -541,8 +505,7 @@ class BuildingImage(MediaFilesMixin, models.Model):
     
     def clean(self):
         """Валидация на уровне модели."""
-        from django.core.exceptions import ValidationError
-        
+        # Если здание еще не сохранено, пропускаем валидацию
         if not self.building_id:
             return
         
@@ -552,40 +515,8 @@ class BuildingImage(MediaFilesMixin, models.Model):
                 building=self.building,
                 is_primary=True
             ).exclude(pk=self.pk if self.pk else None).update(is_primary=False)
-        
-        # Проверка уникальности порядка
-        existing = BuildingImage.objects.filter(
-            building=self.building,
-            order=self.order
-        ).exclude(pk=self.pk if self.pk else None)
-        
-        if existing.exists():
-            raise ValidationError({
-                'order': f'Порядок {self.order} уже используется для этого здания. Порядок должен быть уникальным.'
-            })
-        
-        # Проверка последовательности порядка (не должно быть пропусков)
-        max_order = BuildingImage.objects.filter(
-            building=self.building
-        ).exclude(pk=self.pk if self.pk else None).aggregate(
-            max_order=Max('order')
-        )['max_order'] or 0
-        
-        if self.order > max_order + 1:
-            raise ValidationError({
-                'order': f'Порядок должен быть последовательным. Максимальный порядок: {max_order}, следующий должен быть: {max_order + 1}'
-            })
     
     def save(self, *args, **kwargs):
-        # Автоматически устанавливаем порядок, если не указан
-        if not self.order and self.building_id:
-            max_order = BuildingImage.objects.filter(
-                building=self.building
-            ).exclude(pk=self.pk if self.pk else None).aggregate(
-                max_order=Max('order')
-            )['max_order'] or 0
-            self.order = max_order + 1
-        
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -623,7 +554,6 @@ class BuildingVideo(MediaFilesMixin, models.Model):
         verbose_name = "Видео здания"
         verbose_name_plural = "Видео зданий"
         ordering = ['building', 'order', 'created_at']
-        unique_together = [['building', 'order']]
         indexes = [
             models.Index(fields=['building', 'category']),
         ]
@@ -634,43 +564,10 @@ class BuildingVideo(MediaFilesMixin, models.Model):
     
     def clean(self):
         """Валидация на уровне модели."""
-        from django.core.exceptions import ValidationError
-        
+        # Если здание еще не сохранено, пропускаем валидацию
         if not self.building_id:
             return
-        
-        # Проверка уникальности порядка
-        existing = BuildingVideo.objects.filter(
-            building=self.building,
-            order=self.order
-        ).exclude(pk=self.pk if self.pk else None)
-        
-        if existing.exists():
-            raise ValidationError({
-                'order': f'Порядок {self.order} уже используется для этого здания. Порядок должен быть уникальным.'
-            })
-        
-        # Проверка последовательности порядка (не должно быть пропусков)
-        max_order = BuildingVideo.objects.filter(
-            building=self.building
-        ).exclude(pk=self.pk if self.pk else None).aggregate(
-            max_order=Max('order')
-        )['max_order'] or 0
-        
-        if self.order > max_order + 1:
-            raise ValidationError({
-                'order': f'Порядок должен быть последовательным. Максимальный порядок: {max_order}, следующий должен быть: {max_order + 1}'
-            })
     
     def save(self, *args, **kwargs):
-        # Автоматически устанавливаем порядок, если не указан
-        if not self.order and self.building_id:
-            max_order = BuildingVideo.objects.filter(
-                building=self.building
-            ).exclude(pk=self.pk if self.pk else None).aggregate(
-                max_order=Max('order')
-            )['max_order'] or 0
-            self.order = max_order + 1
-        
         self.full_clean()
         super().save(*args, **kwargs)
