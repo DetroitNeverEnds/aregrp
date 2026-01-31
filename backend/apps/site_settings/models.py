@@ -44,9 +44,60 @@ class SingletonModel(models.Model):
             raise ValidationError("Может существовать только один экземпляр этой модели.")
 
 
-class SiteSettings(SingletonModel):
+class MainSettings(SingletonModel):
     """
-    Основные настройки сайта (контакты, реквизиты).
+    Основные настройки сайта.
+    Содержит информацию для header и footer.
+    Singleton - только один экземпляр в базе данных.
+    """
+    # Контактная информация (для header и footer)
+    phone = models.CharField(
+        max_length=20,
+        verbose_name="Номер телефона",
+        help_text="Номер телефона для связи"
+    )
+    email = models.EmailField(
+        max_length=50,
+        verbose_name="Почта",
+        help_text="Email адрес для связи"
+    )
+    whatsapp_link = models.CharField(
+        max_length=200,
+        verbose_name="Ссылка на WhatsApp",
+        help_text="Ссылка на WhatsApp",
+        blank=True
+    )
+    telegram_link = models.CharField(
+        max_length=200,
+        verbose_name="Ссылка на Telegram",
+        help_text="Ссылка на Telegram",
+        blank=True
+    )
+    
+    # Информация для footer
+    footer_description = models.TextField(
+        verbose_name="Футер описание",
+        help_text="Описание в подвале сайта",
+        blank=True
+    )
+    footer_org_info = models.TextField(
+        verbose_name="Футер орг инфо",
+        help_text="Организационная информация в подвале сайта",
+        blank=True
+    )
+
+    class Meta:
+        verbose_name = "Основные настройки"
+        verbose_name_plural = "Основные настройки"
+        db_table = 'main_settings'
+
+    def __str__(self):
+        return f"Основные настройки ({self.phone})"
+
+
+class ContactsSettings(SingletonModel):
+    """
+    Настройки контактов сайта.
     Singleton - только один экземпляр в базе данных.
     """
     phone = models.CharField(
@@ -83,27 +134,9 @@ class SiteSettings(SingletonModel):
     )
 
     class Meta:
-        verbose_name = "Настройки сайта"
-        verbose_name_plural = "Настройки сайта"
-        db_table = 'site_settings'
+        verbose_name = "Настройки контактов"
+        verbose_name_plural = "Настройки контактов"
+        db_table = 'contacts_settings'
 
     def __str__(self):
-        return f"Настройки сайта ({self.phone})"
-
-
-# Пример: Singleton модель для главной страницы
-# class HomePageSettings(SingletonModel):
-#     """
-#     Настройки главной страницы.
-#     Singleton - только один экземпляр в базе данных.
-#     """
-#     title = models.CharField(max_length=200, verbose_name="Заголовок")
-#     description = models.TextField(verbose_name="Описание")
-#     hero_image = models.ImageField(upload_to='home/', verbose_name="Главное изображение", blank=True)
-#     
-#     class Meta:
-#         verbose_name = "Настройки главной страницы"
-#         verbose_name_plural = "Настройки главной страницы"
-#     
-#     def __str__(self):
-#         return "Настройки главной страницы"
+        return f"Настройки контактов ({self.phone})"

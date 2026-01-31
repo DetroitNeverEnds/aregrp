@@ -5,8 +5,11 @@ from ninja import Router
 from asgiref.sync import sync_to_async
 
 from api.schemas import ProblemDetail
-from .models import SiteSettings
-from .schemas import SiteSettingsOut
+from .models import MainSettings, ContactsSettings
+from .schemas import (
+    MainSettingsOut,
+    ContactsSettingsOut
+)
 from .errors import create_site_settings_error, SiteSettingsErrorCodes
 
 
@@ -14,39 +17,59 @@ site_settings_router = Router()
 
 
 @site_settings_router.get(
-    "/",
-    response={200: SiteSettingsOut, 404: ProblemDetail},
-    summary="Получить настройки сайта",
-    description="Возвращает публичные настройки сайта (контакты, реквизиты)"
+    "/main-info",
+    response={200: MainSettingsOut, 404: ProblemDetail},
+    summary="Получить основные настройки сайта",
+    description="Возвращает основные настройки сайта (контакты и информация для footer)"
 )
-async def get_site_settings(request):  # pylint: disable=unused-argument
+async def get_main_settings(request): 
     """
-    Получить настройки сайта
+    Получить основные настройки сайта.
     
-    Возвращает публичные настройки сайта, включая контактную информацию
-    и реквизиты организации. Эндпоинт публичный, не требует аутентификации.
-    
-    **Пример ответа:**
-    ```json
-    {
-        "phone": "+79991234567",
-        "email": "info@example.com",
-        "whats_app": "https://wa.me/79991234567",
-        "telegram": "@example",
-        "ruk_fio": "Иванов Иван Иванович",
-        "inn": "1234567890"
-    }
-    ```
-    
-    **Коды ошибок:**
-    - `404`: Настройки сайта не найдены (должны быть созданы в админке)
+    Возвращает основные настройки сайта, включая контактную информацию
+    (телефон, email, WhatsApp, Telegram) и информацию для footer.
+    Эндпоинт публичный, не требует аутентификации.
     """
     try:
-        # Получаем единственный экземпляр настроек (Singleton)
-        settings = await sync_to_async(SiteSettings.load)()
+        settings = await sync_to_async(MainSettings.load)()
         
-        # Преобразуем модель в схему
-        return 200, SiteSettingsOut(
+        return 200, MainSettingsOut(
+            phone=settings.phone,
+            email=settings.email,
+            whatsapp_link=settings.whatsapp_link or None,
+            telegram_link=settings.telegram_link or None,
+            footer_description=settings.footer_description or None,
+            footer_org_info=settings.footer_org_info or None
+        )
+        
+    except Exception as e:
+        return 404, create_site_settings_error(
+            status=404,
+            code=SiteSettingsErrorCodes.NOT_FOUND,
+            title="Main settings not found",
+            detail=f"Main settings not found. Please create main settings in admin panel. Error: {str(e)}",
+            instance="/api/v1/site-settings/main-info"
+        )
+
+
+@site_settings_router.get(
+    "/contacts",
+    response={200: ContactsSettingsOut, 404: ProblemDetail},
+    summary="Получить настройки контактов",
+    description="Возвращает контактную информацию и реквизиты организации"
+)
+async def get_contacts_settings(request): 
+    """
+    Получить настройки контактов.
+    
+    Возвращает контактную информацию и реквизиты организации,
+    включая телефон, email, мессенджеры, ФИО руководителя и ИНН.
+    Эндпоинт публичный, не требует аутентификации.
+    """
+    try:
+        settings = await sync_to_async(ContactsSettings.load)()
+        
+        return 200, ContactsSettingsOut(
             phone=settings.phone,
             email=settings.email,
             whats_app=settings.whats_app or None,
@@ -59,7 +82,9 @@ async def get_site_settings(request):  # pylint: disable=unused-argument
         return 404, create_site_settings_error(
             status=404,
             code=SiteSettingsErrorCodes.NOT_FOUND,
-            title="Site settings not found",
-            detail=f"Site settings not found. Please create site settings in admin panel. Error: {str(e)}",
-            instance="/api/v1/site-settings/"
+            title="Contacts settings not found",
+            detail=f"Contacts settings not found. Please create contacts settings in admin panel. Error: {str(e)}",
+            instance="/api/v1/site-settings/contacts"
         )
+
+
