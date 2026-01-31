@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { BrowserRouter, MemoryRouter } from 'react-router-dom';
 import App from './App';
+import { AppWrapper } from './components/AppWrapper/AppWrapper';
 
 describe('App', () => {
     it('должен рендериться без ошибок', () => {
@@ -16,7 +17,9 @@ describe('App', () => {
     it('должен содержать основной контент', () => {
         const { container } = render(
             <MemoryRouter initialEntries={['/auth/login']}>
-                <App />
+                <AppWrapper>
+                    <App />
+                </AppWrapper>
             </MemoryRouter>,
         );
         expect(container.querySelector('form')).toBeInTheDocument();

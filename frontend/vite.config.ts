@@ -16,6 +16,15 @@ export default defineConfig({
         }),
         react(),
     ],
+    server: {
+        proxy: {
+            '/api/v1': {
+                target: 'http://176.98.176.204',
+                changeOrigin: true,
+                secure: false,
+            },
+        },
+    },
     test: {
         globals: true,
         environment: 'jsdom',

@@ -31,6 +31,8 @@ export interface AuthFormProps {
     /** Футер формы (обычно ссылки на другие страницы) */
     footer?: React.ReactNode;
 
+    errorMessage?: string;
+
     /** Состояние загрузки/отправки */
     isSubmitting?: boolean;
 }
@@ -44,6 +46,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     onSubmit,
     submitText,
     footer,
+    errorMessage,
     isSubmitting = false,
 }) => {
     return (
@@ -57,6 +60,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                             {description && (
                                 <Text variant="16-reg" color="gray-50">
                                     {description}
+                                </Text>
+                            )}
+                            {errorMessage && (
+                                <Text variant="16-reg" color="error-default">
+                                    {errorMessage}
                                 </Text>
                             )}
                         </Flex>
