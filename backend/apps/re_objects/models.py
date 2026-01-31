@@ -303,7 +303,7 @@ class Premise(models.Model):
     class Meta:
         verbose_name = "Помещение"
         verbose_name_plural = "Помещения"
-        ordering = ['city', 'building', 'floor', 'number']
+        ordering = ['city', 'floor__building', 'floor', 'number']
         indexes = [
             models.Index(fields=['city', 'status']),  # Для быстрого поиска по городу и статусу
             models.Index(fields=['city', 'premise_type']),  # Для поиска по типу

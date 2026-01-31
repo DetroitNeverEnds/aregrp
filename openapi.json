@@ -593,6 +593,39 @@
         "title": "UserOut",
         "type": "object"
       },
+      "ErrorCode": {
+        "description": "Enum для кодов ошибок API.\n\nВсе коды ошибок должны быть определены здесь.",
+        "enum": [
+          "ACCOUNTS_INVALID_CREDENTIALS",
+          "ACCOUNTS_EMAIL_EXISTS",
+          "ACCOUNTS_PHONE_EXISTS",
+          "ACCOUNTS_PASSWORD_MISMATCH",
+          "ACCOUNTS_PASSWORD_VALIDATION_FAILED",
+          "ACCOUNTS_INVALID_USER_TYPE",
+          "ACCOUNTS_MISSING_ORGANIZATION_NAME",
+          "ACCOUNTS_MISSING_INN",
+          "ACCOUNTS_UNAUTHORIZED",
+          "ACCOUNTS_TOKEN_EXPIRED",
+          "ACCOUNTS_INVALID_TOKEN",
+          "ACCOUNTS_NO_REFRESH_TOKEN",
+          "ACCOUNTS_USER_NOT_FOUND",
+          "ACCOUNTS_EMAIL_ALREADY_USED",
+          "ACCOUNTS_PHONE_ALREADY_USED",
+          "ACCOUNTS_INVALID_CURRENT_PASSWORD",
+          "ACCOUNTS_REGISTRATION_ERROR",
+          "ACCOUNTS_LOGIN_ERROR",
+          "ACCOUNTS_PASSWORD_RESET_ERROR",
+          "ACCOUNTS_PASSWORD_RESET_TOKEN_INVALID",
+          "ACCOUNTS_PASSWORD_RESET_TOKEN_EXPIRED",
+          "FEEDBACK_NOT_FOUND",
+          "FEEDBACK_CREATION_ERROR",
+          "FEEDBACK_UPDATE_ERROR",
+          "FEEDBACK_DELETE_ERROR",
+          "FEEDBACK_VALIDATION_ERROR"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
       "ProblemDetail": {
         "description": "Формат ошибок по RFC 7807 (Problem Details for HTTP APIs).\n\nИспользуется для стандартизации всех ошибок API.",
         "properties": {
@@ -624,8 +657,7 @@
             "title": "Instance"
           },
           "code": {
-            "title": "Code",
-            "type": "string"
+            "$ref": "#/components/schemas/ErrorCode"
           }
         },
         "required": [
