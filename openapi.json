@@ -621,7 +621,9 @@
           "FEEDBACK_CREATION_ERROR",
           "FEEDBACK_UPDATE_ERROR",
           "FEEDBACK_DELETE_ERROR",
-          "FEEDBACK_VALIDATION_ERROR"
+          "FEEDBACK_VALIDATION_ERROR",
+          "SITE_SETTINGS_NOT_FOUND",
+          "SITE_SETTINGS_ERROR"
         ],
         "title": "ErrorCode",
         "type": "string"

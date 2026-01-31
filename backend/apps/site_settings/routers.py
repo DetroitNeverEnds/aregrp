@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from api.schemas import ProblemDetail
 from .models import SiteSettings
 from .schemas import SiteSettingsOut
+from .errors import create_site_settings_error, SiteSettingsErrorCodes
 
 
 site_settings_router = Router()
@@ -55,10 +56,10 @@ async def get_site_settings(request):  # pylint: disable=unused-argument
         )
         
     except Exception as e:
-        return 404, {
-            "type": "https://httpstatuses.com/404",
-            "title": "Site settings not found",
-            "status": 404,
-            "detail": f"Site settings not found: {str(e)}",
-            "instance": "/api/v1/site-settings/"
-        }
+        return 404, create_site_settings_error(
+            status=404,
+            code=SiteSettingsErrorCodes.NOT_FOUND,
+            title="Site settings not found",
+            detail=f"Site settings not found. Please create site settings in admin panel. Error: {str(e)}",
+            instance="/api/v1/site-settings/"
+        )
