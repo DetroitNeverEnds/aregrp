@@ -124,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru'
 
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'Etc/GMT-3'  # UTC+3
 
 USE_I18N = True
 
@@ -135,7 +135,6 @@ USE_TZ = True
 # Поддерживаемые языки
 LANGUAGES = [
     ('ru', 'Русский'),
-    ('en', 'English'),
 ]
 
 
