@@ -138,6 +138,36 @@ STATIC_ROOT = BASE_DIR / 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
 
+# Storage configuration
+# Для использования MinIO установите следующие переменные окружения:
+# AWS_S3_ENDPOINT_URL - URL MinIO сервера (например, http://minio:9000)
+# AWS_STORAGE_BUCKET_NAME - имя bucket в MinIO
+# AWS_ACCESS_KEY_ID - access key для MinIO
+# AWS_SECRET_ACCESS_KEY - secret key для MinIO
+# AWS_S3_REGION_NAME - регион (можно использовать 'us-east-1' для MinIO)
+# USE_MINIO - включить использование MinIO (True/False)
+
+USE_MINIO = config('USE_MINIO', cast=bool, default=False)
+
+if USE_MINIO:
+    # MinIO (S3-совместимое хранилище) настройки
+    AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL', default='')
+    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='aregrp-media')
+    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
+    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
+    AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1')
+    AWS_S3_USE_SSL = config('AWS_S3_USE_SSL', cast=bool, default=False)
+    AWS_S3_VERIFY = config('AWS_S3_VERIFY', cast=bool, default=False)
+    AWS_DEFAULT_ACL = 'public-read'
+    AWS_QUERYSTRING_AUTH = False
+    
+    # Используем MinIO для медиафайлов
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3.S3Storage'
+    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
+else:
+    # Локальное хранение (по умолчанию)
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

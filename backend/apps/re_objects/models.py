@@ -3,6 +3,8 @@
 """
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
+from django.conf import settings
 
 
 class Region(models.Model):
@@ -327,3 +329,211 @@ class Premise(models.Model):
         if self.price_per_month and self.area and not self.price_per_sqm:
             self.price_per_sqm = self.price_per_month / self.area
         super().save(*args, **kwargs)
+
+
+# Функции для генерации путей загрузки медиафайлов
+def premise_image_upload_path(instance, filename):
+    """Генерирует путь для изображений помещений."""
+    return f"premises/{instance.premise.id}/images/{filename}"
+
+
+def building_image_upload_path(instance, filename):
+    """Генерирует путь для изображений зданий."""
+    return f"buildings/{instance.building.id}/images/{filename}"
+
+
+def building_video_upload_path(instance, filename):
+    """Генерирует путь для видео зданий."""
+    return f"buildings/{instance.building.id}/videos/{filename}"
+
+
+class MediaFilesMixin(models.Model):
+    """
+    Миксин с общими полями и методами для медиафайлов.
+    
+    Используется для переиспользования кода между моделями PremiseImage,
+    BuildingImage, BuildingVideo.
+    
+    ВАЖНО: Поле file должно быть переопределено в каждой модели с конкретным
+    upload_to и валидаторами.
+    """
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Название",
+        help_text="Название медиафайла"
+    )
+    order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Порядок",
+        help_text="Порядок отображения (0 - первый)"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        abstract = True
+    
+    @property
+    def file_url(self):
+        """Возвращает URL файла."""
+        if self.file:
+            return self.file.url
+        return None
+
+
+class PremiseImage(MediaFilesMixin, models.Model):
+    """
+    Изображение помещения.
+    """
+    premise = models.ForeignKey(
+        Premise,
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name="Помещение",
+        help_text="Помещение, к которому относится изображение"
+    )
+    file = models.ImageField(
+        upload_to=premise_image_upload_path,
+        verbose_name="Изображение",
+        help_text="Изображение помещения",
+        storage=None,  # Используется DEFAULT_FILE_STORAGE из settings
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'gif']
+            )
+        ]
+    )
+    is_primary = models.BooleanField(
+        default=False,
+        verbose_name="Основное изображение",
+        help_text="Использовать как основное изображение помещения"
+    )
+    
+    class Meta:
+        verbose_name = "Изображение помещения"
+        verbose_name_plural = "Изображения помещений"
+        ordering = ['premise', 'order', 'created_at']
+        indexes = [
+            models.Index(fields=['premise', 'is_primary']),
+        ]
+        db_table = 're_premise_images'
+    
+    def __str__(self):
+        return f"Изображение для {self.premise} ({self.order})"
+    
+    def clean(self):
+        """Валидация на уровне модели."""
+        # Если это основное изображение, снимаем флаг с других
+        if self.is_primary:
+            PremiseImage.objects.filter(
+                premise=self.premise,
+                is_primary=True
+            ).exclude(pk=self.pk if self.pk else None).update(is_primary=False)
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
+class BuildingImage(MediaFilesMixin, models.Model):
+    """
+    Изображение здания.
+    """
+    building = models.ForeignKey(
+        Building,
+        on_delete=models.CASCADE,
+        related_name='images',
+        verbose_name="Здание",
+        help_text="Здание, к которому относится изображение"
+    )
+    file = models.ImageField(
+        upload_to=building_image_upload_path,
+        verbose_name="Изображение",
+        help_text="Изображение здания",
+        storage=None,  # Используется DEFAULT_FILE_STORAGE из settings
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'gif']
+            )
+        ]
+    )
+    category = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Категория",
+        help_text="Категория изображения (например, 'фасад', 'интерьер', 'планировка')"
+    )
+    is_primary = models.BooleanField(
+        default=False,
+        verbose_name="Основное изображение",
+        help_text="Использовать как основное изображение здания"
+    )
+    
+    class Meta:
+        verbose_name = "Изображение здания"
+        verbose_name_plural = "Изображения зданий"
+        ordering = ['building', 'order', 'created_at']
+        indexes = [
+            models.Index(fields=['building', 'is_primary']),
+            models.Index(fields=['building', 'category']),
+        ]
+        db_table = 're_building_images'
+    
+    def __str__(self):
+        return f"Изображение для {self.building} ({self.order})"
+    
+    def clean(self):
+        """Валидация на уровне модели."""
+        # Если это основное изображение, снимаем флаг с других
+        if self.is_primary:
+            BuildingImage.objects.filter(
+                building=self.building,
+                is_primary=True
+            ).exclude(pk=self.pk if self.pk else None).update(is_primary=False)
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
+class BuildingVideo(MediaFilesMixin, models.Model):
+    """
+    Видео здания.
+    """
+    building = models.ForeignKey(
+        Building,
+        on_delete=models.CASCADE,
+        related_name='videos',
+        verbose_name="Здание",
+        help_text="Здание, к которому относится видео"
+    )
+    file = models.FileField(
+        upload_to=building_video_upload_path,
+        verbose_name="Видео",
+        help_text="Видео файл здания",
+        storage=None,  # Используется DEFAULT_FILE_STORAGE из settings
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['mp4', 'mov', 'avi', 'webm']
+            )
+        ]
+    )
+    category = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Категория",
+        help_text="Категория видео (например, 'тур', 'обзор', 'презентация')"
+    )
+    
+    class Meta:
+        verbose_name = "Видео здания"
+        verbose_name_plural = "Видео зданий"
+        ordering = ['building', 'order', 'created_at']
+        indexes = [
+            models.Index(fields=['building', 'category']),
+        ]
+        db_table = 're_building_videos'
+    
+    def __str__(self):
+        return f"Видео для {self.building} ({self.order})"
