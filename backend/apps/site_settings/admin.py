@@ -11,6 +11,7 @@ class MainSettingsAdmin(admin.ModelAdmin):
     Админка для основных настроек сайта.
     Singleton модель - всегда будет только один экземпляр.
     """
+    list_display = ('phone', 'email', 'whatsapp_link', 'telegram_link')
     fieldsets = (
         ('Контактная информация', {
             'fields': ('phone', 'email', 'whatsapp_link', 'telegram_link')
@@ -27,6 +28,15 @@ class MainSettingsAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Запрещаем удаление единственного экземпляра."""
         return False
+    
+    def changelist_view(self, request, extra_context=None):
+        """
+        Переопределяем changelist_view для перенаправления на форму редактирования,
+        так как у нас только один экземпляр (Singleton).
+        """
+        from django.shortcuts import redirect
+        obj = MainSettings.load()
+        return redirect(f'/admin/site_settings/mainsettings/{obj.pk}/change/')
 
 
 @admin.register(ContactsSettings)
@@ -35,6 +45,7 @@ class ContactsSettingsAdmin(admin.ModelAdmin):
     Админка для настроек контактов.
     Singleton модель - всегда будет только один экземпляр.
     """
+    list_display = ('phone', 'email', 'ruk_fio', 'inn')
     fieldsets = (
         ('Контакты', {
             'fields': ('phone', 'email', 'whats_app', 'telegram')
@@ -51,3 +62,12 @@ class ContactsSettingsAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Запрещаем удаление единственного экземпляра."""
         return False
+    
+    def changelist_view(self, request, extra_context=None):
+        """
+        Переопределяем changelist_view для перенаправления на форму редактирования,
+        так как у нас только один экземпляр (Singleton).
+        """
+        from django.shortcuts import redirect
+        obj = ContactsSettings.load()
+        return redirect(f'/admin/site_settings/contactssettings/{obj.pk}/change/')

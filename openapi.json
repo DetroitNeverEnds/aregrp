@@ -453,10 +453,10 @@
         ]
       }
     },
-    "/api/v1/site-settings/": {
+    "/api/v1/site-settings/main-info": {
       "get": {
-        "operationId": "apps_site_settings_routers_get_site_settings",
-        "summary": "Получить настройки сайта",
+        "operationId": "apps_site_settings_routers_get_main_settings",
+        "summary": "Получить основные настройки сайта",
         "parameters": [],
         "responses": {
           "200": {
@@ -464,7 +464,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SiteSettingsOut"
+                  "$ref": "#/components/schemas/MainSettingsOut"
                 }
               }
             }
@@ -480,7 +480,40 @@
             }
           }
         },
-        "description": "Возвращает публичные настройки сайта (контакты, реквизиты)",
+        "description": "Возвращает основные настройки сайта (контакты и информация для footer)",
+        "tags": [
+          "Site Settings"
+        ]
+      }
+    },
+    "/api/v1/site-settings/contacts": {
+      "get": {
+        "operationId": "apps_site_settings_routers_get_contacts_settings",
+        "summary": "Получить настройки контактов",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactsSettingsOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Возвращает контактную информацию и реквизиты организации",
         "tags": [
           "Site Settings"
         ]
@@ -880,8 +913,71 @@
         "title": "UpdatePasswordIn",
         "type": "object"
       },
-      "SiteSettingsOut": {
-        "description": "Схема для возврата настроек сайта.",
+      "MainSettingsOut": {
+        "description": "Схема для возврата основных настроек сайта.",
+        "properties": {
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "whatsapp_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Whatsapp Link"
+          },
+          "telegram_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Link"
+          },
+          "footer_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Footer Description"
+          },
+          "footer_org_info": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Footer Org Info"
+          }
+        },
+        "required": [
+          "phone",
+          "email"
+        ],
+        "title": "MainSettingsOut",
+        "type": "object"
+      },
+      "ContactsSettingsOut": {
+        "description": "Схема для возврата настроек контактов.",
         "properties": {
           "phone": {
             "title": "Phone",
@@ -928,7 +1024,7 @@
           "ruk_fio",
           "inn"
         ],
-        "title": "SiteSettingsOut",
+        "title": "ContactsSettingsOut",
         "type": "object"
       }
     },
