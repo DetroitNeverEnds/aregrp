@@ -21,12 +21,12 @@ export function createAuthClient(): AuthApiClient {
     const client = new AuthApiClient({
         baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
         timeout: 30000,
-        
+
         // Callback при обновлении access токена
-        onTokenRefresh: (accessToken) => {
+        onTokenRefresh: accessToken => {
             localStorage.setItem('accessToken', accessToken);
         },
-        
+
         // Callback при ошибке авторизации
         onAuthError: () => {
             localStorage.removeItem('accessToken');
@@ -34,12 +34,6 @@ export function createAuthClient(): AuthApiClient {
         },
     });
 
-    // Загружаем access токен при инициализации (если есть)
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-        client.setTokens(accessToken);
-    }
-    
     return client;
 }
 
@@ -52,24 +46,29 @@ export function createAuthClient(): AuthApiClient {
  */
 export async function loginExample() {
     const client = createAuthClient();
-    
+
     try {
         // Отправляем логин запрос
         // Сервер автоматически установит refresh токен в HttpOnly cookie
-        const response = await client.post<{
-            access_token: string;
-            user: { id: number; email: string };
-        }>('/api/auth/login', {
+        const response = await client.post<
+            {
+                access_token: string;
+                user: { id: number; email: string };
+            },
+            {
+                email: string;
+                password: string;
+            }
+        >('/api/auth/login', {
             email: 'user@example.com',
             password: 'password123',
         });
 
-        // Сохраняем только access токен
-        // Refresh токен уже в HttpOnly cookie
-        client.setTokens(response.access_token);
+        // Сохраняем access токен в localStorage
+        localStorage.setItem('accessToken', response.access_token);
 
         console.log('Logged in:', response.user);
-        
+
         return response.user;
     } catch (error) {
         console.error('Login failed:', error);
@@ -82,7 +81,7 @@ export async function loginExample() {
  */
 export async function getUserProfileExample() {
     const client = createAuthClient();
-    
+
     try {
         // Токен автоматически добавится в заголовки
         const profile = await client.get<{
@@ -92,7 +91,7 @@ export async function getUserProfileExample() {
         }>('/api/user/profile');
 
         console.log('User profile:', profile);
-        
+
         return profile;
     } catch (error) {
         console.error('Failed to get profile:', error);
@@ -105,14 +104,13 @@ export async function getUserProfileExample() {
  */
 export async function logoutExample() {
     const client = createAuthClient();
-    
+
     try {
         // Отправляем запрос на выход
         // Сервер автоматически удалит refresh токен из кук
-        await client.post('/api/auth/logout');
+        await client.post<void>('/api/auth/logout');
 
         // Очищаем access токен
-        client.clearTokens();
         localStorage.removeItem('accessToken');
 
         console.log('Logged out successfully');
@@ -126,15 +124,13 @@ export async function logoutExample() {
  * Пример: Проверка авторизации
  */
 export async function checkAuthExample() {
-    const client = createAuthClient();
-    
-    const isAuth = await client.isAuthenticated();
-    
-    if (isAuth) {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (accessToken) {
         console.log('User is authenticated');
+        return true;
     } else {
         console.log('User is not authenticated');
+        return false;
     }
-    
-    return isAuth;
 }

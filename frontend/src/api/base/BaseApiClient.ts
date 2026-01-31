@@ -83,6 +83,7 @@ export class BaseApiClient {
                 status,
                 detail: errorData?.message || errorData?.detail || 'Unknown error',
                 instance: error.config?.url || '',
+                code: 'UNKNOWN_ERROR',
             };
         } else if (error.request) {
             // Запрос был отправлен, но ответа не получено
@@ -92,6 +93,7 @@ export class BaseApiClient {
                 status: 0,
                 detail: error.message || 'No response from server',
                 instance: error.config?.url || '',
+                code: 'NETWORK_ERROR',
             };
         } else {
             // Ошибка при настройке запроса
@@ -101,6 +103,7 @@ export class BaseApiClient {
                 status: 0,
                 detail: error.message || 'Failed to create request',
                 instance: '',
+                code: 'REQUEST_ERROR',
             };
         }
     }
@@ -130,7 +133,7 @@ export class BaseApiClient {
     /**
      * POST запрос
      */
-    public async post<TReq, TRes>(url: string, data?: TReq): Promise<TRes> {
+    public async post<TRes, TReq = unknown>(url: string, data?: TReq): Promise<TRes> {
         return this.request({
             method: 'POST',
             url,
@@ -141,7 +144,7 @@ export class BaseApiClient {
     /**
      * PUT запрос
      */
-    public async put<TReq, TRes>(url: string, data?: TReq): Promise<TRes> {
+    public async put<TRes, TReq = unknown>(url: string, data?: TReq): Promise<TRes> {
         return this.request({
             method: 'PUT',
             url,
@@ -152,7 +155,7 @@ export class BaseApiClient {
     /**
      * PATCH запрос
      */
-    public async patch<TReq, TRes>(url: string, data?: TReq): Promise<TRes> {
+    public async patch<TRes, TReq = unknown>(url: string, data?: TReq): Promise<TRes> {
         return this.request({
             method: 'PATCH',
             url,
@@ -163,7 +166,7 @@ export class BaseApiClient {
     /**
      * DELETE запрос
      */
-    public async delete<TReq, TRes>(url: string, data?: TReq): Promise<TRes> {
+    public async delete<TRes, TReq = unknown>(url: string, data?: TReq): Promise<TRes> {
         return this.request({
             method: 'DELETE',
             url,
