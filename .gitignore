@@ -25,18 +25,18 @@ build/
 *.sqlite3
 *.sqlite3-journal
 # Локальная папка postgres_data (для разработки)
-# В production данные хранятся в /opt/aregrp-data/postgres_data
+# В production данные хранятся в /var/lib/aregrp-data/postgres_data
 postgres_data/
 
 # Static files (collected by collectstatic)
 # Локальная папка static (для разработки)
-# В production данные хранятся в /opt/aregrp-data/static
+# В production данные хранятся в /var/lib/aregrp-data/static
 static/
 !static/.gitkeep
 
 # Media files
 # Локальная папка media (для разработки)
-# В production данные хранятся в /opt/aregrp-data/media
+# В production данные хранятся в /var/lib/aregrp-data/media
 media/
 !media/.gitkeep
 

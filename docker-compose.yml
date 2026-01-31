@@ -17,7 +17,7 @@ services:
         image: postgres:17
         volumes:
             # Данные БД хранятся вне проекта для безопасности при деплое
-            - /opt/aregrp-data/postgres_data:/var/lib/postgresql/data
+            - /var/lib/aregrp-data/postgres_data:/var/lib/postgresql/data
         env_file:
             - ./backend/.env.postgres
         networks:
@@ -34,8 +34,8 @@ services:
             - db
         volumes:
             # Медиафайлы и статика также хранятся вне проекта
-            - /opt/aregrp-data/media:/app/media
-            - /opt/aregrp-data/static:/app/static
+            - /var/lib/aregrp-data/media:/app/media
+            - /var/lib/aregrp-data/static:/app/static
         env_file:
             - ./backend/.env
             - ./backend/.env.postgres
@@ -55,8 +55,8 @@ services:
             - "443:443"
         volumes:
             - ./nginx/logs:/var/log/nginx
-            - /opt/aregrp-data/static:/opt/aregrp-data/static:ro
-            - /opt/aregrp-data/media:/opt/aregrp-data/media:ro
+            - /var/lib/aregrp-data/static:/var/lib/aregrp-data/static:ro
+            - /var/lib/aregrp-data/media:/var/lib/aregrp-data/media:ro
         depends_on:
             - frontend
             - backend

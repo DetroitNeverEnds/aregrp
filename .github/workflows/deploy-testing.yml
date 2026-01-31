@@ -184,18 +184,18 @@ jobs:
 
                       # Создаем директории для персистентных данных (вне проекта, чтобы не удалялись при деплое)
                       echo "Creating persistent data directories..."
-                      sudo mkdir -p /opt/aregrp-data/postgres_data
-                      sudo mkdir -p /opt/aregrp-data/media
-                      sudo mkdir -p /opt/aregrp-data/static
+                      sudo mkdir -p /var/lib/aregrp-data/postgres_data
+                      sudo mkdir -p /var/lib/aregrp-data/media
+                      sudo mkdir -p /var/lib/aregrp-data/static
                       
                       # Устанавливаем правильные права доступа для PostgreSQL
                       # PostgreSQL требует, чтобы директория принадлежала пользователю postgres (UID 999 в контейнере)
-                      sudo chown -R 999:999 /opt/aregrp-data/postgres_data || true
-                      sudo chmod 700 /opt/aregrp-data/postgres_data || true
+                      sudo chown -R 999:999 /var/lib/aregrp-data/postgres_data || true
+                      sudo chmod 700 /var/lib/aregrp-data/postgres_data || true
                       
                       # Права для media и static (обычно пользователь из контейнера backend)
-                      sudo chown -R $USER:$USER /opt/aregrp-data/media /opt/aregrp-data/static || true
-                      sudo chmod -R 755 /opt/aregrp-data/media /opt/aregrp-data/static || true
+                      sudo chown -R $USER:$USER /var/lib/aregrp-data/media /var/lib/aregrp-data/static || true
+                      sudo chmod -R 755 /var/lib/aregrp-data/media /var/lib/aregrp-data/static || true
                       
                       echo "✅ Persistent data directories created"
 
