@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthForm } from '../../../components/ui/auth/AuthForm';
 import { TextInput } from '../../../components/ui/common/input/TextInput';
@@ -7,6 +8,7 @@ import { Checkbox } from '../../../components/ui/common/input/Checkbox';
 import { Link } from '../../../components/ui/common/Link';
 import { Text } from '../../../components/ui/common/Text';
 import { Flex } from '../../../components/ui/common/Flex';
+import { useLoginMutation } from '../../../mutations';
 
 type LoginFormData = {
     email: string;
@@ -16,21 +18,48 @@ type LoginFormData = {
 
 export const Login: React.FC = () => {
     const { t } = useTranslation();
-    const { handleSubmit, control, formState } = useForm<LoginFormData>({
+    const navigate = useNavigate();
+    const { handleSubmit, control, formState, setError } = useForm<LoginFormData>({
         defaultValues: {
             email: '',
             password: '',
             rememberMe: true,
         },
     });
-    const onSubmit = useCallback((data: LoginFormData) => console.log(data), []);
+
+    const { mutate: loginMutate, isPending } = useLoginMutation({
+        onSuccess: data => {
+            console.log('Вход выполнен успешно:', data.user);
+            // TODO: Сохранить токены и данные пользователя
+            navigate('/');
+        },
+        onError: error => {
+            console.error('Ошибка входа:', error);
+            setError('root', {
+                type: 'manual',
+                message: t(`errors.${error.code}`),
+            });
+        },
+    });
+
+    const onSubmit = useCallback(
+        (data: LoginFormData) => {
+            loginMutate({
+                email: data.email,
+                password: data.password,
+                use_cookies: data.rememberMe,
+            });
+        },
+        [loginMutate],
+    );
 
     return (
         <AuthForm
             title={t('auth.login.title')}
             submitText={t('auth.login.submit')}
             onSubmit={handleSubmit(onSubmit)}
-            isSubmitting={formState.isSubmitting}
+            isSubmitting={isPending}
+            errorMessage={formState.errors.root?.message}
             additionalOptionsLower={
                 <Flex direction="row" justify="between">
                     <Controller

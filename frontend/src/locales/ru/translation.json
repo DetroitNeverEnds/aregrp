@@ -1,14 +1,4 @@
 {
-    "welcome": "Добро пожаловать",
-    "app": {
-        "title": "Vite + React",
-        "count": "счётчик {{count}}",
-        "edit": "Отредактируйте <1>src/App.tsx</1> и сохраните для тестирования HMR",
-        "learnMore": "Нажмите на логотипы Vite и React, чтобы узнать больше"
-    },
-    "button": {
-        "click": "Нажать"
-    },
     "auth": {
         "common": {
             "backToSite": "Вернуться на сайт",
@@ -23,7 +13,7 @@
             "confirmPassword": "Подтвердите пароль"
         },
         "placeholders": {
-            "name": "Ваше имя",
+            "fullName": "Ваше имя",
             "organisationName": "Название организации",
             "INN": "ИНН",
             "email": "Email",
@@ -64,5 +54,36 @@
             "description": "Введите новый пароль",
             "submit": "Сбросить пароль"
         }
-    }
+    },
+    "errors": {
+        "ACCOUNTS_INVALID_CREDENTIALS": "Неверный email или пароль",
+        "ACCOUNTS_EMAIL_EXISTS": "Пользователь с таким email уже существует",
+        "ACCOUNTS_PHONE_EXISTS": "Пользователь с таким номером телефона уже существует",
+        "ACCOUNTS_PASSWORD_MISMATCH": "Пароли не совпадают",
+        "ACCOUNTS_PASSWORD_VALIDATION_FAILED": "Пароль не соответствует требованиям безопасности",
+        "ACCOUNTS_INVALID_USER_TYPE": "Недопустимый тип пользователя",
+        "ACCOUNTS_MISSING_ORGANIZATION_NAME": "Необходимо указать название организации",
+        "ACCOUNTS_MISSING_INN": "Необходимо указать ИНН",
+        "ACCOUNTS_UNAUTHORIZED": "Необходима авторизация",
+        "ACCOUNTS_TOKEN_EXPIRED": "Срок действия токена истёк",
+        "ACCOUNTS_INVALID_TOKEN": "Недействительный токен",
+        "ACCOUNTS_NO_REFRESH_TOKEN": "Отсутствует токен обновления",
+        "ACCOUNTS_USER_NOT_FOUND": "Пользователь не найден",
+        "ACCOUNTS_EMAIL_ALREADY_USED": "Этот email уже используется",
+        "ACCOUNTS_PHONE_ALREADY_USED": "Этот номер телефона уже используется",
+        "ACCOUNTS_INVALID_CURRENT_PASSWORD": "Неверный текущий пароль",
+        "ACCOUNTS_REGISTRATION_ERROR": "Ошибка при регистрации",
+        "ACCOUNTS_LOGIN_ERROR": "Ошибка при входе",
+        "ACCOUNTS_PASSWORD_RESET_ERROR": "Ошибка при сбросе пароля",
+        "ACCOUNTS_PASSWORD_RESET_TOKEN_INVALID": "Недействительный токен сброса пароля",
+        "ACCOUNTS_PASSWORD_RESET_TOKEN_EXPIRED": "Срок действия токена сброса пароля истёк",
+        "FEEDBACK_NOT_FOUND": "Обращение не найдено",
+        "FEEDBACK_CREATION_ERROR": "Ошибка при создании обращения",
+        "FEEDBACK_UPDATE_ERROR": "Ошибка при обновлении обращения",
+        "FEEDBACK_DELETE_ERROR": "Ошибка при удалении обращения",
+        "FEEDBACK_VALIDATION_ERROR": "Ошибка валидации обращения",
+        "SITE_SETTINGS_NOT_FOUND": "Настройки сайта не найдены",
+        "SITE_SETTINGS_ERROR": "Ошибка настроек сайта"
+    },
+    "common": {}
 }

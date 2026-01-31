@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthForm } from '../../../components/ui/auth/AuthForm';
@@ -6,6 +6,7 @@ import { TextInput } from '../../../components/ui/common/input/TextInput';
 import { Link } from '../../../components/ui/common/Link';
 import { Text } from '../../../components/ui/common/Text';
 import { Flex } from '../../../components/ui/common/Flex';
+import { useRequestPasswordResetMutation } from '../../../mutations';
 
 type ForgotPasswordFormData = {
     email: string;
@@ -13,20 +14,43 @@ type ForgotPasswordFormData = {
 
 export const ForgotPassword: React.FC = () => {
     const { t } = useTranslation();
-    const { handleSubmit, control, formState } = useForm<ForgotPasswordFormData>({
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const { handleSubmit, control, formState, setError } = useForm<ForgotPasswordFormData>({
         defaultValues: {
             email: '',
         },
     });
-    const onSubmit = useCallback((data: ForgotPasswordFormData) => console.log(data), []);
+
+    const { mutate: requestResetMutate, isPending } = useRequestPasswordResetMutation({
+        onSuccess: data => {
+            console.log('Письмо для сброса пароля отправлено');
+            setSuccessMessage(data.message || t('auth.forgotPassword.successMessage'));
+        },
+        onError: error => {
+            console.error('Ошибка запроса сброса пароля:', error);
+            setError('root', {
+                type: 'manual',
+                message: t(`errors.${error.code}`),
+            });
+        },
+    });
+
+    const onSubmit = useCallback(
+        (data: ForgotPasswordFormData) => {
+            setSuccessMessage(null);
+            requestResetMutate({ email: data.email });
+        },
+        [requestResetMutate],
+    );
 
     return (
         <AuthForm
             title={t('auth.forgotPassword.title')}
-            description={t('auth.forgotPassword.description')}
+            description={successMessage || t('auth.forgotPassword.description')}
             submitText={t('auth.forgotPassword.submit')}
             onSubmit={handleSubmit(onSubmit)}
-            isSubmitting={formState.isSubmitting}
+            isSubmitting={isPending}
+            errorMessage={formState.errors.root?.message}
             footer={
                 <Flex gap={10} align="end">
                     <Text variant="16-reg" color="gray-50">
