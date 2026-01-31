@@ -110,6 +110,22 @@ jobs:
             # Создаем backend/.env.postgres из секрета
             echo "${{ secrets.ENV_POSTGRES_FILE }}" > backend/.env.postgres
 
+            # Создаем директории для персистентных данных (вне проекта, чтобы не удалялись при деплое)
+            echo "Creating persistent data directories..."
+            sudo mkdir -p /opt/aregrp-data/postgres_data
+            sudo mkdir -p /opt/aregrp-data/media
+            sudo mkdir -p /opt/aregrp-data/static
+            
+            # Устанавливаем правильные права доступа для PostgreSQL
+            sudo chown -R 999:999 /opt/aregrp-data/postgres_data || true
+            sudo chmod 700 /opt/aregrp-data/postgres_data || true
+            
+            # Права для media и static
+            sudo chown -R $USER:$USER /opt/aregrp-data/media /opt/aregrp-data/static || true
+            sudo chmod -R 755 /opt/aregrp-data/media /opt/aregrp-data/static || true
+            
+            echo "✅ Persistent data directories created"
+
             # Собираем и запускаем контейнеры
             echo "Building and starting containers..."
             docker-compose build --no-cache

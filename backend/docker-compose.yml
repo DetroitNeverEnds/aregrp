@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:17
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - /opt/aregrp-data/postgres_data:/var/lib/postgresql/data
     env_file:
       - .env.postgres
     networks:
