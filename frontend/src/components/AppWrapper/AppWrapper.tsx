@@ -1,6 +1,9 @@
 import React, { Suspense } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { useI18nReady } from '../../i18n/hooks';
+import { queryClient } from '../../lib/queryClient';
+import '../../lib/apiClient';
 import { Loader } from '../ui/common/Loader';
 import styles from './AppWrapper.module.scss';
 
@@ -21,6 +24,7 @@ const I18nReadyGuard: React.FC<AppWrapperProps> = ({ children }) => {
  * Центральная обертка приложения для всех провайдеров
  *
  * Текущий функционал:
+ * - QueryClientProvider для React Query
  * - BrowserRouter для роутинга
  * - Suspense с ожиданием загрузки переводов (i18n)
  *
@@ -28,24 +32,25 @@ const I18nReadyGuard: React.FC<AppWrapperProps> = ({ children }) => {
  * - Redux Store Provider
  * - Theme Provider
  * - Auth Provider
- * - React Query Provider
  */
 export const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
     return (
-        <BrowserRouter>
-            <Suspense
-                fallback={
-                    <div className={styles.appWrapper__fallback}>
-                        <Loader spinnerSize="lg" aria-label="Загрузка приложения" />
-                    </div>
-                }
-            >
-                <I18nReadyGuard>
-                    {/* Здесь будут добавляться другие провайдеры */}
-                    {children}
-                </I18nReadyGuard>
-            </Suspense>
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <Suspense
+                    fallback={
+                        <div className={styles.appWrapper__fallback}>
+                            <Loader spinnerSize="lg" aria-label="Загрузка приложения" />
+                        </div>
+                    }
+                >
+                    <I18nReadyGuard>
+                        {/* Здесь будут добавляться другие провайдеры */}
+                        {children}
+                    </I18nReadyGuard>
+                </Suspense>
+            </BrowserRouter>
+        </QueryClientProvider>
     );
 };
 

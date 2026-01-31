@@ -1,0 +1,624 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "API",
+    "version": "1.0.0",
+    "description": "Main API for the project"
+  },
+  "paths": {
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "apps_accounts_routers_auth_register",
+        "summary": "Register",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthOut" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u0420\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044f \u043d\u043e\u0432\u043e\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\n\n\u0421\u043e\u0437\u0434\u0430\u0435\u0442 \u043d\u043e\u0432\u043e\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u0432 \u0441\u0438\u0441\u0442\u0435\u043c\u0435 \u0441 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u044b\u043c\u0438 \u0434\u0430\u043d\u043d\u044b\u043c\u0438.\n\u041f\u043e\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u044e \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043a\u0438\u0445 \u043b\u0438\u0446 \u0438 \u0430\u0433\u0435\u043d\u0442\u043e\u0432.\n\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u0438 \u0433\u0435\u043d\u0435\u0440\u0438\u0440\u0443\u0435\u0442 JWT \u0442\u043e\u043a\u0435\u043d\u044b \u0434\u043b\u044f \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0438.\n\n**\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b:**\n- `user_type`: \u0422\u0438\u043f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f ('individual' \u0438\u043b\u0438 'agent')\n- `full_name`: \u041f\u043e\u043b\u043d\u043e\u0435 \u0438\u043c\u044f \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\n- `email`: Email \u0430\u0434\u0440\u0435\u0441 (\u0443\u043d\u0438\u043a\u0430\u043b\u044c\u043d\u044b\u0439, \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442\u0441\u044f \u043a\u0430\u043a username)\n- `phone`: \u041d\u043e\u043c\u0435\u0440 \u0442\u0435\u043b\u0435\u0444\u043e\u043d\u0430\n- `password1`: \u041f\u0430\u0440\u043e\u043b\u044c\n- `password2`: \u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u0435 \u043f\u0430\u0440\u043e\u043b\u044f\n- `organization_name`: \u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438 (\u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e \u0434\u043b\u044f \u0430\u0433\u0435\u043d\u0442\u043e\u0432)\n- `inn`: \u0418\u041d\u041d (\u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u043e \u0434\u043b\u044f \u0430\u0433\u0435\u043d\u0442\u043e\u0432)\n- `use_cookies`: \u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0442\u043e\u043a\u0435\u043d\u044b \u0432 HTTP-Only cookies (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e)\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430 \u0434\u043b\u044f \u0444\u0438\u0437\u0438\u0447\u0435\u0441\u043a\u043e\u0433\u043e \u043b\u0438\u0446\u0430:**\n```json\n{\n    \"user_type\": \"individual\",\n    \"full_name\": \"\u0418\u0432\u0430\u043d \u0418\u0432\u0430\u043d\u043e\u0432\",\n    \"email\": \"ivan@example.com\",\n    \"phone\": \"+79991234567\",\n    \"password1\": \"securepassword123\",\n    \"password2\": \"securepassword123\",\n    \"use_cookies\": false\n}\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430 \u0434\u043b\u044f \u0430\u0433\u0435\u043d\u0442\u0430:**\n```json\n{\n    \"user_type\": \"agent\",\n    \"full_name\": \"\u0418\u0432\u0430\u043d \u0418\u0432\u0430\u043d\u043e\u0432\",\n    \"email\": \"agent@example.com\",\n    \"phone\": \"+79991234567\",\n    \"password1\": \"securepassword123\",\n    \"password2\": \"securepassword123\",\n    \"organization_name\": \"\u041e\u041e\u041e \u0420\u043e\u0433\u0430 \u0438 \u041a\u043e\u043f\u044b\u0442\u0430\",\n    \"inn\": \"1234567890\",\n    \"use_cookies\": false\n}\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"user\": {\n        \"id\": 1,\n        \"username\": \"ivan@example.com\",\n        \"email\": \"ivan@example.com\",\n        \"user_type\": \"individual\",\n        \"full_name\": \"\u0418\u0432\u0430\u043d \u0418\u0432\u0430\u043d\u043e\u0432\",\n        \"phone\": \"+79991234567\"\n    },\n    \"access_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"refresh_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"message\": \"User successfully registered\",\n    \"use_cookies\": false\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `400`: \u041f\u0430\u0440\u043e\u043b\u0438 \u043d\u0435 \u0441\u043e\u0432\u043f\u0430\u0434\u0430\u044e\u0442, \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0443\u0436\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442, \u043e\u0448\u0438\u0431\u043a\u0430 \u0432\u0430\u043b\u0438\u0434\u0430\u0446\u0438\u0438 \u043f\u0430\u0440\u043e\u043b\u044f,\n         \u043d\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u044b \u043e\u0431\u044f\u0437\u0430\u0442\u0435\u043b\u044c\u043d\u044b\u0435 \u043f\u043e\u043b\u044f \u0434\u043b\u044f \u0430\u0433\u0435\u043d\u0442\u0430",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserRegistrationIn" }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "apps_accounts_routers_auth_login_user",
+        "summary": "Login User",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthOut" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u0412\u0445\u043e\u0434 \u0432 \u0441\u0438\u0441\u0442\u0435\u043c\u0443\n\n\u0410\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043f\u043e email \u0438 \u043f\u0430\u0440\u043e\u043b\u044e.\n\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 JWT \u0442\u043e\u043a\u0435\u043d\u044b \u0434\u043b\u044f \u0434\u043e\u0441\u0442\u0443\u043f\u0430 \u043a \u0437\u0430\u0449\u0438\u0449\u0435\u043d\u043d\u044b\u043c \u044d\u043d\u0434\u043f\u043e\u0438\u043d\u0442\u0430\u043c.\n\n**\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b:**\n- `email`: Email \u0430\u0434\u0440\u0435\u0441 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\n- `password`: \u041f\u0430\u0440\u043e\u043b\u044c\n- `use_cookies`: \u0423\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u044c \u0442\u043e\u043a\u0435\u043d\u044b \u0432 HTTP-Only cookies (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e)\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```json\n{\n    \"email\": \"test@example.com\",\n    \"password\": \"securepassword123\",\n    \"use_cookies\": false\n}\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"user\": {\n        \"id\": 1,\n        \"username\": \"test\",\n        \"email\": \"test@example.com\"\n    },\n    \"access_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"refresh_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"message\": \"Login successful\",\n    \"use_cookies\": false\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `400`: \u041e\u0448\u0438\u0431\u043a\u0430 \u0441\u0435\u0440\u0432\u0435\u0440\u0430\n- `401`: \u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0435 \u0443\u0447\u0435\u0442\u043d\u044b\u0435 \u0434\u0430\u043d\u043d\u044b\u0435",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserLoginIn" }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "apps_accounts_routers_auth_logout_user",
+        "summary": "Logout User",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u0412\u044b\u0445\u043e\u0434 \u0438\u0437 \u0441\u0438\u0441\u0442\u0435\u043c\u044b\n\n\u041e\u0447\u0438\u0449\u0430\u0435\u0442 HTTP-Only cookies \u0438 \u0437\u0430\u0432\u0435\u0440\u0448\u0430\u0435\u0442 \u0441\u0435\u0441\u0441\u0438\u044e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f.\n\u0423\u0434\u0430\u043b\u044f\u0435\u0442 access \u0438 refresh \u0442\u043e\u043a\u0435\u043d\u044b \u0438\u0437 cookies.\n\n**\u0422\u0440\u0435\u0431\u0443\u0435\u0442 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0438:** Bearer JWT \u0442\u043e\u043a\u0435\u043d \u0432 \u0437\u0430\u0433\u043e\u043b\u043e\u0432\u043a\u0435 Authorization\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```\nPOST /api/v1/auth/logout\nAuthorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"message\": \"Logout successful\"\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `401`: \u041d\u0435 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d",
+        "tags": ["Authentication"],
+        "security": [{ "JWTAuth": [] }]
+      }
+    },
+    "/api/v1/auth/refresh-token": {
+      "post": {
+        "operationId": "apps_accounts_routers_auth_refresh_token",
+        "summary": "Refresh Token",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c JWT \u0442\u043e\u043a\u0435\u043d\u044b\n\n\u041e\u0431\u043d\u043e\u0432\u043b\u044f\u0435\u0442 access \u0438 refresh \u0442\u043e\u043a\u0435\u043d\u044b \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u044f refresh \u0442\u043e\u043a\u0435\u043d \u0438\u0437 HTTP-Only cookies.\n\u0423\u0441\u0442\u0430\u043d\u0430\u0432\u043b\u0438\u0432\u0430\u0435\u0442 \u043d\u043e\u0432\u044b\u0435 \u0442\u043e\u043a\u0435\u043d\u044b \u043e\u0431\u0440\u0430\u0442\u043d\u043e \u0432 cookies.\n\n**\u0422\u0440\u0435\u0431\u0443\u0435\u0442:** Refresh \u0442\u043e\u043a\u0435\u043d \u0432 HTTP-Only cookie\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```\nPOST /api/v1/auth/refresh-token\nCookie: refresh_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"message\": \"Tokens refreshed successfully\",\n    \"access_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"refresh_token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\"\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `401`: Refresh \u0442\u043e\u043a\u0435\u043d \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d, \u0438\u0441\u0442\u0435\u043a \u0438\u043b\u0438 \u043d\u0435\u0432\u0435\u0440\u043d\u044b\u0439",
+        "tags": ["Authentication"]
+      }
+    },
+    "/api/v1/auth/password-reset": {
+      "post": {
+        "operationId": "apps_accounts_routers_auth_password_reset",
+        "summary": "Password Reset",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u0417\u0430\u043f\u0440\u043e\u0441 \u0441\u0431\u0440\u043e\u0441\u0430 \u043f\u0430\u0440\u043e\u043b\u044f\n\n\u041e\u0442\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u0442 email \u0441 \u0442\u043e\u043a\u0435\u043d\u043e\u043c \u0434\u043b\u044f \u0441\u0431\u0440\u043e\u0441\u0430 \u043f\u0430\u0440\u043e\u043b\u044f \u043d\u0430 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u044b\u0439 email \u0430\u0434\u0440\u0435\u0441.\n\u0415\u0441\u043b\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044c \u0441 \u0442\u0430\u043a\u0438\u043c email \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d, \u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0443\u0441\u043f\u0435\u0448\u043d\u044b\u0439 \u043e\u0442\u0432\u0435\u0442\n(\u0434\u043b\u044f \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u0438 \u043d\u0435 \u0440\u0430\u0441\u043a\u0440\u044b\u0432\u0430\u0435\u043c \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044e \u043e \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u043e\u0432\u0430\u043d\u0438\u0438 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f).\n\n**\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b:**\n- `email`: Email \u0430\u0434\u0440\u0435\u0441 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```json\n{\n    \"email\": \"user@example.com\"\n}\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"message\": \"If an account with this email exists, a password reset link has been sent.\"\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `400`: \u041e\u0448\u0438\u0431\u043a\u0430 \u043e\u0442\u043f\u0440\u0430\u0432\u043a\u0438 email",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PasswordResetIn" }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/auth/password-reset/confirm": {
+      "post": {
+        "operationId": "apps_accounts_routers_auth_password_reset_confirm",
+        "summary": "Password Reset Confirm",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u0435 \u0441\u0431\u0440\u043e\u0441\u0430 \u043f\u0430\u0440\u043e\u043b\u044f\n\n\u0423\u0441\u0442\u0430\u043d\u0430\u0432\u043b\u0438\u0432\u0430\u0435\u0442 \u043d\u043e\u0432\u044b\u0439 \u043f\u0430\u0440\u043e\u043b\u044c \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u044f \u0442\u043e\u043a\u0435\u043d \u0438\u0437 email.\n\n**\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b:**\n- `token`: JWT \u0442\u043e\u043a\u0435\u043d \u0434\u043b\u044f \u0441\u0431\u0440\u043e\u0441\u0430 \u043f\u0430\u0440\u043e\u043b\u044f (\u0438\u0437 email)\n- `new_password1`: \u041d\u043e\u0432\u044b\u0439 \u043f\u0430\u0440\u043e\u043b\u044c\n- `new_password2`: \u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u0435 \u043d\u043e\u0432\u043e\u0433\u043e \u043f\u0430\u0440\u043e\u043b\u044f\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```json\n{\n    \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\",\n    \"new_password1\": \"newpassword123\",\n    \"new_password2\": \"newpassword123\"\n}\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"message\": \"Password has been reset successfully\"\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `400`: \u041f\u0430\u0440\u043e\u043b\u0438 \u043d\u0435 \u0441\u043e\u0432\u043f\u0430\u0434\u0430\u044e\u0442, \u043e\u0448\u0438\u0431\u043a\u0430 \u0432\u0430\u043b\u0438\u0434\u0430\u0446\u0438\u0438 \u043f\u0430\u0440\u043e\u043b\u044f, \u043d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0442\u043e\u043a\u0435\u043d\n- `401`: \u0422\u043e\u043a\u0435\u043d \u0438\u0441\u0442\u0435\u043a \u0438\u043b\u0438 \u043d\u0435\u0432\u0435\u0440\u043d\u044b\u0439",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetConfirmIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/profile/user": {
+      "get": {
+        "operationId": "apps_accounts_routers_profile_get_user",
+        "summary": "Get User",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserOut" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u0434\u0430\u043d\u043d\u044b\u0435 \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\n\n\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043f\u043e\u043b\u043d\u0443\u044e \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044e \u043e \u0442\u0435\u043a\u0443\u0449\u0435\u043c \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043d\u043e\u043c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435,\n\u0432\u043a\u043b\u044e\u0447\u0430\u044f API \u0442\u043e\u043a\u0435\u043d, \u0442\u0430\u0440\u0438\u0444\u043d\u044b\u0439 \u043f\u043b\u0430\u043d \u0438 \u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0443 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u043d\u0438\u044f.\n\n**\u0422\u0440\u0435\u0431\u0443\u0435\u0442 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0438:** Bearer JWT \u0442\u043e\u043a\u0435\u043d \u0432 \u0437\u0430\u0433\u043e\u043b\u043e\u0432\u043a\u0435 Authorization\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```\nGET /api/v1/profile/user\nAuthorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"id\": 1,\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\"\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `401`: \u041d\u0435 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d (\u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442 \u0438\u043b\u0438 \u043d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 JWT \u0442\u043e\u043a\u0435\u043d)",
+        "tags": ["Profile"],
+        "security": [{ "JWTAuth": [] }]
+      }
+    },
+    "/api/v1/profile/profile": {
+      "put": {
+        "operationId": "apps_accounts_routers_profile_update_profile",
+        "summary": "Update Profile",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserOut" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u043f\u0440\u043e\u0444\u0438\u043b\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\n\n\u041e\u0431\u043d\u043e\u0432\u043b\u044f\u0435\u0442 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u044e \u043f\u0440\u043e\u0444\u0438\u043b\u044f \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043d\u043e\u0433\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f.\n\u041c\u043e\u0436\u043d\u043e \u043e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u0438\u043c\u044f, email, \u0442\u0435\u043b\u0435\u0444\u043e\u043d \u0438 \u0434\u0440\u0443\u0433\u0438\u0435 \u0434\u0430\u043d\u043d\u044b\u0435.\n\n**\u0422\u0440\u0435\u0431\u0443\u0435\u0442 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0438:** Bearer JWT \u0442\u043e\u043a\u0435\u043d \u0432 \u0437\u0430\u0433\u043e\u043b\u043e\u0432\u043a\u0435 Authorization\n\n**\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b:**\n- `full_name`: \u041f\u043e\u043b\u043d\u043e\u0435 \u0438\u043c\u044f (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e)\n- `email`: \u041d\u043e\u0432\u044b\u0439 email \u0430\u0434\u0440\u0435\u0441 (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e)\n- `phone`: \u041d\u043e\u043c\u0435\u0440 \u0442\u0435\u043b\u0435\u0444\u043e\u043d\u0430 (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e)\n- `organization_name`: \u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435 \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438 (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e, \u0434\u043b\u044f \u0430\u0433\u0435\u043d\u0442\u043e\u0432)\n- `inn`: \u0418\u041d\u041d (\u043e\u043f\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u043e, \u0434\u043b\u044f \u0430\u0433\u0435\u043d\u0442\u043e\u0432)\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```\nPUT /api/v1/profile/profile\nAuthorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\nContent-Type: application/json\n\n{\n    \"full_name\": \"\u041d\u043e\u0432\u043e\u0435 \u0438\u043c\u044f\",\n    \"email\": \"newemail@example.com\",\n    \"phone\": \"+79991234567\"\n}\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"id\": 1,\n    \"username\": \"user\",\n    \"email\": \"newemail@example.com\",\n    \"user_type\": \"individual\",\n    \"full_name\": \"\u041d\u043e\u0432\u043e\u0435 \u0438\u043c\u044f\",\n    \"phone\": \"+79991234567\"\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `400`: \u041e\u0448\u0438\u0431\u043a\u0430 \u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u044f (\u043d\u0430\u043f\u0440\u0438\u043c\u0435\u0440, email \u0443\u0436\u0435 \u0437\u0430\u043d\u044f\u0442)\n- `401`: \u041d\u0435 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d",
+        "tags": ["Profile"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateProfileIn" }
+            }
+          },
+          "required": true
+        },
+        "security": [{ "JWTAuth": [] }]
+      }
+    },
+    "/api/v1/profile/change-password": {
+      "post": {
+        "operationId": "apps_accounts_routers_profile_change_password",
+        "summary": "Change Password",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u0421\u043c\u0435\u043d\u0430 \u043f\u0430\u0440\u043e\u043b\u044f \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043d\u044b\u043c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u043c\n\n\u041f\u043e\u0437\u0432\u043e\u043b\u044f\u0435\u0442 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043d\u043e\u043c\u0443 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044e \u0438\u0437\u043c\u0435\u043d\u0438\u0442\u044c \u0441\u0432\u043e\u0439 \u043f\u0430\u0440\u043e\u043b\u044c.\n\u0422\u0440\u0435\u0431\u0443\u0435\u0442 \u0443\u043a\u0430\u0437\u0430\u043d\u0438\u044f \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u043f\u0430\u0440\u043e\u043b\u044f \u0434\u043b\u044f \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u044f.\n\n**\u0422\u0440\u0435\u0431\u0443\u0435\u0442 \u0430\u0443\u0442\u0435\u043d\u0442\u0438\u0444\u0438\u043a\u0430\u0446\u0438\u0438:** Bearer JWT \u0442\u043e\u043a\u0435\u043d \u0432 \u0437\u0430\u0433\u043e\u043b\u043e\u0432\u043a\u0435 Authorization\n\n**\u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440\u044b:**\n- `current_password`: \u0422\u0435\u043a\u0443\u0449\u0438\u0439 \u043f\u0430\u0440\u043e\u043b\u044c \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f\n- `new_password1`: \u041d\u043e\u0432\u044b\u0439 \u043f\u0430\u0440\u043e\u043b\u044c\n- `new_password2`: \u041f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u0438\u0435 \u043d\u043e\u0432\u043e\u0433\u043e \u043f\u0430\u0440\u043e\u043b\u044f\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u0437\u0430\u043f\u0440\u043e\u0441\u0430:**\n```\nPOST /api/v1/profile/change-password\nAuthorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...\nContent-Type: application/json\n\n{\n    \"current_password\": \"oldpassword123\",\n    \"new_password1\": \"newpassword123\",\n    \"new_password2\": \"newpassword123\"\n}\n```\n\n**\u041f\u0440\u0438\u043c\u0435\u0440 \u043e\u0442\u0432\u0435\u0442\u0430:**\n```json\n{\n    \"message\": \"Password changed successfully\"\n}\n```\n\n**\u041a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a:**\n- `400`: \u041f\u0430\u0440\u043e\u043b\u0438 \u043d\u0435 \u0441\u043e\u0432\u043f\u0430\u0434\u0430\u044e\u0442, \u043d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0442\u0435\u043a\u0443\u0449\u0438\u0439 \u043f\u0430\u0440\u043e\u043b\u044c, \u043e\u0448\u0438\u0431\u043a\u0430 \u0432\u0430\u043b\u0438\u0434\u0430\u0446\u0438\u0438 \u043f\u0430\u0440\u043e\u043b\u044f\n- `401`: \u041d\u0435 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d",
+        "tags": ["Profile"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePasswordIn" }
+            }
+          },
+          "required": true
+        },
+        "security": [{ "JWTAuth": [] }]
+      }
+    },
+    "/api/v1/site-settings/": {
+      "get": {
+        "operationId": "apps_site_settings_routers_get_site_settings",
+        "summary": "\u041f\u043e\u043b\u0443\u0447\u0438\u0442\u044c \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0441\u0430\u0439\u0442\u0430",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SiteSettingsOut" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProblemDetail" }
+              }
+            }
+          }
+        },
+        "description": "\u0412\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043f\u0443\u0431\u043b\u0438\u0447\u043d\u044b\u0435 \u043d\u0430\u0441\u0442\u0440\u043e\u0439\u043a\u0438 \u0441\u0430\u0439\u0442\u0430 (\u043a\u043e\u043d\u0442\u0430\u043a\u0442\u044b, \u0440\u0435\u043a\u0432\u0438\u0437\u0438\u0442\u044b)",
+        "tags": ["Site Settings"]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthOut": {
+        "properties": {
+          "user": { "$ref": "#/components/schemas/UserOut" },
+          "access_token": { "title": "Access Token", "type": "string" },
+          "refresh_token": { "title": "Refresh Token", "type": "string" },
+          "message": { "title": "Message", "type": "string" },
+          "use_cookies": { "title": "Use Cookies", "type": "boolean" }
+        },
+        "required": [
+          "user",
+          "access_token",
+          "refresh_token",
+          "message",
+          "use_cookies"
+        ],
+        "title": "AuthOut",
+        "type": "object"
+      },
+      "UserOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "integer" },
+          "username": { "title": "Username", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "user_type": { "title": "User Type", "type": "string" },
+          "full_name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Full Name"
+          },
+          "phone": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Phone"
+          },
+          "organization_name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Organization Name"
+          },
+          "inn": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Inn"
+          }
+        },
+        "required": ["id", "username", "email", "user_type"],
+        "title": "UserOut",
+        "type": "object"
+      },
+      "ErrorCode": {
+        "description": "Enum \u0434\u043b\u044f \u043a\u043e\u0434\u043e\u0432 \u043e\u0448\u0438\u0431\u043e\u043a API.\n\n\u0412\u0441\u0435 \u043a\u043e\u0434\u044b \u043e\u0448\u0438\u0431\u043e\u043a \u0434\u043e\u043b\u0436\u043d\u044b \u0431\u044b\u0442\u044c \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0435\u043d\u044b \u0437\u0434\u0435\u0441\u044c.",
+        "enum": [
+          "ACCOUNTS_INVALID_CREDENTIALS",
+          "ACCOUNTS_EMAIL_EXISTS",
+          "ACCOUNTS_PHONE_EXISTS",
+          "ACCOUNTS_PASSWORD_MISMATCH",
+          "ACCOUNTS_PASSWORD_VALIDATION_FAILED",
+          "ACCOUNTS_INVALID_USER_TYPE",
+          "ACCOUNTS_MISSING_ORGANIZATION_NAME",
+          "ACCOUNTS_MISSING_INN",
+          "ACCOUNTS_UNAUTHORIZED",
+          "ACCOUNTS_TOKEN_EXPIRED",
+          "ACCOUNTS_INVALID_TOKEN",
+          "ACCOUNTS_NO_REFRESH_TOKEN",
+          "ACCOUNTS_USER_NOT_FOUND",
+          "ACCOUNTS_EMAIL_ALREADY_USED",
+          "ACCOUNTS_PHONE_ALREADY_USED",
+          "ACCOUNTS_INVALID_CURRENT_PASSWORD",
+          "ACCOUNTS_REGISTRATION_ERROR",
+          "ACCOUNTS_LOGIN_ERROR",
+          "ACCOUNTS_PASSWORD_RESET_ERROR",
+          "ACCOUNTS_PASSWORD_RESET_TOKEN_INVALID",
+          "ACCOUNTS_PASSWORD_RESET_TOKEN_EXPIRED",
+          "FEEDBACK_NOT_FOUND",
+          "FEEDBACK_CREATION_ERROR",
+          "FEEDBACK_UPDATE_ERROR",
+          "FEEDBACK_DELETE_ERROR",
+          "FEEDBACK_VALIDATION_ERROR",
+          "SITE_SETTINGS_NOT_FOUND",
+          "SITE_SETTINGS_ERROR"
+        ],
+        "title": "ErrorCode",
+        "type": "string"
+      },
+      "ProblemDetail": {
+        "description": "\u0424\u043e\u0440\u043c\u0430\u0442 \u043e\u0448\u0438\u0431\u043e\u043a \u043f\u043e RFC 7807 (Problem Details for HTTP APIs).\n\n\u0418\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0435\u0442\u0441\u044f \u0434\u043b\u044f \u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u0438\u0437\u0430\u0446\u0438\u0438 \u0432\u0441\u0435\u0445 \u043e\u0448\u0438\u0431\u043e\u043a API.",
+        "properties": {
+          "type": { "title": "Type", "type": "string" },
+          "status": { "title": "Status", "type": "integer" },
+          "title": { "title": "Title", "type": "string" },
+          "detail": { "title": "Detail", "type": "string" },
+          "instance": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Instance"
+          },
+          "code": { "$ref": "#/components/schemas/ErrorCode" }
+        },
+        "required": ["type", "status", "title", "detail", "code"],
+        "title": "ProblemDetail",
+        "type": "object"
+      },
+      "UserRegistrationIn": {
+        "properties": {
+          "user_type": { "title": "User Type", "type": "string" },
+          "full_name": { "title": "Full Name", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "phone": { "title": "Phone", "type": "string" },
+          "password1": { "title": "Password1", "type": "string" },
+          "password2": { "title": "Password2", "type": "string" },
+          "use_cookies": {
+            "default": false,
+            "title": "Use Cookies",
+            "type": "boolean"
+          },
+          "organization_name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Organization Name"
+          },
+          "inn": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Inn"
+          }
+        },
+        "required": [
+          "user_type",
+          "full_name",
+          "email",
+          "phone",
+          "password1",
+          "password2"
+        ],
+        "title": "UserRegistrationIn",
+        "type": "object"
+      },
+      "UserLoginIn": {
+        "properties": {
+          "email": { "title": "Email", "type": "string" },
+          "password": { "title": "Password", "type": "string" },
+          "use_cookies": {
+            "default": false,
+            "title": "Use Cookies",
+            "type": "boolean"
+          }
+        },
+        "required": ["email", "password"],
+        "title": "UserLoginIn",
+        "type": "object"
+      },
+      "PasswordResetIn": {
+        "properties": { "email": { "title": "Email", "type": "string" } },
+        "required": ["email"],
+        "title": "PasswordResetIn",
+        "type": "object"
+      },
+      "PasswordResetConfirmIn": {
+        "properties": {
+          "token": { "title": "Token", "type": "string" },
+          "new_password1": { "title": "New Password1", "type": "string" },
+          "new_password2": { "title": "New Password2", "type": "string" }
+        },
+        "required": ["token", "new_password1", "new_password2"],
+        "title": "PasswordResetConfirmIn",
+        "type": "object"
+      },
+      "UpdateProfileIn": {
+        "properties": {
+          "full_name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Full Name"
+          },
+          "email": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Phone"
+          },
+          "organization_name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Organization Name"
+          },
+          "inn": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Inn"
+          }
+        },
+        "title": "UpdateProfileIn",
+        "type": "object"
+      },
+      "UpdatePasswordIn": {
+        "properties": {
+          "current_password": { "title": "Current Password", "type": "string" },
+          "new_password1": { "title": "New Password1", "type": "string" },
+          "new_password2": { "title": "New Password2", "type": "string" }
+        },
+        "required": ["current_password", "new_password1", "new_password2"],
+        "title": "UpdatePasswordIn",
+        "type": "object"
+      },
+      "SiteSettingsOut": {
+        "description": "\u0421\u0445\u0435\u043c\u0430 \u0434\u043b\u044f \u0432\u043e\u0437\u0432\u0440\u0430\u0442\u0430 \u043d\u0430\u0441\u0442\u0440\u043e\u0435\u043a \u0441\u0430\u0439\u0442\u0430.",
+        "properties": {
+          "phone": { "title": "Phone", "type": "string" },
+          "email": { "title": "Email", "type": "string" },
+          "whats_app": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Whats App"
+          },
+          "telegram": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Telegram"
+          },
+          "ruk_fio": { "title": "Ruk Fio", "type": "string" },
+          "inn": { "title": "Inn", "type": "string" }
+        },
+        "required": ["phone", "email", "ruk_fio", "inn"],
+        "title": "SiteSettingsOut",
+        "type": "object"
+      }
+    },
+    "securitySchemes": { "JWTAuth": { "type": "http", "scheme": "bearer" } }
+  },
+  "servers": []
+}

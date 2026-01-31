@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthForm } from '../../../components/ui/auth/AuthForm';
 import { TextInput } from '../../../components/ui/common/input/TextInput';
@@ -8,34 +9,18 @@ import { Link } from '../../../components/ui/common/Link';
 import { Text } from '../../../components/ui/common/Text';
 import { Flex } from '../../../components/ui/common/Flex';
 import RadioButtons from '../../../components/ui/common/input/RadioButtons';
+import { useRegisterMutation } from '../../../mutations';
+import type { RegisterMutationData, UserType } from '../../../mutations/auth';
 
-type RegisterTypeChoice = 'physical' | 'agent';
-
-type RegisterFormData = {
-    registerType: RegisterTypeChoice;
-
-    // physical
-    name: string;
-    // agent
-    organisationName: string;
-    INN: string;
-
-    // common
-    email: string;
-    phone: string;
-    password1: string;
-    password2: string;
-
-    // other
-    policyAgrement: boolean;
-};
+type RegisterFormData = RegisterMutationData;
 
 export const Register: React.FC = () => {
     const { t } = useTranslation();
-    const { handleSubmit, control, formState, setValue, watch } = useForm<RegisterFormData>({
+    const navigate = useNavigate();
+    const { handleSubmit, control, setValue, watch, setError } = useForm<RegisterFormData>({
         defaultValues: {
-            registerType: 'physical',
-            name: '',
+            userType: 'individual',
+            fullName: '',
             organisationName: '',
             INN: '',
             email: '',
@@ -45,38 +30,58 @@ export const Register: React.FC = () => {
             policyAgrement: false,
         },
     });
-    // TODO: Choice for agent
-    const onSubmit = useCallback((data: RegisterFormData) => console.log(data), []);
+
+    const { mutate: registerMutate, isPending } = useRegisterMutation({
+        onSuccess: data => {
+            console.log('Регистрация успешна:', data.user);
+            // TODO: Сохранить токены и данные пользователя
+            navigate('/');
+        },
+        onError: error => {
+            console.error('Ошибка регистрации:', error);
+            setError('root', {
+                type: 'manual',
+                message: t(`errors.${error.code}`),
+            });
+        },
+    });
+
+    const onSubmit = useCallback(
+        (data: RegisterFormData) => {
+            registerMutate(data);
+        },
+        [registerMutate],
+    );
 
     const changeRegisterTypeChoice = useCallback(
-        (type: RegisterTypeChoice) => {
+        (type: UserType) => {
             switch (type) {
-                case 'physical':
+                case 'individual':
+                    setValue('fullName', '');
+                    break;
+                case 'agent':
                     setValue('organisationName', '');
                     setValue('INN', '');
                     break;
-                case 'agent':
-                    setValue('name', '');
-                    break;
             }
-            setValue('registerType', type);
+            setValue('userType', type);
         },
         [setValue],
     );
 
     // eslint-disable-next-line react-hooks/incompatible-library
-    const registerType = watch('registerType');
+    const userType = watch('userType');
 
     return (
         <AuthForm
             title={t('auth.register.title')}
             submitText={t('auth.register.submit')}
             onSubmit={handleSubmit(onSubmit)}
-            isSubmitting={formState.isSubmitting}
+            isSubmitting={isPending}
             additionalOptionsUpper={
                 <Controller
                     control={control}
-                    name="registerType"
+                    name="userType"
                     render={({ field, fieldState }) => (
                         <RadioButtons
                             size="lg"
@@ -84,7 +89,7 @@ export const Register: React.FC = () => {
                             errorMessage={fieldState.error?.message}
                             options={[
                                 {
-                                    value: 'physical',
+                                    value: 'individual',
                                     label: 'Физическое лицо',
                                 },
                                 {
@@ -93,7 +98,7 @@ export const Register: React.FC = () => {
                                 },
                             ]}
                             {...field}
-                            onChange={val => changeRegisterTypeChoice(val as RegisterTypeChoice)}
+                            onChange={val => changeRegisterTypeChoice(val as UserType)}
                         />
                     )}
                 />
@@ -135,12 +140,11 @@ export const Register: React.FC = () => {
             }
         >
             <Flex gap={10}>
-                {}
-                {registerType === 'physical' && (
+                {userType === 'individual' && (
                     <>
                         <Controller
                             control={control}
-                            name="name"
+                            name="fullName"
                             rules={{
                                 required: t('auth.errors.fieldRequired'),
                             }}
@@ -148,7 +152,7 @@ export const Register: React.FC = () => {
                                 <TextInput
                                     size="lg"
                                     type="text"
-                                    placeholder={t('auth.placeholders.name')}
+                                    placeholder={t('auth.placeholders.fullName')}
                                     errorMessage={fieldState.error?.message}
                                     {...field}
                                 />
@@ -157,7 +161,7 @@ export const Register: React.FC = () => {
                     </>
                 )}
 
-                {registerType === 'agent' && (
+                {userType === 'agent' && (
                     <>
                         <Controller
                             control={control}
