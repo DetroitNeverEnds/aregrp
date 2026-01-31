@@ -4,22 +4,23 @@
 Пример структуры для других приложений.
 """
 from api.errors import create_problem_detail
+from api.schemas import ErrorCode
 
 
 class FeedbackErrorCodes:
     """Коды ошибок для модуля feedback."""
     
     # Общие ошибки
-    FEEDBACK_NOT_FOUND = "FEEDBACK_NOT_FOUND"
-    FEEDBACK_CREATION_ERROR = "FEEDBACK_CREATION_ERROR"
-    FEEDBACK_UPDATE_ERROR = "FEEDBACK_UPDATE_ERROR"
-    FEEDBACK_DELETE_ERROR = "FEEDBACK_DELETE_ERROR"
-    VALIDATION_ERROR = "FEEDBACK_VALIDATION_ERROR"
+    FEEDBACK_NOT_FOUND = ErrorCode.FEEDBACK_NOT_FOUND
+    FEEDBACK_CREATION_ERROR = ErrorCode.FEEDBACK_CREATION_ERROR
+    FEEDBACK_UPDATE_ERROR = ErrorCode.FEEDBACK_UPDATE_ERROR
+    FEEDBACK_DELETE_ERROR = ErrorCode.FEEDBACK_DELETE_ERROR
+    VALIDATION_ERROR = ErrorCode.FEEDBACK_VALIDATION_ERROR
 
 
 def create_feedback_error(
     status: int,
-    code: str,
+    code: ErrorCode,
     title: str,
     detail: str,
     instance: str = None
@@ -29,7 +30,7 @@ def create_feedback_error(
     
     Args:
         status: HTTP статус код
-        code: Код ошибки из FeedbackErrorCodes
+        code: Код ошибки из FeedbackErrorCodes (ErrorCode enum)
         title: Краткое описание ошибки
         detail: Детальное описание ошибки
         instance: URI ресурса (опционально)

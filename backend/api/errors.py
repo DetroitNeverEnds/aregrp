@@ -4,6 +4,7 @@
 Каждое приложение должно иметь свой модуль errors.py с кодами ошибок.
 """
 from typing import Optional
+from api.schemas import ErrorCode
 
 
 # Базовый URL для типов ошибок
@@ -12,7 +13,7 @@ ERROR_TYPE_BASE = "https://api.example.com/problems"
 
 def create_problem_detail(
     status: int,
-    code: str,
+    code: ErrorCode,
     title: str,
     detail: str,
     instance: Optional[str] = None,
@@ -26,7 +27,7 @@ def create_problem_detail(
     
     Args:
         status: HTTP статус код
-        code: Внутренний код ошибки (используется фронтендом)
+        code: Внутренний код ошибки (ErrorCode enum)
         title: Краткое описание ошибки
         detail: Детальное описание ошибки
         instance: URI ресурса, на котором произошла ошибка
@@ -38,14 +39,16 @@ def create_problem_detail(
     Example:
         >>> error = create_problem_detail(
         ...     status=400,
-        ...     code="ACCOUNTS_EMAIL_EXISTS",
+        ...     code=ErrorCode.ACCOUNTS_EMAIL_EXISTS,
         ...     title="Email already exists",
         ...     detail="User with this email already exists",
         ...     instance="/api/v1/auth/register"
         ... )
     """
+    code_str = code.value
+    
     if error_type is None:
-        error_type = f"{ERROR_TYPE_BASE}/{code.lower().replace('_', '-')}"
+        error_type = f"{ERROR_TYPE_BASE}/{code_str.lower().replace('_', '-')}"
     
     return {
         "type": error_type,
