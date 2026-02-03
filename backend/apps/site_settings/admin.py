@@ -14,10 +14,10 @@ class MainSettingsAdmin(admin.ModelAdmin):
     list_display = ('phone', 'email', 'whatsapp_link', 'telegram_link')
     fieldsets = (
         ('Контактная информация', {
-            'fields': ('phone', 'email', 'whatsapp_link', 'telegram_link')
+            'fields': ('phone', 'display_phone', 'email', 'whatsapp_link', 'telegram_link')
         }),
         ('Информация для footer', {
-            'fields': ('footer_description', 'footer_org_info')
+            'fields': ('footer_description', 'footer_org_info', 'footer_inn')
         }),
     )
     

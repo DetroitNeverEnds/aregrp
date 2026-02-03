@@ -56,6 +56,12 @@ class MainSettings(SingletonModel):
         verbose_name="Номер телефона",
         help_text="Номер телефона для связи"
     )
+    display_phone = models.CharField(
+        max_length=50,
+        verbose_name="Отображаемый номер телефона",
+        help_text="Номер телефона для отображения на сайте",
+        blank=True
+    )
     email = models.EmailField(
         max_length=50,
         verbose_name="Почта",
@@ -83,6 +89,12 @@ class MainSettings(SingletonModel):
     footer_org_info = models.TextField(
         verbose_name="Футер орг инфо",
         help_text="Организационная информация в подвале сайта",
+        blank=True
+    )
+    footer_inn = models.CharField(
+        max_length=50,
+        verbose_name="ИНН в футере",
+        help_text="ИНН для отображения в подвале сайта",
         blank=True
     )
 
