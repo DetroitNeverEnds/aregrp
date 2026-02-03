@@ -17,7 +17,7 @@ class MainSettingsAdmin(admin.ModelAdmin):
             'fields': ('phone', 'display_phone', 'email', 'whatsapp_link', 'telegram_link')
         }),
         ('Информация для footer', {
-            'fields': ('description', 'info_name', 'inn')
+            'fields': ('description', 'org_name', 'inn')
         }),
     )
     

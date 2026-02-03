@@ -40,7 +40,7 @@ async def get_main_settings(request):
             whatsapp_link=settings.whatsapp_link or None,
             telegram_link=settings.telegram_link or None,
             description=settings.description or None,
-            info_name=settings.info_name or None,
+            info_name=settings.org_name or None,
             inn=settings.inn or None
         )
         
@@ -64,8 +64,7 @@ async def get_contacts_settings(request):
     """
     Получить настройки контактов.
     
-    Возвращает контактную информацию из MainSettings и реквизиты из ContactsSettings,
-    включая телефон, email, мессенджеры, ФИО руководителя и ИНН.
+    Возвращает контактную информацию из MainSettings и реквизиты (ОГРН, юридический адрес) из ContactsSettings.
     Эндпоинт публичный, не требует аутентификации.
     """
     try:

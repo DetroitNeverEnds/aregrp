@@ -86,7 +86,7 @@ class MainSettings(SingletonModel):
     )
     org_name = models.TextField(
         verbose_name="Info name",
-        help_text="Название оргинизации",
+        help_text="Название организации",
         blank=True
     )
     inn = models.CharField(
