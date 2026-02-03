@@ -79,22 +79,20 @@ class MainSettings(SingletonModel):
         help_text="Ссылка на Telegram",
         blank=True
     )
-    
-    # Информация для footer
-    footer_description = models.TextField(
-        verbose_name="Футер описание",
-        help_text="Описание в подвале сайта",
+
+    description = models.TextField(
+        verbose_name="Описание",
+        help_text="Описание организации"
+    )
+    org_name = models.TextField(
+        verbose_name="Info name",
+        help_text="Название оргинизации",
         blank=True
     )
-    footer_org_info = models.TextField(
-        verbose_name="Футер орг инфо",
-        help_text="Организационная информация в подвале сайта",
-        blank=True
-    )
-    footer_inn = models.CharField(
+    inn = models.CharField(
         max_length=50,
-        verbose_name="ИНН в футере",
-        help_text="ИНН для отображения в подвале сайта",
+        verbose_name="ИНН",
+        help_text="ИНН для отображения",
         blank=True
     )
 
@@ -110,39 +108,21 @@ class MainSettings(SingletonModel):
 class ContactsSettings(SingletonModel):
     """
     Настройки контактов сайта.
+    Содержит только реквизиты: ОГРН, Юридический адрес.
+    Контактная информация берется из MainSettings.
     Singleton - только один экземпляр в базе данных.
     """
-    phone = models.CharField(
+    ogrn = models.CharField(
         max_length=20,
-        verbose_name="Телефон",
-        help_text="Номер телефона для связи"
-    )
-    email = models.EmailField(
-        max_length=50,
-        verbose_name="Email",
-        help_text="Email адрес для связи"
-    )
-    whats_app = models.CharField(
-        max_length=100,
-        verbose_name="WhatsApp",
-        help_text="Ссылка или номер WhatsApp",
+        verbose_name="ОГРН",
+        help_text="Основной государственный регистрационный номер",
         blank=True
     )
-    telegram = models.CharField(
-        max_length=100,
-        verbose_name="Telegram",
-        help_text="Ссылка или username Telegram",
+    legal_address = models.CharField(
+        max_length=500,
+        verbose_name="Юридический адрес",
+        help_text="Юридический адрес организации",
         blank=True
-    )
-    ruk_fio = models.CharField(
-        max_length=300,
-        verbose_name="ФИО руководителя",
-        help_text="Полное имя руководителя"
-    )
-    inn = models.CharField(
-        max_length=50,
-        verbose_name="ИНН",
-        help_text="Идентификационный номер налогоплательщика"
     )
 
     class Meta:
@@ -151,4 +131,4 @@ class ContactsSettings(SingletonModel):
         db_table = 'contacts_settings'
 
     def __str__(self):
-        return f"Настройки контактов ({self.phone})"
+        return "Настройки контактов (реквизиты)"

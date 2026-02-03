@@ -11,19 +11,18 @@ class MainSettingsOut(Schema):
     email: str
     whatsapp_link: str | None = None
     telegram_link: str | None = None
-    footer_description: str | None = None
-    footer_org_info: str | None = None
-    footer_inn: str | None = None
+    description: str | None = None
+    info_name: str | None = None
+    inn: str | None = None
 
 
 
 class ContactsSettingsOut(Schema):
-    """Схема для возврата настроек контактов.
-    """
+    """Схема для возврата настроек контактов."""
     phone: str
     display_phone: str
     email: str
     whatsapp_link: str | None = None
     telegram_link: str | None = None
-    ruk_fio: str
-    inn: str
+    ogrn: str | None = None
+    legal_address: str | None = None

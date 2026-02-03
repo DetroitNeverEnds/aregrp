@@ -17,7 +17,7 @@ class MainSettingsAdmin(admin.ModelAdmin):
             'fields': ('phone', 'display_phone', 'email', 'whatsapp_link', 'telegram_link')
         }),
         ('Информация для footer', {
-            'fields': ('footer_description', 'footer_org_info', 'footer_inn')
+            'fields': ('description', 'info_name', 'inn')
         }),
     )
     
@@ -45,13 +45,10 @@ class ContactsSettingsAdmin(admin.ModelAdmin):
     Админка для настроек контактов.
     Singleton модель - всегда будет только один экземпляр.
     """
-    list_display = ('phone', 'email', 'ruk_fio', 'inn')
+    list_display = ('ogrn', 'legal_address')
     fieldsets = (
-        ('Контакты', {
-            'fields': ('phone', 'email', 'whats_app', 'telegram')
-        }),
-        ('Реквизиты', {
-            'fields': ('ruk_fio', 'inn')
+        ('Реквизиты компании', {
+            'fields': ('ogrn', 'legal_address')
         }),
     )
     

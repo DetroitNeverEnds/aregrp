@@ -39,9 +39,9 @@ async def get_main_settings(request):
             email=settings.email,
             whatsapp_link=settings.whatsapp_link or None,
             telegram_link=settings.telegram_link or None,
-            footer_description=settings.footer_description or None,
-            footer_org_info=settings.footer_org_info or None,
-            footer_inn=settings.footer_inn or None
+            description=settings.description or None,
+            info_name=settings.info_name or None,
+            inn=settings.inn or None
         )
         
     except Exception as e:
@@ -64,30 +64,29 @@ async def get_contacts_settings(request):
     """
     Получить настройки контактов.
     
-    Возвращает контактную информацию и реквизиты организации,
+    Возвращает контактную информацию из MainSettings и реквизиты из ContactsSettings,
     включая телефон, email, мессенджеры, ФИО руководителя и ИНН.
     Эндпоинт публичный, не требует аутентификации.
     """
     try:
-        contact_settings = await sync_to_async(ContactsSettings.load)()
         main_settings = await sync_to_async(MainSettings.load)()
+        contacts_settings = await sync_to_async(ContactsSettings.load)()
 
         return 200, ContactsSettingsOut(
-            phone=contact_settings.phone,
-            email=contact_settings.email,
-            whats_app=contact_settings.whats_app or None,
-            telegram=contact_settings.telegram or None,
-            ruk_fio=contact_settings.ruk_fio,
-            inn=contact_settings.inn
+            phone=main_settings.phone,
+            display_phone=main_settings.display_phone or main_settings.phone,
+            email=main_settings.email,
+            whatsapp_link=main_settings.whatsapp_link or None,
+            telegram_link=main_settings.telegram_link or None,
+            ogrn=contacts_settings.ogrn or None,
+            legal_address=contacts_settings.legal_address or None
         )
         
     except Exception as e:
         return 404, create_site_settings_error(
             status=404,
             code=SiteSettingsErrorCodes.NOT_FOUND,
-            title="Contacts settings not found",
-            detail=f"Contacts settings not found. Please create contacts settings in admin panel. Error: {str(e)}",
+            title="Settings not found",
+            detail=f"Settings not found. Please create main settings and contacts settings in admin panel. Error: {str(e)}",
             instance="/api/v1/site-settings/contacts"
         )
-
-
