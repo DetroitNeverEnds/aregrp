@@ -17,7 +17,7 @@ site_settings_router = Router()
     "/main-info",
     response={200: MainSettingsOut, 404: ProblemDetail},
     summary="Получить основные настройки сайта",
-    description="Возвращает основные настройки: контакты (phone, display_phone, email, whatsapp_link, telegram_link), описание, название организации (info_name), ИНН."
+    description="Возвращает основные настройки: контакты (phone, display_phone, email, whatsapp_link, telegram_link), описание, название организации (org_name), ИНН."
 )
 async def get_main_settings(request):
     """
@@ -25,7 +25,7 @@ async def get_main_settings(request):
 
     Возвращает:
     - Контактная информация: phone, display_phone, email, whatsapp_link, telegram_link
-    - Описание и название организации: description, info_name
+    - Описание и название организации: description, org_name
     - ИНН: inn
 
     Эндпоинт публичный, аутентификация не требуется.
@@ -41,7 +41,7 @@ async def get_main_settings(request):
             whatsapp_link=settings.whatsapp_link or None,
             telegram_link=settings.telegram_link or None,
             description=settings.description or None,
-            info_name=settings.org_name or None,
+            org_name=settings.org_name or None,
             inn=settings.inn or None
         )
         

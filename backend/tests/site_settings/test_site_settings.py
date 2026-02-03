@@ -62,7 +62,7 @@ class TestMainInfo:
         assert data["display_phone"] == "8 (999) 000-11-22"
         assert data["email"] == "site@example.com"
         assert data["description"] == "Тестовое описание организации"
-        assert data["info_name"] == "ООО Тест"
+        assert data["org_name"] == "ООО Тест"
         assert data["inn"] == "7707083893"
         assert data["whatsapp_link"] == "https://wa.me/79990001122"
         assert data["telegram_link"] == "https://t.me/test"

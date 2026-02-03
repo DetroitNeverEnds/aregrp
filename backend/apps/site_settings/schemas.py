@@ -12,7 +12,7 @@ class MainSettingsOut(Schema):
     whatsapp_link: str | None = None
     telegram_link: str | None = None
     description: str | None = None
-    info_name: str | None = None
+    org_name: str | None = None
     inn: str | None = None
 
 
