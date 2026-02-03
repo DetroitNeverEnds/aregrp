@@ -24,15 +24,20 @@ from ..services.utils import get_user_data
 auth_router = Router()
 
 
-@auth_router.post("/register", response={200: AuthOut, 400: ProblemDetail})
+@auth_router.post(
+    "/register",
+    response={200: AuthOut, 400: ProblemDetail},
+    summary="Регистрация пользователя",
+    description="Создаёт пользователя (individual или agent). Для агентов обязательны organization_name и inn. Возвращает JWT токены; опционально use_cookies.",
+)
 async def register(request, data: UserRegistrationIn):  # pylint: disable=unused-argument
     """
-    Регистрация нового пользователя
-    
+    Регистрация нового пользователя.
+
     Создает нового пользователя в системе с указанными данными.
     Поддерживает регистрацию физических лиц и агентов.
     Автоматически генерирует JWT токены для аутентификации.
-    
+
     **Параметры:**
     - `user_type`: Тип пользователя ('individual' или 'agent')
     - `full_name`: Полное имя пользователя
@@ -92,7 +97,7 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
     
     **Коды ошибок:**
     - `400`: Пароли не совпадают, пользователь уже существует, ошибка валидации пароля,
-             не указаны обязательные поля для агента
+             не указаны обязательные поля для агента (organization_name, inn)
     """
     try:
         # Валидация типа пользователя
@@ -261,14 +266,19 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
         )
 
 
-@auth_router.post("/login", response={200: AuthOut, 400: ProblemDetail, 401: ProblemDetail})
+@auth_router.post(
+    "/login",
+    response={200: AuthOut, 400: ProblemDetail, 401: ProblemDetail},
+    summary="Вход в систему",
+    description="Аутентификация по email и паролю. Возвращает access и refresh токены; опционально use_cookies.",
+)
 async def login_user(request, data: UserLoginIn):
     """
-    Вход в систему
-    
+    Вход в систему.
+
     Аутентифицирует пользователя по email и паролю.
     Возвращает JWT токены для доступа к защищенным эндпоинтам.
-    
+
     **Параметры:**
     - `email`: Email адрес пользователя
     - `password`: Пароль
@@ -299,8 +309,8 @@ async def login_user(request, data: UserLoginIn):
     ```
     
     **Коды ошибок:**
-    - `400`: Ошибка сервера
-    - `401`: Неверные учетные данные
+    - `400`: Ошибка сервера при входе
+    - `401`: Неверные учётные данные (email или пароль)
     """
     try:
         # Ищем пользователя по email
@@ -372,16 +382,22 @@ async def login_user(request, data: UserLoginIn):
         )
 
 
-@auth_router.post("/logout", response={200: dict, 400: ProblemDetail, 401: ProblemDetail}, auth=jwt_auth)
+@auth_router.post(
+    "/logout",
+    response={200: dict, 400: ProblemDetail, 401: ProblemDetail},
+    auth=jwt_auth,
+    summary="Выход из системы",
+    description="Завершает сессию: удаляет access и refresh токены из HTTP-Only cookies. Требует JWT.",
+)
 async def logout_user(request):  # pylint: disable=unused-argument
     """
-    Выход из системы
-    
+    Выход из системы.
+
     Очищает HTTP-Only cookies и завершает сессию пользователя.
     Удаляет access и refresh токены из cookies.
-    
-    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization
-    
+
+    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization.
+
     **Пример запроса:**
     ```
     POST /api/v1/auth/logout
@@ -394,8 +410,9 @@ async def logout_user(request):  # pylint: disable=unused-argument
         "message": "Logout successful"
     }
     ```
-    
+
     **Коды ошибок:**
+    - `400`: Ошибка при выходе
     - `401`: Не авторизован
     """
     try:
@@ -415,22 +432,27 @@ async def logout_user(request):  # pylint: disable=unused-argument
         )
 
 
-@auth_router.post("/refresh-token", response={200: dict, 400: ProblemDetail, 401: ProblemDetail})
+@auth_router.post(
+    "/refresh-token",
+    response={200: dict, 400: ProblemDetail, 401: ProblemDetail},
+    summary="Обновить JWT токены",
+    description="Обновляет access и refresh токены по refresh токену из HTTP-Only cookie. Новые токены возвращаются в теле и в cookies.",
+)
 async def refresh_token(request):
     """
-    Обновить JWT токены
-    
-    Обновляет access и refresh токены используя refresh токен из HTTP-Only cookies.
-    Устанавливает новые токены обратно в cookies.
-    
-    **Требует:** Refresh токен в HTTP-Only cookie
-    
+    Обновить JWT токены.
+
+    Обновляет access и refresh токены, используя refresh токен из HTTP-Only cookie.
+    Устанавливает новые токены в ответ (тело JSON и cookies).
+
+    **Требует:** Refresh токен в HTTP-Only cookie `refresh_token`.
+
     **Пример запроса:**
     ```
     POST /api/v1/auth/refresh-token
     Cookie: refresh_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
     ```
-    
+
     **Пример ответа:**
     ```json
     {
@@ -439,9 +461,10 @@ async def refresh_token(request):
         "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
     }
     ```
-    
+
     **Коды ошибок:**
-    - `401`: Refresh токен не найден, истек или неверный
+    - `400`: Ошибка обновления токенов
+    - `401`: Refresh токен не найден, истёк или неверный
     """
     try:
         # Получаем refresh токен из cookies
@@ -552,15 +575,20 @@ async def refresh_token(request):
         )
 
 
-@auth_router.post("/password-reset", response={200: dict, 400: ProblemDetail})
+@auth_router.post(
+    "/password-reset",
+    response={200: dict, 400: ProblemDetail},
+    summary="Запрос сброса пароля",
+    description="Отправляет письмо со ссылкой для сброса пароля на указанный email. При отсутствии пользователя возвращает тот же успешный ответ (без раскрытия факта).",
+)
 async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unused-argument
     """
-    Запрос сброса пароля
-    
+    Запрос сброса пароля.
+
     Отправляет email с токеном для сброса пароля на указанный email адрес.
     Если пользователь с таким email не найден, возвращает успешный ответ
     (для безопасности не раскрываем информацию о существовании пользователя).
-    
+
     **Параметры:**
     - `email`: Email адрес пользователя
     
@@ -579,7 +607,7 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
     ```
     
     **Коды ошибок:**
-    - `400`: Ошибка отправки email
+    - `400`: Ошибка отправки email или внутренняя ошибка
     """
     try:
         # Ищем пользователя по email асинхронно
@@ -620,13 +648,18 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
         )
 
 
-@auth_router.post("/password-reset/confirm", response={200: dict, 400: ProblemDetail, 401: ProblemDetail})
+@auth_router.post(
+    "/password-reset/confirm",
+    response={200: dict, 400: ProblemDetail, 401: ProblemDetail},
+    summary="Подтверждение сброса пароля",
+    description="Устанавливает новый пароль по токену из письма. Параметры: token, new_password1, new_password2.",
+)
 async def password_reset_confirm(request, data: PasswordResetConfirmIn):  # pylint: disable=unused-argument
     """
-    Подтверждение сброса пароля
-    
-    Устанавливает новый пароль используя токен из email.
-    
+    Подтверждение сброса пароля.
+
+    Устанавливает новый пароль, используя токен из email.
+
     **Параметры:**
     - `token`: JWT токен для сброса пароля (из email)
     - `new_password1`: Новый пароль
@@ -649,8 +682,8 @@ async def password_reset_confirm(request, data: PasswordResetConfirmIn):  # pyli
     ```
     
     **Коды ошибок:**
-    - `400`: Пароли не совпадают, ошибка валидации пароля, неверный токен
-    - `401`: Токен истек или неверный
+    - `400`: Пароли не совпадают, ошибка валидации пароля
+    - `401`: Токен истёк или неверный, пользователь не найден
     """
     try:
         # Проверяем токен

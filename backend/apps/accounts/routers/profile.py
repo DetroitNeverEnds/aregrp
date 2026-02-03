@@ -16,22 +16,27 @@ from ..services.utils import get_user_data
 profile_router = Router()
 
 
-@profile_router.get("/user", response={200: UserOut, 401: ProblemDetail}, auth=jwt_auth)
+@profile_router.get(
+    "/user",
+    response={200: UserOut, 401: ProblemDetail},
+    auth=jwt_auth,
+    summary="Получить данные текущего пользователя",
+    description="Возвращает информацию о текущем авторизованном пользователе. Требует Bearer JWT в заголовке Authorization.",
+)
 async def get_user(request):
     """
-    Получить данные текущего пользователя
-    
-    Возвращает полную информацию о текущем авторизованном пользователе,
-    включая API токен, тарифный план и статистику использования.
-    
-    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization
-    
+    Получить данные текущего пользователя.
+
+    Возвращает полную информацию о текущем авторизованном пользователе.
+
+    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization.
+
     **Пример запроса:**
     ```
     GET /api/v1/profile/user
     Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
     ```
-    
+
     **Пример ответа:**
     ```json
     {
@@ -40,43 +45,49 @@ async def get_user(request):
         "email": "test@example.com"
     }
     ```
-    
+
     **Коды ошибок:**
     - `401`: Не авторизован (отсутствует или неверный JWT токен)
     """
     return 200, get_user_data(request.auth)
 
 
-@profile_router.put("/profile", response={200: UserOut, 400: ProblemDetail, 401: ProblemDetail}, auth=jwt_auth)
+@profile_router.put(
+    "/profile",
+    response={200: UserOut, 400: ProblemDetail, 401: ProblemDetail},
+    auth=jwt_auth,
+    summary="Обновить профиль пользователя",
+    description="Обновляет данные профиля: full_name, email, phone; для агентов — organization_name, inn. Требует JWT.",
+)
 async def update_profile(request, data: UpdateProfileIn):
     """
-    Обновить профиль пользователя
-    
+    Обновить профиль пользователя.
+
     Обновляет информацию профиля текущего авторизованного пользователя.
-    Можно обновить имя, email, телефон и другие данные.
-    
-    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization
-    
+    Можно обновить имя, email, телефон; для агентов — название организации и ИНН.
+
+    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization.
+
     **Параметры:**
     - `full_name`: Полное имя (опционально)
     - `email`: Новый email адрес (опционально)
     - `phone`: Номер телефона (опционально)
     - `organization_name`: Название организации (опционально, для агентов)
     - `inn`: ИНН (опционально, для агентов)
-    
+
     **Пример запроса:**
     ```
     PUT /api/v1/profile/profile
     Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
     Content-Type: application/json
-    
+
     {
         "full_name": "Новое имя",
         "email": "newemail@example.com",
         "phone": "+79991234567"
     }
     ```
-    
+
     **Пример ответа:**
     ```json
     {
@@ -88,7 +99,7 @@ async def update_profile(request, data: UpdateProfileIn):
         "phone": "+79991234567"
     }
     ```
-    
+
     **Коды ошибок:**
     - `400`: Ошибка обновления (например, email уже занят)
     - `401`: Не авторизован
@@ -124,41 +135,47 @@ async def update_profile(request, data: UpdateProfileIn):
         )
 
 
-@profile_router.post("/change-password", response={200: dict, 400: ProblemDetail, 401: ProblemDetail}, auth=jwt_auth)
+@profile_router.post(
+    "/change-password",
+    response={200: dict, 400: ProblemDetail, 401: ProblemDetail},
+    auth=jwt_auth,
+    summary="Смена пароля",
+    description="Меняет пароль авторизованного пользователя. Требует текущий пароль и дважды новый. Требует JWT.",
+)
 async def change_password(request, data: UpdatePasswordIn):
     """
-    Смена пароля авторизованным пользователем
-    
+    Смена пароля авторизованным пользователем.
+
     Позволяет авторизованному пользователю изменить свой пароль.
     Требует указания текущего пароля для подтверждения.
-    
-    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization
-    
+
+    **Требует аутентификации:** Bearer JWT токен в заголовке Authorization.
+
     **Параметры:**
     - `current_password`: Текущий пароль пользователя
     - `new_password1`: Новый пароль
     - `new_password2`: Подтверждение нового пароля
-    
+
     **Пример запроса:**
     ```
     POST /api/v1/profile/change-password
     Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
     Content-Type: application/json
-    
+
     {
         "current_password": "oldpassword123",
         "new_password1": "newpassword123",
         "new_password2": "newpassword123"
     }
     ```
-    
+
     **Пример ответа:**
     ```json
     {
         "message": "Password changed successfully"
     }
     ```
-    
+
     **Коды ошибок:**
     - `400`: Пароли не совпадают, неверный текущий пароль, ошибка валидации пароля
     - `401`: Не авторизован

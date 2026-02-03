@@ -124,6 +124,24 @@ class ContactsSettings(SingletonModel):
         help_text="Юридический адрес организации",
         blank=True
     )
+    latitude = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name="Широта",
+        help_text="Широта (latitude) для карты"
+    )
+    longitude = models.FloatField(
+        null=True,
+        blank=True,
+        verbose_name="Долгота",
+        help_text="Долгота (longitude) для карты"
+    )
+    sales_center_address = models.CharField(
+        max_length=500,
+        verbose_name="Адрес офиса продаж",
+        help_text="Адрес центра продаж",
+        blank=True
+    )
 
     class Meta:
         verbose_name = "Настройки контактов"

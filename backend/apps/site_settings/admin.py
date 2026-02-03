@@ -45,10 +45,13 @@ class ContactsSettingsAdmin(admin.ModelAdmin):
     Админка для настроек контактов.
     Singleton модель - всегда будет только один экземпляр.
     """
-    list_display = ('ogrn', 'legal_address')
+    list_display = ('ogrn', 'legal_address', 'sales_center_address')
     fieldsets = (
         ('Реквизиты компании', {
             'fields': ('ogrn', 'legal_address')
+        }),
+        ('Офис продаж', {
+            'fields': ('latitude', 'longitude', 'sales_center_address')
         }),
     )
     

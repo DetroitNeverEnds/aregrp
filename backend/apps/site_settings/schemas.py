@@ -17,12 +17,15 @@ class MainSettingsOut(Schema):
 
 
 
+class CoordinatesOut(Schema):
+    """Точка на карте (для JSON)."""
+    lat: float
+    lng: float
+
+
 class ContactsSettingsOut(Schema):
     """Схема для возврата настроек контактов."""
-    phone: str
-    display_phone: str
-    email: str
-    whatsapp_link: str | None = None
-    telegram_link: str | None = None
     ogrn: str | None = None
     legal_address: str | None = None
+    coordinates: CoordinatesOut | None = None
+    sales_center_address: str | None = None
