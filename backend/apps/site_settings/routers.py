@@ -6,11 +6,7 @@ from asgiref.sync import sync_to_async
 
 from api.schemas import ProblemDetail
 from .models import MainSettings, ContactsSettings
-from .schemas import (
-    MainSettingsOut,
-    ContactsSettingsOut,
-    CoordinatesOut,
-)
+from .schemas import MainSettingsOut, ContactsSettingsOut, CoordinatesOut
 from .errors import create_site_settings_error, SiteSettingsErrorCodes
 
 
@@ -63,28 +59,22 @@ async def get_main_settings(request):
     "/contacts",
     response={200: ContactsSettingsOut, 404: ProblemDetail},
     summary="Получить настройки контактов",
-    description="Возвращает контакты из MainSettings и реквизиты/офис из ContactsSettings: ОГРН, юридический адрес, координаты (lat/lng), адрес офиса продаж."
+    description="Возвращает реквизиты и офис из ContactsSettings: ОГРН, юридический адрес, координаты (lat/lng), адрес офиса продаж.",
 )
 async def get_contacts_settings(request):
     """
-    Получить настройки контактов (объединённые MainSettings + ContactsSettings).
+    Получить настройки контактов (ContactsSettings).
 
-    Из MainSettings: phone, display_phone, email, whatsapp_link, telegram_link.
-    Из ContactsSettings: ogrn, legal_address, coordinates (объект {lat, lng}), sales_center_address.
+    Возвращает: ogrn, legal_address, coordinates (объект {lat, lng}), sales_center_address.
+    Контактные данные (телефон, email, мессенджеры) — в эндпоинте /main-info.
 
     Эндпоинт публичный, аутентификация не требуется.
-    При отсутствии любой из настроек в БД возвращает 404.
+    При отсутствии настроек в БД возвращает 404.
     """
     try:
-        main_settings = await sync_to_async(MainSettings.load)()
         contacts_settings = await sync_to_async(ContactsSettings.load)()
 
         return 200, ContactsSettingsOut(
-            phone=main_settings.phone,
-            display_phone=main_settings.display_phone or main_settings.phone,
-            email=main_settings.email,
-            whatsapp_link=main_settings.whatsapp_link or None,
-            telegram_link=main_settings.telegram_link or None,
             ogrn=contacts_settings.ogrn or None,
             legal_address=contacts_settings.legal_address or None,
             coordinates=(
@@ -92,14 +82,13 @@ async def get_contacts_settings(request):
                 if contacts_settings.latitude is not None and contacts_settings.longitude is not None
                 else None
             ),
-            sales_center_address=contacts_settings.sales_center_address or None
+            sales_center_address=contacts_settings.sales_center_address or None,
         )
-        
     except Exception as e:
         return 404, create_site_settings_error(
             status=404,
             code=SiteSettingsErrorCodes.NOT_FOUND,
             title="Settings not found",
-            detail=f"Settings not found. Please create main settings and contacts settings in admin panel. Error: {str(e)}",
-            instance="/api/v1/site-settings/contacts"
+            detail=f"Contacts settings not found. Create contacts settings in admin panel. Error: {str(e)}",
+            instance="/api/v1/site-settings/contacts",
         )

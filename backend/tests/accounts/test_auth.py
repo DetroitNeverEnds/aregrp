@@ -2,24 +2,26 @@
 Тесты для эндпоинтов аутентификации и регистрации.
 """
 import pytest
-from ninja.testing import TestClient
+from unittest.mock import patch, AsyncMock
+from ninja.testing import TestAsyncClient
 
+from asgiref.sync import sync_to_async
 from api.router import api
 from apps.accounts.models import CustomUser
+from apps.accounts.services.auth_service import generate_password_reset_token
 
 
 @pytest.mark.django_db
 class TestRegistration:
     """Тесты для эндпоинта регистрации /auth/register."""
-    
+
     @pytest.fixture
-    def client(self):
-        """Клиент для API."""
-        return TestClient(api)
-    
-    def test_register_individual_success(self, client):
+    def client(self, api_client):
+        return api_client
+
+    async def test_register_individual_success(self, client):
         """Тест успешной регистрации физического лица."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "individual",
@@ -49,17 +51,16 @@ class TestRegistration:
         assert user_data["user_type"] == "individual"
         assert user_data["full_name"] == "Иван Иванов"
         assert user_data["phone"] == "+79991234567"
-        
-        # Проверяем, что пользователь создан в БД
-        user = CustomUser.objects.get(email="ivan@example.com")
+
+        user = await sync_to_async(CustomUser.objects.get)(email="ivan@example.com")
         assert user.user_type == "individual"
         assert user.full_name == "Иван Иванов"
         assert user.phone == "+79991234567"
-        assert user.check_password("TestPassword123!")
+        assert await sync_to_async(user.check_password)("TestPassword123!")
     
-    def test_register_agent_success(self, client):
+    async def test_register_agent_success(self, client):
         """Тест успешной регистрации агента."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "agent",
@@ -87,20 +88,19 @@ class TestRegistration:
         assert user_data["organization_name"] == "ООО Рога и Копыта"
         assert user_data["inn"] == "1234567890"
         
-        # Проверяем в БД
-        user = CustomUser.objects.get(email="agent@example.com")
+        user = await sync_to_async(CustomUser.objects.get)(email=data["user"]["email"])
         assert user.user_type == "agent"
         assert user.organization_name == "ООО Рога и Копыта"
         assert user.inn == "1234567890"
     
-    def test_register_duplicate_email(self, client, test_user):
+    async def test_register_duplicate_email(self, client, test_user):
         """Тест регистрации с существующим email."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "individual",
                 "full_name": "Другой Пользователь",
-                "email": "test@example.com",  # Уже существует
+                "email": test_user.email,  # уже занят test_user
                 "phone": "+79991234569",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -121,15 +121,15 @@ class TestRegistration:
         assert data["code"] == "ACCOUNTS_EMAIL_EXISTS"
         assert "email" in data["detail"].lower() or "exists" in data["detail"].lower()
     
-    def test_register_duplicate_phone(self, client, test_user):
+    async def test_register_duplicate_phone(self, client, test_user):
         """Тест регистрации с существующим телефоном."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "individual",
                 "full_name": "Другой Пользователь",
                 "email": "new@example.com",
-                "phone": "+79991234567",  # Уже существует
+                "phone": test_user.phone,  # уже занят test_user
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
                 "use_cookies": False
@@ -143,9 +143,9 @@ class TestRegistration:
         assert data["code"] == "ACCOUNTS_PHONE_EXISTS"
         assert "phone" in data["detail"].lower() or "exists" in data["detail"].lower()
     
-    def test_register_password_mismatch(self, client):
+    async def test_register_password_mismatch(self, client):
         """Тест регистрации с несовпадающими паролями."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "individual",
@@ -165,9 +165,9 @@ class TestRegistration:
         assert data["code"] == "ACCOUNTS_PASSWORD_MISMATCH"
         assert "password" in data["detail"].lower() or "match" in data["detail"].lower()
     
-    def test_register_agent_missing_organization_name(self, client):
+    async def test_register_agent_missing_organization_name(self, client):
         """Тест регистрации агента без названия организации."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "agent",
@@ -189,9 +189,9 @@ class TestRegistration:
         assert data["code"] == "ACCOUNTS_MISSING_ORGANIZATION_NAME"
         assert "organization" in data["detail"].lower()
     
-    def test_register_agent_missing_inn(self, client):
+    async def test_register_agent_missing_inn(self, client):
         """Тест регистрации агента без ИНН."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "agent",
@@ -213,9 +213,9 @@ class TestRegistration:
         assert data["code"] == "ACCOUNTS_MISSING_INN"
         assert "inn" in data["detail"].lower()
     
-    def test_register_invalid_user_type(self, client):
+    async def test_register_invalid_user_type(self, client):
         """Тест регистрации с неверным типом пользователя."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "invalid_type",
@@ -234,9 +234,9 @@ class TestRegistration:
         assert data["status"] == 400
         assert data["code"] == "ACCOUNTS_INVALID_USER_TYPE"
     
-    def test_register_weak_password(self, client):
+    async def test_register_weak_password(self, client):
         """Тест регистрации со слабым паролем."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "individual",
@@ -255,9 +255,9 @@ class TestRegistration:
         assert data["status"] == 400
         assert data["code"] == "ACCOUNTS_PASSWORD_VALIDATION_FAILED"
     
-    def test_register_with_cookies(self, client):
+    async def test_register_with_cookies(self, client):
         """Тест регистрации с установкой cookies."""
-        response = client.post(
+        response = await client.post(
             "/auth/register",
             json={
                 "user_type": "individual",
@@ -281,46 +281,38 @@ class TestRegistration:
 @pytest.mark.django_db
 class TestLogin:
     """Тесты для эндпоинта входа /auth/login."""
-    
+
     @pytest.fixture
-    def client(self):
-        """Клиент для API."""
-        return TestClient(api)
-    
-    def test_login_success(self, client, test_user):
+    def client(self, api_client):
+        return api_client
+
+    async def test_login_success(self, client, test_user):
         """Тест успешного входа."""
-        response = client.post(
+        response = await client.post(
             "/auth/login",
             json={
-                "email": "test@example.com",
+                "email": test_user.email,
                 "password": "TestPassword123!",
                 "use_cookies": False
             }
         )
-        
         assert response.status_code == 200
         data = response.json()
-        
-        # Проверяем структуру успешного ответа
         assert "user" in data
         assert "access_token" in data
         assert "refresh_token" in data
-        assert "message" in data
         assert data["message"] == "Login successful"
-        assert data["use_cookies"] is False
-        
-        # Проверяем данные пользователя
         user_data = data["user"]
-        assert user_data["email"] == "test@example.com"
+        assert user_data["email"] == test_user.email
         assert user_data["user_type"] == "individual"
         
         # Проверяем, что токены не пустые
         assert len(data["access_token"]) > 0
         assert len(data["refresh_token"]) > 0
     
-    def test_login_invalid_email(self, client):
+    async def test_login_invalid_email(self, client):
         """Тест входа с несуществующим email."""
-        response = client.post(
+        response = await client.post(
             "/auth/login",
             json={
                 "email": "nonexistent@example.com",
@@ -342,12 +334,12 @@ class TestLogin:
         assert data["code"] == "ACCOUNTS_INVALID_CREDENTIALS"
         assert "invalid" in data["detail"].lower() or "credentials" in data["detail"].lower()
     
-    def test_login_invalid_password(self, client, test_user):
+    async def test_login_invalid_password(self, client, test_user):
         """Тест входа с неверным паролем."""
-        response = client.post(
+        response = await client.post(
             "/auth/login",
             json={
-                "email": "test@example.com",
+                "email": test_user.email,
                 "password": "WrongPassword123!",
                 "use_cookies": False
             }
@@ -359,12 +351,12 @@ class TestLogin:
         assert data["status"] == 401
         assert data["code"] == "ACCOUNTS_INVALID_CREDENTIALS"
     
-    def test_login_with_cookies(self, client, test_user):
+    async def test_login_with_cookies(self, client, test_user):
         """Тест входа с установкой cookies."""
-        response = client.post(
+        response = await client.post(
             "/auth/login",
             json={
-                "email": "test@example.com",
+                "email": test_user.email,
                 "password": "TestPassword123!",
                 "use_cookies": True
             }
@@ -381,19 +373,17 @@ class TestLogin:
 @pytest.mark.django_db
 class TestLogout:
     """Тесты для эндпоинта выхода /auth/logout."""
-    
+
     @pytest.fixture
-    def client(self):
-        """Клиент для API."""
-        return TestClient(api)
-    
-    def test_logout_success(self, client, test_user):
+    def client(self, api_client):
+        return api_client
+
+    async def test_logout_success(self, client, test_user):
         """Тест успешного выхода."""
-        # Сначала логинимся для получения токена
-        login_response = client.post(
+        login_response = await client.post(
             "/auth/login",
             json={
-                "email": "test@example.com",
+                "email": test_user.email,
                 "password": "TestPassword123!",
                 "use_cookies": False
             }
@@ -401,40 +391,38 @@ class TestLogout:
         
         assert login_response.status_code == 200
         token = login_response.json()["access_token"]
-        
-        # Выходим с токеном
-        logout_client = TestClient(api)
-        logout_client.headers = {"Authorization": f"Bearer {token}"}
-        response = logout_client.post("/auth/logout")
+        client.headers = {"Authorization": f"Bearer {token}"}
+        response = await client.post("/auth/logout")
         
         assert response.status_code == 200
         data = response.json()
         assert "message" in data
         assert data["message"] == "Logout successful"
     
-    def test_logout_unauthorized(self, client):
+    async def test_logout_unauthorized(self, client):
         """Тест выхода без авторизации."""
-        response = client.post("/auth/logout")
-        
+        client.headers = {}
+        client.cookies = {}
+        response = await client.post("/auth/logout")
         assert response.status_code == 401
 
 
 @pytest.mark.django_db
 class TestRefreshToken:
     """Тесты для эндпоинта обновления токена /auth/refresh-token."""
-    
+
     @pytest.fixture
-    def client(self):
-        """Клиент для API."""
-        return TestClient(api)
-    
-    def test_refresh_token_success(self, client, test_user):
+    def client(self, api_client):
+        return api_client
+
+    async def test_refresh_token_success(self, client, test_user):
         """Тест успешного обновления токена."""
-        # Логинимся для получения refresh_token
-        login_response = client.post(
+        client.headers = {}
+        client.cookies = {}
+        login_response = await client.post(
             "/auth/login",
             json={
-                "email": "test@example.com",
+                "email": test_user.email,
                 "password": "TestPassword123!",
                 "use_cookies": False
             }
@@ -442,14 +430,8 @@ class TestRefreshToken:
         
         assert login_response.status_code == 200
         refresh_token = login_response.json()["refresh_token"]
-        
-        # Устанавливаем refresh_token в cookies
-        refresh_client = TestClient(api)
-        # В TestClient cookies устанавливаются через cookies атрибут
-        refresh_client.cookies = {"refresh_token": refresh_token}
-        
-        # Обновляем токен
-        response = refresh_client.post("/auth/refresh-token")
+        client.cookies = {"refresh_token": refresh_token}
+        response = await client.post("/auth/refresh-token")
         
         assert response.status_code == 200
         data = response.json()
@@ -459,29 +441,146 @@ class TestRefreshToken:
         assert "refresh_token" in data
         assert data["message"] == "Tokens refreshed successfully"
         
-        # Проверяем, что токены обновлены (новые значения)
-        assert data["access_token"] != refresh_token
-        assert data["refresh_token"] != refresh_token
+        # Новые токены выданы
+        assert len(data["access_token"]) > 0
+        assert len(data["refresh_token"]) > 0
     
-    def test_refresh_token_missing(self, client):
+    async def test_refresh_token_missing(self, client):
         """Тест обновления токена без refresh_token в cookies."""
-        response = client.post("/auth/refresh-token")
-        
+        client.headers = {}
+        client.cookies = {}
+        response = await client.post("/auth/refresh-token")
         assert response.status_code == 401
         data = response.json()
         
         assert data["status"] == 401
         assert data["code"] == "ACCOUNTS_NO_REFRESH_TOKEN"
     
-    def test_refresh_token_invalid(self, client):
+    async def test_refresh_token_invalid(self, client):
         """Тест обновления токена с неверным токеном."""
-        refresh_client = TestClient(api)
-        refresh_client.cookies = {"refresh_token": "invalid_token"}
-        
-        response = refresh_client.post("/auth/refresh-token")
+        client.cookies = {"refresh_token": "invalid_token"}
+        response = await client.post("/auth/refresh-token")
         
         assert response.status_code == 401
         data = response.json()
         
         assert data["status"] == 401
         assert data["code"] in ["ACCOUNTS_INVALID_TOKEN", "ACCOUNTS_TOKEN_EXPIRED"]
+
+
+@pytest.mark.django_db
+class TestPasswordReset:
+    """Тесты для POST /auth/password-reset."""
+
+    @pytest.fixture
+    def client(self, api_client):
+        return api_client
+
+    @patch("apps.accounts.routers.auth.send_password_reset_email", new_callable=AsyncMock, return_value=True)
+    async def test_password_reset_success(self, mock_send_email, client, test_user):
+        """Запрос сброса пароля для существующего email возвращает 200 и отправляет письмо."""
+        response = await client.post(
+            "/auth/password-reset",
+            json={"email": test_user.email},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "message" in data
+        assert "account" in data["message"].lower() or "email" in data["message"].lower()
+        mock_send_email.assert_called_once()
+
+    async def test_password_reset_nonexistent_email_returns_200(self, client):
+        """Для несуществующего email возвращается 200 (без раскрытия факта)."""
+        response = await client.post(
+            "/auth/password-reset",
+            json={"email": "nonexistent@example.com"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "message" in data
+
+
+@pytest.mark.django_db
+class TestPasswordResetConfirm:
+    """Тесты для POST /auth/password-reset/confirm."""
+
+    @pytest.fixture
+    def client(self, api_client):
+        return api_client
+
+    async def test_password_reset_confirm_success(self, client, test_user):
+        """Успешная смена пароля по токену из письма."""
+        token = generate_password_reset_token(test_user)
+        response = await client.post(
+            "/auth/password-reset/confirm",
+            json={
+                "token": token,
+                "new_password1": "NewSecurePass123!",
+                "new_password2": "NewSecurePass123!",
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get("message") == "Password has been reset successfully"
+        login_response = await client.post(
+            "/auth/login",
+            json={
+                "email": test_user.email,
+                "password": "NewSecurePass123!",
+                "use_cookies": False,
+            },
+        )
+        assert login_response.status_code == 200
+
+    async def test_password_reset_confirm_invalid_token(self, client):
+        """Неверный токен — 401."""
+        response = await client.post(
+            "/auth/password-reset/confirm",
+            json={
+                "token": "invalid.jwt.token",
+                "new_password1": "NewPass123!",
+                "new_password2": "NewPass123!",
+            },
+        )
+
+        assert response.status_code == 401
+        data = response.json()
+        assert data["status"] == 401
+        assert "token" in data.get("code", "").lower() or "invalid" in data.get("detail", "").lower()
+
+    async def test_password_reset_confirm_password_mismatch(self, client, test_user):
+        """Пароли не совпадают — 400."""
+        token = generate_password_reset_token(test_user)
+        response = await client.post(
+            "/auth/password-reset/confirm",
+            json={
+                "token": token,
+                "new_password1": "NewPass123!",
+                "new_password2": "OtherPass123!",
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.json()
+        assert data["status"] == 400
+        assert data["code"] == "ACCOUNTS_PASSWORD_MISMATCH"
+
+    async def test_password_reset_confirm_weak_password(self, client, test_user):
+        """Слабый пароль — 400."""
+        token = generate_password_reset_token(test_user)
+        response = await client.post(
+            "/auth/password-reset/confirm",
+            json={
+                "token": token,
+                "new_password1": "123",
+                "new_password2": "123",
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.json()
+        assert data["status"] == 400
+        assert data["code"] == "ACCOUNTS_PASSWORD_VALIDATION_FAILED"

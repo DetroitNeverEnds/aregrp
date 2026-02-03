@@ -2,8 +2,9 @@
 Smoke тесты для эндпоинтов профиля.
 """
 import pytest
-from ninja.testing import TestClient
+from ninja.testing import TestAsyncClient
 
+from asgiref.sync import sync_to_async
 from api.router import api
 from apps.accounts.models import CustomUser
 
@@ -11,53 +12,40 @@ from apps.accounts.models import CustomUser
 @pytest.mark.django_db
 class TestProfileEndpoints:
     """Тесты для эндпоинтов профиля."""
-    
-    def get_authenticated_client(self, email, password):
+
+    async def get_authenticated_client(self, api_client, email, password):
         """Создает аутентифицированный клиент."""
-        client = TestClient(api)
-        
-        # Логинимся
-        login_response = client.post(
+        login_response = await api_client.post(
             "/auth/login",
-            json={
-                "email": email,
-                "password": password,
-                "use_cookies": False
-            }
+            json={"email": email, "password": password, "use_cookies": False}
         )
-        
         assert login_response.status_code == 200
         token = login_response.json()["access_token"]
-        
-        # Устанавливаем токен
-        client.headers = {"Authorization": f"Bearer {token}"}
-        return client
-    
-    def test_get_user(self, test_user):
+        api_client.headers = {"Authorization": f"Bearer {token}"}
+        return api_client
+
+    async def test_get_user(self, api_client, test_user):
         """Тест получения данных пользователя."""
-        client = self.get_authenticated_client("test@example.com", "TestPassword123!")
-        
-        response = client.get("/profile/user")
-        
+        client = await self.get_authenticated_client(api_client, test_user.email, "TestPassword123!")
+        response = await client.get("/profile/user")
         assert response.status_code == 200
         data = response.json()
-        assert data["email"] == "test@example.com"
+        assert data["email"] == test_user.email
         assert data["user_type"] == "individual"
         assert data["full_name"] == "Тестовый Пользователь"
-        assert data["phone"] == "+79991234567"
+        assert data["phone"] == test_user.phone
     
-    def test_get_user_unauthorized(self):
+    async def test_get_user_unauthorized(self, api_client):
         """Тест получения данных без авторизации."""
-        client = TestClient(api)
-        response = client.get("/profile/user")
-        
+        api_client.headers = {}
+        api_client.cookies = {}
+        response = await api_client.get("/profile/user")
         assert response.status_code == 401
-    
-    def test_update_profile(self, test_user):
+
+    async def test_update_profile(self, api_client, test_user):
         """Тест обновления профиля."""
-        client = self.get_authenticated_client("test@example.com", "TestPassword123!")
-        
-        response = client.put(
+        client = await self.get_authenticated_client(api_client, test_user.email, "TestPassword123!")
+        response = await client.put(
             "/profile/profile",
             json={
                 "full_name": "Обновленное Имя",
@@ -70,16 +58,14 @@ class TestProfileEndpoints:
         assert data["full_name"] == "Обновленное Имя"
         assert data["phone"] == "+79991234599"
         
-        # Проверяем в БД
-        user = CustomUser.objects.get(email="test@example.com")
+        user = await sync_to_async(CustomUser.objects.get)(email=test_user.email)
         assert user.full_name == "Обновленное Имя"
         assert user.phone == "+79991234599"
     
-    def test_update_profile_agent(self, test_agent_user):
+    async def test_update_profile_agent(self, api_client, test_agent_user):
         """Тест обновления профиля агента."""
-        client = self.get_authenticated_client("agent@example.com", "TestPassword123!")
-        
-        response = client.put(
+        client = await self.get_authenticated_client(api_client, test_agent_user.email, "TestPassword123!")
+        response = await client.put(
             "/profile/profile",
             json={
                 "organization_name": "Новое Название ООО",
@@ -92,15 +78,15 @@ class TestProfileEndpoints:
         assert data["organization_name"] == "Новое Название ООО"
         assert data["inn"] == "9876543210"
         
-        # Проверяем в БД
-        user = CustomUser.objects.get(email="agent@example.com")
+        user = await sync_to_async(CustomUser.objects.get)(email=test_agent_user.email)
         assert user.organization_name == "Новое Название ООО"
         assert user.inn == "9876543210"
     
-    def test_update_profile_unauthorized(self):
+    async def test_update_profile_unauthorized(self, api_client):
         """Тест обновления профиля без авторизации."""
-        client = TestClient(api)
-        response = client.put(
+        api_client.headers = {}
+        api_client.cookies = {}
+        response = await api_client.put(
             "/profile/profile",
             json={
                 "full_name": "Новое Имя"
@@ -109,7 +95,78 @@ class TestProfileEndpoints:
         
         assert response.status_code == 401
     
-    @pytest.mark.skip(reason="Требуется мок - не тестируем смену пароля")
-    def test_change_password(self, test_user):
-        """Тест смены пароля - пропускаем, требуется мок."""
-        pass
+    async def test_change_password(self, api_client, test_user):
+        """Тест смены пароля: успешная смена и вход с новым паролем."""
+        client = await self.get_authenticated_client(api_client, test_user.email, "TestPassword123!")
+        response = await client.post(
+            "/profile/change-password",
+            json={
+                "current_password": "TestPassword123!",
+                "new_password1": "NewPassword456!",
+                "new_password2": "NewPassword456!",
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get("message") == "Password changed successfully"
+
+        api_client.headers = {}
+        login_old = await api_client.post(
+            "/auth/login",
+            json={"email": test_user.email, "password": "TestPassword123!", "use_cookies": False},
+        )
+        assert login_old.status_code == 401
+        login_new = await api_client.post(
+            "/auth/login",
+            json={"email": test_user.email, "password": "NewPassword456!", "use_cookies": False},
+        )
+        assert login_new.status_code == 200
+
+    async def test_change_password_wrong_current(self, api_client, test_user):
+        """Тест смены пароля с неверным текущим паролем — 400."""
+        client = await self.get_authenticated_client(api_client, test_user.email, "TestPassword123!")
+        response = await client.post(
+            "/profile/change-password",
+            json={
+                "current_password": "WrongCurrentPass!",
+                "new_password1": "NewPassword456!",
+                "new_password2": "NewPassword456!",
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.json()
+        assert data["status"] == 400
+        assert data["code"] == "ACCOUNTS_INVALID_CURRENT_PASSWORD"
+
+    async def test_change_password_mismatch(self, api_client, test_user):
+        """Тест смены пароля при несовпадении новых паролей — 400."""
+        client = await self.get_authenticated_client(api_client, test_user.email, "TestPassword123!")
+        response = await client.post(
+            "/profile/change-password",
+            json={
+                "current_password": "TestPassword123!",
+                "new_password1": "NewPassword456!",
+                "new_password2": "OtherPassword789!",
+            },
+        )
+
+        assert response.status_code == 400
+        data = response.json()
+        assert data["status"] == 400
+        assert data["code"] == "ACCOUNTS_PASSWORD_MISMATCH"
+
+    async def test_change_password_unauthorized(self, api_client):
+        """Тест смены пароля без авторизации — 401."""
+        api_client.headers = {}
+        api_client.cookies = {}
+        response = await api_client.post(
+            "/profile/change-password",
+            json={
+                "current_password": "TestPassword123!",
+                "new_password1": "NewPass123!",
+                "new_password2": "NewPass123!",
+            },
+        )
+        assert response.status_code == 401
