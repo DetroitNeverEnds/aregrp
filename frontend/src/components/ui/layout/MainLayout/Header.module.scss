@@ -1,0 +1,44 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+    padding: 20px 120px;
+    margin-bottom: 100px;
+}
+
+.socialButton {
+    :global {
+        svg {
+            color: $primary-yellow !important;
+
+            path,
+            circle,
+            rect,
+            line,
+            polyline,
+            polygon {
+                fill: $primary-yellow !important;
+                stroke: $primary-yellow !important;
+            }
+        }
+    }
+
+    &:hover:not(:disabled),
+    &:active:not(:disabled),
+    &:focus:active:not(:disabled) {
+        :global {
+            svg {
+                color: $primary-yellow !important;
+
+                path,
+                circle,
+                rect,
+                line,
+                polyline,
+                polygon {
+                    fill: $primary-yellow !important;
+                    stroke: $primary-yellow !important;
+                }
+            }
+        }
+    }
+}
