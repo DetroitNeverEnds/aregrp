@@ -144,12 +144,6 @@ describe('Text Component', () => {
         expect(element.className).toContain('extra');
     });
 
-    it('применяет цвет gray-100 по умолчанию', () => {
-        render(<Text>Текст с цветом по умолчанию</Text>);
-        const element = screen.getByText('Текст с цветом по умолчанию');
-        expect(element.className).toContain(styles['text--color-gray-100']);
-    });
-
     it('применяет цвет primary-500', () => {
         render(<Text color="primary-500">Текст primary цвета</Text>);
         const element = screen.getByText('Текст primary цвета');

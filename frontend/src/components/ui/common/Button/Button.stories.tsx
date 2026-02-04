@@ -313,6 +313,7 @@ export const AllVariants: Story = {
             </div>
         </div>
     ),
+};
 
 // Кнопки-ссылки
 export const AsLink: Story = {
@@ -348,5 +349,4 @@ export const AsLink: Story = {
             </div>
         </div>
     ),
-};
 };
