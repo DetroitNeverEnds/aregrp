@@ -1,0 +1,25 @@
+.formColumn {
+    padding-right: 140px;
+}
+
+.imgColumn {
+    overflow: hidden;
+    position: relative;
+
+    // background-color: $danger-color;
+    background-image: url('img/formMock.png');
+    border-radius: 10px;
+    background-size: cover; /* Масштабирует и обрезает */
+    background-position: center center; /* Центрирует по вертикали и горизонтали */
+    background-repeat: no-repeat;
+}
+
+.mapColumn {
+    min-height: 400px;
+}
+
+.legal {
+    &__keys {
+        width: 200px;
+    }
+}

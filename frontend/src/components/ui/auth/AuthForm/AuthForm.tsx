@@ -51,11 +51,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 }) => {
     return (
         <div className={styles.formWrapper}>
-            <Flex gap={20} fullWidth>
+            <Flex gap={20} align="start" fullWidth>
                 <Form onSubmit={onSubmit}>
-                    <Flex gap={40}>
+                    <Flex align="start" gap={40}>
                         {/* Заголовок и описание */}
-                        <Flex gap={20}>
+                        <Flex align="start" gap={20} fullWidth>
                             <Text variant="h3">{title}</Text>
                             {description && (
                                 <Text variant="16-reg" color="gray-50">
@@ -70,10 +70,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                         </Flex>
 
                         {/* Содержимое формы */}
-                        <Flex gap={20}>
-                            {additionalOptionsUpper && <div>{additionalOptionsUpper}</div>}
-                            <Flex gap={10}>{children}</Flex>
-                            {additionalOptionsLower && <div>{additionalOptionsLower}</div>}
+                        <Flex gap={20} fullWidth align="start">
+                            {additionalOptionsUpper && additionalOptionsUpper}
+                            <Flex gap={10} fullWidth align="start">
+                                {children}
+                            </Flex>
+                            {additionalOptionsLower && additionalOptionsLower}
                         </Flex>
 
                         {/* Кнопка отправки */}
