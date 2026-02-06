@@ -1,4 +1,4 @@
-import styles from './card.module.scss';
+import styles from './Card.module.scss';
 import classNames from 'classnames';
 import { Flex, type FlexProps } from '../Flex';
 
