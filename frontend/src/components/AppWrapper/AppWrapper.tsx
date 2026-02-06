@@ -5,6 +5,7 @@ import { queryClient } from '../../lib/queryClient';
 import '../../lib/apiClient';
 import { Loader } from '../ui/common/Loader';
 import styles from './AppWrapper.module.scss';
+import { QueryWaiter } from './queryWaiter';
 
 interface AppWrapperProps {
     children: React.ReactNode;
@@ -34,20 +35,19 @@ const I18nReadyGuard: React.FC<AppWrapperProps> = ({ children }) => {
  */
 export const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
     return (
-        <QueryClientProvider client={queryClient}>
-            <Suspense
-                fallback={
-                    <div className={styles.appWrapper__fallback}>
-                        <Loader spinnerSize="lg" aria-label="Загрузка приложения" />
-                    </div>
-                }
-            >
-                <I18nReadyGuard>
-                    {/* Здесь будут добавляться другие провайдеры */}
-                    {children}
-                </I18nReadyGuard>
-            </Suspense>
-        </QueryClientProvider>
+        <Suspense
+            fallback={
+                <div className={styles.appWrapper__fallback}>
+                    <Loader spinnerSize="lg" aria-label="Загрузка приложения" />
+                </div>
+            }
+        >
+            <I18nReadyGuard>
+                <QueryClientProvider client={queryClient}>
+                    <QueryWaiter>{children}</QueryWaiter>
+                </QueryClientProvider>
+            </I18nReadyGuard>
+        </Suspense>
     );
 };
 

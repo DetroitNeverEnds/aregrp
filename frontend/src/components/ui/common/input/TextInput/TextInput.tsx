@@ -23,7 +23,7 @@ export type TextInputProps = Omit<
     AdditionalInputProps;
 
 export const TextInput: React.FC<TextInputProps> = ({
-    size,
+    size = 'md',
     leadingIcon,
     errorMessage,
     className = '',

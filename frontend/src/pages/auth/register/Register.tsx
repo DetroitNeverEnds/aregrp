@@ -129,7 +129,7 @@ export const Register: React.FC = () => {
                 />
             }
             footer={
-                <Flex align="end">
+                <Flex align="end" fullWidth>
                     <Text variant="16-reg" color="gray-50">
                         {t('auth.common.hasAccount')}{' '}
                         <Link to="/auth/login" size="lg" theme="black">
@@ -139,7 +139,7 @@ export const Register: React.FC = () => {
                 </Flex>
             }
         >
-            <Flex gap={10}>
+            <Flex gap={10} align="start" fullWidth>
                 {userType === 'individual' && (
                     <>
                         <Controller

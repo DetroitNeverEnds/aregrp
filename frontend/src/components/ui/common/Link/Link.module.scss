@@ -4,48 +4,69 @@
     text-decoration: none;
     cursor: pointer;
     transition: color 0.2s ease;
+    font-family: $font-family-base;
 
     // Тема blue (по умолчанию)
     &--blue {
-        span {
-            color: $primary-700 !important;
+        color: $primary-700;
+
+        &:hover {
+            color: $primary-800;
         }
 
-        &:hover span {
-            color: $primary-800 !important;
-        }
-
-        &:active span {
-            color: $primary-900 !important;
+        &:active {
+            color: $primary-900;
         }
     }
 
     // Тема black
     &--black {
-        span {
-            color: $gray-100 !important;
+        color: $gray-100;
+
+        &:hover {
+            color: $primary-700;
         }
 
-        &:hover span {
-            color: $primary-700 !important;
-        }
-
-        &:active span {
-            color: $gray-50 !important;
+        &:active {
+            color: $gray-50;
         }
     }
 
-    // Размеры (для будущего расширения)
-    &--small {
-        // Дополнительные стили для маленького размера при необходимости
+    // Тема light
+    &--light {
+        color: $gray-opacity-0-80;
+
+        &:hover {
+            color: $gray-0;
+        }
+
+        &:active {
+            color: $gray-0;
+        }
+
+        &:disabled,
+        &[disabled] {
+            color: $error-text-disable;
+        }
     }
 
-    &--medium {
-        // Дополнительные стили для среднего размера при необходимости
+    // Размеры
+    &--sm {
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 120%;
     }
 
-    &--large {
-        // Дополнительные стили для большого размера при необходимости
+    &--md {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 120%;
+    }
+
+    &--lg {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 140%;
     }
 
     // Стили для иконок
@@ -57,5 +78,43 @@
     &__trailingIcon {
         margin-left: 8px;
         flex-shrink: 0;
+    }
+
+    // Цвета иконок для светлой темы
+    &--light {
+        .link__leadingIcon,
+        .link__trailingIcon {
+            svg path {
+                fill: $gray-opacity-0-80;
+            }
+        }
+
+        &:hover {
+            .link__leadingIcon,
+            .link__trailingIcon {
+                svg path {
+                    fill: $gray-0;
+                }
+            }
+        }
+
+        &:active {
+            .link__leadingIcon,
+            .link__trailingIcon {
+                svg path {
+                    fill: $gray-0;
+                }
+            }
+        }
+
+        &:disabled,
+        &[disabled] {
+            .link__leadingIcon,
+            .link__trailingIcon {
+                svg path {
+                    fill: $error-text-disable;
+                }
+            }
+        }
     }
 }

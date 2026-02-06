@@ -1,8 +1,13 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { Button, type ButtonSize, type ButtonVariant } from './Button';
 import styles from './Button.module.scss';
+
+const renderWithRouter = (ui: React.ReactElement) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
+};
 
 describe('Button', () => {
     it('рендерится с текстом', () => {
@@ -223,6 +228,69 @@ describe('Button', () => {
             const button = container.querySelector('button');
             button?.focus();
             expect(document.activeElement).not.toBe(button);
+        });
+
+        describe('кнопка как ссылка', () => {
+            it('рендерится как Link когда передан проп to', () => {
+                const { container } = renderWithRouter(
+                    <Button variant="primary" size="md" to="/test">
+                        Link Button
+                    </Button>,
+                );
+                const link = container.querySelector('a');
+                expect(link).toBeInTheDocument();
+                expect(link).toHaveAttribute('href', '/test');
+                expect(screen.getByText('Link Button')).toBeInTheDocument();
+            });
+
+            it('применяет правильные классы для Link', () => {
+                const { container } = renderWithRouter(
+                    <Button variant="outlined" size="lg" to="/test" className="custom-class">
+                        Link Button
+                    </Button>,
+                );
+                const link = container.querySelector('a');
+                expect(link?.className).toContain(styles.button);
+                expect(link?.className).toContain(styles['button--outlined']);
+                expect(link?.className).toContain(styles['button--lg']);
+                expect(link).toHaveClass('custom-class');
+            });
+
+            it('рендерится с иконкой как Link', () => {
+                const { container } = renderWithRouter(
+                    <Button variant="primary" size="md" to="/test" icon="check">
+                        Link with Icon
+                    </Button>,
+                );
+                const link = container.querySelector('a');
+                const icon = container.querySelector('[class*="icon"]');
+                expect(link).toBeInTheDocument();
+                expect(icon).toBeInTheDocument();
+                expect(screen.getByText('Link with Icon')).toBeInTheDocument();
+            });
+
+            it('рендерится только с иконкой как Link', () => {
+                const { container } = renderWithRouter(
+                    <Button variant="primary" size="md" to="/test" icon="plus" onlyIcon>
+                        Hidden text
+                    </Button>,
+                );
+                const link = container.querySelector('a');
+                const icon = container.querySelector('[class*="icon"]');
+                expect(link).toBeInTheDocument();
+                expect(icon).toBeInTheDocument();
+                expect(screen.queryByText('Hidden text')).not.toBeInTheDocument();
+            });
+
+            it('не рендерится как button когда передан to', () => {
+                const { container } = renderWithRouter(
+                    <Button variant="primary" size="md" to="/test">
+                        Link Button
+                    </Button>,
+                );
+                const button = container.querySelector('button');
+                expect(button).not.toBeInTheDocument();
+            });
         });
     });
 });

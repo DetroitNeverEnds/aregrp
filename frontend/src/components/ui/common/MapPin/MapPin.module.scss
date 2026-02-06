@@ -1,0 +1,36 @@
+.tooltip {
+    width: 100%;
+}
+
+.pin {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 26px;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.15));
+}
+
+.iconWrapper {
+    position: relative;
+    z-index: 2;
+    width: 24px;
+    height: 24px;
+    background-color: $primary-700;
+    border: 1.6px solid $primary-800;
+    border-radius: 1000px;
+    flex-shrink: 0;
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+}
+
+.label {
+    position: relative;
+    left: -12px;
+    padding: 4px 10px 4px 16px;
+    background-color: $gray-0;
+    border-radius: 40px;
+    white-space: nowrap;
+}
