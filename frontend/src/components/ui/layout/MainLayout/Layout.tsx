@@ -18,7 +18,7 @@ export const MainLayout = () => {
             <div className={styles.content}>
                 <Outlet context={{ setBreadcrumbs }} />
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </Flex>
     );
 };

@@ -58,21 +58,20 @@ export const YandexMap = ({
     children,
 }: YandexMapProps) => {
     return (
-        <YMap
-            location={{ center: center || markerCoordinates, zoom }}
-            className={classNames(styles.map, className)}
-            key={apiKey}
-            behaviors={[]}
-        >
-            <YMapDefaultSchemeLayer customization={YaMapsCustomization} />
-            <YMapDefaultFeaturesLayer />
+        <div className={styles.wrapper}>
+            <YMap
+                location={{ center: center || markerCoordinates, zoom }}
+                className={classNames(styles.map, className)}
+                key={apiKey}
+                behaviors={[]}
+            >
+                <YMapDefaultSchemeLayer customization={YaMapsCustomization} />
+                <YMapDefaultFeaturesLayer />
 
-            {/* <YMapDefaultMarker coordinates={markerCoordinates}>
-                <div className={styles.marker}>{children}</div>
-            </YMapDefaultMarker> */}
-            <YMapMarker coordinates={markerCoordinates}>
-                <div className={styles.marker}>{children}</div>
-            </YMapMarker>
-        </YMap>
+                <YMapMarker coordinates={markerCoordinates}>
+                    <div className={styles.marker}>{children}</div>
+                </YMapMarker>
+            </YMap>
+        </div>
     );
 };

@@ -8,7 +8,10 @@ type ContactsRequest = {
 type ContactsResponse = {
     ogrn: string;
     legal_address: string;
-    coordinates: null;
+    coordinates: {
+        lat: number;
+        lng: number;
+    };
     sales_center_address: string;
 };
 

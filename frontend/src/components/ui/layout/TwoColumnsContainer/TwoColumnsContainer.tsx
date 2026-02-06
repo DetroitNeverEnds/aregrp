@@ -18,7 +18,6 @@ export const Column = (props: FlexProps) => {
     return (
         <Flex {...props} className={classNames(styles.column, props.className)}>
             {props.children}
-            {/* <Divider /> */}
         </Flex>
     );
 };

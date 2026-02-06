@@ -13,6 +13,7 @@ import { FeedbackForm } from '../components/ui/forms/FeedbackForm';
 import { YandexMap } from '../components/ui/common/YandexMap';
 
 import styles from './Contacts.module.scss';
+import { MapPin } from '../components/ui/common/MapPin';
 import { Card } from '../components/ui/common/Card/Card';
 
 export const Contacts = () => {
@@ -107,18 +108,22 @@ export const Contacts = () => {
                 </Column>
                 <Column className={styles.mapColumn}>
                     <YandexMap
-                        markerCoordinates={[48.889695, 55.876743]}
+                        markerCoordinates={[
+                            contacts?.coordinates.lat || 0,
+                            contacts?.coordinates.lng || 0,
+                        ]}
                         zoom={13}
                         markerHint="AREGRP"
-                        markerBalloon="<strong>AREGRP</strong><br/>Наш офис"
                     >
-                        <Card align="start" gap={6}>
-                            <Text variant="14-med">{t('pages.contacts.salesOffice')}</Text>
-                            <Text variant="12-reg" color="gray-70">
-                                {contacts?.sales_center_address || '-'}
-                            </Text>
-                            <img src="img/salesOffice.png" />
-                        </Card>
+                        <MapPin address={contacts?.sales_center_address || '-'}>
+                            <Card align="start" gap={6} isPin>
+                                <Text variant="14-med">{t('pages.contacts.salesOffice')}</Text>
+                                <Text variant="12-reg" color="gray-70">
+                                    {contacts?.sales_center_address || '-'}
+                                </Text>
+                                <img src="img/salesOffice.png" style={{ width: '100%' }} />
+                            </Card>
+                        </MapPin>
                     </YandexMap>
                 </Column>
             </TwoColumnsContainer>
@@ -138,49 +143,33 @@ export const Contacts = () => {
                         </Text>
                     </Flex>
                     <Flex gap={20} fullWidth>
-                        {legalInfo.map(({ title, value }) => (
-                            <Flex direction="row" fullWidth gap={80}>
+                        {legalInfo.map(({ title, value }, i) => (
+                            <Flex key={i} direction="row" fullWidth gap={80} align="baseline">
                                 <Text color="gray-50" className={styles.legal__keys}>
                                     {title}
                                 </Text>
                                 <Text>{value}</Text>
                             </Flex>
                         ))}
-                        {/* <Flex direction="row" fullWidth gap={80}>
-                            <Text color="gray-50" className={styles.legal__keys}>
-                                {t('pages.contacts.inn')}
-                            </Text>
-                            <Text>{siteInfo?.inn}</Text>
-                        </Flex>
-                        <Flex direction="row" fullWidth gap={80}>
-                            <Text color="gray-50" className={styles.legal__keys}>
-                                {t('pages.contacts.ogrn')}
-                            </Text>
-                            <Text>{contacts?.ogrn || '-'}</Text>
-                        </Flex>
-                        <Flex direction="row" fullWidth gap={80}>
-                            <Text color="gray-50" className={styles.legal__keys}>
-                                {t('pages.contacts.legal_adress')}
-                            </Text>
-                            <Text>{contacts?.legal_address || '-'}</Text>
-                        </Flex> */}
                     </Flex>
                 </Column>
             </TwoColumnsContainer>
 
             {/* Форма */}
             <TwoColumnsContainer>
-                <Column gap={80} className={styles.formColumn}>
-                    <Flex gap={20} align="start">
-                        <Text color="gray-50">{t('pages.contacts.planView')}</Text>
-                        <Flex align="start">
-                            <Text variant="h2">{t('pages.contacts.fillForm')}</Text>
-                            <Text variant="h2" color="gray-50">
-                                {t('pages.contacts.forDetails')}
-                            </Text>
+                <Column>
+                    <Flex className={styles.formColumnContent} gap={80}>
+                        <Flex gap={20} align="start">
+                            <Text color="gray-50">{t('pages.contacts.planView')}</Text>
+                            <Flex align="start">
+                                <Text variant="h2">{t('pages.contacts.fillForm')}</Text>
+                                <Text variant="h2" color="gray-50">
+                                    {t('pages.contacts.forDetails')}
+                                </Text>
+                            </Flex>
                         </Flex>
+                        <FeedbackForm />
                     </Flex>
-                    <FeedbackForm />
                 </Column>
                 <Column className={styles.imgColumn} />
             </TwoColumnsContainer>

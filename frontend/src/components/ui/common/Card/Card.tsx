@@ -2,8 +2,17 @@ import styles from './card.module.scss';
 import classNames from 'classnames';
 import { Flex, type FlexProps } from '../Flex';
 
-export type CardProps = FlexProps;
+export interface CardProps extends FlexProps {
+    isPin?: boolean;
+}
 
-export const Card = (props: CardProps) => {
-    return <Flex {...props} className={classNames(props.className, styles.container)} />;
+export const Card = ({ isPin, className, ...props }: CardProps) => {
+    return (
+        <Flex
+            {...props}
+            className={classNames(className, styles.container, {
+                [styles.pin]: isPin,
+            })}
+        />
+    );
 };

@@ -60,7 +60,7 @@ export const Footer = () => {
                     {/* Верхняя секция с контактами */}
                     <Flex direction="row" justify="between" align="start" fullWidth>
                         <Flex align="start" gap={60}>
-                            <Flex gap={40} fullWidth>
+                            <Flex gap={40} fullWidth align="start">
                                 <Divider />
                                 <Text variant="20-med" color="gray-0">
                                     {t('footer.contactUs')}
