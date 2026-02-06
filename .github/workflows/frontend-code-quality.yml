@@ -31,7 +31,7 @@ jobs:
         run: npm run lint
 
       - name: Check code formatting
-        run: npm run format:check
+        run: npm run format
 
       - name: TypeScript type check
         run: npx tsc --noEmit
