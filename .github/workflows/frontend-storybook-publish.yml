@@ -54,9 +54,9 @@ jobs:
             - name: Build Storybook
               run: |
                   if [ "${{ inputs.environment }}" == "production" ]; then
-                    npm run build-storybook -- -o storybook-static
+                    npm run storybook:build -- -o storybook-static
                   else
-                    npm run build-storybook -- -o storybook-static/testing
+                    npm run storybook:build -- -o storybook-static/testing
                   fi
 
             - name: Upload Storybook artifacts
