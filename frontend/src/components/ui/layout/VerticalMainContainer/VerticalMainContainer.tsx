@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import { Flex } from '../../common/Flex';
 
-import styles from './verticalmaincontainer.module.scss';
+import styles from './VerticalMainContainer.module.scss';
 
 type VerticalMainContainerProps = PropsWithChildren;
 
