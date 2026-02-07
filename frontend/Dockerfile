@@ -12,6 +12,10 @@ RUN npm ci
 # Копируем исходный код
 COPY . .
 
+# Принимаем build argument для Yandex Maps API ключа
+ARG VITE_YANDEX_MAPS_API_KEY
+ENV VITE_YANDEX_MAPS_API_KEY=$VITE_YANDEX_MAPS_API_KEY
+
 # Собираем приложение для production
 RUN npm run build
 
