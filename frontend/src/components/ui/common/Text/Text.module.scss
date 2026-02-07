@@ -11,6 +11,13 @@ $font-weight-medium: 500;
     padding: 0;
     font-family: $font-montserrat;
     color: inherit;
+    max-width: 100%;
+
+    &__ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
     // Цвета текста
     &--color-gray-0 {

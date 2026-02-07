@@ -6,6 +6,11 @@
     transition: color 0.2s ease;
     font-family: $font-family-base;
 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+
     // Тема blue (по умолчанию)
     &--blue {
         color: $primary-700;
