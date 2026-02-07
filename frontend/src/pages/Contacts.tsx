@@ -121,7 +121,7 @@ export const Contacts = () => {
                                 <Text variant="12-reg" color="gray-70">
                                     {contacts?.sales_center_address || '-'}
                                 </Text>
-                                <img src="img/salesOffice.png" style={{ width: '100%' }} />
+                                <img src="/img/salesOffice.png" style={{ width: '100%' }} />
                             </Card>
                         </MapPin>
                     </YandexMap>

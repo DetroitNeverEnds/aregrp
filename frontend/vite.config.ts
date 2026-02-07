@@ -23,6 +23,18 @@ export default defineConfig({
                 changeOrigin: true,
                 secure: false,
             },
+            '/yandex-maps-api': {
+                target: 'https://api-maps.yandex.ru',
+                changeOrigin: true,
+                secure: true,
+                rewrite: path => path.replace(/^\/yandex-maps-api/, ''),
+                configure: (proxy, _options) => {
+                    proxy.on('proxyReq', (proxyReq, _req, _res) => {
+                        // Устанавливаем кастомный заголовок Referer
+                        proxyReq.setHeader('Referer', 'http://localhost/');
+                    });
+                },
+            },
         },
     },
     test: {
