@@ -1,6 +1,7 @@
 .flex {
     display: flex;
     box-sizing: border-box;
+    max-width: 100%;
 
     &--inline {
         display: inline-flex;

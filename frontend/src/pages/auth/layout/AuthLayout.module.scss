@@ -1,13 +1,24 @@
-// @use '../../../styles/variables' as *;
-
 .body {
     width: 100%;
     min-height: 100vh;
 }
 
 .logo {
-    width: 461px;
-    background: $gradient-primary-700-900;
+    width: 950px;
+    background: $gradient-primary-700-900-lr;
+    position: relative;
+
+    &__lion1 {
+        position: absolute;
+        top: 27px;
+        left: 27px;
+    }
+
+    &__lion2 {
+        position: absolute;
+        bottom: 27px;
+        right: 27px;
+    }
 }
 
 .auth {

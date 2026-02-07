@@ -46,16 +46,19 @@ export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
     variant?: TextVariant;
     /** Цвет текста */
     color?: TextColor;
+    ellipsis?: boolean;
 }
 
 export const Text: React.FC<TextProps> = ({
     variant = '16-reg',
     color,
     className = '',
+    ellipsis = false,
     ...props
 }) => {
     const textClassNames = classNames(
         styles.text,
+        { [styles.text__ellipsis]: ellipsis },
         styles[`text--${variant}`],
         color && styles[`text--color-${color}`],
         className,
