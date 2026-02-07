@@ -47,12 +47,14 @@ export const Header = (props: HeaderProps) => {
                             onlyIcon
                             icon="whatsapp"
                             className={styles.socialButton}
+                            to={siteInfo?.whatsapp_link || ''}
                         />
                         <Button
                             variant="outlined"
                             onlyIcon
                             icon="tg"
                             className={styles.socialButton}
+                            to={siteInfo?.telegram_link || ''}
                         />
                     </Flex>
                     <Flex direction="row">
