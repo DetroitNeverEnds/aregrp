@@ -14,10 +14,10 @@ on:
             ENV_POSTGRES_FILE:
                 required: true
     # Старые условия (закомментированы):
-    # pull_request:
-    #     branches: [main]
-    #     paths:
-    #         - "**/*"
+    pull_request:
+        branches: [main]
+        paths:
+            - "**/*"
     # workflow_dispatch:
     
     # Новые условия: запуск при push в main
