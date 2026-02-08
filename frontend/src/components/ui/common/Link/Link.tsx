@@ -22,6 +22,7 @@ export interface LinkProps extends Omit<RouterLinkProps, 'to'> {
     trailingIcon?: IconName;
     /** Дополнительный CSS класс */
     className?: string;
+    ellipsis?: boolean;
 }
 
 export const Link: React.FC<LinkProps> = ({
@@ -32,6 +33,7 @@ export const Link: React.FC<LinkProps> = ({
     leadingIcon,
     trailingIcon,
     className = '',
+    ellipsis = false,
     ...props
 }) => {
     // Маппинг размеров на размеры иконок
@@ -45,6 +47,7 @@ export const Link: React.FC<LinkProps> = ({
 
     const linkClassNames = classNames(
         styles.link,
+        { [styles.link__ellipsis]: ellipsis },
         styles[`link--${size}`],
         styles[`link--${theme}`],
         className,
