@@ -3,7 +3,7 @@ import { Icon, type IconSize } from './Icon';
 import { iconNames } from './iconConfig';
 
 const meta = {
-    title: 'Components/Icon',
+    title: 'UI/Common/Icon',
     component: Icon,
     parameters: {
         layout: 'centered',

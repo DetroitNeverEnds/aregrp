@@ -128,6 +128,19 @@ $font-weight-medium: 500;
         font-weight: $font-weight-medium;
     }
 
+    // 10px варианты
+    &--10-reg {
+        font-size: 10px;
+        line-height: 120%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--10-med {
+        @extend .text--10-reg;
+        font-weight: $font-weight-medium;
+    }
+
     // 12px варианты
     &--12-reg {
         font-size: 12px;

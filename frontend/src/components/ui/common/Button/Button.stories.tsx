@@ -4,7 +4,7 @@ import { Button, type ButtonSize, type ButtonWidth } from './Button';
 import { iconNames } from '../Icon';
 
 const meta = {
-    title: 'Components/Button',
+    title: 'UI/Common/Button',
     component: Button,
     decorators: [
         Story => (

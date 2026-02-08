@@ -1,0 +1,113 @@
+.select-container {
+    position: relative;
+    width: 100%;
+
+    &:focus-visible {
+        outline: none;
+    }
+}
+
+.select-field {
+    padding: 10px 20px;
+    background: $gray-0;
+    border: 1.6px solid $gray-20;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+
+    .select-container--lg & {
+        padding: 15px 20px;
+    }
+
+    .select-container--sm & {
+        padding: 10px 20px;
+    }
+
+    // Состояния
+    .select-container:hover:not(.select-container--disabled) & {
+        border-color: $primary-700;
+    }
+
+    .select-container:focus-visible:not(.select-container--disabled) & {
+        border-color: $primary-800;
+    }
+
+    .select-container--open:not(.select-container--disabled) & {
+        border-color: $primary-800;
+    }
+
+    .select-container--error & {
+        border-color: $error-default;
+        background: $gray-0;
+
+        &:hover {
+            border-color: $error-default;
+        }
+    }
+
+    .select-container--disabled & {
+        background: $error-bg-disable;
+        border-color: $gray-20;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+.select-value {
+    flex: 1;
+    min-width: 0;
+}
+
+.select-icons {
+    flex-shrink: 0;
+}
+
+.select-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: $gray-0;
+    border-radius: 20px;
+    box-shadow:
+        0px 0px 16px 0px rgba(68, 83, 113, 0.1),
+        0px 4px 8px 0px rgba(68, 83, 113, 0.05);
+    padding: 20px;
+    overflow-y: scroll;
+    z-index: 1000;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.select-option {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background: $gray-opacity-20-20;
+    }
+
+    // &--focused {
+    //     background: $gray-opacity-20-20;
+    // }
+
+    &--selected {
+        background: $gray-opacity-20-20;
+    }
+}
+
+.select-option-content {
+    gap: 4px;
+}

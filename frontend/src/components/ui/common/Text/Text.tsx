@@ -8,6 +8,8 @@ export type TextVariant =
     | 'h3'
     | 'h4'
     | 'h5'
+    | '10-reg'
+    | '10-med'
     | '12-reg'
     | '12-med'
     | '14-reg'
