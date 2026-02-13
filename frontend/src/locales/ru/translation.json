@@ -92,7 +92,13 @@
         "messanger": "Мессенджер",
         "whatsapp": "WhatsApp",
         "telegram": "Telegram",
-        "send": "Отправить"
+        "send": "Отправить",
+        "from": "От",
+        "to": "До",
+        "price": "Цена",
+        "area": "Площадь",
+        "buyment": "Покупка",
+        "sellment": "Продажа"
     },
     "header": {
         "sale": "Продажа",
@@ -149,5 +155,10 @@
         },
         "copyright": "© 2024 Все права защищены",
         "development": "Разработка сайта"
+    },
+    "components": {
+        "objectFilter": {
+            "allCenters": "Все бизнес центры"
+        }
     }
 }

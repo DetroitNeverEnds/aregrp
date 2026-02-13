@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, type ReactNode } from 'react';
 import classNames from 'classnames';
 import styles from './TextInput.module.scss';
 import { Icon, type IconName } from '../../Icon';
@@ -10,11 +10,15 @@ export type TextInputWidth = 'auto' | 'max';
 
 type AdditionalInputProps = {
     /** Размер инпута */
-    size: TextInputSize;
+    size?: TextInputSize;
     /** Иконка слева (например, search, mail-simple) */
     leadingIcon?: IconName;
     /** Сообщение об ошибке (при наличии инпут становится невалидным с темой error) */
     errorMessage?: string;
+    // Trailing label
+    trailingLabel?: string | ReactNode;
+    clearable?: boolean;
+    width?: number;
 };
 export type TextInputProps = Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -31,6 +35,9 @@ export const TextInput: React.FC<TextInputProps> = ({
     type = 'text',
     value,
     onChange,
+    trailingLabel,
+    clearable = true,
+    // width,
     ...props
 }) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -85,8 +92,13 @@ export const TextInput: React.FC<TextInputProps> = ({
         className,
     );
 
+    const style = {};
+    // if (width) {
+    //     style.width = width;
+    // }
+
     return (
-        <div className={styles['input-wrapper']}>
+        <div className={styles['input-wrapper']} style={style}>
             <div className={containerClassNames}>
                 {leadingIcon && <Icon name={leadingIcon} size={20} />}
 
@@ -99,7 +111,8 @@ export const TextInput: React.FC<TextInputProps> = ({
                     ref={ref}
                     className={styles.input}
                 />
-                {hasValue && !isPasswordField && (
+                {trailingLabel}
+                {clearable && hasValue && !isPasswordField && (
                     <FlatButton onClick={onClear}>
                         <Icon name="xmark-gray-circle" size={20} />
                     </FlatButton>

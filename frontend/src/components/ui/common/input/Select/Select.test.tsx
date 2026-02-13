@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event';
 import { Select } from './Select';
 
 const mockOptions = [
-    { value: '1', title: 'Опция 1', description: 'Описание 1' },
-    { value: '2', title: 'Опция 2', description: 'Описание 2' },
-    { value: '3', title: 'Опция 3' },
+    { value: '1', label: { title: 'Опция 1', description: 'Описание 1' } },
+    { value: '2', label: { title: 'Опция 2', description: 'Описание 2' } },
+    { value: '3', label: { title: 'Опция 3' } },
 ];
 
 describe('Select', () => {
