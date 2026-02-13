@@ -115,27 +115,32 @@ class FloorAdmin(admin.ModelAdmin):
 
 @admin.register(Premise)
 class PremiseAdmin(admin.ModelAdmin):
-    """Админка для помещений."""
+    """Админка для помещений. Помещение привязано к зданию, этаж — из списка этажей этого здания."""
     list_display = (
-        'number', 'city', 'building_info', 'floor_info', 
-        'area', 'price_per_month', 'premise_type', 'status', 'created_at'
+        'number', 'city', 'building', 'floor_info',
+        'area', 'price_per_month', 'premise_type', 'status',
+        'available_for_rent', 'available_for_sale', 'created_at'
     )
     list_filter = (
-        'city', 'city__region', 'premise_type', 'status', 
+        'city', 'city__region', 'building', 'premise_type', 'status',
+        'available_for_rent', 'available_for_sale',
         'has_windows', 'has_parking', 'is_furnished', 'created_at'
     )
     search_fields = (
-        'number', 'city__name', 'floor__building__name', 
-        'description', 'floor__building__address'
+        'number', 'city__name', 'building__name',
+        'description', 'building__address'
     )
-    ordering = ('city', 'floor__building', 'floor__number', 'number')
-    autocomplete_fields = ['city', 'floor']
+    ordering = ('city', 'building', 'floor__number', 'number')
+    autocomplete_fields = ['city', 'building']  # floor — ChainedForeignKey, виджет от django-smart-selects
     readonly_fields = ('created_at', 'updated_at', 'price_per_sqm')
     inlines = [PremiseImageInline]
-    
+
     fieldsets = (
         ('Основная информация', {
-            'fields': ('city', 'floor', 'number', 'premise_type', 'status')
+            'fields': (
+                'city', 'building', 'floor', 'number', 'premise_type', 'status',
+                'available_for_rent', 'available_for_sale',
+            )
         }),
         ('Параметры для поиска', {
             'fields': ('area', 'price_per_month', 'price_per_sqm')
@@ -154,13 +159,6 @@ class PremiseAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
-    def building_info(self, obj):
-        """Информация о здании."""
-        if obj.floor and obj.floor.building:
-            return obj.floor.building.name
-        return '-'
-    building_info.short_description = 'Здание'
     
     def floor_info(self, obj):
         """Информация об этаже."""

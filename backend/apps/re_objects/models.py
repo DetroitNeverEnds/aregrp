@@ -1,8 +1,11 @@
 """
 Модели для объектов недвижимости (здания, помещения).
 """
+import uuid
+
 from django.db import models
 from django.core.exceptions import ValidationError
+from smart_selects.db_fields import ChainedForeignKey
 from django.core.validators import FileExtensionValidator
 from django.conf import settings
 
@@ -203,6 +206,14 @@ class Premise(models.Model):
         OFFICE = 'office', 'Офис'
         OTHER = 'other', 'Другое'
 
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        db_index=True,
+        verbose_name="UUID",
+        help_text="Публичный идентификатор помещения для API и URL",
+    )
     # Основные параметры для поиска
     city = models.ForeignKey(
         City,
@@ -213,16 +224,28 @@ class Premise(models.Model):
         null=True,
         blank=True
     )
-    
-    # Связь с этажом (опционально, для детальной информации)
-    floor = models.ForeignKey(
+    # Здание, в котором находится помещение (обязательное поле)
+    building = models.ForeignKey(
+        Building,
+        on_delete=models.CASCADE,
+        related_name='premises',
+        verbose_name="Здание",
+        help_text="Здание, в котором находится помещение"
+    )
+    # Этаж внутри здания (опционально; список этажей фильтруется по выбранному зданию — django-smart-selects)
+    floor = ChainedForeignKey(
         Floor,
+        chained_field='building',
+        chained_model_field='building',
         on_delete=models.SET_NULL,
         related_name='premises',
         null=True,
         blank=True,
+        show_all=False,
+        auto_choose=True,
+        sort=True,
         verbose_name="Этаж",
-        help_text="Этаж, на котором находится помещение"
+        help_text="Этаж, на котором находится помещение (должен относиться к выбранному зданию)"
     )
     
     # Параметры помещения (основные для поиска)
@@ -261,7 +284,17 @@ class Premise(models.Model):
         verbose_name="Статус",
         help_text="Статус доступности помещения"
     )
-    
+    available_for_rent = models.BooleanField(
+        default=True,
+        verbose_name="Доступно для аренды",
+        help_text="Помещение предлагается в аренду"
+    )
+    available_for_sale = models.BooleanField(
+        default=False,
+        verbose_name="Доступно для продажи",
+        help_text="Помещение предлагается к продаже"
+    )
+
     # Описание и детали
     number = models.CharField(
         max_length=50,
@@ -306,27 +339,33 @@ class Premise(models.Model):
     class Meta:
         verbose_name = "Помещение"
         verbose_name_plural = "Помещения"
-        ordering = ['city', 'floor__building', 'floor', 'number']
+        ordering = ['city', 'building', 'floor', 'number']
         indexes = [
-            models.Index(fields=['city', 'status']),  # Для быстрого поиска по городу и статусу
-            models.Index(fields=['city', 'premise_type']),  # Для поиска по типу
-            models.Index(fields=['area']),  # Для фильтрации по площади
-            models.Index(fields=['price_per_month']),  # Для фильтрации по цене
+            models.Index(fields=['city', 'status']),
+            models.Index(fields=['city', 'premise_type']),
+            models.Index(fields=['building']),
+            models.Index(fields=['area']),
+            models.Index(fields=['price_per_month']),
         ]
         db_table = 're_premises'
 
     def __str__(self):
-        building_info = f", {self.floor.building.name}" if self.floor else ""
+        building_info = f", {self.building.name}" if self.building else (f", {self.floor.building.name}" if self.floor else "")
         floor_info = f", этаж {self.floor.number}" if self.floor else ""
-        return f"{self.number or 'Помещение'} ({self.city.name}{building_info}{floor_info})"
-
-    @property
-    def building(self):
-        """Возвращает здание через этаж (для удобства доступа)."""
-        return self.floor.building if self.floor else None
+        city_name = self.city.name if self.city else "—"
+        return f"{self.number or 'Помещение'} ({city_name}{building_info}{floor_info})"
 
     def save(self, *args, **kwargs):
-        # Если город не указан, используем город по умолчанию
+        # Синхронизация здания и этажа: при выборе этажа подставляем здание; при смене здания обнуляем этаж, если он из другого здания
+        if self.floor_id:
+            if not self.building_id:
+                self.building_id = Floor.objects.filter(pk=self.floor_id).values_list('building_id', flat=True).first()
+            elif Floor.objects.filter(pk=self.floor_id, building_id=self.building_id).exists() is False:
+                self.floor_id = None
+        # Город из здания, если не указан
+        if self.building_id and not self.city_id:
+            self.city_id = Building.objects.filter(pk=self.building_id).values_list('city_id', flat=True).first()
+        # Если город всё ещё не указан, используем город по умолчанию
         if not self.city_id:
             try:
                 default_city = City.objects.filter(is_default=True).first()

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+    'smart_selects',
 
     'apps.accounts',
     'apps.site_settings',
@@ -238,3 +239,7 @@ LOGGING = {
         },
     },
 }
+
+# --- re_objects: значения параметров фильтра API помещений ---
+RE_OBJECTS_SALE_TYPE_RENT = "rent"
+RE_OBJECTS_SALE_TYPE_SALE = "sale"

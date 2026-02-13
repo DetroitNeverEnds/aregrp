@@ -12,6 +12,61 @@ wheels = [
 ]
 
 [[package]]
+name = "aregrp-backend"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "boto3" },
+    { name = "dj-database-url" },
+    { name = "django" },
+    { name = "django-cors-headers" },
+    { name = "django-ninja" },
+    { name = "django-smart-selects" },
+    { name = "django-storages" },
+    { name = "pillow" },
+    { name = "pre-commit" },
+    { name = "psycopg2-binary" },
+    { name = "pyjwt" },
+    { name = "python-decouple" },
+    { name = "pyyaml" },
+    { name = "ruff" },
+    { name = "uvicorn" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "pytest-django" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "boto3", specifier = ">=1.34.0" },
+    { name = "dj-database-url", specifier = ">=2.3.0" },
+    { name = "django", specifier = ">=5.2.1" },
+    { name = "django-cors-headers", specifier = ">=4.7.0" },
+    { name = "django-ninja", specifier = ">=1.1.0" },
+    { name = "django-smart-selects", specifier = ">=1.6.0" },
+    { name = "django-storages", specifier = ">=1.14.2" },
+    { name = "pillow", specifier = ">=10.0.0" },
+    { name = "pre-commit", specifier = ">=4.2.0" },
+    { name = "psycopg2-binary", specifier = ">=2.9.11" },
+    { name = "pyjwt", specifier = ">=2.8.0" },
+    { name = "python-decouple", specifier = ">=3.8" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+    { name = "ruff", specifier = ">=0.11.13" },
+    { name = "uvicorn", specifier = ">=0.34.2" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest-asyncio", specifier = ">=0.23.0" },
+    { name = "pytest-django", specifier = ">=4.8.0" },
+]
+
+[[package]]
 name = "asgiref"
 version = "3.8.1"
 source = { registry = "https://pypi.org/simple" }
@@ -141,6 +196,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-smart-selects"
+version = "1.7.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4a/33/3b512f6b38e0581be812f470424e9b819688edba03b581931534d5fcfc11/django_smart_selects-1.7.2.tar.gz", hash = "sha256:c8116718ecf2d0d0fd4cd1e52c26d2dcc586e25319aa65af7af2d51a1012df3a", size = 27931, upload-time = "2024-11-17T19:06:57.09Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7a/83/4ae33d1518409ac65891cc5f739cface4d8f27117fbf1eda3a515e90e86c/django_smart_selects-1.7.2-py3-none-any.whl", hash = "sha256:08c774d96285e6d169043cd548860d74d085be8d349c42437232c42bc43cd79a", size = 31651, upload-time = "2024-11-17T19:06:55.279Z" },
+]
+
+[[package]]
 name = "django-storages"
 version = "1.14.6"
 source = { registry = "https://pypi.org/simple" }
@@ -150,51 +217,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ff/d6/2e50e378fff0408d558f36c4acffc090f9a641fd6e084af9e54d45307efa/django_storages-1.14.6.tar.gz", hash = "sha256:7a25ce8f4214f69ac9c7ce87e2603887f7ae99326c316bc8d2d75375e09341c9", size = 87587, upload-time = "2025-04-02T02:34:55.103Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1f/21/3cedee63417bc5553eed0c204be478071c9ab208e5e259e97287590194f1/django_storages-1.14.6-py3-none-any.whl", hash = "sha256:11b7b6200e1cb5ffcd9962bd3673a39c7d6a6109e8096f0e03d46fab3d3aabd9", size = 33095, upload-time = "2025-04-02T02:34:53.291Z" },
-]
-
-[[package]]
-name = "django-template"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "boto3" },
-    { name = "dj-database-url" },
-    { name = "django" },
-    { name = "django-cors-headers" },
-    { name = "django-ninja" },
-    { name = "django-storages" },
-    { name = "pillow" },
-    { name = "pre-commit" },
-    { name = "psycopg2-binary" },
-    { name = "pyjwt" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "pytest-django" },
-    { name = "python-decouple" },
-    { name = "pyyaml" },
-    { name = "ruff" },
-    { name = "uvicorn" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "boto3", specifier = ">=1.34.0" },
-    { name = "dj-database-url", specifier = ">=2.3.0" },
-    { name = "django", specifier = ">=5.2.1" },
-    { name = "django-cors-headers", specifier = ">=4.7.0" },
-    { name = "django-ninja", specifier = ">=1.1.0" },
-    { name = "django-storages", specifier = ">=1.14.2" },
-    { name = "pillow", specifier = ">=10.0.0" },
-    { name = "pre-commit", specifier = ">=4.2.0" },
-    { name = "psycopg2-binary", specifier = ">=2.9.11" },
-    { name = "pyjwt", specifier = ">=2.8.0" },
-    { name = "pytest", specifier = ">=8.0.0" },
-    { name = "pytest-asyncio", specifier = ">=0.23.0" },
-    { name = "pytest-django", specifier = ">=4.8.0" },
-    { name = "python-decouple", specifier = ">=3.8" },
-    { name = "pyyaml", specifier = ">=6.0.2" },
-    { name = "ruff", specifier = ">=0.11.13" },
-    { name = "uvicorn", specifier = ">=0.34.2" },
 ]
 
 [[package]]

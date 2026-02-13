@@ -46,6 +46,9 @@ class ErrorCode(str, Enum):
     SITE_SETTINGS_NOT_FOUND = "SITE_SETTINGS_NOT_FOUND"
     SITE_SETTINGS_ERROR = "SITE_SETTINGS_ERROR"
 
+    # Re objects (premises)
+    RE_OBJECTS_NOT_FOUND = "RE_OBJECTS_NOT_FOUND"
+
 
 class ProblemDetail(Schema):
     """

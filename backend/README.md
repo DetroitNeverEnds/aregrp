@@ -17,14 +17,45 @@
 ## 🚀 How to Use This Project
 
 1. Copy the repository contents to your own project folder.
-2. Rename and fill in the `.env` file (from `env`).
-3. Rename and fill in the `.env.postgres` file (from `env.postgres`).
+2. Rename and fill in the `.env` file (from `env.example`).
+3. Rename and fill in the `.env.postgres` file (from `env.postgres.example`).
+4. Установка зависимостей: `uv sync` (ставит и dev-группу; в Docker используется `uv sync --no-dev`).
+5. Обновление lock после изменения `pyproject.toml`: `uv lock` (из каталога `backend`).
+6. Экспорт OpenAPI-схемы в `api/api.json`: из каталога `backend` выполнить `uv run python scripts/export_openapi.py`.
+
+**Про uv на macOS:** в песочнице (например, в IDE) `uv run` может падать с ошибкой SystemConfiguration. В таком случае выполнять команды в обычном терминале или после `uv sync` использовать интерпретатор виртуального окружения: `.venv/bin/python scripts/export_openapi.py`, `.venv/bin/python manage.py migrate` и т.д.
 
 ---
 
 ### 💻 Local Development
 
-You can run the project locally using:
+**Вариант 1: БД в Docker, Django на хосте**
+
+Поднять только PostgreSQL (порт 5432 наружу):
+
+```bash
+# из корня проекта
+docker compose -f docker-compose.local.yml up -d
+```
+
+В `backend/.env.postgres` задать `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`.  
+В `backend/.env` указать:
+
+```env
+DATABASE_URL=postgres://USER:PASSWORD@localhost:5432/DBNAME
+```
+
+(те же USER, PASSWORD, DBNAME, что в `.env.postgres`). Затем:
+
+```bash
+cd backend
+uv run python manage.py migrate
+uv run python manage.py runserver
+```
+
+**Вариант 2: без Docker (SQLite)**
+
+В `.env` оставить `DATABASE_URL=sqlite:///db.sqlite3` и запускать:
 
 ```bash
 uv run manage.py runserver --verbosity 2 --traceback
