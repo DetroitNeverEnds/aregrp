@@ -5,11 +5,13 @@
     cursor: pointer;
     transition: color 0.2s ease;
     font-family: $font-family-base;
-
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     max-width: 100%;
+
+    &__ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
     // Тема blue (по умолчанию)
     &--blue {

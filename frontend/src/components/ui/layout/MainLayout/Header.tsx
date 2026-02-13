@@ -28,18 +28,28 @@ export const Header = (props: HeaderProps) => {
                     <LogoText />
                 </Flex>
                 <Flex direction="row" align="center" gap={30}>
-                    <Link to="/sale">{t('header.sale')}</Link>
-                    <Link to="/rent">{t('header.rent')}</Link>
-                    <Link to="/investors">{t('header.investors')}</Link>
-                    <Link to="/agents">{t('header.agents')}</Link>
-                    <Link to="/contacts">{t('header.contacts')}</Link>
-                    <Link to="/cases" trailingIcon="download-rounded">
+                    <Link to="/sale" ellipsis>
+                        {t('header.sale')}
+                    </Link>
+                    <Link to="/rent" ellipsis>
+                        {t('header.rent')}
+                    </Link>
+                    <Link to="/investors" ellipsis>
+                        {t('header.investors')}
+                    </Link>
+                    <Link to="/agents" ellipsis>
+                        {t('header.agents')}
+                    </Link>
+                    <Link to="/contacts" ellipsis>
+                        {t('header.contacts')}
+                    </Link>
+                    <Link to="/cases" ellipsis trailingIcon="download-rounded">
                         {t('header.cases')}
                     </Link>
                 </Flex>
                 <Flex direction="row" gap={40}>
                     <Flex direction="row" gap={10}>
-                        <Link to={`tel:${siteInfo?.phone}`} size="lg">
+                        <Link to={`tel:${siteInfo?.phone}`} size="lg" ellipsis>
                             {siteInfo?.display_phone || '-'}
                         </Link>
                         <Button

@@ -16,10 +16,10 @@ on:
             VITE_YANDEX_MAPS_API_KEY:
                 required: true
     # Старые условия (закомментированы):
-    pull_request:
-        branches: [main]
-        paths:
-            - "**/*"
+    # pull_request:
+    #     branches: [main]
+    #     paths:
+    #         - "**/*"
     # workflow_dispatch:
     
     # Новые условия: запуск при push в main
