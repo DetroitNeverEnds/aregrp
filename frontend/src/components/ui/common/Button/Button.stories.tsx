@@ -1,10 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { BrowserRouter } from 'react-router-dom';
 import { Button, type ButtonSize, type ButtonWidth } from './Button';
 import { iconNames } from '../Icon';
 
 const meta = {
     title: 'Components/Button',
     component: Button,
+    decorators: [
+        Story => (
+            <BrowserRouter>
+                <Story />
+            </BrowserRouter>
+        ),
+    ],
     parameters: {
         layout: 'centered',
     },
@@ -302,6 +310,42 @@ export const AllVariants: Story = {
                 <Button variant="secondary" size="md">
                     Secondary Medium
                 </Button>
+            </div>
+        </div>
+    ),
+};
+
+// Кнопки-ссылки
+export const AsLink: Story = {
+    args: {
+        variant: 'primary',
+        size: 'md',
+    },
+    render: () => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <Button variant="primary" size="md" to="/" icon="sample">
+                    Главная
+                </Button>
+                <Button variant="outlined" size="md" to="/about">
+                    О нас
+                </Button>
+                <Button variant="secondary" size="md" to="/contacts" icon="phone">
+                    Контакты
+                </Button>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <Button variant="primary" size="lg" to="/" icon="chevron-left">
+                    Назад
+                </Button>
+                <Button variant="outlined" size="lg" to="/next" icon="chevron-right">
+                    Далее
+                </Button>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <Button variant="primary" size="md" to="/" icon="plus" onlyIcon />
+                <Button variant="outlined" size="md" to="/search" icon="search" onlyIcon />
+                <Button variant="secondary" size="md" to="/settings" icon="settings" onlyIcon />
             </div>
         </div>
     ),

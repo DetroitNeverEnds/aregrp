@@ -49,6 +49,7 @@ $gray-opacity-100-80: rgba(30, 32, 35, 0.8);
 
 // Градиенты
 $gradient-primary-700-900: linear-gradient(180deg, $primary-700 0%, $primary-900 100%);
+$gradient-primary-700-900-lr: linear-gradient(-90deg, $primary-700 0%, $primary-900 100%);
 $gradient-gray-100: linear-gradient(180deg, $gray-100 0%, rgba($gray-100, 0) 100%);
 
 // Устаревшие цвета (для обратной совместимости)
@@ -75,3 +76,5 @@ $font-family-base:
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
+
+$border-radius-l: 30px;

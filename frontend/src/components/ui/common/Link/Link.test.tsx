@@ -22,8 +22,8 @@ describe('Link', () => {
 
     it('использует size по умолчанию medium', () => {
         renderWithRouter(<Link to="/test">Текст</Link>);
-        const text = screen.getByText('Текст');
-        expect(text.tagName).toBe('SPAN');
+        const link = screen.getByText('Текст').closest('a');
+        expect(link).toHaveClass(styles['link--md']);
     });
 
     it('применяет кастомный size', () => {

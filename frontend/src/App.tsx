@@ -4,6 +4,9 @@ import Login from './pages/auth/login';
 import Register from './pages/auth/register';
 import ForgotPassword from './pages/auth/forgot-password';
 import RestorePassword from './pages/auth/restore-password';
+import { MainLayout } from './components/ui/layout/MainLayout/Layout';
+import { Root } from './pages/Root';
+import { Contacts } from './pages/Contacts';
 
 function App() {
     return (
@@ -13,6 +16,10 @@ function App() {
                 <Route path="register" element={<Register />} />
                 <Route path="forgot-password" element={<ForgotPassword />} />
                 <Route path="restore-password" element={<RestorePassword />} />
+            </Route>
+            <Route path="/" element={<MainLayout />}>
+                <Route path="/" element={<Root />} />
+                <Route path="/contacts" element={<Contacts />} />
             </Route>
         </Routes>
     );

@@ -61,7 +61,7 @@ export const Login: React.FC = () => {
             isSubmitting={isPending}
             errorMessage={formState.errors.root?.message}
             additionalOptionsLower={
-                <Flex direction="row" justify="between">
+                <Flex direction="row" justify="between" fullWidth>
                     <Controller
                         control={control}
                         name="rememberMe"
@@ -80,7 +80,7 @@ export const Login: React.FC = () => {
                 </Flex>
             }
             footer={
-                <Flex align="end">
+                <Flex align="end" fullWidth>
                     <Text variant="16-reg" color="gray-50">
                         {t('auth.common.noAccount')}{' '}
                         <Link to="/auth/register" size="lg" theme="black">

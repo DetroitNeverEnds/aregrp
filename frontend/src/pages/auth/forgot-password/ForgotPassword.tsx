@@ -52,7 +52,7 @@ export const ForgotPassword: React.FC = () => {
             isSubmitting={isPending}
             errorMessage={formState.errors.root?.message}
             footer={
-                <Flex gap={10} align="end">
+                <Flex gap={10} align="end" fullWidth>
                     <Text variant="16-reg" color="gray-50">
                         {t('auth.common.hasAccount')}{' '}
                         <Link to="/auth/login" size="lg" theme="black">

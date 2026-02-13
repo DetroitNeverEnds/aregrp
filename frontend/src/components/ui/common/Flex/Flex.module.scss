@@ -1,5 +1,7 @@
 .flex {
     display: flex;
+    box-sizing: border-box;
+    max-width: 100%;
 
     &--inline {
         display: inline-flex;
@@ -71,6 +73,27 @@
     &--align-baseline {
         align-items: baseline;
     }
+
+    // // AlignItems
+    // &--align-items-start {
+    //     align-items: flex-start;
+    // }
+
+    // &--align-end {
+    //     align-items: flex-end;
+    // }
+
+    // &--align-center {
+    //     align-items: center;
+    // }
+
+    // &--align-stretch {
+    //     align-items: stretch;
+    // }
+
+    // &--align-baseline {
+    //     align-items: baseline;
+    // }
 
     // Wrap
     &--wrap-nowrap {

@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import styles from './Text.module.scss';
 
 export type TextVariant =
+    | 'h1'
     | 'h2'
     | 'h3'
     | 'h4'
@@ -21,7 +22,13 @@ export type TextVariant =
     | '24-med';
 
 export type TextColor =
+    | 'gray-0'
+    | 'gray-5'
+    | 'gray-10'
+    | 'gray-20'
+    | 'gray-30'
     | 'gray-50'
+    | 'gray-70'
     | 'gray-100'
     | 'primary-200'
     | 'primary-300'
@@ -39,18 +46,21 @@ export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
     variant?: TextVariant;
     /** Цвет текста */
     color?: TextColor;
+    ellipsis?: boolean;
 }
 
 export const Text: React.FC<TextProps> = ({
     variant = '16-reg',
-    color = 'gray-100',
+    color,
     className = '',
+    ellipsis = false,
     ...props
 }) => {
     const textClassNames = classNames(
         styles.text,
+        { [styles.text__ellipsis]: ellipsis },
         styles[`text--${variant}`],
-        styles[`text--color-${color}`],
+        color && styles[`text--color-${color}`],
         className,
     );
 

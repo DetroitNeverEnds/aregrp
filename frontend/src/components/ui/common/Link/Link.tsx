@@ -1,12 +1,11 @@
 import React from 'react';
 import { Link as RouterLink, type LinkProps as RouterLinkProps } from 'react-router-dom';
 import classNames from 'classnames';
-import { Text, type TextProps } from '../Text';
 import { Icon, type IconName } from '../Icon';
 import styles from './Link.module.scss';
 
 export type LinkSize = 'sm' | 'md' | 'lg';
-export type LinkTheme = 'blue' | 'black';
+export type LinkTheme = 'blue' | 'black' | 'light';
 
 export interface LinkProps extends Omit<RouterLinkProps, 'to'> {
     /** Путь для навигации */
@@ -35,13 +34,6 @@ export const Link: React.FC<LinkProps> = ({
     className = '',
     ...props
 }) => {
-    // Маппинг размеров на варианты текста
-    const sizeToVariant: Record<LinkSize, TextProps['variant']> = {
-        sm: '12-med',
-        md: '14-med',
-        lg: '16-med',
-    };
-
     // Маппинг размеров на размеры иконок
     const sizeToIconSize: Record<LinkSize, 14 | 16 | 20 | 24> = {
         sm: 16,
@@ -49,7 +41,6 @@ export const Link: React.FC<LinkProps> = ({
         lg: 20,
     };
 
-    const variant = sizeToVariant[size];
     const iconSize = sizeToIconSize[size];
 
     const linkClassNames = classNames(
@@ -64,7 +55,7 @@ export const Link: React.FC<LinkProps> = ({
             {leadingIcon && (
                 <Icon name={leadingIcon} size={iconSize} className={styles.link__leadingIcon} />
             )}
-            <Text variant={variant}>{children}</Text>
+            {children}
             {trailingIcon && (
                 <Icon name={trailingIcon} size={iconSize} className={styles.link__trailingIcon} />
             )}

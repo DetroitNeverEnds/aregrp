@@ -29,7 +29,7 @@ const meta = {
         },
         theme: {
             control: 'select',
-            options: ['blue', 'black'],
+            options: ['blue', 'black', 'light'],
             description: 'Тема ссылки',
         },
         children: {
@@ -92,6 +92,11 @@ export const AllThemes: Story = {
             <Link to="/example" theme="black">
                 Черная тема (black)
             </Link>
+            <div style={{ background: '#263e4b', padding: '16px', borderRadius: '8px' }}>
+                <Link to="/example" theme="light">
+                    Светлая тема (light)
+                </Link>
+            </div>
         </div>
     ),
 };
@@ -136,6 +141,35 @@ export const SizesWithIcons: Story = {
     ),
 };
 
+export const LightThemeWithIcons: Story = {
+    args: {
+        to: '',
+        children: '',
+    },
+    render: () => (
+        <div style={{ background: '#263e4b', padding: '24px', borderRadius: '8px' }}>
+            <h4 style={{ marginBottom: '16px', color: '#fff' }}>Светлая тема с иконками</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <Link to="/example" theme="light" leadingIcon="plus" size="sm">
+                    Ссылка с иконкой слева
+                </Link>
+                <Link to="/example" theme="light" trailingIcon="arrow-narrow-right" size="sm">
+                    Ссылка с иконкой справа
+                </Link>
+                <Link
+                    to="/example"
+                    theme="light"
+                    leadingIcon="plus"
+                    trailingIcon="arrow-narrow-right"
+                    size="sm"
+                >
+                    Ссылка с двумя иконками
+                </Link>
+            </div>
+        </div>
+    ),
+};
+
 export const ThemesComparison: Story = {
     args: {
         to: '',
@@ -168,6 +202,20 @@ export const ThemesComparison: Story = {
                     </Link>
                     <Link to="/example" size="lg" theme="black">
                         Большая черная ссылка
+                    </Link>
+                </div>
+            </div>
+            <div style={{ background: '#263e4b', padding: '16px', borderRadius: '8px' }}>
+                <h4 style={{ marginBottom: '8px', color: '#fff' }}>Светлая тема (light)</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <Link to="/example" size="sm" theme="light">
+                        Маленькая светлая ссылка
+                    </Link>
+                    <Link to="/example" size="md" theme="light">
+                        Средняя светлая ссылка
+                    </Link>
+                    <Link to="/example" size="lg" theme="light">
+                        Большая светлая ссылка
                     </Link>
                 </div>
             </div>

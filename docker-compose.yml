@@ -2,7 +2,10 @@ services:
     # Frontend контейнер
     frontend:
         image: ${REGISTRY_PREFIX:-}aregrp-frontend:${TAG:-local}
-        build: frontend
+        build:
+            context: frontend
+            args:
+                VITE_YANDEX_MAPS_API_KEY: ${VITE_YANDEX_MAPS_API_KEY}
         container_name: aregrp-frontend
         restart: unless-stopped
         networks:

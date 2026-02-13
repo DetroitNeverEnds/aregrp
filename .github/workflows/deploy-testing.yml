@@ -13,11 +13,13 @@ on:
                 required: true
             ENV_POSTGRES_FILE:
                 required: true
+            VITE_YANDEX_MAPS_API_KEY:
+                required: true
     # Старые условия (закомментированы):
-    # pull_request:
-    #     branches: [main]
-    #     paths:
-    #         - "**/*"
+    pull_request:
+        branches: [main]
+        paths:
+            - "**/*"
     # workflow_dispatch:
     
     # Новые условия: запуск при push в main
@@ -74,6 +76,7 @@ jobs:
               env:
                   REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}
                   TAG: ${{ env.TAG }}
+                  VITE_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
               run: docker compose build && docker compose push
     deploy:
         name: Deploy
@@ -228,6 +231,7 @@ jobs:
                       # Экспортируем переменные окружения для docker-compose
                       export REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
                       export TAG=${{ env.TAG }}
+                      export VITE_YANDEX_MAPS_API_KEY=${{ secrets.VITE_YANDEX_MAPS_API_KEY }}
 
                       # Останавливаем, скачиваем и запускаем
                       docker compose pull

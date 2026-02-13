@@ -14,6 +14,7 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
     justify?: FlexJustify;
     /** Выравнивание по поперечной оси (align-items) */
     align?: FlexAlign;
+    // alignItems?: FlexAlign;
     /** Перенос элементов (flex-wrap) */
     wrap?: FlexWrap;
     /** Расстояние между элементами */
@@ -29,7 +30,8 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Flex: React.FC<FlexProps> = ({
     direction = 'column',
     justify = 'start',
-    align = 'stretch',
+    align = 'center',
+    // alignItems = 'center',
     wrap = 'nowrap',
     gap,
     inline = false,
@@ -44,6 +46,7 @@ export const Flex: React.FC<FlexProps> = ({
         styles[`flex--direction-${direction}`],
         styles[`flex--justify-${justify}`],
         styles[`flex--align-${align}`],
+        // styles[`flex--align-items-${alignItems}`],
         styles[`flex--wrap-${wrap}`],
         {
             [styles['flex--inline']]: inline,

@@ -1,0 +1,1 @@
+export { VerticalMainContainer } from './VerticalMainContainer';

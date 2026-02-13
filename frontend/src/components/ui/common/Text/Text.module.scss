@@ -10,11 +10,44 @@ $font-weight-medium: 500;
     margin: 0;
     padding: 0;
     font-family: $font-montserrat;
+    color: inherit;
+    max-width: 100%;
+
+    &__ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
     // Цвета текста
+    &--color-gray-0 {
+        color: $gray-0;
+    }
+
+    &--color-gray-5 {
+        color: $gray-5;
+    }
+
+    &--color-gray-10 {
+        color: $gray-10;
+    }
+
+    &--color-gray-20 {
+        color: $gray-20;
+    }
+
+    &--color-gray-30 {
+        color: $gray-30;
+    }
+
     &--color-gray-50 {
         color: $gray-50;
     }
+
+    &--color-gray-70 {
+        color: $gray-70;
+    }
+
     &--color-gray-100 {
         color: $gray-100;
     }
@@ -60,6 +93,13 @@ $font-weight-medium: 500;
     }
 
     // Заголовки
+    &--h1 {
+        font-size: 50px;
+        line-height: 110%;
+        letter-spacing: 0;
+        font-weight: $font-weight-medium;
+    }
+
     &--h2 {
         font-size: 46px;
         line-height: 110%;
