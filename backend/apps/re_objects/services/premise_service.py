@@ -1,8 +1,10 @@
 """
-Сервисный слой для помещений: фильтрация, пагинация, получение по id.
+Сервисный слой для помещений: фильтрация, пагинация, получение по UUID.
 
 Публичный API:
-- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building, price/area, order_by).
+- parse_building_uuids(value) — парсит строку 'uuid1,uuid2,...' в список UUID для фильтра зданий.
+- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
+- get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address).
 - get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
@@ -14,10 +16,11 @@ from typing import Optional
 from uuid import UUID
 
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Subquery
 
-from ..models import Premise
+from ..models import Building, Premise
 from ..schemas import (
+    BuildingOptionOut,
     PremiseListOut,
     PremiseListResponse,
     PremiseDetailOut,
@@ -27,19 +30,40 @@ from ..schemas import (
 )
 
 
+def parse_building_uuids(value: Optional[str]) -> Optional[list[UUID]]:
+    """
+    Парсит building_uuids из query-строки 'uuid1,uuid2,...' в список UUID.
+
+    Пустая или невалидная строка — None. Невалидные фрагменты пропускаются.
+    """
+    if not value or not value.strip():
+        return None
+    uuids = []
+    for part in value.strip().split(","):
+        part = part.strip()
+        if not part:
+            continue
+        try:
+            uuids.append(UUID(part))
+        except (ValueError, TypeError):
+            continue
+    return uuids if uuids else None
+
+
 class PremiseFilterParams:
     """
     Параметры фильтрации и пагинации списка помещений.
 
     sale_type: rent | sale (из settings). available: True — свободные, False — занятые.
-    building_query: поиск по адресу/названию здания. min/max price, min/max area.
-    order_by: default | price_asc | price_desc | area_asc | area_desc. page, page_size.
+    building_query: поиск по адресу/названию здания. building_uuids: фильтр по UUID зданий (чекбоксы).
+    min/max price, min/max area. order_by, page, page_size.
     """
 
     __slots__ = (
         "sale_type",
         "available",
         "building_query",
+        "building_uuids",
         "min_price",
         "max_price",
         "min_area",
@@ -55,6 +79,7 @@ class PremiseFilterParams:
         sale_type: Optional[str] = None,
         available: Optional[bool] = None,
         building_query: Optional[str] = None,
+        building_uuids: Optional[list[UUID]] = None,
         min_price: Optional[Decimal] = None,
         max_price: Optional[Decimal] = None,
         min_area: Optional[Decimal] = None,
@@ -67,6 +92,7 @@ class PremiseFilterParams:
         # True — свободные, False — занятые, None — по умолчанию свободные
         self.available = available if available is not None else True
         self.building_query = building_query and building_query.strip() or None
+        self.building_uuids = list(building_uuids) if building_uuids else None
         self.min_price = min_price
         self.max_price = max_price
         self.min_area = min_area
@@ -80,8 +106,8 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     """
     Строит queryset помещений с фильтрами и сортировкой.
 
-    Фильтры: available (свободные/занятые), sale_type (аренда/продажа), building_query,
-    min_price, max_price, min_area, max_area. Сортировка по order_by.
+    Фильтры: available (свободные/занятые), sale_type (аренда/продажа), building_query (поиск по тексту),
+    building_uuids (фильтр по UUID зданий), min_price, max_price, min_area, max_area. Сортировка по order_by.
     Не обращается к БД (lazy), пагинация не применяется.
     Результат передаётся в async-методы (acount, async for).
     """
@@ -110,6 +136,8 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
             Q(building__address__icontains=params.building_query)
             | Q(building__name__icontains=params.building_query)
         )
+    if params.building_uuids:
+        qs = qs.filter(building__uuid__in=params.building_uuids)
 
     if params.min_price is not None:
         qs = qs.filter(price_per_month__gte=params.min_price)
@@ -131,6 +159,48 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     else:
         qs = qs.order_by("city", "building", "floor__number", "number", "id")
     return qs
+
+
+def _premise_filter_for_buildings(
+    sale_type: Optional[str],
+    available: bool,
+) -> Q:
+    """Фильтр помещений по sale_type и available (для списка зданий и для queryset)."""
+    q = Q()
+    if available:
+        q &= Q(status=Premise.Status.AVAILABLE)
+    else:
+        q &= Q(
+            status__in=[
+                Premise.Status.RESERVED,
+                Premise.Status.RENTED,
+                Premise.Status.UNAVAILABLE,
+            ]
+        )
+    if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
+        q &= Q(available_for_rent=True)
+    elif sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
+        q &= Q(available_for_sale=True)
+    return q
+
+
+async def get_buildings_for_filter(
+    sale_type: Optional[str] = None,
+    available: bool = True,
+) -> list[BuildingOptionOut]:
+    """
+    Список зданий для фильтра (чекбоксы «бизнес-центры»).
+
+    Возвращает здания, у которых есть хотя бы одно помещение с учётом sale_type и available.
+    Фронт запрашивает один раз при загрузке и подставляет список в мультиселект.
+    """
+    premise_filter = _premise_filter_for_buildings(sale_type, available)
+    subq = Premise.objects.filter(premise_filter).values("building_id").distinct()
+    qs = Building.objects.filter(id__in=Subquery(subq)).order_by("name")
+    return [
+        BuildingOptionOut(uuid=str(b.uuid), name=b.name, address=b.address)
+        async for b in qs
+    ]
 
 
 def _build_premise_media(p: Premise) -> PremiseMediaOut:
