@@ -100,6 +100,14 @@ class Building(models.Model):
     Здание.
     Связано с городом. Содержит этажи с помещениями.
     """
+    uuid = models.UUIDField(
+        verbose_name="UUID",
+        help_text="Публичный идентификатор здания для API",
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        db_index=True,
+    )
     name = models.CharField(
         max_length=300,
         verbose_name="Название здания",

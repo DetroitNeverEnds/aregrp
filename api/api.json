@@ -519,6 +519,64 @@
         ]
       }
     },
+    "/api/v1/premises/buildings": {
+      "get": {
+        "operationId": "apps_re_objects_routers_building_list",
+        "summary": "Список зданий для фильтра",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sale_type",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "rent — только с помещениями под аренду, sale — под продажу",
+              "title": "Sale Type"
+            },
+            "required": false,
+            "description": "rent — только с помещениями под аренду, sale — под продажу"
+          },
+          {
+            "in": "query",
+            "name": "available",
+            "schema": {
+              "default": true,
+              "description": "Только здания со свободными помещениями (true) или с занятыми (false)",
+              "title": "Available",
+              "type": "boolean"
+            },
+            "required": false,
+            "description": "Только здания со свободными помещениями (true) или с занятыми (false)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BuildingOptionOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        },
+        "description": "Здания, у которых есть помещения (с учётом sale_type и available). Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры».",
+        "tags": [
+          "Premises"
+        ]
+      }
+    },
     "/api/v1/premises": {
       "get": {
         "operationId": "apps_re_objects_routers_premise_list",
@@ -577,6 +635,24 @@
             },
             "required": false,
             "description": "Поиск по адресу или названию здания"
+          },
+          {
+            "in": "query",
+            "name": "building_uuids",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по UUID зданий (через запятую)",
+              "title": "Building Uuids"
+            },
+            "required": false,
+            "description": "Фильтр по UUID зданий (через запятую)"
           },
           {
             "in": "query",
@@ -718,7 +794,7 @@
             }
           }
         },
-        "description": "Фильтры: sale_type (rent|sale), available (true/false — свободно/занято), building, min_price, max_price, min_area, max_area. Сортировка: order_by. Пагинация: page, page_size.",
+        "description": "Фильтры: sale_type (rent|sale), available (true/false — свободно/занято), building (поиск по тексту), building_uuids (UUID зданий через запятую), min_price, max_price, min_area, max_area. Сортировка: order_by. Пагинация: page, page_size.",
         "tags": [
           "Premises"
         ]
@@ -764,6 +840,24 @@
             },
             "required": false,
             "description": "Поиск по адресу или названию здания"
+          },
+          {
+            "in": "query",
+            "name": "building_uuids",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по UUID зданий (через запятую)",
+              "title": "Building Uuids"
+            },
+            "required": false,
+            "description": "Фильтр по UUID зданий (через запятую)"
           },
           {
             "in": "query",
@@ -951,6 +1045,24 @@
             },
             "required": false,
             "description": "Поиск по адресу или названию здания"
+          },
+          {
+            "in": "query",
+            "name": "building_uuids",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Фильтр по UUID зданий (через запятую)",
+              "title": "Building Uuids"
+            },
+            "required": false,
+            "description": "Фильтр по UUID зданий (через запятую)"
           },
           {
             "in": "query",
@@ -1683,6 +1795,30 @@
           "lng"
         ],
         "title": "CoordinatesOut",
+        "type": "object"
+      },
+      "BuildingOptionOut": {
+        "description": "Здание для фильтра (чекбоксы «бизнес-центры»): uuid, название, адрес.",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "name",
+          "address"
+        ],
+        "title": "BuildingOptionOut",
         "type": "object"
       },
       "MediaPhotoOut": {

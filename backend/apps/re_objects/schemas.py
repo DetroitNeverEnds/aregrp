@@ -63,3 +63,11 @@ class PremiseListResponse(Schema):
     total: int
     page: int
     page_size: int
+
+
+class BuildingOptionOut(Schema):
+    """Здание для фильтра (чекбоксы «бизнес-центры»): uuid, название, адрес."""
+
+    uuid: str
+    name: str
+    address: str
