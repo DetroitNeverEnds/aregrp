@@ -5,6 +5,8 @@ import { useMemo } from 'react';
 import { ObjectsFilter } from '../components/ui/forms/ObjectsFilter';
 import Text from '../components/ui/common/Text';
 import { YandexMap } from '../components/ui/common/YandexMap';
+import { ObjectCard } from '../components/ui/cards/ObjectCard';
+import { mockObjectCards } from '../components/ui/cards/ObjectCard/ObjectCard.mock';
 
 import styles from './Root.module.scss';
 
@@ -20,6 +22,11 @@ export const Root = () => {
 
     const data: Data = {
         coordinates: [[44.650540230512846, 42.65871198485353]],
+    };
+
+    const handleCardClick = (id: string | number) => {
+        console.log('Card clicked:', id);
+        // TODO: Добавить навигацию на страницу объекта
     };
 
     return (
@@ -40,6 +47,22 @@ export const Root = () => {
                 </Flex>
             </Flex>
             <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
+
+            {/* Секция с карточками объектов */}
+            <Flex align="start" gap={40} fullWidth>
+                <Text variant="h2" color="primary-900">
+                    Доступные объекты
+                </Text>
+                <div className={styles.cardsGrid}>
+                    {mockObjectCards.map(card => (
+                        <ObjectCard
+                            key={card.id}
+                            {...card}
+                            onButtonClick={() => handleCardClick(card.id)}
+                        />
+                    ))}
+                </div>
+            </Flex>
         </Flex>
     );
 };

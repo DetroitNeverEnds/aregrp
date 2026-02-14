@@ -1,3 +1,10 @@
 .map {
     height: 580px;
 }
+
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(544px, 1fr));
+    gap: 40px;
+    width: 100%;
+}
