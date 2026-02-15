@@ -8,3 +8,11 @@
     gap: 40px;
     width: 100%;
 }
+
+.benifits {
+    &__number {
+        &__title {
+            font-size: 42px;
+        }
+    }
+}

@@ -17,10 +17,10 @@ export const api = {
     /**
      * GET запрос
      */
-    get<TRequest, TResponse>(endpoint: string): (params: TRequest) => Promise<TResponse> {
-        return async () => {
+    get<TRequest, TResponse>(endpoint: string): (params?: TRequest) => Promise<TResponse> {
+        return async (params?: TRequest) => {
             const client = getApiClient();
-            return await client.get<TResponse>(endpoint);
+            return await client.get<TResponse>(endpoint, params as Record<string, string | number | boolean>);
         };
     },
 

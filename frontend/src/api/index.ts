@@ -15,3 +15,7 @@ export type { AuthApiClientConfig } from './base/AuthApiClient';
 
 // API фабрика и утилиты
 export { api, initializeApiClient } from './base/api';
+
+// Handlers
+export * from './handlers/auth';
+export * from './handlers/premises';

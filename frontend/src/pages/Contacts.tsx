@@ -9,8 +9,8 @@ import { useSiteInfo } from '../queries/siteInfo';
 import { Link } from '../components/ui/common/Link';
 import { Divider } from '../components/ui/common/Divider';
 import { useSiteContacts } from '../queries/contacts';
-import { FeedbackForm } from '../components/ui/forms/FeedbackForm';
 import { YandexMap } from '../components/ui/common/YandexMap';
+import { FeedbackFormRow } from '../components/ui/layout/FeedbackFormRow';
 
 import styles from './Contacts.module.scss';
 import { MapPin } from '../components/ui/common/MapPin';
@@ -130,7 +130,7 @@ export const Contacts = () => {
 
             {/* Реквизиты */}
             <TwoColumnsContainer>
-                <Column align="start" gap={40}>
+                <Column gap={40}>
                     <Divider />
                     <Text variant="20-med">{t('pages.contacts.requisite')}</Text>
                 </Column>
@@ -156,23 +156,7 @@ export const Contacts = () => {
             </TwoColumnsContainer>
 
             {/* Форма */}
-            <TwoColumnsContainer>
-                <Column>
-                    <Flex className={styles.formColumnContent} gap={80}>
-                        <Flex gap={20} align="start">
-                            <Text color="gray-50">{t('pages.contacts.planView')}</Text>
-                            <Flex align="start">
-                                <Text variant="h2">{t('pages.contacts.fillForm')}</Text>
-                                <Text variant="h2" color="gray-50">
-                                    {t('pages.contacts.forDetails')}
-                                </Text>
-                            </Flex>
-                        </Flex>
-                        <FeedbackForm />
-                    </Flex>
-                </Column>
-                <Column className={styles.imgColumn} />
-            </TwoColumnsContainer>
+            <FeedbackFormRow />
         </VerticalMainContainer>
     );
 };

@@ -58,10 +58,10 @@ export const YandexMap = ({
     children,
 }: YandexMapProps) => {
     return (
-        <div className={styles.wrapper}>
+        <div className={classNames(styles.wrapper, className)}>
             <YMap
                 location={{ center: center || markerCoordinates, zoom }}
-                className={classNames(styles.map, className)}
+                className={classNames(styles.map)}
                 key={apiKey}
                 behaviors={[]}
             >

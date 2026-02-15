@@ -6,19 +6,20 @@ import { Flex } from '../../Flex';
 import { Dropdown } from '../../Dropdown';
 import type { Size } from '../../Dropdown/Dropdown';
 
-type EasyLabel = {
+type Label = {
     title: string;
     description?: string;
 };
 
 export interface SelectOption<T> {
     value: T;
-    label: EasyLabel;
+    label: Label;
 }
 
 export interface SelectProps<T> {
     /** Массив опций для выбора */
     options: SelectOption<T>[];
+    emptyMessage?: string;
     /** Текущее выбранное значение */
     value?: T | undefined;
     /** Callback при изменении значения */
@@ -47,6 +48,7 @@ export interface SelectProps<T> {
 
 export function Select<T>({
     options,
+    emptyMessage,
     value,
     onChange,
     placeholder = 'Выберите значение',
@@ -111,6 +113,11 @@ export function Select<T>({
                         </Text>
                     </Flex>
                 ))}
+                {options.length === 0 && (
+                    <Text variant="16-reg" color="gray-50">
+                        {emptyMessage}
+                    </Text>
+                )}
             </Flex>
         </Dropdown>
     );

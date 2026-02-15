@@ -5,13 +5,14 @@ import styles from './ObjectsFilter.module.scss';
 import { Button } from '../../common/Button';
 import Switch from '../../common/input/Switch';
 import FromToSelect from './FromToSelect';
-import { Select } from '../../common/input/Select';
+import { Select, type SelectOption } from '../../common/input/Select';
 import { useTranslation } from 'react-i18next';
-
-type Type = 'buy' | 'rent';
+import type { SaleType } from '../../../../api';
+import { useBuildings } from '../../../../queries/premises';
+import { useMemo } from 'react';
 
 type SearchParams = {
-    type: Type;
+    type: SaleType;
     businessCenters?: string[];
     priceFrom?: number;
     priceTo?: number;
@@ -24,19 +25,22 @@ type ObjectsFilterProps = {
     onSubmit: (values: SearchParams) => void;
 };
 
-// Моковые данные для бизнес-центров
-const businessCenterOptions = [
-    { value: 'bc1', label: { title: 'Бизнес-центр 1' } },
-    { value: 'bc2', label: { title: 'Бизнес-центр 2' } },
-    { value: 'bc3', label: { title: 'Бизнес-центр 3' } },
-    { value: 'bc4', label: { title: 'Бизнес-центр 4' } },
-];
-
 export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) => {
     const { t } = useTranslation();
+    const { data: businessCenterOptionsData } = useBuildings();
+    const businessCenterOptions: SelectOption<string>[] = useMemo(
+        () =>
+            businessCenterOptionsData?.map(bc => ({
+                value: bc.uuid,
+                label: {
+                    title: bc.name,
+                },
+            })) || [],
+        [businessCenterOptionsData],
+    );
 
     const { control, handleSubmit, setValue } = useForm<SearchParams>({
-        defaultValues: { ...{ type: 'buy' }, ...(defaultValues || {}) },
+        defaultValues: { ...{ type: 'sale' }, ...(defaultValues || {}) },
     });
 
     return (
@@ -47,7 +51,7 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
                         <Switch
                             options={[
                                 {
-                                    value: 'buy',
+                                    value: 'sale',
                                     label: t('common.buyment'),
                                 },
                                 {
@@ -67,7 +71,7 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
                 <Controller
                     render={({ field: { value, onChange } }) => (
                         <Select
-                            options={businessCenterOptions}
+                            options={businessCenterOptions || []}
                             placeholder={t('components.objectFilter.allCenters')}
                             size="lg"
                             value={value}

@@ -23,6 +23,8 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
     inline?: boolean;
     /** Ширина 100% */
     fullWidth?: boolean;
+    /** Обрезать содержимое с многоточием */
+    ellipsis?: boolean;
     /** Содержимое */
     children?: React.ReactNode;
     ref?: React.Ref<HTMLDivElement>;
@@ -39,6 +41,7 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>(
             gap,
             inline = false,
             fullWidth = false,
+            ellipsis = false,
             className = '',
             style,
             children,
@@ -56,6 +59,7 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>(
             {
                 [styles['flex--inline']]: inline,
                 [styles['flex--full-width']]: fullWidth,
+                [styles['flex--ellipsis']]: ellipsis,
             },
             className,
         );
