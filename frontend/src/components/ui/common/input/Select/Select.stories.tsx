@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Select } from './Select';
+import { Select, type SelectProps } from './Select';
 import { useState } from 'react';
 
 const meta = {
@@ -77,7 +77,7 @@ const simpleOptions = [
 ];
 
 // Контролируемый компонент для интерактивных примеров
-const ControlledSelect = (args: any) => {
+const ControlledSelect = (args: SelectProps<string>) => {
     const [value, setValue] = useState<string | undefined>(args.value);
 
     return (

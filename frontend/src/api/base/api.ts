@@ -20,7 +20,10 @@ export const api = {
     get<TRequest, TResponse>(endpoint: string): (params?: TRequest) => Promise<TResponse> {
         return async (params?: TRequest) => {
             const client = getApiClient();
-            return await client.get<TResponse>(endpoint, params as Record<string, string | number | boolean>);
+            return await client.get<TResponse>(
+                endpoint,
+                params as Record<string, string | number | boolean>,
+            );
         };
     },
 

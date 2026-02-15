@@ -13,13 +13,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockImage = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop';
+const mockImage =
+    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop';
 
 export const Default: Story = {
     args: {
         id: 1,
         title: 'Роторная 1д',
-        description: 'Двух-этажный бизнес-центр со своим паркингом в приволжском районе г. Казань рядом с ТРЦ "KazanMall"',
+        description:
+            'Двух-этажный бизнес-центр со своим паркингом в приволжском районе г. Казань рядом с ТРЦ "KazanMall"',
         imagesUrl: [mockImage],
         priceFrom: 2550000,
         onButtonClick: () => console.log('Button clicked'),
@@ -30,7 +32,8 @@ export const WithMonthlyPayment: Story = {
     args: {
         id: 2,
         title: 'ул. Аделя Кутуя, 68A',
-        description: 'Многофункциональный трехэтажный бизнес-центр со своим паркингом в Советском г. Казани',
+        description:
+            'Многофункциональный трехэтажный бизнес-центр со своим паркингом в Советском г. Казани',
         imagesUrl: [mockImage],
         priceFrom: 1000000,
         monthlyPayment: 17500,
@@ -53,7 +56,8 @@ export const LongDescription: Story = {
     args: {
         id: 4,
         title: 'Бизнес-центр "Премиум"',
-        description: 'Очень длинное описание объекта недвижимости, которое должно обрезаться после двух строк. Современный бизнес-центр класса А с развитой инфраструктурой, собственной парковкой, системой безопасности и круглосуточной охраной. Расположен в центре города с удобной транспортной доступностью.',
+        description:
+            'Очень длинное описание объекта недвижимости, которое должно обрезаться после двух строк. Современный бизнес-центр класса А с развитой инфраструктурой, собственной парковкой, системой безопасности и круглосуточной охраной. Расположен в центре города с удобной транспортной доступностью.',
         imagesUrl: [mockImage],
         priceFrom: 3500000,
         monthlyPayment: 50000,

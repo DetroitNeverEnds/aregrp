@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
-import { Switch } from './Switch';
+import { Switch, type SwitchProps } from './Switch';
 
 const meta = {
     title: 'UI/Input/Switch',
@@ -14,7 +14,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const SwitchWithState = (args: any) => {
+const SwitchWithState = (args: SwitchProps) => {
     const [value, setValue] = useState(args.value || args.options[0].value);
 
     return <Switch {...args} value={value} onChange={setValue} />;
