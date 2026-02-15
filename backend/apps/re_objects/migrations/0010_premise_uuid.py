@@ -4,6 +4,18 @@ import uuid
 from django.db import migrations, models
 
 
+def populate_premise_uuids(apps, schema_editor):
+    """Заполняет уникальные UUID для существующих записей Premise."""
+    Premise = apps.get_model("re_objects", "Premise")
+    for premise in Premise.objects.all():
+        premise.uuid = uuid.uuid4()
+        premise.save(update_fields=["uuid"])
+
+
+def noop_reverse(apps, schema_editor):
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,6 +24,18 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
+            model_name="premise",
+            name="uuid",
+            field=models.UUIDField(
+                db_index=True,
+                editable=False,
+                help_text="Публичный идентификатор помещения для API и URL",
+                null=True,
+                verbose_name="UUID",
+            ),
+        ),
+        migrations.RunPython(populate_premise_uuids, noop_reverse),
+        migrations.AlterField(
             model_name="premise",
             name="uuid",
             field=models.UUIDField(
