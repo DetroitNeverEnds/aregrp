@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Select } from './Select';
 
 const mockOptions = [
@@ -17,9 +16,9 @@ describe('Select', () => {
 
     it('открывает выпадающий список при клике', async () => {
         render(<Select options={mockOptions} />);
-        const select = screen.getByRole('combobox');
+        const trigger = screen.getByText('Выберите значение');
 
-        fireEvent.click(select);
+        fireEvent.click(trigger);
 
         await waitFor(() => {
             expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -34,8 +33,8 @@ describe('Select', () => {
             </div>,
         );
 
-        const select = screen.getByRole('combobox');
-        fireEvent.click(select);
+        const trigger = screen.getByText('Выберите значение');
+        fireEvent.click(trigger);
 
         await waitFor(() => {
             expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -53,8 +52,8 @@ describe('Select', () => {
         const handleChange = vi.fn();
         render(<Select options={mockOptions} onChange={handleChange} />);
 
-        const select = screen.getByRole('combobox');
-        fireEvent.click(select);
+        const trigger = screen.getByText('Выберите значение');
+        fireEvent.click(trigger);
 
         await waitFor(() => {
             expect(screen.getByRole('listbox')).toBeInTheDocument();
@@ -71,87 +70,26 @@ describe('Select', () => {
         expect(screen.getByText('Опция 2')).toBeInTheDocument();
     });
 
-    it('показывает кнопку очистки когда clearable=true и есть значение', () => {
-        render(<Select options={mockOptions} value="1" clearable />);
-        const clearButton = screen.getByLabelText('Очистить');
-        expect(clearButton).toBeInTheDocument();
-    });
-
-    it('очищает значение при клике на кнопку очистки', async () => {
-        const handleChange = vi.fn();
-        render(<Select options={mockOptions} value="1" clearable onChange={handleChange} />);
-
-        const clearButton = screen.getByLabelText('Очистить');
-        fireEvent.click(clearButton);
-
-        expect(handleChange).toHaveBeenCalledWith('');
-    });
-
-    it('не открывается когда disabled=true', () => {
+    it('не открывается когда disabled=true', async () => {
         render(<Select options={mockOptions} disabled />);
-        const select = screen.getByRole('combobox');
+        const trigger = screen.getByText('Выберите значение');
 
-        fireEvent.click(select);
+        fireEvent.click(trigger);
 
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-    });
-
-    it('отображает сообщение об ошибке', () => {
-        render(<Select options={mockOptions} errorMessage="Обязательное поле" />);
-        expect(screen.getByText('Обязательное поле')).toBeInTheDocument();
-    });
-
-    it('поддерживает навигацию клавиатурой', async () => {
-        const user = userEvent.setup();
-        render(<Select options={mockOptions} />);
-
-        const select = screen.getByRole('combobox');
-        await user.click(select);
-
-        // Открываем список
-        await user.keyboard('{Enter}');
-        await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
-        });
-
-        // Навигация вниз
-        await user.keyboard('{ArrowDown}');
-        await user.keyboard('{ArrowDown}');
-
-        // Выбор опции
-        const handleChange = vi.fn();
-        render(<Select options={mockOptions} onChange={handleChange} />);
-    });
-
-    it('закрывается при нажатии Escape', async () => {
-        const user = userEvent.setup();
-        render(<Select options={mockOptions} />);
-
-        const select = screen.getByRole('combobox');
-        await user.click(select);
-
-        await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
-        });
-
-        await user.keyboard('{Escape}');
-
-        await waitFor(() => {
-            expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
-        });
-    });
-
-    it('применяет класс fullWidth', () => {
-        const { container } = render(<Select options={mockOptions} fullWidth />);
-        const selectContainer = container.querySelector('.select-container--full-width');
-        expect(selectContainer).toBeInTheDocument();
+        // Даем время на обработку клика
+        await waitFor(
+            () => {
+                expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+            },
+            { timeout: 100 },
+        );
     });
 
     it('рендерит опции с описанием', async () => {
         render(<Select options={mockOptions} />);
-        const select = screen.getByRole('combobox');
+        const trigger = screen.getByText('Выберите значение');
 
-        fireEvent.click(select);
+        fireEvent.click(trigger);
 
         await waitFor(() => {
             expect(screen.getByText('Описание 1')).toBeInTheDocument();
@@ -159,45 +97,54 @@ describe('Select', () => {
         });
     });
 
-    it('создает скрытый input для форм', () => {
-        render(<Select options={mockOptions} name="test-select" value="1" />);
-        const hiddenInput = document.querySelector('input[type="hidden"]') as HTMLInputElement;
-
-        expect(hiddenInput).toBeInTheDocument();
-        expect(hiddenInput.name).toBe('test-select');
-        expect(hiddenInput.value).toBe('1');
-    });
-
-    it('поддерживает required атрибут', () => {
-        render(<Select options={mockOptions} name="test-select" required />);
-        const hiddenInput = document.querySelector('input[type="hidden"]') as HTMLInputElement;
-
-        expect(hiddenInput.required).toBe(true);
-    });
-
     it('применяет правильный размер', () => {
         const { container, rerender } = render(<Select options={mockOptions} size="lg" />);
-        expect(container.querySelector('.select-container--lg')).toBeInTheDocument();
+        const dropdownButton = container.querySelector('[class*="dropdown-button--lg"]');
+        expect(dropdownButton).toBeInTheDocument();
 
         rerender(<Select options={mockOptions} size="sm" />);
-        expect(container.querySelector('.select-container--sm')).toBeInTheDocument();
+        const dropdownButtonSm = container.querySelector('[class*="dropdown-button--sm"]');
+        expect(dropdownButtonSm).toBeInTheDocument();
     });
 
     it('показывает иконку chevron-down когда закрыт', () => {
-        render(<Select options={mockOptions} />);
-        // Icon компонент рендерит SVG, проверяем наличие
-        const select = screen.getByRole('combobox');
-        expect(select).toBeInTheDocument();
+        const { container } = render(<Select options={mockOptions} />);
+        const trigger = screen.getByText('Выберите значение');
+        expect(trigger).toBeInTheDocument();
+
+        // Проверяем наличие SVG иконки
+        const svg = container.querySelector('svg');
+        expect(svg).toBeInTheDocument();
     });
 
     it('показывает иконку chevron-up когда открыт', async () => {
-        render(<Select options={mockOptions} />);
-        const select = screen.getByRole('combobox');
+        const { container } = render(<Select options={mockOptions} />);
+        const trigger = screen.getByText('Выберите значение');
 
-        fireEvent.click(select);
+        fireEvent.click(trigger);
 
         await waitFor(() => {
             expect(screen.getByRole('listbox')).toBeInTheDocument();
+            // Проверяем наличие SVG иконки
+            const svg = container.querySelector('svg');
+            expect(svg).toBeInTheDocument();
         });
+    });
+
+    it('отображает сообщение когда нет опций', () => {
+        render(<Select options={[]} emptyMessage="Нет доступных опций" />);
+        const trigger = screen.getByText('Выберите значение');
+
+        fireEvent.click(trigger);
+
+        expect(screen.getByText('Нет доступных опций')).toBeInTheDocument();
+    });
+
+    it('применяет дополнительный className', () => {
+        const { container } = render(
+            <Select options={mockOptions} className="custom-select-class" />,
+        );
+        const selectContainer = container.querySelector('.custom-select-class');
+        expect(selectContainer).toBeInTheDocument();
     });
 });

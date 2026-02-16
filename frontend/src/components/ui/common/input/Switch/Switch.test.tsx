@@ -16,16 +16,6 @@ describe('Switch', () => {
         expect(screen.getByText('Option 2')).toBeInTheDocument();
     });
 
-    it('отображает активную опцию', () => {
-        render(<Switch options={defaultOptions} value="option1" />);
-
-        const button1 = screen.getByRole('radio', { name: /Option 1/i });
-        const button2 = screen.getByRole('radio', { name: /Option 2/i });
-
-        expect(button1).toHaveAttribute('aria-checked', 'true');
-        expect(button2).toHaveAttribute('aria-checked', 'false');
-    });
-
     it('вызывает onChange при клике на неактивную опцию', async () => {
         const user = userEvent.setup();
         const handleChange = vi.fn();

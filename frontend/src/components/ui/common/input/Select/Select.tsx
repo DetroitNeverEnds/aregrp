@@ -80,6 +80,7 @@ export function Select<T>({
             size={size}
             isOpened={isDropdownOpen}
             onOpenChange={setIsDropdownOpen}
+            disabled={disabled}
             trigger={
                 selectedOption?.label.title ? (
                     <Text variant="16-reg" ellipsis>
