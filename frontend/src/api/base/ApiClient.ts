@@ -1,10 +1,15 @@
-import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosError } from 'axios';
+import axios, {
+    type AxiosInstance,
+    type AxiosRequestConfig,
+    type AxiosError,
+    type InternalAxiosRequestConfig,
+} from 'axios';
 import type { ApiError } from '../types';
 
 /**
  * Конфигурация базового API клиента
  */
-export interface BaseApiClientConfig {
+export interface ApiClientConfig {
     baseURL: string;
     timeout?: number;
     headers?: Record<string, string>;
@@ -15,16 +20,22 @@ export interface Request<Params, Body> {
     body: Body;
 }
 
+interface RefreshTokenResponse {
+    message: string;
+    access_token: string;
+    refresh_token: string;
+}
+
 /**
  * Базовый класс для работы с API на основе axios
  *
  * Предоставляет основные методы для выполнения HTTP запросов
  * с обработкой ошибок и таймаутов
  */
-export class BaseApiClient {
+export class ApiClient {
     protected axiosInstance: AxiosInstance;
 
-    constructor(config: BaseApiClientConfig) {
+    constructor(config: ApiClientConfig) {
         this.axiosInstance = axios.create({
             baseURL: config.baseURL,
             timeout: config.timeout || 30000,
@@ -45,14 +56,17 @@ export class BaseApiClient {
         this.axiosInstance.interceptors.response.use(
             response => response,
             (error: AxiosError) => {
+                return Promise.reject(this.handleAuth(error));
+            },
+        );
+        this.axiosInstance.interceptors.response.use(
+            response => response,
+            (error: AxiosError) => {
                 return Promise.reject(this.handleError(error));
             },
         );
     }
 
-    /**
-     * Проверить, является ли объект Problem Detail
-     */
     protected isProblemDetail(obj: unknown): obj is ApiError {
         if (typeof obj !== 'object' || obj === null) {
             return false;
@@ -61,9 +75,23 @@ export class BaseApiClient {
         return required.every(key => key in obj);
     }
 
-    /**
-     * Обработать ошибку axios
-     */
+    protected async handleAuth(error: AxiosError) {
+        const originalRequest = error.config as InternalAxiosRequestConfig & {
+            _retry?: boolean;
+        };
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            try {
+                originalRequest._retry = true;
+                await axios.post<RefreshTokenResponse>('/api/v1/auth/refresh-token', {});
+                return this.axiosInstance(originalRequest);
+            } catch (refreshError) {
+                console.error(refreshError);
+            }
+        }
+        return Promise.reject(error);
+    }
+
     protected handleError(error: AxiosError): ApiError {
         if (error.response) {
             // Сервер ответил с кодом ошибки
@@ -112,8 +140,7 @@ export class BaseApiClient {
      * Выполнить запрос к API
      */
     protected async request<TReq, TRes>(config: AxiosRequestConfig<TReq>): Promise<TRes> {
-        const response = await this.axiosInstance.request(config);
-        return response.data as TRes;
+        return (await this.axiosInstance.request(config)).data as TRes;
     }
 
     /**

@@ -5,12 +5,15 @@ import styles from './Button.module.scss';
 import { Icon, type IconName } from '../Icon';
 
 export type ButtonVariant = 'primary' | 'outlined' | 'secondary';
+export type ButtonTheme = 'light' | 'dark';
 export type ButtonSize = 'lg' | 'md';
 export type ButtonWidth = 'auto' | 'max';
 
 interface BaseButtonProps {
     /** Тип кнопки (определяет визуальный стиль) */
     variant?: ButtonVariant;
+    /** Тема кнопки (определяет визуальный стиль) */
+    theme?: ButtonTheme;
     /** Размер кнопки */
     size?: ButtonSize;
     /** Ширина кнопки: auto - по содержимому, max - на всю ширину контейнера */
@@ -42,6 +45,7 @@ export type ButtonProps = ButtonAsButton | ButtonAsLink;
 export const Button: React.FC<ButtonProps> = props => {
     const {
         variant = 'primary',
+        theme = 'light',
         size = 'md',
         width = 'auto',
         children,
@@ -53,7 +57,7 @@ export const Button: React.FC<ButtonProps> = props => {
 
     const buttonClassNames = classNames(
         styles.button,
-        styles[`button--${variant}`],
+        styles[`button--${variant}--${theme}`],
         styles[`button--${size}`],
         styles[`button--width-${width}`],
         {

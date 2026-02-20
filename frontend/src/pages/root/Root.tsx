@@ -1,0 +1,194 @@
+import { useTranslation } from 'react-i18next';
+import { Flex } from '../../components/ui/common/Flex';
+import { useHeaderSettings } from '../../hooks/useHeaderSettings';
+import { useMemo } from 'react';
+import { ObjectsFilter } from '../../components/ui/forms/ObjectsFilter';
+import Text from '../../components/ui/common/Text';
+import { YandexMap } from '../../components/ui/common/YandexMap';
+import { ObjectCard } from '../../components/ui/cards/ObjectCard';
+// import { mockObjectCards } from '../../components/ui/cards/ObjectCard/ObjectCard.mock';
+import { Icon } from '../../components/ui/common/Icon';
+import type { IconName } from '../../components/ui/common/Icon/iconConfig';
+
+import styles from './Root.module.scss';
+import { Button } from '../../components/ui/common/Button';
+import Contaier, { FeatureCard } from '../../components/ui/layout/Container';
+import { Column } from '../../components/ui/layout/TwoColumnsContainer';
+import { Divider } from '../../components/ui/common/Divider';
+import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
+import { usePremises } from '../../queries/premises';
+import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
+import { Welcome } from './components/Welcome';
+import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
+
+type Data = {
+    coordinates: [number, number][];
+};
+
+const headerSettings: HeaderProps = {
+    theme: 'dark',
+    breadcrumbs: [],
+};
+
+export const Root = () => {
+    const { t } = useTranslation();
+
+    useHeaderSettings(headerSettings);
+
+    const data: Data = {
+        coordinates: [[44.650540230512846, 42.65871198485353]],
+    };
+
+    const premises = usePremises({}).data?.data;
+
+    const workWithUsBenefits: { icon: IconName; title: string }[] = useMemo(
+        () => [
+            {
+                icon: 'benefit-1',
+                title: t('benefits.workWithUs.items.designerRepair'),
+            },
+            {
+                icon: 'benefit-2',
+                title: t('benefits.workWithUs.items.wetPoint'),
+            },
+            {
+                icon: 'benefit-3',
+                title: t('benefits.workWithUs.items.accessibleLocation'),
+            },
+            {
+                icon: 'benefit-4',
+                title: t('benefits.workWithUs.items.cleanDeal'),
+            },
+        ],
+        [t],
+    );
+
+    return (
+        <div>
+            <Welcome />
+            <VerticalMainContainer>
+                {/* Map and default buildings */}
+                <ObjectsFilter onSubmit={data => console.log(data)} />
+                <Contaier justify="center" align="center">
+                    <Flex align="start" gap={20} fullWidth>
+                        <Text variant="18-reg" color="gray-50">
+                            Расположение
+                        </Text>
+                        <Flex direction="row" justify="between" fullWidth gap={60}>
+                            <Text variant="h2" color="primary-900">
+                                Наши бизнес-центры
+                            </Text>
+                            <Text variant="20-reg" style={{ maxWidth: '520px' }}>
+                                У нас широкий выбор офисов для выгодного инвестирования в
+                                коммерческую недвижимость
+                            </Text>
+                        </Flex>
+                    </Flex>
+                    <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
+
+                    {/* Секция с карточками объектов */}
+                    <Flex align="start" gap={40} fullWidth>
+                        <Text variant="h2" color="primary-900">
+                            Доступные объекты
+                        </Text>
+                        <Flex direction="row" gap={24} justify="between" fullWidth>
+                            {premises?.items.map(item => (
+                                <ObjectCard key={item.uuid} item={item} />
+                            ))}
+                        </Flex>
+                    </Flex>
+                    <Button variant="outlined" onClick={() => alert('TODO')}>
+                        Показать ещё
+                    </Button>
+                </Contaier>
+
+                {/* Office Buildings Benefits */}
+                <FeatureCard gap={80}>
+                    <Flex direction="row" align="start" gap={24} fullWidth>
+                        <Column gap={40}>
+                            <Divider />
+                            <Text variant="h2">{t('benefits.officeBuildings.title')}</Text>
+                        </Column>
+                        <Column gap={40}>
+                            <Divider />
+                            <Flex gap={20} fullWidth align="start">
+                                <Text variant="18-reg">
+                                    {t('benefits.officeBuildings.subtitle')}
+                                </Text>
+                                <Text variant="20-med" color="primary-yellow">
+                                    {t('benefits.officeBuildings.description')}
+                                </Text>
+                            </Flex>
+                        </Column>
+                    </Flex>
+                    <Flex direction="row" align="start" gap={100} fullWidth>
+                        <Flex align="start">
+                            <Text className={styles.benifits__number__title}>12</Text>
+                            <Text variant="14-reg">
+                                {t('benefits.officeBuildings.stats.businessCenters')}
+                            </Text>
+                        </Flex>
+                        <Flex align="start">
+                            <Text className={styles.benifits__number__title}>~400</Text>
+                            <Text variant="14-reg">
+                                {t('benefits.officeBuildings.stats.officePremises')}
+                            </Text>
+                        </Flex>
+                    </Flex>
+                </FeatureCard>
+
+                {/* Actual offers */}
+                <Contaier align="center">
+                    <Flex fullWidth align="start">
+                        <Text variant="h2">Актуальные предложения</Text>
+                        <Text variant="h2" color="gray-50">
+                            лучших офисов в продаже
+                        </Text>
+                    </Flex>
+                    <Flex direction="row" fullWidth gap={24}>
+                        {[{ title: 'A1' }, { title: 'A2' }, { title: 'A3' }].map((el, index) => (
+                            <Flex key={index}>
+                                <Text variant="20-reg">TODO: {el.title}</Text>
+                            </Flex>
+                        ))}
+                    </Flex>
+                    <Button variant="outlined" onClick={() => alert('TODO')}>
+                        Перейти в каталог
+                    </Button>
+                </Contaier>
+
+                {/* Work with us benefits */}
+                <FeatureCard gap={80}>
+                    <Flex direction="row" align="start" gap={24} fullWidth>
+                        <Column gap={40} style={{ width: '768px' }}>
+                            <Divider />
+                            <Text variant="h2">{t('benefits.workWithUs.title')}</Text>
+                        </Column>
+                        <Column gap={40}>
+                            <Divider />
+                            <Flex gap={20} fullWidth align="start">
+                                <Text variant="18-reg">{t('benefits.workWithUs.subtitle')}</Text>
+                                <Text variant="20-med" color="primary-yellow">
+                                    {t('benefits.workWithUs.description')}
+                                </Text>
+                            </Flex>
+                        </Column>
+                    </Flex>
+                    <Flex direction="row" gap={93} fullWidth>
+                        {workWithUsBenefits.map((benefit, index) => (
+                            <Column key={index} gap={20} align="start" className={styles.benefit}>
+                                <Icon name={benefit.icon} size={32} color="primary-yellow" />
+                                <Text variant="20-reg" className={styles.benefit__title}>
+                                    {benefit.title}
+                                </Text>
+                            </Column>
+                        ))}
+                    </Flex>
+                </FeatureCard>
+
+                {/* Feedback form */}
+                <FeedbackFormRow />
+            </VerticalMainContainer>
+        </div>
+    );
+};

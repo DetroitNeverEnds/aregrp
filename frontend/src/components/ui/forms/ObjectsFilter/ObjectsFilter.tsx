@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import type { SaleType } from '../../../../api';
 import { useBuildings } from '../../../../queries/premises';
 import { useMemo } from 'react';
+import { Column } from '../../layout/TwoColumnsContainer';
 
 type SearchParams = {
     type: SaleType;
@@ -27,7 +28,7 @@ type ObjectsFilterProps = {
 
 export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) => {
     const { t } = useTranslation();
-    const { data: businessCenterOptionsData } = useBuildings();
+    const businessCenterOptionsData = useBuildings().data?.data;
     const businessCenterOptions: SelectOption<string>[] = useMemo(
         () =>
             businessCenterOptionsData?.map(bc => ({
@@ -40,7 +41,7 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
     );
 
     const { control, handleSubmit, setValue } = useForm<SearchParams>({
-        defaultValues: { ...{ type: 'sale' }, ...(defaultValues || {}) },
+        defaultValues,
     });
 
     return (
@@ -68,37 +69,42 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
                 />
 
                 {/* TODO: Заменить на мультиселект */}
-                <Controller
-                    render={({ field: { value, onChange } }) => (
-                        <Select
-                            options={businessCenterOptions || []}
-                            placeholder={t('components.objectFilter.allCenters')}
-                            size="lg"
-                            value={value}
-                            onChange={onChange}
-                            className={styles.bcSelect}
-                        />
-                    )}
-                    control={control}
-                    name="businessCenters"
-                />
-
-                <FromToSelect
-                    label={t('common.price')}
-                    metric={'₽'}
-                    onChange={({ from, to }) => {
-                        setValue('priceFrom', from);
-                        setValue('priceTo', to);
-                    }}
-                />
-                <FromToSelect
-                    label={t('common.area')}
-                    metric={'м²'}
-                    onChange={({ from, to }) => {
-                        setValue('areaFrom', from);
-                        setValue('areaTo', to);
-                    }}
-                />
+                <Column>
+                    <Controller
+                        render={({ field: { value, onChange } }) => (
+                            <Select
+                                options={businessCenterOptions || []}
+                                placeholder={t('components.objectFilter.allCenters')}
+                                size="lg"
+                                value={value}
+                                onChange={onChange}
+                                className={styles.bcSelect}
+                            />
+                        )}
+                        control={control}
+                        name="businessCenters"
+                    />
+                </Column>
+                <Column>
+                    <FromToSelect
+                        label={t('common.price')}
+                        metric={'₽'}
+                        onChange={({ from, to }) => {
+                            setValue('priceFrom', from);
+                            setValue('priceTo', to);
+                        }}
+                    />
+                </Column>
+                <Column>
+                    <FromToSelect
+                        label={t('common.area')}
+                        metric={'м²'}
+                        onChange={({ from, to }) => {
+                            setValue('areaFrom', from);
+                            setValue('areaTo', to);
+                        }}
+                    />
+                </Column>
 
                 <Button type="submit" variant="primary" size="lg" icon="search">
                     Поиск объектов

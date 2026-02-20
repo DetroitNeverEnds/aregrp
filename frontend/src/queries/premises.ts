@@ -11,16 +11,17 @@ import {
     type BuildingFilterParams,
     type PremiseDetail,
 } from '../api';
+import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
 
 /**
  * Хук для получения списка зданий
  */
 export function useBuildings(
     params?: BuildingFilterParams,
-): UseQueryResult<BuildingOption[], Error> {
+): UseQueryResult<QueryResult<BuildingOption[]>, Error> {
     return useQuery({
         queryKey: ['buildings', params],
-        queryFn: () => getBuildings(params),
+        queryFn: () => wrapApiCall(getBuildings)(params),
     });
 }
 
@@ -29,10 +30,10 @@ export function useBuildings(
  */
 export function usePremises(
     params?: PremiseFilterParams,
-): UseQueryResult<PremiseListResponse, Error> {
+): UseQueryResult<QueryResult<PremiseListResponse>, Error> {
     return useQuery({
         queryKey: ['premises', params],
-        queryFn: () => getPremises(params),
+        queryFn: () => wrapApiCall(getPremises)(params),
     });
 }
 
@@ -41,10 +42,10 @@ export function usePremises(
  */
 export function usePremisesForRent(
     params?: Omit<PremiseFilterParams, 'sale_type'>,
-): UseQueryResult<PremiseListResponse, Error> {
+): UseQueryResult<QueryResult<PremiseListResponse>, Error> {
     return useQuery({
         queryKey: ['premises', 'rent', params],
-        queryFn: () => getPremisesForRent(params),
+        queryFn: () => wrapApiCall(getPremisesForRent)(params),
     });
 }
 
@@ -53,20 +54,20 @@ export function usePremisesForRent(
  */
 export function usePremisesForSale(
     params?: Omit<PremiseFilterParams, 'sale_type'>,
-): UseQueryResult<PremiseListResponse, Error> {
+): UseQueryResult<QueryResult<PremiseListResponse>, Error> {
     return useQuery({
         queryKey: ['premises', 'sale', params],
-        queryFn: () => getPremisesForSale(params),
+        queryFn: () => wrapApiCall(getPremisesForSale)(params),
     });
 }
 
 /**
  * Хук для получения детальной информации о помещении
  */
-export function usePremiseDetail(uuid: string): UseQueryResult<PremiseDetail, Error> {
+export function usePremiseDetail(uuid: string): UseQueryResult<QueryResult<PremiseDetail>, Error> {
     return useQuery({
         queryKey: ['premises', uuid],
-        queryFn: () => getPremiseDetail(uuid),
+        queryFn: () => wrapApiCall(getPremiseDetail)(uuid),
         enabled: !!uuid,
     });
 }

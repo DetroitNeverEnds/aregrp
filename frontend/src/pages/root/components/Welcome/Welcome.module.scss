@@ -1,0 +1,38 @@
+@use '../../../../styles/variables.scss' as *;
+
+.welcome {
+    z-index: -1;
+    position: relative;
+    width: 100%;
+    min-height: 580px;
+    background: $gradient-primary-700-900-lr;
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
+    margin-bottom: -50px;
+
+    &__logo {
+        z-index: 1;
+        width: 835px;
+
+        &__icon {
+            width: 835px !important;
+            height: auto !important;
+        }
+        &__description {
+            max-width: 636px;
+            text-align: center;
+        }
+    }
+
+    &__lion {
+        position: absolute;
+        top: 70px;
+        left: 120px;
+    }
+
+    &__skyscraper {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+}

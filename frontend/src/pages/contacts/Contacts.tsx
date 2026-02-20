@@ -1,33 +1,37 @@
 import { useTranslation } from 'react-i18next';
-import { Flex } from '../components/ui/common/Flex';
-import Text from '../components/ui/common/Text';
-import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
+import { Flex } from '../../components/ui/common/Flex';
+import Text from '../../components/ui/common/Text';
+import { useHeaderSettings } from '../../hooks/useHeaderSettings';
 import { useMemo, Fragment } from 'react';
-import { VerticalMainContainer } from '../components/ui/layout/VerticalMainContainer';
-import { Column, TwoColumnsContainer } from '../components/ui/layout/TwoColumnsContainer';
-import { useSiteInfo } from '../queries/siteInfo';
-import { Link } from '../components/ui/common/Link';
-import { Divider } from '../components/ui/common/Divider';
-import { useSiteContacts } from '../queries/contacts';
-import { YandexMap } from '../components/ui/common/YandexMap';
-import { FeedbackFormRow } from '../components/ui/layout/FeedbackFormRow';
+import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
+import { Column, TwoColumnsContainer } from '../../components/ui/layout/TwoColumnsContainer';
+import { useSiteInfo } from '../../queries/siteInfo';
+import { Link } from '../../components/ui/common/Link';
+import { Divider } from '../../components/ui/common/Divider';
+import { useSiteContacts } from '../../queries/contacts';
+import { YandexMap } from '../../components/ui/common/YandexMap';
+import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
 
 import styles from './Contacts.module.scss';
-import { MapPin } from '../components/ui/common/MapPin';
-import { Card } from '../components/ui/common/Card/Card';
+import { MapPin } from '../../components/ui/common/MapPin';
+import { Card } from '../../components/ui/common/Card/Card';
+import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
 
 export const Contacts = () => {
     const { t } = useTranslation();
-    const bc = useMemo(
-        () => [
-            { to: '/', label: t('bc.main') },
-            { to: '/contacts', label: t('bc.contacts') },
-        ],
+    const headerSettings: HeaderProps = useMemo(
+        () => ({
+            theme: 'light',
+            breadcrumbs: [
+                { to: '/', label: t('bc.main') },
+                { to: '/contacts', label: t('bc.contacts') },
+            ],
+        }),
         [t],
     );
-    useBreadcrumbs(bc);
-    const siteInfo = useSiteInfo().data;
-    const contacts = useSiteContacts().data;
+    useHeaderSettings(headerSettings);
+    const siteInfo = useSiteInfo().data?.data;
+    const contacts = useSiteContacts().data?.data;
 
     const contactsVariants = useMemo(
         () => [
@@ -73,7 +77,7 @@ export const Contacts = () => {
     );
 
     return (
-        <VerticalMainContainer>
+        <VerticalMainContainer className={styles.container}>
             {/* Контакты и карта */}
             <TwoColumnsContainer>
                 <Column gap={200} align="stretch">

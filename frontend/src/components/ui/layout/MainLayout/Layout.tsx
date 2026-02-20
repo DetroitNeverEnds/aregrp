@@ -1,22 +1,25 @@
-import { Header } from './Header';
+import { Header, type HeaderProps } from './Header';
 import styles from './Layout.module.scss';
 import { Footer } from './Footer';
 import { Flex } from '../../common/Flex';
 import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
-import type { BreadCrumbsDescription } from '../../common/Breadcrumbs/Breadcrumbs';
 
 export type OutletContext = {
-    setBreadcrumbs: (b: BreadCrumbsDescription | undefined) => void;
+    setHeaderSettings: (h: HeaderProps) => void;
 };
 
 export const MainLayout = () => {
-    const [breadcrumbs, setBreadcrumbs] = useState<BreadCrumbsDescription | undefined>([]);
+    const [headerSettings, setHeaderSettings] = useState<HeaderProps>({
+        theme: 'light',
+        breadcrumbs: [],
+    });
+
     return (
         <Flex className={styles.root}>
-            <Header breadcrumbs={breadcrumbs} />
+            <Header {...headerSettings} />
             <div className={styles.content}>
-                <Outlet context={{ setBreadcrumbs }} />
+                <Outlet context={{ setHeaderSettings }} />
             </div>
             <Footer />
         </Flex>

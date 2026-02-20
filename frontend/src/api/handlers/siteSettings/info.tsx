@@ -1,11 +1,11 @@
 import { api } from '../../base/api';
 
-type InfoRequest = {
+export type InfoRequest = {
     params: undefined;
     body: undefined;
 };
 
-type InfoResponse = {
+export type InfoResponse = {
     phone: string;
     display_phone: string;
     email: string;

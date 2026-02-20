@@ -5,3 +5,5 @@ export {
     useRequestPasswordResetMutation,
     useConfirmPasswordResetMutation,
 } from './auth';
+
+export { useUpdateProfileMutation, useChangePasswordMutation } from './profile';

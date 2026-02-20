@@ -23,6 +23,11 @@ export default defineConfig({
                 changeOrigin: true,
                 secure: false,
             },
+            '/media': {
+                target: 'http://176.98.176.204',
+                changeOrigin: true,
+                secure: false,
+            },
             '/yandex-maps-api': {
                 target: 'https://api-maps.yandex.ru',
                 changeOrigin: true,

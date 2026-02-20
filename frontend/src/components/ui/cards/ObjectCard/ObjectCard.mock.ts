@@ -7,51 +7,43 @@ const image3 = 'http://localhost:3845/assets/b0cacff29e39d1ac758819e22fe5e081320
 const image4 = 'http://localhost:3845/assets/8d879e575a22308a335a8a0b1297cde0e3b280be.png';
 const image5 = 'http://localhost:3845/assets/faee4f1213c9c3ae4f0bf3f8d2255e31f16f2300.png';
 
-export const mockObjectCards: Omit<ObjectCardProps, 'onButtonClick'>[] = [
+export const mockObjectCards: Omit<ObjectCardProps, 'item'>[] = [
     {
-        id: 1,
-        title: 'Роторная 1д',
-        description:
-            'Двух-этажный бизнес-центр со своим паркингом в приволжском районе г. Казань рядом с ТРЦ "KazanMall"',
+        address: 'Роторная 1д',
+        name: 'Двух-этажный бизнес-центр со своим паркингом в приволжском районе г. Казань рядом с ТРЦ "KazanMall"',
         imagesUrl: [image1],
         priceFrom: 2550000,
     },
     {
-        id: 2,
-        title: 'ул. Аделя Кутуя, 68A',
-        description:
-            'Многофункциональный трехэтажный бизнес-центр со своим паркингом в Советском г. Казани',
+        address: 'ул. Аделя Кутуя, 68A',
+        name: 'Многофункциональный трехэтажный бизнес-центр со своим паркингом в Советском г. Казани',
         imagesUrl: [image2],
         priceFrom: 1000000,
         monthlyPayment: 17500,
     },
     {
-        id: 3,
-        title: 'ул. Татарстана 20',
-        description: 'Офисное здание в центре города г. Казани',
+        address: 'ул. Татарстана 20',
+        name: 'Офисное здание в центре города г. Казани',
         imagesUrl: [image3],
         priceFrom: 3322200,
     },
     {
-        id: 4,
-        title: 'ул. Зилантовская 22/15',
-        description: 'Коммерческая недвижимость в ЖК«Салават Купере»',
+        address: 'ул. Зилантовская 22/15',
+        name: 'Коммерческая недвижимость в ЖК«Салават Купере»',
         imagesUrl: [image4],
         priceFrom: 2550000,
         monthlyPayment: 17500,
     },
     {
-        id: 5,
-        title: 'Фрунзе 5',
-        description: 'Многофункциональный бизнес-центр с паркингом в Кировском районе г. Казани',
+        address: 'Фрунзе 5',
+        name: 'Многофункциональный бизнес-центр с паркингом в Кировском районе г. Казани',
         imagesUrl: [image5],
         priceFrom: 2588500,
         monthlyPayment: 25000,
     },
     {
-        id: 6,
-        title: 'Маршутная 12А',
-        description: 'Многофункциональный бизнес-центр с паркингом в Кировском районе г. Казани',
+        address: 'Маршутная 12А',
+        name: 'Многофункциональный бизнес-центр с паркингом в Кировском районе г. Казани',
         imagesUrl: [image5],
         priceFrom: 1130000,
         monthlyPayment: 8100,

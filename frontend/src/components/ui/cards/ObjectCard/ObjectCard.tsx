@@ -1,48 +1,35 @@
-import React from 'react';
-import classNames from 'classnames';
+import React, { useCallback } from 'react';
 import { Button } from '../../common/Button';
 import { Flex } from '../../common/Flex';
 import { Divider } from '../../common/Divider';
 import { Text } from '../../common/Text';
 import styles from './ObjectCard.module.scss';
 import { Column } from '../../layout/TwoColumnsContainer';
+import type { PremiseListItem } from '../../../../api';
 
 export interface ObjectCardProps {
-    /** ID объекта */
-    id: string | number;
-    /** Название/адрес объекта */
-    title: string;
-    /** Описание объекта */
-    description: string;
-    /** Массив URL изображений */
-    imagesUrl: string[];
-    /** Цена "от" в рублях */
-    priceFrom?: number;
-    /** Ежемесячный платеж в рублях */
-    monthlyPayment?: number;
-    /** Клик по кнопке */
-    onButtonClick?: () => void;
-    /** Alt текст для изображения */
-    imageAlt?: string;
-    /** Дополнительный CSS класс */
-    className?: string;
+    item: PremiseListItem;
 }
 
 /**
  * Компонент карточки объекта недвижимости
  */
-export const ObjectCard: React.FC<ObjectCardProps> = ({
-    // id,
-    title,
-    description,
-    imagesUrl,
-    priceFrom,
-    monthlyPayment,
-    onButtonClick,
-    imageAlt = '',
-    className = '',
-}) => {
-    const cardClassNames = classNames(styles.objectCard, className);
+export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
+    const {
+        uuid,
+        name,
+        price,
+        address,
+        // floor,
+        // area,
+        // has_tenant,
+        media,
+    } = item;
+    const monthlyPayment = 1;
+
+    const onButtonClick = useCallback(() => {
+        alert(`TODO: ${uuid}`);
+    }, [uuid]);
 
     // Форматирование цены
     const formatPrice = (price: number) => {
@@ -55,14 +42,14 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({
     };
 
     return (
-        <Flex justify="between" gap={30} className={cardClassNames}>
+        <Flex justify="between" gap={30} className={styles.objectCard}>
             <Flex gap={20} fullWidth align="start">
                 {/* Изображение */}
-                {imagesUrl.length > 0 && (
+                {media.photos.length > 0 && (
                     <div className={styles.objectCard__imageWrapper}>
                         <img
-                            src={imagesUrl[0]}
-                            alt={imageAlt || title}
+                            src={media.photos[0].url}
+                            alt={address}
                             className={styles.objectCard__image}
                         />
                     </div>
@@ -81,13 +68,13 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({
                         color="primary-900"
                         className={styles.objectCard__name__title}
                     >
-                        {title}
+                        {address}
                     </Text>
-                    {(priceFrom || monthlyPayment) && (
+                    {(price || monthlyPayment) && (
                         <Flex gap={4} align="end">
-                            {priceFrom && (
+                            {price && (
                                 <Text variant="20-reg" color="gray-70">
-                                    от {formatPrice(priceFrom)}
+                                    от {formatPrice(Number(price))}
                                 </Text>
                             )}
                             {monthlyPayment && (
@@ -104,14 +91,14 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({
 
                 {/* Описание */}
                 <Text variant="20-reg" color="gray-100" className={styles.objectCard__description}>
-                    {description}
+                    {name}
                 </Text>
             </Flex>
 
             {/* Кнопки */}
             <Flex direction="row" gap={10} fullWidth>
                 <Column>
-                    {priceFrom && (
+                    {price && (
                         <Button variant="primary" size="md" width="max" onClick={onButtonClick}>
                             Каталог продажи
                         </Button>

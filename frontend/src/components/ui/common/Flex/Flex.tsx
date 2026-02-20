@@ -7,7 +7,7 @@ export type FlexJustify = 'start' | 'end' | 'center' | 'between' | 'around' | 'e
 export type FlexAlign = 'start' | 'end' | 'center' | 'stretch' | 'baseline';
 export type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse';
 
-export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface FlexProps {
     /** Направление flex */
     direction?: FlexDirection;
     /** Выравнивание по главной оси (justify-content) */
@@ -27,7 +27,14 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
     ellipsis?: boolean;
     /** Содержимое */
     children?: React.ReactNode;
-    ref?: React.Ref<HTMLDivElement>;
+    /** Дополнительный CSS класс */
+    className?: string;
+    /** Дополнительные стили */
+    style?: React.CSSProperties;
+    /** Обработчик клика */
+    onClick?: React.MouseEventHandler<HTMLDivElement>;
+    /** Роль элемента */
+    role?: string;
 }
 
 export const Flex = forwardRef<HTMLDivElement, FlexProps>(

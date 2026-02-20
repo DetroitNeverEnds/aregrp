@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './FromToSelect.module.scss';
 import Text from '../../common/Text/Text';
 import { Flex } from '../../common/Flex';
@@ -59,7 +59,7 @@ export function FromToSelect({
     }, [formState.from, formState.to, label, metric, t]);
 
     return (
-        <Flex gap={8} className={styles.container}>
+        <Flex gap={8} className={styles.container} fullWidth>
             <Dropdown
                 size="lg"
                 trigger={triggerContent}

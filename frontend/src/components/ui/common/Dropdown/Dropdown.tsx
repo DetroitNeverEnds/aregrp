@@ -91,8 +91,6 @@ export function Dropdown({
         triggerClassName,
     );
 
-    console.log(triggerClassNames);
-
     const dropdownClassNames = classNames(styles['dropdown-content'], dropdownClassName);
 
     return (

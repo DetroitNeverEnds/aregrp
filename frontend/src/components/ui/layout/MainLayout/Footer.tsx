@@ -17,7 +17,7 @@ import { Column } from '../TwoColumnsContainer';
 
 export const Footer = () => {
     const { t } = useTranslation();
-    const siteInfo = useSiteInfo().data;
+    const siteInfo = useSiteInfo().data?.data;
 
     const footerLinks = useMemo(
         () => [
