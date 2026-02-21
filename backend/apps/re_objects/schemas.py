@@ -5,7 +5,7 @@
 Поля ответа: uuid, название, стоимость, адрес, этаж, площадь, has_tenant, media (фото/видео).
 """
 from decimal import Decimal
-from typing import Optional
+from typing import Literal, Optional
 
 from ninja import Schema
 
@@ -71,3 +71,22 @@ class BuildingOptionOut(Schema):
     uuid: str
     name: str
     address: str
+
+
+class MediaItemOut(Schema):
+    """Элемент медиа: фото или видео."""
+
+    type: Literal["photo", "video"]
+    link: str
+
+
+class BuildingCatalogueOut(Schema):
+    """Здание в каталоге: uuid, title, address, description, min_sale_price, min_rent_price, media."""
+
+    uuid: str
+    title: str
+    address: str
+    description: str
+    min_sale_price: Optional[float] = None
+    min_rent_price: Optional[float] = None
+    media: list[MediaItemOut]

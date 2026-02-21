@@ -8,8 +8,9 @@
 3) GET /api/v1/premises/sale — то же, только для продажи (sale_type=sale).
    Ответ у 1–3: { items: [...], total, page, page_size }. Параметры: available, building (поиск по тексту), building_uuids (фильтр по UUID зданий), min/max price, min/max area, order_by, page, page_size. В каждом item: uuid, name, price, address, floor, area, has_tenant, media.
 4) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available. Фронт запрашивает один раз и подставляет в чекбоксы.
+5) GET /api/v1/buildings/catalogue — каталог зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
 
-5) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
+6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished). 404 — ProblemDetail.
 
 Вся логика в services.premise_service; роутер только парсит query (в т.ч. через parse_building_uuids)
@@ -24,9 +25,15 @@ from ninja import Query, Router
 
 from api.schemas import ProblemDetail
 from .errors import ReObjectsErrorCodes, create_re_objects_error
-from .schemas import BuildingOptionOut, PremiseDetailOut, PremiseListResponse
+from .schemas import (
+    BuildingCatalogueOut,
+    BuildingOptionOut,
+    PremiseDetailOut,
+    PremiseListResponse,
+)
 from .services import (
     PremiseFilterParams,
+    get_buildings_catalogue,
     get_buildings_for_filter,
     get_premise_by_uuid,
     get_premise_list,
@@ -56,6 +63,18 @@ async def building_list(
 ):
     """Список зданий для мультиселекта фильтра. Ответ: [{ uuid, name, address }, ...]."""
     items = await get_buildings_for_filter(sale_type=sale_type, available=available)
+    return 200, items
+
+
+@re_objects_router.get(
+    "/buildings/catalogue",
+    response={200: list[BuildingCatalogueOut]},
+    summary="Каталог зданий",
+    description="Список зданий с помещениями: uuid, title, address, description, min_sale_price, min_rent_price, media.",
+)
+async def building_catalogue(request):
+    """Каталог зданий для страницы каталога. Ответ: [{ uuid, title, address, description, min_sale_price?, min_rent_price?, media }, ...]."""
+    items = await get_buildings_catalogue()
     return 200, items
 
 

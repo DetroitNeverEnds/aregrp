@@ -5,6 +5,7 @@
 - parse_building_uuids(value) — парсит строку 'uuid1,uuid2,...' в список UUID для фильтра зданий.
 - get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address).
+- get_buildings_catalogue() — каталог зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
 - get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
@@ -16,11 +17,13 @@ from typing import Optional
 from uuid import UUID
 
 from django.conf import settings
-from django.db.models import Q, Subquery
+from django.db.models import Min, Q, Subquery
 
 from ..models import Building, Premise
 from ..schemas import (
+    BuildingCatalogueOut,
     BuildingOptionOut,
+    MediaItemOut,
     PremiseListOut,
     PremiseListResponse,
     PremiseDetailOut,
@@ -201,6 +204,59 @@ async def get_buildings_for_filter(
         BuildingOptionOut(uuid=str(b.uuid), name=b.name, address=b.address)
         async for b in qs
     ]
+
+
+def _build_building_media(building: Building) -> list[MediaItemOut]:
+    """Собирает медиа здания: фото и видео в формате [{type, link}, ...]."""
+    media: list[MediaItemOut] = []
+    for img in sorted(building.images.all(), key=lambda x: (x.order, x.pk)):
+        if img.file:
+            media.append(MediaItemOut(type="photo", link=img.file.url))
+    for vid in sorted(building.videos.all(), key=lambda x: (x.order, x.pk)):
+        if vid.file:
+            media.append(MediaItemOut(type="video", link=vid.file.url))
+    return media
+
+
+async def get_buildings_catalogue() -> list[BuildingCatalogueOut]:
+    """
+    Каталог зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
+
+    Возвращает все здания с помещениями. min_rent_price / min_sale_price — минимум цен
+    по помещениям с available_for_rent / available_for_sale.
+    """
+    qs = (
+        Building.objects.prefetch_related("images", "videos")
+        .annotate(
+            min_rent=Min(
+                "premises__price_per_month",
+                filter=Q(premises__available_for_rent=True),
+            ),
+            min_sale=Min(
+                "premises__price_per_month",
+                filter=Q(premises__available_for_sale=True),
+            ),
+        )
+        .filter(premises__isnull=False)
+        .distinct()
+        .order_by("name")
+    )
+    result: list[BuildingCatalogueOut] = []
+    async for b in qs:
+        min_rent_val = float(b.min_rent) if b.min_rent is not None else None
+        min_sale_val = float(b.min_sale) if b.min_sale is not None else None
+        result.append(
+            BuildingCatalogueOut(
+                uuid=str(b.uuid),
+                title=b.name,
+                address=b.address,
+                description=b.description or "",
+                min_sale_price=min_sale_val,
+                min_rent_price=min_rent_val,
+                media=_build_building_media(b),
+            )
+        )
+    return result
 
 
 def _build_premise_media(p: Premise) -> PremiseMediaOut:
