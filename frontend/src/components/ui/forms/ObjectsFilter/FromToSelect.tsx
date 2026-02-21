@@ -71,8 +71,6 @@ export function FromToSelect({
                     <TextInput
                         type="number"
                         placeholder={t('common.from')}
-                        trailingLabel={metric}
-                        clearable={false}
                         className={styles.input}
                         width={180}
                         onChange={val =>
@@ -86,8 +84,6 @@ export function FromToSelect({
                     <TextInput
                         type="number"
                         placeholder={t('common.to')}
-                        trailingLabel={metric}
-                        clearable={false}
                         className={styles.input}
                         width={180}
                         onChange={val =>

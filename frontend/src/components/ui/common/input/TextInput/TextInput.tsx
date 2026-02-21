@@ -115,12 +115,12 @@ export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, 
                         ref={innerRef}
                         className={styles.input}
                     />
-                    {trailingLabel}
                     {clearable && hasValue && !isPasswordField && (
                         <FlatButton onClick={onClear}>
                             <Icon name="xmark-gray-circle" size={20} />
                         </FlatButton>
                     )}
+                    {trailingLabel}
                     {isPasswordField && (
                         <FlatButton onClick={() => setIsPasswordVisible(!isPasswordVisible)}>
                             <Icon name={isPasswordVisible ? 'eye' : 'eye-slash'} size={20} />
