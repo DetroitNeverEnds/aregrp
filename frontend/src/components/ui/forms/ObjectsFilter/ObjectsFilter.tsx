@@ -41,7 +41,7 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
     );
 
     const { control, handleSubmit, setValue } = useForm<SearchParams>({
-        defaultValues,
+        defaultValues: { type: 'sale', ...(defaultValues || {}) },
     });
 
     return (
