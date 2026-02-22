@@ -36,10 +36,6 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
         [styles['container--dark']]: isDark,
     });
 
-    const socialButtonClassName = classNames(styles.socialButton, {
-        [styles['socialButton--dark']]: isDark,
-    });
-
     return (
         <Flex gap={24} className={containerClassName} fullWidth>
             <Flex direction="row" justify="between" align="center" fullWidth gap={20}>
@@ -76,14 +72,14 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                             variant="outlined"
                             onlyIcon
                             icon="whatsapp"
-                            className={socialButtonClassName}
+                            iconColor="primary-yellow"
                             to={siteInfo?.whatsapp_link || ''}
                         />
                         <Button
                             variant="outlined"
                             onlyIcon
                             icon="tg"
-                            className={socialButtonClassName}
+                            iconColor="primary-yellow"
                             to={siteInfo?.telegram_link || ''}
                         />
                     </Flex>

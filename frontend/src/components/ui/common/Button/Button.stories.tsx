@@ -20,7 +20,7 @@ const meta = {
     argTypes: {
         variant: {
             control: 'select',
-            options: ['primary', 'outlined', 'secondary'],
+            options: ['primary', 'outlined', 'secondary', 'flat'],
             description: 'Тип кнопки (определяет визуальный стиль)',
         },
         size: {

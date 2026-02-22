@@ -1,5 +1,5 @@
-import { Contaier } from './Container';
-export { Contaier } from './Container';
+import { Container } from './Container';
+export { Container as Contaier } from './Container';
 export { FeatureCard } from './FeatureCard';
 
-export default Contaier;
+export default Container;

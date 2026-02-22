@@ -123,4 +123,21 @@
             }
         }
     }
+
+    &--flat {
+        &--light {
+            background: transparent;
+            color: $gray-100;
+
+            &:hover:not(:disabled) {
+                background-color: $gray-opacity-20-40;
+                color: $gray-100;
+            }
+
+            &:active:not(:disabled),
+            &:focus:active:not(:disabled) {
+                background-color: $gray-30;
+            }
+        }
+    }
 }

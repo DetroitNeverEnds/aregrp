@@ -6,6 +6,7 @@ import { Text } from '../../common/Text';
 import styles from './ObjectCard.module.scss';
 import { Column } from '../../layout/TwoColumnsContainer';
 import type { PremiseListItem } from '../../../../api';
+import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 
 export interface ObjectCardProps {
     item: PremiseListItem;
@@ -15,16 +16,7 @@ export interface ObjectCardProps {
  * Компонент карточки объекта недвижимости
  */
 export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
-    const {
-        uuid,
-        name,
-        price,
-        address,
-        // floor,
-        // area,
-        // has_tenant,
-        media,
-    } = item;
+    const { uuid, name, price, address } = item;
     const monthlyPayment = 1;
 
     const onButtonClick = useCallback(() => {
@@ -45,15 +37,7 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
         <Flex justify="between" gap={30} className={styles.objectCard}>
             <Flex gap={20} fullWidth align="start">
                 {/* Изображение */}
-                {media.photos.length > 0 && (
-                    <div className={styles.objectCard__imageWrapper}>
-                        <img
-                            src={media.photos[0].url}
-                            alt={address}
-                            className={styles.objectCard__image}
-                        />
-                    </div>
-                )}
+                <Gallery premise={item} className={styles.objectCard__imageWrapper} />
 
                 {/* Заголовок и цена */}
                 <Flex

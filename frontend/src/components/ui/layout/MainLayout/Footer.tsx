@@ -76,10 +76,10 @@ export const Footer = () => {
                                     className={styles.footer__socialMedia_links}
                                 >
                                     <Link to={siteInfo?.telegram_link || ''}>
-                                        <Icon name="telegram" size={50} />
+                                        <Icon name="telegram" color="primary-yellow" size={50} />
                                     </Link>
                                     <Link to={siteInfo?.whatsapp_link || ''}>
-                                        <Icon name="whatsapp" size={50} />
+                                        <Icon name="whatsapp" color="primary-yellow" size={50} />
                                     </Link>
                                 </Flex>
 

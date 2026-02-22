@@ -95,14 +95,8 @@ export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, 
             },
             className,
         );
-
-        const style = {};
-        // if (width) {
-        //     style.width = width;
-        // }
-
         return (
-            <div className={styles['input-wrapper']} style={style}>
+            <div className={styles['input-wrapper']}>
                 <div className={containerClassNames}>
                     {leadingIcon && <Icon name={leadingIcon} size={20} />}
 
@@ -113,7 +107,7 @@ export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, 
                         onChange={handleChange}
                         {...props}
                         ref={innerRef}
-                        className={styles.input}
+                        className={classNames(styles.input, styles[`input--${size}`])}
                     />
                     {clearable && hasValue && !isPasswordField && (
                         <FlatButton onClick={onClear}>

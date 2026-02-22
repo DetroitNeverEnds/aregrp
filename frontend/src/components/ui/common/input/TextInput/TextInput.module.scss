@@ -22,12 +22,13 @@
 
     // Размеры
     &--lg {
-        padding: 15px 20px 15px 20px;
-        padding-left: 20px;
+        // padding: 15px 20px 15px 20px;
+        padding: 0 20px;
     }
 
     &--md {
-        padding: 10px 20px 10px 20px;
+        // padding: 10px 20px 10px 20px;
+        padding: 0 20px;
     }
 
     // Состояния
@@ -69,6 +70,14 @@
     font-weight: $font-weight-regular;
     outline: none;
     width: 100%;
+
+    &--lg {
+        padding: 15px 0;
+    }
+
+    &--md {
+        padding: 10px 0;
+    }
 
     &::placeholder {
         color: $gray-50;

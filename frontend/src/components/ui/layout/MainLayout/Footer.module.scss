@@ -9,14 +9,7 @@
     margin-top: 100px;
 
     &__socialMedia_links {
-        path,
-        circle,
-        rect,
-        line,
-        polyline,
-        polygon {
-            fill: $primary-yellow;
-        }
+        color: $primary-yellow;
     }
 
     &__links {

@@ -1,0 +1,85 @@
+@use '@/styles/variables' as *;
+
+.pagination {
+    &__arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        padding: 7px 14px;
+        border: 1.6px solid $gray-20;
+        border-radius: 28px;
+        background: transparent;
+        color: $gray-100;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(&--disabled) {
+            background: $gray-opacity-20-40;
+            border-color: $gray-30;
+        }
+
+        &:active:not(&--disabled) {
+            background: $gray-30;
+        }
+
+        &--disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &__page {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        padding: 4px;
+        border: none;
+        border-radius: 40px;
+        background: transparent;
+        font-family: $font-family-base;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.2;
+        color: $gray-100;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(&--current) {
+            background: $gray-opacity-20-40;
+        }
+
+        &:active:not(&--current) {
+            background: $gray-30;
+        }
+
+        &--current {
+            background: $primary-700;
+            color: $gray-0;
+            cursor: default;
+        }
+    }
+
+    &__ellipsis {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        padding: 4px;
+        font-family: 'Golos Text', $font-family-base;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 18px;
+        color: $gray-100;
+        user-select: none;
+    }
+}
