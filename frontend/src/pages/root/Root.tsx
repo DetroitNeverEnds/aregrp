@@ -46,7 +46,7 @@ export const Root = () => {
             <Welcome />
             <VerticalMainContainer>
                 {/* Map and default buildings */}
-                <ObjectsFilter onSubmit={data => console.log(data)} />
+                <ObjectsFilter />
                 <Container justify="center" align="center">
                     <Flex align="start" gap={20} fullWidth>
                         <Text variant="18-reg" color="gray-50">

@@ -50,7 +50,7 @@ export const BenefitsWorking = (props: BenefitsProps) => {
                             title: t('benefits.working.items.cleanDeal'),
                         },
                     ],
-                },
+                } as BenifitConfig,
                 sale: {
                     title: t('benefits.sale.title'),
                     subtitle: t('benefits.sale.subtitle'),
@@ -77,7 +77,7 @@ export const BenefitsWorking = (props: BenefitsProps) => {
                             subtitle: t('benefits.sale.items.noRent.subtitle'),
                         },
                     ],
-                },
+                } as BenifitConfig,
             })[props.variant],
         [props.variant, t],
     );
