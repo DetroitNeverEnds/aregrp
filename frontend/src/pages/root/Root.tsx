@@ -16,7 +16,7 @@ import Container, { FeatureCard } from '../../components/ui/layout/Container';
 import { Column } from '../../components/ui/layout/TwoColumnsContainer';
 import { Divider } from '../../components/ui/common/Divider';
 import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
-import { usePremises } from '../../queries/premises';
+import { useBuildingsCatalogue, usePremises } from '../../queries/premises';
 import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
 import { Welcome } from './components/Welcome';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
@@ -42,6 +42,7 @@ export const Root = () => {
     };
 
     const premises = usePremises({}).data?.data;
+    const buildings = useBuildingsCatalogue().data?.data || [];
 
     const workWithUsBenefits: { icon: IconName; title: string }[] = useMemo(
         () => [
@@ -89,7 +90,7 @@ export const Root = () => {
                     <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
 
                     <CardContainer loadMore={() => alert('todo')}>
-                        {premises?.items.map(item => (
+                        {buildings.map(item => (
                             <ObjectCard key={item.uuid} item={item} />
                         ))}
                     </CardContainer>

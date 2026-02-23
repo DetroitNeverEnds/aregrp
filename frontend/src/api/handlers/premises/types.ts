@@ -98,3 +98,24 @@ export interface BuildingFilterParams {
     sale_type?: SaleType;
     available?: boolean;
 }
+
+/**
+ * Элемент медиа здания
+ */
+export interface MediaItem {
+    type: 'photo' | 'video';
+    link: string;
+}
+
+/**
+ * Здание в каталоге
+ */
+export interface BuildingCatalogue {
+    uuid: string;
+    title: string;
+    address: string;
+    description: string;
+    min_sale_price?: number | null;
+    min_rent_price?: number | null;
+    media: MediaItem[];
+}

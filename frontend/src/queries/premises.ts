@@ -1,11 +1,13 @@
 import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import {
     getBuildings,
+    getBuildingsCatalogue,
     getPremises,
     getPremisesForRent,
     getPremisesForSale,
     getPremiseDetail,
     type BuildingOption,
+    type BuildingCatalogue,
     type PremiseListResponse,
     type PremiseFilterParams,
     type BuildingFilterParams,
@@ -22,6 +24,16 @@ export function useBuildings(
     return useQuery({
         queryKey: ['buildings', params],
         queryFn: () => wrapApiCall(getBuildings)(params),
+    });
+}
+
+/**
+ * Хук для получения каталога зданий
+ */
+export function useBuildingsCatalogue(): UseQueryResult<QueryResult<BuildingCatalogue[]>, Error> {
+    return useQuery({
+        queryKey: ['buildings', 'catalogue'],
+        queryFn: () => wrapApiCall(getBuildingsCatalogue)(),
     });
 }
 

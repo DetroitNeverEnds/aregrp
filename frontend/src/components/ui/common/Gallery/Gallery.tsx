@@ -2,38 +2,40 @@ import React, { useMemo, useState } from 'react';
 
 import styles from './Gallery.module.scss';
 import { Flex } from '@/components/ui/common/Flex';
-import type { PremiseListItem } from '@/api';
+import type { BuildingCatalogue, MediaItem, PremiseListItem } from '@/api';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { Button } from '@/components/ui/common/Button';
 
-export type Media = {
-    type: 'photo' | 'video';
-    url: string;
-};
-
 export type GalleryProps = {
-    media?: Media[];
+    media?: MediaItem[];
     premise?: PremiseListItem;
+    building?: BuildingCatalogue;
 
     className?: string;
 };
 
 export const Gallery = (props: GalleryProps) => {
     const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(0);
-    const media: Media[] = useMemo(() => {
+    const media: MediaItem[] = useMemo(() => {
         return _.concat(
             props.media || [],
-            props.premise?.media.photos.map(proto => ({
+            props.premise?.media.photos.map(item => ({
                 type: 'photo',
-                url: proto.url,
+                link: item.url,
             })) || [],
-            props.premise?.media.videos.map(proto => ({
+            props.premise?.media.videos.map(item => ({
                 type: 'video',
-                url: proto.url,
+                link: item.url,
             })) || [],
+            props.building?.media || [],
         );
-    }, [props.media, props.premise]);
+    }, [
+        props.building?.media,
+        props.media,
+        props.premise?.media.photos,
+        props.premise?.media.videos,
+    ]);
 
     return (
         <div className={classNames(styles.container, props.className)}>
@@ -42,7 +44,7 @@ export const Gallery = (props: GalleryProps) => {
                     {media.type === 'photo' && (
                         <img
                             key={index}
-                            src={media.url}
+                            src={media.link}
                             className={classNames(styles.media, {
                                 [styles.media__inactive]: index !== currentMediaIndex,
                             })}
@@ -51,10 +53,12 @@ export const Gallery = (props: GalleryProps) => {
                     {media.type === 'video' && (
                         <video
                             key={index}
-                            src={media.url}
+                            src={media.link}
                             className={classNames(styles.media, {
                                 [styles.media__inactive]: index !== currentMediaIndex,
                             })}
+                            // controls
+                            autoPlay
                         />
                     )}
                 </React.Fragment>
@@ -63,7 +67,7 @@ export const Gallery = (props: GalleryProps) => {
             {/* Left control */}
             {currentMediaIndex > 0 && (
                 <Button
-                    variant="outlined"
+                    variant="secondary"
                     icon="chevron-left"
                     onlyIcon
                     className={classNames(styles.control, styles.control__left)}
@@ -74,7 +78,7 @@ export const Gallery = (props: GalleryProps) => {
             {/* Right control */}
             {currentMediaIndex < media.length - 1 && (
                 <Button
-                    variant="outlined"
+                    variant="secondary"
                     icon="chevron-right"
                     onlyIcon
                     className={classNames(styles.control, styles.control__right)}

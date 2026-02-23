@@ -2,6 +2,7 @@ import { api } from '../../base/api';
 import type {
     BuildingOption,
     BuildingFilterParams,
+    BuildingCatalogue,
     PremiseListResponse,
     PremiseFilterParams,
     PremiseDetail,
@@ -11,6 +12,11 @@ import type {
  * Получить список зданий для фильтра
  */
 export const getBuildings = api.get<BuildingFilterParams, BuildingOption[]>('/premises/buildings');
+
+/**
+ * Получить каталог зданий
+ */
+export const getBuildingsCatalogue = api.get<void, BuildingCatalogue[]>('/buildings/catalogue');
 
 /**
  * Получить список помещений с фильтрами
