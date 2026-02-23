@@ -42,6 +42,7 @@ export const Button: React.FC<ButtonProps> = props => {
         width = 'auto',
         children,
         icon,
+        iconColor = undefined,
         onlyIcon = false,
         className = '',
         ...restProps
@@ -70,7 +71,7 @@ export const Button: React.FC<ButtonProps> = props => {
                     size={24}
                     aria-hidden={!onlyIcon}
                     className={styles.button__icon}
-                    color={props.iconColor}
+                    color={iconColor}
                 />
             )}
             {!onlyIcon && <span className={styles.button__content}>{children}</span>}

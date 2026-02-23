@@ -1,14 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { Flex } from '../../components/ui/common/Flex';
 import { useHeaderSettings } from '../../hooks/useHeaderSettings';
-import { useMemo } from 'react';
 import { ObjectsFilter } from '../../components/ui/forms/ObjectsFilter';
 import Text from '../../components/ui/common/Text';
 import { YandexMap } from '../../components/ui/common/YandexMap';
 import { ObjectCard } from '../../components/ui/cards/ObjectCard';
-// import { mockObjectCards } from '../../components/ui/cards/ObjectCard/ObjectCard.mock';
-import { Icon } from '../../components/ui/common/Icon';
-import type { IconName } from '../../components/ui/common/Icon/iconConfig';
 
 import styles from './Root.module.scss';
 import { Button } from '../../components/ui/common/Button';
@@ -22,6 +18,7 @@ import { Welcome } from './components/Welcome';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
 import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContainer';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
+import { BenifitsWorking } from '@/components/ui/cards/Benefits';
 
 type Data = {
     coordinates: [number, number][];
@@ -43,28 +40,6 @@ export const Root = () => {
 
     const premises = usePremises({}).data?.data;
     const buildings = useBuildingsCatalogue().data?.data || [];
-
-    const workWithUsBenefits: { icon: IconName; title: string }[] = useMemo(
-        () => [
-            {
-                icon: 'benefit-1',
-                title: t('benefits.workWithUs.items.designerRepair'),
-            },
-            {
-                icon: 'benefit-2',
-                title: t('benefits.workWithUs.items.wetPoint'),
-            },
-            {
-                icon: 'benefit-3',
-                title: t('benefits.workWithUs.items.accessibleLocation'),
-            },
-            {
-                icon: 'benefit-4',
-                title: t('benefits.workWithUs.items.cleanDeal'),
-            },
-        ],
-        [t],
-    );
 
     return (
         <div>
@@ -150,33 +125,7 @@ export const Root = () => {
                 </Container>
 
                 {/* Work with us benefits */}
-                <FeatureCard gap={80}>
-                    <Flex direction="row" align="start" gap={24} fullWidth>
-                        <Column gap={40} style={{ width: '768px' }}>
-                            <Divider />
-                            <Text variant="h2">{t('benefits.workWithUs.title')}</Text>
-                        </Column>
-                        <Column gap={40}>
-                            <Divider />
-                            <Flex gap={20} fullWidth align="start">
-                                <Text variant="18-reg">{t('benefits.workWithUs.subtitle')}</Text>
-                                <Text variant="20-med" color="primary-yellow">
-                                    {t('benefits.workWithUs.description')}
-                                </Text>
-                            </Flex>
-                        </Column>
-                    </Flex>
-                    <Flex direction="row" gap={93} fullWidth>
-                        {workWithUsBenefits.map((benefit, index) => (
-                            <Column key={index} gap={20} align="start" className={styles.benefit}>
-                                <Icon name={benefit.icon} size={32} color="primary-yellow" />
-                                <Text variant="20-reg" className={styles.benefit__title}>
-                                    {benefit.title}
-                                </Text>
-                            </Column>
-                        ))}
-                    </Flex>
-                </FeatureCard>
+                <BenifitsWorking variant="working" />
 
                 {/* Feedback form */}
                 <FeedbackFormRow />

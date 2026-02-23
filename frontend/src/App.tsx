@@ -7,8 +7,7 @@ import RestorePassword from './pages/auth/restore-password';
 import { MainLayout } from './components/ui/layout/MainLayout/Layout';
 import { Root } from './pages/root';
 import { Contacts } from './pages/contacts';
-import { Sale } from './pages/sale';
-import { Rent } from './pages/rent';
+import { Catalogue } from './pages/catalogue';
 import { Investors } from './pages/investors';
 import { Agents } from './pages/agents';
 import { Cases } from './pages/cases';
@@ -24,8 +23,7 @@ function App() {
             </Route>
             <Route path="/" element={<MainLayout />}>
                 <Route path="/" element={<Root />} />
-                <Route path="/sale" element={<Sale />} />
-                <Route path="/rent" element={<Rent />} />
+                <Route path="/catalogue" element={<Catalogue />} />
                 <Route path="/investors" element={<Investors />} />
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/contacts" element={<Contacts />} />

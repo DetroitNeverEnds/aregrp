@@ -40,7 +40,7 @@ export const Gallery = (props: GalleryProps) => {
     return (
         <div className={classNames(styles.container, props.className)}>
             {media.map((media, index) => (
-                <React.Fragment>
+                <React.Fragment key={media.link}>
                     {media.type === 'photo' && (
                         <img
                             key={index}

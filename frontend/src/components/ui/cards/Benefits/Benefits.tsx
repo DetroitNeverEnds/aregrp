@@ -1,0 +1,117 @@
+import { Divider } from '@/components/ui/common/Divider';
+import { Flex } from '@/components/ui/common/Flex';
+import { Icon, type IconName } from '@/components/ui/common/Icon';
+import Text from '@/components/ui/common/Text';
+import { FeatureCard } from '@/components/ui/layout/Container';
+import { Column } from '@/components/ui/layout/TwoColumnsContainer';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+type Variant = 'working' | 'sale';
+export type BenefitsProps = {
+    variant: Variant;
+};
+
+type BenifitConfig = {
+    title: string;
+    subtitle: string;
+    description: string;
+    items: {
+        icon: IconName;
+        title: string;
+        subtitle?: string;
+    }[];
+};
+
+export const BenefitsWorking = (props: BenefitsProps) => {
+    const { t } = useTranslation();
+    const benefit: BenifitConfig = useMemo(
+        () =>
+            ({
+                working: {
+                    title: t('benefits.working.title'),
+                    subtitle: t('benefits.working.subtitle'),
+                    description: t('benefits.working.description'),
+                    items: [
+                        {
+                            icon: 'benefit-1',
+                            title: t('benefits.working.items.designerRepair'),
+                        },
+                        {
+                            icon: 'benefit-2',
+                            title: t('benefits.working.items.wetPoint'),
+                        },
+                        {
+                            icon: 'benefit-3',
+                            title: t('benefits.working.items.accessibleLocation'),
+                        },
+                        {
+                            icon: 'benefit-4',
+                            title: t('benefits.working.items.cleanDeal'),
+                        },
+                    ],
+                },
+                sale: {
+                    title: t('benefits.sale.title'),
+                    subtitle: t('benefits.sale.subtitle'),
+                    description: t('benefits.sale.description'),
+                    items: [
+                        {
+                            icon: 'benefit-8',
+                            title: t('benefits.sale.items.highLiquidity'),
+                            subtitle: t('benefits.sale.items.highLiquidity.subtitle'),
+                        },
+                        {
+                            icon: 'benefit-7',
+                            title: t('benefits.sale.items.longTermAsset'),
+                            subtitle: t('benefits.sale.items.longTermAsset.subtitle'),
+                        },
+                        {
+                            icon: 'benefit-5',
+                            title: t('benefits.sale.items.stableIncome'),
+                            subtitle: t('benefits.sale.items.stableIncome.subtitle'),
+                        },
+                        {
+                            icon: 'benefit-6',
+                            title: t('benefits.sale.items.noRent'),
+                            subtitle: t('benefits.sale.items.noRent.subtitle'),
+                        },
+                    ],
+                },
+            })[props.variant],
+        [props.variant, t],
+    );
+
+    return (
+        <FeatureCard gap={80}>
+            <Flex direction="row" align="start" gap={24} fullWidth>
+                <Column gap={40} style={{ width: '768px' }}>
+                    <Divider />
+                    <Text variant="h2">{benefit.title}</Text>
+                </Column>
+                <Column gap={40}>
+                    <Divider />
+                    <Flex gap={20} fullWidth align="start">
+                        <Text variant="18-reg">{benefit.subtitle}</Text>
+                        <Text variant="20-med" color="primary-yellow">
+                            {benefit.description}
+                        </Text>
+                    </Flex>
+                </Column>
+            </Flex>
+            <Flex direction="row" gap={93} fullWidth>
+                {benefit.items.map((benefit, index) => (
+                    <Column key={index} gap={20} align="start">
+                        <Icon name={benefit.icon} size={32} color="primary-yellow" />
+                        {benefit.subtitle && (
+                            <Text variant="20-reg" color="gray-50">
+                                {benefit.subtitle}
+                            </Text>
+                        )}
+                        <Text variant="20-reg">{benefit.title}</Text>
+                    </Column>
+                ))}
+            </Flex>
+        </FeatureCard>
+    );
+};

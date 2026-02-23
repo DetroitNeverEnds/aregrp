@@ -44,10 +44,10 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                     {isDark ? <LogoTextDark /> : <LogoText />}
                 </Flex>
                 <Flex direction="row" align="center" gap={30} className={styles.menuContainer}>
-                    <Link to="/sale" ellipsis theme={linkTheme}>
+                    <Link to='/catalogue?filter={"type":"sale"}' ellipsis theme={linkTheme}>
                         {t('header.sale')}
                     </Link>
-                    <Link to="/rent" ellipsis theme={linkTheme}>
+                    <Link to='/catalogue?filter={"type":"rent"}' ellipsis theme={linkTheme}>
                         {t('header.rent')}
                     </Link>
                     <Link to="/investors" ellipsis theme={linkTheme}>

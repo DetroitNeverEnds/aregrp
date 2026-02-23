@@ -1,33 +1,25 @@
 import { Controller, useForm } from 'react-hook-form';
-import { Flex } from '../../common/Flex';
-import { Form } from '../../common/Form';
 import styles from './ObjectsFilter.module.scss';
-import { Button } from '../../common/Button';
-import Switch from '../../common/input/Switch';
 import FromToSelect from './FromToSelect';
-import { Select, type SelectOption } from '../../common/input/Select';
 import { useTranslation } from 'react-i18next';
-import type { SaleType } from '../../../../api';
-import { useBuildings } from '../../../../queries/premises';
+import { useBuildings } from '@/queries/premises';
 import { useMemo } from 'react';
-import { Column } from '../../layout/TwoColumnsContainer';
-
-type SearchParams = {
-    type: SaleType;
-    businessCenters?: string[];
-    priceFrom?: number;
-    priceTo?: number;
-    areaFrom?: number;
-    areaTo?: number;
-};
+import { Column } from '@/components/ui/layout/TwoColumnsContainer';
+import { Select, type SelectOption } from '@/components/ui/common/input/Select';
+import Form from '@/components/ui/common/Form';
+import { Flex } from '@/components/ui/common/Flex';
+import Switch from '@/components/ui/common/input/Switch';
+import { Button } from '@/components/ui/common/Button';
+import type { ObjectsFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/types';
+import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 
 type ObjectsFilterProps = {
-    defaultValues?: SearchParams;
-    onSubmit: (values: SearchParams) => void;
+    defaultValues?: ObjectsFilterSearchParams;
 };
 
-export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) => {
+export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
     const { t } = useTranslation();
+    const { filter, gotoFilter } = useFilterSearchParams();
     const businessCenterOptionsData = useBuildings().data?.data;
     const businessCenterOptions: SelectOption<string>[] = useMemo(
         () =>
@@ -40,8 +32,12 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
         [businessCenterOptionsData],
     );
 
-    const { control, handleSubmit, setValue } = useForm<SearchParams>({
-        defaultValues: { type: 'sale', ...(defaultValues || {}) },
+    const onSubmit = (values: ObjectsFilterSearchParams) => {
+        gotoFilter(values);
+    };
+
+    const { control, handleSubmit, setValue } = useForm<ObjectsFilterSearchParams>({
+        defaultValues: { ...filter, ...(defaultValues || {}) },
     });
 
     return (
@@ -93,6 +89,7 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
                             setValue('priceFrom', from);
                             setValue('priceTo', to);
                         }}
+                        defaultValue={{ from: filter.priceFrom || 0, to: filter.priceTo || 0 }}
                     />
                 </Column>
                 <Column>
@@ -103,6 +100,7 @@ export const ObjectsFilter = ({ defaultValues, onSubmit }: ObjectsFilterProps) =
                             setValue('areaFrom', from);
                             setValue('areaTo', to);
                         }}
+                        defaultValue={{ from: filter.areaFrom || 0, to: filter.areaTo || 0 }}
                     />
                 </Column>
 
