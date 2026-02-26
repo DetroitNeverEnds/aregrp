@@ -1,14 +1,24 @@
 .loader {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $gray-opacity-0-70;
-    z-index: 1000;
+
+    // Вариант block (по умолчанию) - скелетон внутри контейнера
+    &--block {
+        width: 100%;
+        min-height: 200px;
+    }
+
+    // Вариант overlay - поверх всей страницы
+    &--overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: $gray-opacity-0-70;
+        z-index: 1000;
+    }
 
     &__content {
         display: flex;

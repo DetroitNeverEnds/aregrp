@@ -12,7 +12,7 @@ export const QueryWaiter = (props: PropsWithChildren) => {
 
     // Ждём завершения всех запросов
     if (_.some([siteInfo.isPending, user.isPending])) {
-        return <Loader />;
+        return <Loader variant="overlay" />;
     }
 
     // Fail if errors (только критичные запросы)

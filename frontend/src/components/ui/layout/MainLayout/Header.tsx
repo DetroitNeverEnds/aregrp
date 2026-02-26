@@ -14,6 +14,7 @@ import styles from './Header.module.scss';
 import classNames from 'classnames';
 import { BreadCrumbs, type BreadCrumbsDescription } from '../../common/Breadcrumbs/Breadcrumbs';
 import { useUser } from '../../../../queries/profile';
+import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 
 export type HeaderTheme = 'light' | 'dark';
 
@@ -28,6 +29,8 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
     const siteInfo = siteInfoResult?.data;
     const userResult = useUser().data;
     const userInfo = userResult?.data;
+
+    const { getLinkToCatalogue } = useFilterSearchParams();
 
     const isDark = theme === 'dark';
     const linkTheme = isDark ? 'light' : 'blue';
@@ -44,10 +47,10 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                     {isDark ? <LogoTextDark /> : <LogoText />}
                 </Flex>
                 <Flex direction="row" align="center" gap={30} className={styles.menuContainer}>
-                    <Link to='/catalogue?filter={"type":"sale"}' ellipsis theme={linkTheme}>
+                    <Link to={getLinkToCatalogue({ sale_type: 'sale' })} ellipsis theme={linkTheme}>
                         {t('header.sale')}
                     </Link>
-                    <Link to='/catalogue?filter={"type":"rent"}' ellipsis theme={linkTheme}>
+                    <Link to={getLinkToCatalogue({ sale_type: 'rent' })} ellipsis theme={linkTheme}>
                         {t('header.rent')}
                     </Link>
                     <Link to="/investors" ellipsis theme={linkTheme}>

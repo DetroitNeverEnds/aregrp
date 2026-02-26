@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback, type ReactNode, forwardRef } from 'react';
+import React, { useMemo, useCallback, type ReactNode, forwardRef } from 'react';
 import classNames from 'classnames';
 import styles from './TextInput.module.scss';
 import { Icon, type IconName } from '../../Icon';
@@ -15,10 +15,12 @@ type AdditionalInputProps = {
     leadingIcon?: IconName;
     /** Сообщение об ошибке (при наличии инпут становится невалидным с темой error) */
     errorMessage?: string;
-    // Trailing label
+    /** Trailing label */
     trailingLabel?: string | ReactNode;
+    /** Показывать кнопку очистки */
     clearable?: boolean;
-    width?: number;
+    /** Обработчик изменения значения */
+    onChange: (val: string) => void;
 };
 export type TextInputProps = Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -26,7 +28,7 @@ export type TextInputProps = Omit<
 > &
     AdditionalInputProps;
 
-export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, TextInputProps>(
+export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     (
         {
             size = 'md',
@@ -35,18 +37,16 @@ export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, 
             className = '',
             disabled = false,
             type = 'text',
-            value,
+            value = '',
             onChange,
             trailingLabel,
             clearable = true,
-            // width,
             ...props
         },
-        _ref,
+        ref,
     ) => {
-        const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-        const [hasValue, setHasValue] = useState(Boolean(props.defaultValue) || Boolean(value));
-        const innerRef = useRef<HTMLInputElement>(null);
+        const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
+        const hasValue = useMemo(() => Boolean(value), [value]);
 
         // Определяем, показывать ли toggle для пароля
         const isPasswordField = useMemo(() => type === 'password', [type]);
@@ -57,30 +57,17 @@ export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, 
             [isPasswordField, isPasswordVisible, type],
         );
 
-        // Обработчик изменения для отслеживания наличия значения
+        // Обработчик изменения
         const handleChange = useCallback(
             (e: React.ChangeEvent<HTMLInputElement>) => {
-                setHasValue(e.target.value.length > 0);
-                onChange?.(e);
+                onChange(e.target.value);
             },
-            [onChange, setHasValue],
+            [onChange],
         );
 
         const onClear = useCallback(() => {
-            if (innerRef.current) {
-                // Устанавливаем пустое значение
-                innerRef.current.value = '';
-                setHasValue(false);
-
-                const syntheticEvent = {
-                    target: innerRef.current,
-                    currentTarget: innerRef.current,
-                } as React.ChangeEvent<HTMLInputElement>;
-
-                // Вызываем onChange с синтетическим событием
-                onChange?.(syntheticEvent);
-            }
-        }, [onChange, innerRef]);
+            onChange('');
+        }, [onChange]);
 
         // Определяем, есть ли ошибка
         const hasError = useMemo(() => Boolean(errorMessage), [errorMessage]);
@@ -105,8 +92,8 @@ export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, 
                         value={value}
                         disabled={disabled}
                         onChange={handleChange}
+                        ref={ref}
                         {...props}
-                        ref={innerRef}
                         className={classNames(styles.input, styles[`input--${size}`])}
                     />
                     {clearable && hasValue && !isPasswordField && (
@@ -131,5 +118,7 @@ export const TextInput: React.FC<TextInputProps> = forwardRef<HTMLInputElement, 
         );
     },
 );
+
+TextInput.displayName = 'TextInput';
 
 export default TextInput;

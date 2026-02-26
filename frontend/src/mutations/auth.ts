@@ -43,6 +43,9 @@ export function useRegisterMutation(
             const { userType, fullName, policyAgrement: _uPA, ...other } = data;
             return register({ user_type: userType, full_name: fullName, ...other });
         },
+        onSuccess(_data, _variables, _onMutateResult, context) {
+            context.client.invalidateQueries({ queryKey: ['user'] });
+        },
         ...options,
     });
 }
@@ -52,6 +55,9 @@ export function useLoginMutation(
 ) {
     return useMutation({
         mutationFn: login,
+        onSuccess(_data, _variables, _onMutateResult, context) {
+            context.client.invalidateQueries({ queryKey: ['user'] });
+        },
         ...options,
     });
 }
@@ -61,6 +67,9 @@ export function useLogoutMutation(
 ) {
     return useMutation({
         mutationFn: logout,
+        onSuccess(_data, _variables, _onMutateResult, context) {
+            context.client.invalidateQueries({ queryKey: ['user'] });
+        },
         ...options,
     });
 }
@@ -79,6 +88,9 @@ export function useConfirmPasswordResetMutation(
 ) {
     return useMutation({
         mutationFn: confirmPasswordReset,
+        onSuccess(_data, _variables, _onMutateResult, context) {
+            context.client.invalidateQueries({ queryKey: ['user'] });
+        },
         ...options,
     });
 }

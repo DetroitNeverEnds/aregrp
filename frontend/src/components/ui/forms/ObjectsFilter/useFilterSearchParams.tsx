@@ -1,29 +1,38 @@
-import type { ObjectsFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/types';
+import type { PremiseFilterParams } from '@/api';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const useFilterSearchParams = (): {
-    filter: ObjectsFilterSearchParams;
-    setFilter: (filter: ObjectsFilterSearchParams) => void;
-    gotoFilter: (filter: ObjectsFilterSearchParams) => void;
+    filter: PremiseFilterParams;
+    setFilter: (filter: PremiseFilterParams) => void;
+    gotoFilter: (filter: PremiseFilterParams) => void;
+    getLinkToCatalogue: (filter: PremiseFilterParams) => string;
 } => {
     const [searchParams] = useSearchParams();
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
     const setFilter = useCallback(
-        (filter: ObjectsFilterSearchParams) => {
+        async (filter: PremiseFilterParams) => {
             searchParams.set('filter', JSON.stringify(filter));
+            await queryClient.invalidateQueries({ queryKey: ['premises', filter] });
         },
-        [searchParams],
+        [searchParams, queryClient],
     );
     const gotoFilter = useCallback(
-        (filter: ObjectsFilterSearchParams) => {
+        async (filter: PremiseFilterParams) => {
             navigate(`/catalogue?filter=${JSON.stringify(filter)}`);
+            await queryClient.invalidateQueries({ queryKey: ['premises', filter] });
         },
-        [navigate],
+        [navigate, queryClient],
     );
     const filter = useMemo(
-        () => JSON.parse(searchParams.get('filter') || '{}') as ObjectsFilterSearchParams,
+        () => JSON.parse(searchParams.get('filter') || '{}') as PremiseFilterParams,
         [searchParams],
     );
-    return { filter, setFilter, gotoFilter };
+    const getLinkToCatalogue = useCallback(
+        (filter: PremiseFilterParams) => `/catalogue?filter=${JSON.stringify(filter)}`,
+        [],
+    );
+    return { filter, setFilter, gotoFilter, getLinkToCatalogue };
 };

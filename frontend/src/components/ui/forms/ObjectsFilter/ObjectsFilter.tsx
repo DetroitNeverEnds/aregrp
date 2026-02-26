@@ -1,20 +1,20 @@
 import { Controller, useForm } from 'react-hook-form';
 import styles from './ObjectsFilter.module.scss';
-import FromToSelect from './FromToSelect';
+import MinMaxSelect from './MinMaxSelect';
 import { useTranslation } from 'react-i18next';
 import { useBuildings } from '@/queries/premises';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Column } from '@/components/ui/layout/TwoColumnsContainer';
 import { Select, type SelectOption } from '@/components/ui/common/input/Select';
 import Form from '@/components/ui/common/Form';
 import { Flex } from '@/components/ui/common/Flex';
 import Switch from '@/components/ui/common/input/Switch';
 import { Button } from '@/components/ui/common/Button';
-import type { ObjectsFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/types';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
+import type { PremiseFilterParams } from '@/api';
 
 type ObjectsFilterProps = {
-    defaultValues?: ObjectsFilterSearchParams;
+    defaultValues?: PremiseFilterParams;
 };
 
 export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
@@ -32,13 +32,34 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
         [businessCenterOptionsData],
     );
 
-    const onSubmit = (values: ObjectsFilterSearchParams) => {
+    const onSubmit = (values: PremiseFilterParams) => {
         gotoFilter(values);
     };
 
-    const { control, handleSubmit, setValue } = useForm<ObjectsFilterSearchParams>({
-        defaultValues: { ...filter, ...(defaultValues || {}) },
+    const { control, handleSubmit, setValue } = useForm<PremiseFilterParams>({
+        defaultValues: { sale_type: 'sale', ...(defaultValues || {}), ...filter },
     });
+
+    // TODO: Сбрасывать форму, когда меняется фильтр
+    // useEffect(() => {
+    //     console.log('aaa', {
+    //         building_uuids: '',
+    //         min_area: 1,
+    //         max_area: 1,
+    //         min_price: 1,
+    //         max_price: 1,
+    //         ...filter,
+    //     });
+
+    //     reset({
+    //         building_uuids: '',
+    //         min_area: 1,
+    //         max_area: 1,
+    //         min_price: 1,
+    //         max_price: 1,
+    //         ...filter,
+    //     });
+    // }, [filter, reset]);
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
@@ -53,7 +74,7 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                                 },
                                 {
                                     value: 'rent',
-                                    label: t('common.sellment'),
+                                    label: t('common.rentment'),
                                 },
                             ]}
                             value={value}
@@ -61,7 +82,7 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                         />
                     )}
                     control={control}
-                    name="type"
+                    name="sale_type"
                 />
 
                 {/* TODO: Заменить на мультиселект */}
@@ -78,29 +99,29 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                             />
                         )}
                         control={control}
-                        name="businessCenters"
+                        name="building_uuids"
                     />
                 </Column>
                 <Column>
-                    <FromToSelect
+                    <MinMaxSelect
                         label={t('common.price')}
                         metric={'₽'}
-                        onChange={({ from, to }) => {
-                            setValue('priceFrom', from);
-                            setValue('priceTo', to);
+                        onChange={({ min: from, max: to }) => {
+                            setValue('min_price', from);
+                            setValue('max_price', to);
                         }}
-                        defaultValue={{ from: filter.priceFrom || 0, to: filter.priceTo || 0 }}
+                        defaultValue={{ min: filter.min_price, max: filter.max_price }}
                     />
                 </Column>
                 <Column>
-                    <FromToSelect
+                    <MinMaxSelect
                         label={t('common.area')}
                         metric={'м²'}
-                        onChange={({ from, to }) => {
-                            setValue('areaFrom', from);
-                            setValue('areaTo', to);
+                        onChange={({ min: from, max: to }) => {
+                            setValue('min_area', from);
+                            setValue('max_area', to);
                         }}
-                        defaultValue={{ from: filter.areaFrom || 0, to: filter.areaTo || 0 }}
+                        defaultValue={{ min: filter.min_area, max: filter.max_area }}
                     />
                 </Column>
 

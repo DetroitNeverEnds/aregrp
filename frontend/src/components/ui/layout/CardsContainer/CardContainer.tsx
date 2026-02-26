@@ -5,8 +5,8 @@ import { Pagination } from '@/components/ui/common/Pagination';
 import Container from '@/components/ui/layout/Container';
 
 export type PaginationConfig = {
-    currentPage: number;
-    totalPages: number;
+    currentPage?: number;
+    totalPages?: number;
     onPageChange: (page: number) => void;
 };
 
@@ -24,8 +24,8 @@ export const CardContainer = (props: CardContainerProps) => {
             </Flex>
             {props.pagination && (
                 <Pagination
-                    initialPage={props.pagination.currentPage}
-                    totalPages={props.pagination.totalPages}
+                    initialPage={props.pagination.currentPage || 1}
+                    totalPages={props.pagination.totalPages || 1}
                     onPageChange={props.pagination.onPageChange}
                 />
             )}

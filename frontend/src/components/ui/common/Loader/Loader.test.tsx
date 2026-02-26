@@ -11,6 +11,30 @@ describe('Loader', () => {
         expect(loader).toHaveAttribute('role', 'status');
     });
 
+    it('по умолчанию использует вариант block', () => {
+        const { container } = render(<Loader />);
+        const loader = container.querySelector(`.${styles['loader--block']}`);
+        expect(loader).toBeInTheDocument();
+    });
+
+    it('применяет вариант overlay', () => {
+        const { container } = render(<Loader variant="overlay" />);
+        const loader = container.querySelector(`.${styles['loader--overlay']}`);
+        expect(loader).toBeInTheDocument();
+    });
+
+    it('применяет кастомную высоту для варианта block', () => {
+        const { container } = render(<Loader variant="block" height={400} />);
+        const loader = container.querySelector(`.${styles.loader}`);
+        expect(loader).toHaveStyle({ height: '400px' });
+    });
+
+    it('не применяет высоту для варианта overlay', () => {
+        const { container } = render(<Loader variant="overlay" height={400} />);
+        const loader = container.querySelector(`.${styles.loader}`);
+        expect(loader).not.toHaveStyle({ height: '400px' });
+    });
+
     it('отображает текст, если передан', () => {
         render(<Loader text="Загрузка данных..." />);
         expect(screen.getByText('Загрузка данных...')).toBeInTheDocument();

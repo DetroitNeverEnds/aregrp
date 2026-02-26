@@ -97,7 +97,7 @@ export function Select<T>({
                 selectedValue === undefined ? styles.unselectedTrigger : styles.selectedTrigger
             }
         >
-            <Flex gap={1}>
+            <Flex gap={1} align="start">
                 {options.map(option => (
                     <Flex
                         key={String(option.value)}

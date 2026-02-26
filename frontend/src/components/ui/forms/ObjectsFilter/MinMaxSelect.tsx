@@ -1,40 +1,40 @@
 import { useEffect, useMemo, useState } from 'react';
-import styles from './FromToSelect.module.scss';
+import styles from './MinMaxSelect.module.scss';
 import Text from '../../common/Text/Text';
 import { Flex } from '../../common/Flex';
 import { Dropdown } from '../../common/Dropdown';
 import { TextInput } from '../../common/input/TextInput';
 import { useTranslation } from 'react-i18next';
 
-export type FromToState = {
-    from: number;
-    to: number;
+export type MinMaxState = {
+    min?: number;
+    max?: number;
 };
 
-export interface FromToSelectProps {
+export interface MinMaxSelectProps {
     label: string;
     metric: string;
-    defaultValue?: FromToState;
-    onChange?: (s: FromToState) => void;
+    defaultValue?: MinMaxState;
+    onChange?: (s: MinMaxState) => void;
     disabled?: boolean;
 }
 
-export function FromToSelect({
+export function MinMaxSelect({
     defaultValue,
     label,
     metric,
     onChange = _ => {},
     disabled = false,
-}: FromToSelectProps) {
+}: MinMaxSelectProps) {
     const { t } = useTranslation();
 
-    const [formState, setFormState] = useState<FromToState>(defaultValue || { from: 0, to: 0 });
+    const [formState, setFormState] = useState<MinMaxState>(defaultValue || {});
     useEffect(() => {
         onChange(formState);
     }, [formState, onChange]);
 
     const triggerContent = useMemo(() => {
-        if (!formState.from && !formState.to) {
+        if (!formState.min && !formState.max) {
             return (
                 <Text color="gray-50" ellipsis>
                     {label}, {metric}
@@ -43,20 +43,20 @@ export function FromToSelect({
         }
         return (
             <Text ellipsis>
-                {formState.from > 0 && (
+                {formState.min && (
                     <>
-                        {t('common.from')} {formState.from}
+                        {t('common.from')} {formState.min}
                     </>
                 )}{' '}
-                {formState.to > 0 && (
+                {formState.max && (
                     <>
-                        {t('common.to')} {formState.to}
+                        {t('common.to')} {formState.max}
                     </>
                 )}
                 {metric}
             </Text>
         );
-    }, [formState.from, formState.to, label, metric, t]);
+    }, [formState.min, formState.max, label, metric, t]);
 
     return (
         <Flex gap={8} className={styles.container} fullWidth>
@@ -76,10 +76,11 @@ export function FromToSelect({
                         onChange={val =>
                             setFormState({
                                 ...formState,
-                                from: Number(val.currentTarget.value) || 0,
+                                min: val ? Number(val) : undefined,
                             })
                         }
-                        value={formState.from > 0 ? formState.from : undefined}
+                        value={formState.min?.toString() || ''}
+                        name="from"
                     />
                     <TextInput
                         type="number"
@@ -87,9 +88,10 @@ export function FromToSelect({
                         className={styles.input}
                         width={180}
                         onChange={val =>
-                            setFormState({ ...formState, to: Number(val.currentTarget.value) || 0 })
+                            setFormState({ ...formState, max: val ? Number(val) : undefined })
                         }
-                        value={formState.to > 0 ? formState.to : undefined}
+                        value={formState.max?.toString() || ''}
+                        name="to"
                     />
                 </Flex>
             </Dropdown>
@@ -97,4 +99,4 @@ export function FromToSelect({
     );
 }
 
-export default FromToSelect;
+export default MinMaxSelect;
