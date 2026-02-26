@@ -27,10 +27,10 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={1} totalPages={5} onPageChange={onPageChange} />);
 
-        const page3Button = screen.getByLabelText('Страница 3');
-        await user.click(page3Button);
+        const page2Button = screen.getByLabelText('Страница 2');
+        await user.click(page2Button);
 
-        expect(onPageChange).toHaveBeenCalledWith(3);
+        expect(onPageChange).toHaveBeenCalledWith(2);
     });
 
     it('вызывает onPageChange при клике на кнопку "Вперед"', async () => {

@@ -7,7 +7,7 @@ import Text from '@/components/ui/common/Text';
 
 export type PaginationProps = {
     /** Текущая страница (1-based) */
-    initialPage: number;
+    currentPage: number;
     /** Общее количество страниц */
     totalPages: number;
     /** Callback при выборе страницы */
@@ -21,12 +21,11 @@ export type PaginationProps = {
  * Отображает навигацию по страницам с кнопками перехода
  */
 export const Pagination: React.FC<PaginationProps> = ({
-    initialPage,
+    currentPage,
     totalPages,
     onPageChange,
     className,
 }) => {
-    const [currentPage, setCurrentPage] = useState(initialPage || 1);
     const pages = useMemo(
         () => ({
             hasLeadingEclipsis: totalPages >= 5 && currentPage > 3,
@@ -40,10 +39,13 @@ export const Pagination: React.FC<PaginationProps> = ({
 
     const handlePageClick = (page: number) => {
         if (page !== currentPage && page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
             onPageChange(page);
         }
     };
+
+    if (totalPages <= 1) {
+        return null;
+    }
 
     return (
         <Flex
@@ -58,11 +60,14 @@ export const Pagination: React.FC<PaginationProps> = ({
                 disabled={currentPage === 1}
                 icon="chevron-left"
                 onlyIcon
+                aria-label="Предыдущая страница"
             />
 
             <Button
                 variant={currentPage === 1 ? 'primary' : 'flat'}
                 onClick={() => handlePageClick(1)}
+                aria-label="Страница 1"
+                aria-current={currentPage === 1 ? 'page' : undefined}
             >
                 1
             </Button>
@@ -72,6 +77,8 @@ export const Pagination: React.FC<PaginationProps> = ({
                     key={page}
                     variant={currentPage === page ? 'primary' : 'flat'}
                     onClick={() => handlePageClick(page)}
+                    aria-label={`Страница ${page}`}
+                    aria-current={currentPage === page ? 'page' : undefined}
                 >
                     {page}
                 </Button>
@@ -81,6 +88,8 @@ export const Pagination: React.FC<PaginationProps> = ({
                 <Button
                     variant={currentPage === totalPages ? 'primary' : 'flat'}
                     onClick={() => handlePageClick(totalPages)}
+                    aria-label={`Страница ${totalPages}`}
+                    aria-current={currentPage === totalPages ? 'page' : undefined}
                 >
                     {totalPages}
                 </Button>
@@ -92,6 +101,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                 disabled={currentPage === totalPages}
                 icon="chevron-right"
                 onlyIcon
+                aria-label="Следующая страница"
             />
         </Flex>
     );
