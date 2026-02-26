@@ -3,7 +3,7 @@ import styles from './ObjectsFilter.module.scss';
 import MinMaxSelect from './MinMaxSelect';
 import { useTranslation } from 'react-i18next';
 import { useBuildings } from '@/queries/premises';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Column } from '@/components/ui/layout/TwoColumnsContainer';
 import { Select, type SelectOption } from '@/components/ui/common/input/Select';
 import Form from '@/components/ui/common/Form';
@@ -85,17 +85,18 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                     name="sale_type"
                 />
 
-                {/* TODO: Заменить на мультиселект */}
                 <Column>
                     <Controller
                         render={({ field: { value, onChange } }) => (
-                            <Select
+                            <Select<string>
                                 options={businessCenterOptions || []}
                                 placeholder={t('components.objectFilter.allCenters')}
                                 size="lg"
-                                value={value}
-                                onChange={onChange}
+                                value={value?.split(',') || []}
+                                onChange={uuids => onChange(uuids.join(','))}
                                 className={styles.bcSelect}
+                                multiple
+                                clearable
                             />
                         )}
                         control={control}

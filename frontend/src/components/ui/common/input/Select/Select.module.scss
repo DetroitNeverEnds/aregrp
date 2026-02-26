@@ -60,22 +60,29 @@
     cursor: pointer;
     border-radius: 8px;
     transition: background-color 0.15s ease;
+    width: 100%;
 
     &:hover {
-        background: $gray-opacity-20-20;
+        background: $primary-mute;
     }
 
     &--selected {
-        background: $gray-opacity-20-20;
+        background: $primary-mute;
+    }
+
+    &--multi {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+
+        &:hover {
+            background: $primary-mute;
+        }
     }
 }
 
-.unselectedTrigger {
-    // background-color: $gray-10;
-    // color: $gray-50;
-}
-
-.selectedTrigger {
-    // background-color: $gray-0;
-    // color: $gray-100;
+.trigger {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }

@@ -87,6 +87,19 @@ const ControlledSelect = (args: SelectProps<string>) => {
     );
 };
 
+// Контролируемый компонент для мультиселекта
+const ControlledMultiSelect = (args: SelectProps<string>) => {
+    const [value, setValue] = useState<string[]>(
+        (args.multiple && Array.isArray(args.value) ? args.value : []) as string[],
+    );
+
+    return (
+        <div style={{ width: '400px' }}>
+            <Select {...args} multiple value={value} onChange={setValue} />
+        </div>
+    );
+};
+
 export const Default: Story = {
     render: args => <ControlledSelect {...args} />,
     args: {
@@ -231,6 +244,49 @@ export const InForm: Story = {
     },
 };
 
+export const MultiSelect: Story = {
+    render: args => <ControlledMultiSelect {...args} />,
+    args: {
+        options: sampleOptions,
+        placeholder: 'Выберите опции',
+        size: 'lg',
+        multiple: true,
+    },
+};
+
+export const MultiSelectSmall: Story = {
+    render: args => <ControlledMultiSelect {...args} />,
+    args: {
+        options: sampleOptions,
+        placeholder: 'Выберите опции',
+        size: 'sm',
+        multiple: true,
+    },
+};
+
+export const MultiSelectWithPreselected: Story = {
+    render: args => <ControlledMultiSelect {...args} />,
+    args: {
+        options: sampleOptions,
+        placeholder: 'Выберите опции',
+        size: 'lg',
+        multiple: true,
+        value: ['1', '3'],
+    },
+};
+
+export const MultiSelectDisabled: Story = {
+    render: args => <ControlledMultiSelect {...args} />,
+    args: {
+        options: sampleOptions,
+        placeholder: 'Выберите опции',
+        size: 'lg',
+        multiple: true,
+        disabled: true,
+        value: ['1', '2'],
+    },
+};
+
 export const AllStates: Story = {
     args: {
         options: simpleOptions,
@@ -238,11 +294,13 @@ export const AllStates: Story = {
     render: () => {
         const [value1, setValue1] = useState<string | undefined>(undefined);
         const [value2, setValue2] = useState<string | undefined>('2');
+        const [multiValue1, setMultiValue1] = useState<string[]>([]);
+        const [multiValue2, setMultiValue2] = useState<string[]>(['1', '3']);
 
         return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '400px' }}>
                 <div>
-                    <h3>Default (пустой)</h3>
+                    <h3>Single Select - Default (пустой)</h3>
                     <Select
                         options={simpleOptions}
                         value={value1}
@@ -251,7 +309,7 @@ export const AllStates: Story = {
                     />
                 </div>
                 <div>
-                    <h3>Filled (заполненный)</h3>
+                    <h3>Single Select - Filled (заполненный)</h3>
                     <Select
                         options={simpleOptions}
                         value={value2}
@@ -260,7 +318,7 @@ export const AllStates: Story = {
                     />
                 </div>
                 <div>
-                    <h3>Filled + Clearable</h3>
+                    <h3>Single Select - Filled + Clearable</h3>
                     <Select
                         options={simpleOptions}
                         value={value2}
@@ -270,7 +328,7 @@ export const AllStates: Story = {
                     />
                 </div>
                 <div>
-                    <h3>Error</h3>
+                    <h3>Single Select - Error</h3>
                     <Select
                         options={simpleOptions}
                         value={value1}
@@ -280,7 +338,7 @@ export const AllStates: Story = {
                     />
                 </div>
                 <div>
-                    <h3>Disabled (пустой)</h3>
+                    <h3>Single Select - Disabled (пустой)</h3>
                     <Select
                         options={simpleOptions}
                         value={value1}
@@ -290,8 +348,39 @@ export const AllStates: Story = {
                     />
                 </div>
                 <div>
-                    <h3>Disabled (заполненный)</h3>
+                    <h3>Single Select - Disabled (заполненный)</h3>
                     <Select options={simpleOptions} value={value2} onChange={setValue2} disabled />
+                </div>
+                <div>
+                    <h3>Multi Select - Default (пустой)</h3>
+                    <Select
+                        options={simpleOptions}
+                        value={multiValue1}
+                        onChange={setMultiValue1}
+                        placeholder="Выберите города"
+                        multiple
+                    />
+                </div>
+                <div>
+                    <h3>Multi Select - Filled (заполненный)</h3>
+                    <Select
+                        options={simpleOptions}
+                        value={multiValue2}
+                        onChange={setMultiValue2}
+                        placeholder="Выберите города"
+                        multiple
+                    />
+                </div>
+                <div>
+                    <h3>Multi Select - Disabled</h3>
+                    <Select
+                        options={simpleOptions}
+                        value={multiValue2}
+                        onChange={setMultiValue2}
+                        placeholder="Выберите города"
+                        multiple
+                        disabled
+                    />
                 </div>
             </div>
         );

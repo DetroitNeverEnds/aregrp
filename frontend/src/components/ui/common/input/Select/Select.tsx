@@ -1,10 +1,14 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import classNames from 'classnames';
 import styles from './Select.module.scss';
 import Text from '../../Text/Text';
 import { Flex } from '../../Flex';
 import { Dropdown } from '../../Dropdown';
 import type { Size } from '../../Dropdown/Dropdown';
+import { Checkbox } from '../Checkbox';
+import _ from 'lodash';
+import FlatButton from '@/components/ui/common/FlatButton';
+import Icon from '@/components/ui/common/Icon';
 
 type Label = {
     title: string;
@@ -16,64 +20,103 @@ export interface SelectOption<T> {
     label: Label;
 }
 
-export interface SelectProps<T> {
-    /** Массив опций для выбора */
+interface BaseSelectProps<T> {
     options: SelectOption<T>[];
     emptyMessage?: string;
-    /** Текущее выбранное значение */
-    value?: T | undefined;
-    /** Callback при изменении значения */
-    onChange?: (value: T | undefined) => void;
-    /** Текст placeholder */
     placeholder?: string;
-    /** Размер компонента */
     size?: Size;
-    /** Отключенное состояние */
     disabled?: boolean;
-    /** Сообщение об ошибке */
     errorMessage?: string;
-    /** Возможность очистить выбранное значение */
     clearable?: boolean;
-    /** Имя поля для форм */
     name?: string;
-    /** ID элемента */
     id?: string;
-    /** Обязательное поле */
     required?: boolean;
-    /** Дополнительные CSS классы */
     className?: string;
-    /** Максимальная высота выпадающего списка */
     maxHeight?: number;
 }
 
-export function Select<T>({
-    options,
-    emptyMessage,
-    value,
-    onChange,
-    placeholder = 'Выберите значение',
-    size = 'lg',
-    disabled = false,
-    // required = false,
-    className = '',
-}: SelectProps<T>) {
-    const [selectedValue, setSelectedValue] = useState<T | undefined>(() => value);
+type SingleOnChange<T> = (value: T | undefined) => void;
+type MultiOnChange<T> = (value: T[]) => void;
+
+interface SingleSelectProps<T> extends BaseSelectProps<T> {
+    multiple?: false;
+    value?: T | undefined;
+    onChange?: SingleOnChange<T>;
+}
+
+interface MultiSelectProps<T> extends BaseSelectProps<T> {
+    multiple: true;
+    value?: T[];
+    onChange?: MultiOnChange<T>;
+}
+
+export type SelectProps<T> = SingleSelectProps<T> | MultiSelectProps<T>;
+
+export function Select<T>(props: SelectProps<T>) {
+    const {
+        options,
+        emptyMessage,
+        value,
+        onChange,
+        placeholder = 'Выберите значение',
+        size = 'lg',
+        disabled = false,
+        className = '',
+        multiple = false,
+        clearable = false,
+    } = props;
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const selectedOption = useMemo(
-        () => options.find(el => el.value === selectedValue),
-        [options, selectedValue],
+
+    const [selectedOptions, setSelectedOptions] = useState<number[]>(() =>
+        (multiple
+            ? (value as T[]).map(option => options.findIndex(item => item.value === option))
+            : value
+              ? [options.findIndex(item => item.value === (value as T))]
+              : []
+        ).filter(i => i >= 0),
     );
 
     const handleSelect = useCallback(
-        (option: SelectOption<T>) => {
+        (selectedIndex: number) => {
+            console.log(selectedIndex);
+
             if (!disabled) {
-                onChange?.(option.value);
-                setSelectedValue(option.value);
-                setIsDropdownOpen(false);
+                if (multiple) {
+                    const newOptions = selectedOptions.includes(selectedIndex)
+                        ? selectedOptions.filter(i => i !== selectedIndex)
+                        : [selectedIndex, ...selectedOptions].sort();
+                    setSelectedOptions(newOptions);
+                    (onChange as MultiOnChange<T> | undefined)?.(
+                        _.at(options, newOptions).map(i => i.value),
+                    );
+                } else {
+                    setSelectedOptions([selectedIndex]);
+                    (onChange as SingleOnChange<T> | undefined)?.(options[selectedIndex].value);
+                    setIsDropdownOpen(false);
+                }
             }
         },
-        [disabled, onChange],
+        [disabled, multiple, onChange, options, selectedOptions],
     );
+
+    const handleClear = useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
+            if (!disabled) {
+                setSelectedOptions([]);
+                if (multiple) {
+                    (onChange as MultiOnChange<T> | undefined)?.([]);
+                } else {
+                    (onChange as SingleOnChange<T> | undefined)?.(undefined);
+                    setIsDropdownOpen(false);
+                }
+            }
+        },
+        [disabled, multiple, onChange],
+    );
+
+    console.log(options, selectedOptions);
 
     return (
         <Dropdown
@@ -82,10 +125,19 @@ export function Select<T>({
             onOpenChange={setIsDropdownOpen}
             disabled={disabled}
             trigger={
-                selectedOption?.label.title ? (
-                    <Text variant="16-reg" ellipsis>
-                        {selectedOption?.label.title}
-                    </Text>
+                selectedOptions.length > 0 ? (
+                    <Flex direction="row" justify="between" className={styles.trigger}>
+                        <Text variant="16-reg" ellipsis>
+                            {selectedOptions
+                                .map(optionIndex => options[optionIndex].label.title)
+                                .join(', ')}
+                        </Text>
+                        {clearable && (
+                            <FlatButton onClick={handleClear}>
+                                <Icon name="x-close" />
+                            </FlatButton>
+                        )}
+                    </Flex>
                 ) : (
                     <Text variant="16-reg" ellipsis color="gray-50">
                         {placeholder}
@@ -93,27 +145,71 @@ export function Select<T>({
                 )
             }
             className={className}
-            triggerClassName={
-                selectedValue === undefined ? styles.unselectedTrigger : styles.selectedTrigger
-            }
+            // triggerClassName={
+            //     (multiple ? selected === 0 : singleValue === undefined)
+            //         ? styles.unselectedTrigger
+            //         : styles.selectedTrigger
+            // }
         >
-            <Flex gap={1} align="start">
-                {options.map(option => (
-                    <Flex
-                        key={String(option.value)}
-                        onClick={() => handleSelect(option)}
-                        className={classNames(styles['select-option'], {
-                            [styles['select-option--selected']]: selectedValue === option.value,
-                        })}
-                    >
-                        <Text ellipsis variant="16-reg">
-                            {option.label.title}
-                        </Text>
-                        <Text variant="10-reg" color="gray-50">
-                            {option.label.description}
-                        </Text>
-                    </Flex>
-                ))}
+            <Flex gap={1} align="start" direction="column">
+                {options.map((option, index) =>
+                    multiple ? (
+                        <Flex
+                            key={String(option.value)}
+                            onClick={() => handleSelect(index)}
+                            className={classNames(
+                                styles['select-option'],
+                                styles['select-option--multi'],
+                                {
+                                    [styles['select-option--selected']]:
+                                        selectedOptions.includes(index),
+                                },
+                            )}
+                            gap={8}
+                            direction="row"
+                        >
+                            <Checkbox
+                                size="sm"
+                                checked={selectedOptions.includes(index)}
+                                // onChange={() => handleSelect(index)}
+                                // onClick={e => e.stopPropagation()}
+                                // onClick={() => {}}
+                                // onChange={() => {}}
+                            />
+                            <Flex direction="column" align="start" gap={4} style={{ flex: 1 }}>
+                                <Text ellipsis variant="16-reg">
+                                    {option.label.title}
+                                </Text>
+                                {option.label.description && (
+                                    <Text variant="10-reg" color="gray-70">
+                                        {option.label.description}
+                                    </Text>
+                                )}
+                            </Flex>
+                        </Flex>
+                    ) : (
+                        <Flex
+                            key={String(option.value)}
+                            onClick={() => handleSelect(index)}
+                            className={classNames(styles['select-option'], {
+                                [styles['select-option--selected']]:
+                                    selectedOptions.includes(index),
+                            })}
+                            direction="column"
+                            align="start"
+                            gap={4}
+                        >
+                            <Text ellipsis variant="16-reg">
+                                {option.label.title}
+                            </Text>
+                            {option.label.description && (
+                                <Text variant="10-reg" color="gray-70">
+                                    {option.label.description}
+                                </Text>
+                            )}
+                        </Flex>
+                    ),
+                )}
                 {options.length === 0 && (
                     <Text variant="16-reg" color="gray-50">
                         {emptyMessage}
