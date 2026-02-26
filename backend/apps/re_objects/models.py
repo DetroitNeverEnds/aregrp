@@ -273,10 +273,9 @@ class Premise(models.Model):
         max_digits=10,
         decimal_places=2,
         verbose_name="Цена за м², ₽",
-        help_text="Стоимость аренды за квадратный метр (вычисляется автоматически при сохранении)",
+        help_text="Стоимость аренды за квадратный метр. Задаётся вручную.",
         null=True,
         blank=True,
-        editable=False
     )
     premise_type = models.CharField(
         max_length=50,
@@ -386,11 +385,7 @@ class Premise(models.Model):
                         self.city = first_city
             except City.DoesNotExist:
                 pass
-        
-        # Автоматически вычисляем цену за м², если указаны цена и площадь
-        if self.price_per_month and self.area:
-            self.price_per_sqm = self.price_per_month / self.area
-        
+
         super().save(*args, **kwargs)
 
 
