@@ -111,7 +111,7 @@ def create_building_with_floor(
                 order=i,
             )
 
-    return 201, {
+    return 200, {
         "uuid": str(building.uuid),
         "name": building.name,
         "address": building.address,
@@ -183,7 +183,7 @@ def create_premise_in_building(
                 is_primary=(i == 1),
             )
 
-    return 201, {
+    return 200, {
         "uuid": str(premise.uuid),
         "number": premise.number,
         "building_uuid": str(building.uuid),
