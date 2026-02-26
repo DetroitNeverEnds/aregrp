@@ -24,7 +24,7 @@ export const CardContainer = (props: CardContainerProps) => {
             </Flex>
             {props.pagination && (
                 <Pagination
-                    initialPage={props.pagination.currentPage || 1}
+                    currentPage={props.pagination.currentPage || 1}
                     totalPages={props.pagination.totalPages || 1}
                     onPageChange={props.pagination.onPageChange}
                 />

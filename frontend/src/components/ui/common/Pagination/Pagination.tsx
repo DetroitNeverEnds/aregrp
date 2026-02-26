@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import styles from './Pagination.module.scss';
 import { Flex } from '@/components/ui/common/Flex';
