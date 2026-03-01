@@ -8,7 +8,7 @@ import {
 } from './RadioButtons';
 
 const meta = {
-    title: 'Components/RadioButtons',
+    title: 'UI/Input/RadioButtons',
     component: RadioButtons,
     parameters: {
         layout: 'centered',

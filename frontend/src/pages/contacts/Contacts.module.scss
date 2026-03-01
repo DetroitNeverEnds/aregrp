@@ -1,0 +1,14 @@
+.container {
+    margin-top: 100px;
+}
+
+.mapColumn {
+    min-height: 400px;
+}
+
+.legal {
+    &__keys {
+        width: 200px;
+        flex-shrink: 0;
+    }
+}

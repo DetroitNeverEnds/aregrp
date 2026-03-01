@@ -30,7 +30,8 @@ export type ApiErrorCode =
     | 'FEEDBACK_DELETE_ERROR'
     | 'FEEDBACK_VALIDATION_ERROR'
     | 'SITE_SETTINGS_NOT_FOUND'
-    | 'SITE_SETTINGS_ERROR';
+    | 'SITE_SETTINGS_ERROR'
+    | 'RE_OBJECTS_NOT_FOUND';
 
 /**
  * Ответ API с ошибкой (Problem Details RFC 7807)

@@ -1,6 +1,6 @@
 // Цвета Primary
 $primary-yellow: #faca3e;
-$primary-mute: #a5c0db; // TODO: check by designer
+$primary-mute: rgba(245, 245, 245, 1);
 $primary-200: #c3d6e0;
 $primary-300: #a1bfcf;
 $primary-400: #7fabbe;
@@ -52,16 +52,6 @@ $gradient-primary-700-900: linear-gradient(180deg, $primary-700 0%, $primary-900
 $gradient-primary-700-900-lr: linear-gradient(-90deg, $primary-700 0%, $primary-900 100%);
 $gradient-gray-100: linear-gradient(180deg, $gray-100 0%, rgba($gray-100, 0) 100%);
 
-// Устаревшие цвета (для обратной совместимости)
-$primary-color: #007bff;
-$secondary-color: #6c757d;
-$success-color: #28a745;
-$danger-color: #dc3545;
-$warning-color: #ffc107;
-$info-color: #17a2b8;
-$light-color: #f8f9fa;
-$dark-color: #343a40;
-
 // Шрифты
 $font-family-base:
     'Montserrat',
@@ -78,3 +68,7 @@ $font-family-base:
     sans-serif;
 
 $border-radius-l: 30px;
+
+// Веса шрифтов
+$font-weight-regular: 300;
+$font-weight-medium: 400;

@@ -1,0 +1,86 @@
+@use '../variables' as *;
+
+/**
+ * Миксин для генерации цветовых классов
+ * Используется в компонентах Text и Icon для единообразия
+ */
+@mixin color-variants($prefix: 'color') {
+    // Gray цвета
+    &--#{$prefix}-gray-0 {
+        color: $gray-0;
+    }
+
+    &--#{$prefix}-gray-5 {
+        color: $gray-5;
+    }
+
+    &--#{$prefix}-gray-10 {
+        color: $gray-10;
+    }
+
+    &--#{$prefix}-gray-20 {
+        color: $gray-20;
+    }
+
+    &--#{$prefix}-gray-30 {
+        color: $gray-30;
+    }
+
+    &--#{$prefix}-gray-50 {
+        color: $gray-50;
+    }
+
+    &--#{$prefix}-gray-70 {
+        color: $gray-70;
+    }
+
+    &--#{$prefix}-gray-100 {
+        color: $gray-100;
+    }
+
+    // Primary цвета
+    &--#{$prefix}-primary-200 {
+        color: $primary-200;
+    }
+
+    &--#{$prefix}-primary-300 {
+        color: $primary-300;
+    }
+
+    &--#{$prefix}-primary-400 {
+        color: $primary-400;
+    }
+
+    &--#{$prefix}-primary-500 {
+        color: $primary-500;
+    }
+
+    &--#{$prefix}-primary-600 {
+        color: $primary-600;
+    }
+
+    &--#{$prefix}-primary-700 {
+        color: $primary-700;
+    }
+
+    &--#{$prefix}-primary-800 {
+        color: $primary-800;
+    }
+
+    &--#{$prefix}-primary-900 {
+        color: $primary-900;
+    }
+
+    &--#{$prefix}-primary-1000 {
+        color: $primary-1000;
+    }
+
+    &--#{$prefix}-primary-yellow {
+        color: $primary-yellow;
+    }
+
+    // Error цвет
+    &--#{$prefix}-error-default {
+        color: $error-default;
+    }
+}

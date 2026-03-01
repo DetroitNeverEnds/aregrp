@@ -17,24 +17,23 @@ type RegisterFormData = RegisterMutationData;
 export const Register: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { handleSubmit, control, setValue, watch, setError } = useForm<RegisterFormData>({
-        defaultValues: {
-            userType: 'individual',
-            fullName: '',
-            organisationName: '',
-            INN: '',
-            email: '',
-            phone: '',
-            password1: '',
-            password2: '',
-            policyAgrement: false,
-        },
-    });
+    const { handleSubmit, control, setValue, watch, setError, formState } =
+        useForm<RegisterFormData>({
+            defaultValues: {
+                userType: 'individual',
+                fullName: '',
+                organisationName: '',
+                INN: '',
+                email: '',
+                phone: '',
+                password1: '',
+                password2: '',
+                policyAgrement: false,
+            },
+        });
 
     const { mutate: registerMutate, isPending } = useRegisterMutation({
-        onSuccess: data => {
-            console.log('Регистрация успешна:', data.user);
-            // TODO: Сохранить токены и данные пользователя
+        onSuccess: () => {
             navigate('/');
         },
         onError: error => {
@@ -138,6 +137,7 @@ export const Register: React.FC = () => {
                     </Text>
                 </Flex>
             }
+            errorMessage={formState.errors.root?.message}
         >
             <Flex gap={10} align="start" fullWidth>
                 {userType === 'individual' && (

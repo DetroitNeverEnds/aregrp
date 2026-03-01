@@ -3,7 +3,7 @@ import { FlatButton } from './FlatButton';
 import { Icon } from '../Icon';
 
 const meta = {
-    title: 'Components/FlatButton',
+    title: 'UI/Common/FlatButton',
     component: FlatButton,
     parameters: {
         layout: 'centered',

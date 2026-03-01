@@ -28,8 +28,7 @@ export const RestorePassword: React.FC = () => {
     });
 
     const { mutate: confirmResetMutate, isPending } = useConfirmPasswordResetMutation({
-        onSuccess: data => {
-            console.log('Пароль успешно изменен:', data.message);
+        onSuccess: () => {
             navigate('/auth/login');
         },
         onError: error => {

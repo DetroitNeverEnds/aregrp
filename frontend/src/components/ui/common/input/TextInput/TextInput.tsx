@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, type ReactNode, forwardRef } from 'react';
 import classNames from 'classnames';
 import styles from './TextInput.module.scss';
 import { Icon, type IconName } from '../../Icon';
@@ -10,11 +10,17 @@ export type TextInputWidth = 'auto' | 'max';
 
 type AdditionalInputProps = {
     /** Размер инпута */
-    size: TextInputSize;
+    size?: TextInputSize;
     /** Иконка слева (например, search, mail-simple) */
     leadingIcon?: IconName;
     /** Сообщение об ошибке (при наличии инпут становится невалидным с темой error) */
     errorMessage?: string;
+    /** Trailing label */
+    trailingLabel?: string | ReactNode;
+    /** Показывать кнопку очистки */
+    clearable?: boolean;
+    /** Обработчик изменения значения */
+    onChange: (val: string) => void;
 };
 export type TextInputProps = Omit<
     React.InputHTMLAttributes<HTMLInputElement>,
@@ -22,102 +28,97 @@ export type TextInputProps = Omit<
 > &
     AdditionalInputProps;
 
-export const TextInput: React.FC<TextInputProps> = ({
-    size = 'md',
-    leadingIcon,
-    errorMessage,
-    className = '',
-    disabled = false,
-    type = 'text',
-    value,
-    onChange,
-    ...props
-}) => {
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const [hasValue, setHasValue] = useState(Boolean(props.defaultValue) || Boolean(value));
-    const ref = useRef<HTMLInputElement>(null);
-
-    // Определяем, показывать ли toggle для пароля
-    const isPasswordField = useMemo(() => type === 'password', [type]);
-
-    // Определяем актуальный тип инпута (для переключения видимости пароля)
-    const actualType = useMemo(
-        () => (isPasswordField && isPasswordVisible ? 'text' : type),
-        [isPasswordField, isPasswordVisible, type],
-    );
-
-    // Обработчик изменения для отслеживания наличия значения
-    const handleChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            setHasValue(e.target.value.length > 0);
-            onChange?.(e);
-        },
-        [onChange, setHasValue],
-    );
-
-    const onClear = useCallback(() => {
-        if (ref.current) {
-            // Устанавливаем пустое значение
-            ref.current.value = '';
-            setHasValue(false);
-
-            const syntheticEvent = {
-                target: ref.current,
-                currentTarget: ref.current,
-            } as React.ChangeEvent<HTMLInputElement>;
-
-            // Вызываем onChange с синтетическим событием
-            onChange?.(syntheticEvent);
-        }
-    }, [onChange, ref]);
-
-    // Определяем, есть ли ошибка
-    const hasError = useMemo(() => Boolean(errorMessage), [errorMessage]);
-
-    const containerClassNames = classNames(
-        styles['input-container'],
-        styles[`input-container--${size}`],
+export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+    (
         {
-            [styles['input-container--error']]: hasError,
-            [styles['input-container--disabled']]: disabled,
-            [styles['input--with-leading-icon']]: leadingIcon,
+            size = 'md',
+            leadingIcon,
+            errorMessage,
+            className = '',
+            disabled = false,
+            type = 'text',
+            value = '',
+            onChange,
+            trailingLabel,
+            clearable = true,
+            ...props
         },
-        className,
-    );
+        ref,
+    ) => {
+        const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
+        const hasValue = useMemo(() => Boolean(value), [value]);
 
-    return (
-        <div className={styles['input-wrapper']}>
-            <div className={containerClassNames}>
-                {leadingIcon && <Icon name={leadingIcon} size={20} />}
+        // Определяем, показывать ли toggle для пароля
+        const isPasswordField = useMemo(() => type === 'password', [type]);
 
-                <input
-                    type={actualType}
-                    value={value}
-                    disabled={disabled}
-                    onChange={handleChange}
-                    {...props}
-                    ref={ref}
-                    className={styles.input}
-                />
-                {hasValue && !isPasswordField && (
-                    <FlatButton onClick={onClear}>
-                        <Icon name="xmark-gray-circle" size={20} />
-                    </FlatButton>
-                )}
-                {isPasswordField && (
-                    <FlatButton onClick={() => setIsPasswordVisible(!isPasswordVisible)}>
-                        <Icon name={isPasswordVisible ? 'eye' : 'eye-slash'} size={20} />
-                    </FlatButton>
+        // Определяем актуальный тип инпута (для переключения видимости пароля)
+        const actualType = useMemo(
+            () => (isPasswordField && isPasswordVisible ? 'text' : type),
+            [isPasswordField, isPasswordVisible, type],
+        );
+
+        // Обработчик изменения
+        const handleChange = useCallback(
+            (e: React.ChangeEvent<HTMLInputElement>) => {
+                onChange(e.target.value);
+            },
+            [onChange],
+        );
+
+        const onClear = useCallback(() => {
+            onChange('');
+        }, [onChange]);
+
+        // Определяем, есть ли ошибка
+        const hasError = useMemo(() => Boolean(errorMessage), [errorMessage]);
+
+        const containerClassNames = classNames(
+            styles['input-container'],
+            styles[`input-container--${size}`],
+            {
+                [styles['input-container--error']]: hasError,
+                [styles['input-container--disabled']]: disabled,
+                [styles['input--with-leading-icon']]: leadingIcon,
+            },
+            className,
+        );
+        return (
+            <div className={styles['input-wrapper']}>
+                <div className={containerClassNames}>
+                    {leadingIcon && <Icon name={leadingIcon} size={20} />}
+
+                    <input
+                        type={actualType}
+                        value={value}
+                        disabled={disabled}
+                        onChange={handleChange}
+                        ref={ref}
+                        {...props}
+                        className={classNames(styles.input, styles[`input--${size}`])}
+                    />
+                    {clearable && hasValue && !isPasswordField && (
+                        <FlatButton onClick={onClear}>
+                            <Icon name="xmark-gray-circle" size={20} />
+                        </FlatButton>
+                    )}
+                    {trailingLabel}
+                    {isPasswordField && (
+                        <FlatButton onClick={() => setIsPasswordVisible(!isPasswordVisible)}>
+                            <Icon name={isPasswordVisible ? 'eye' : 'eye-slash'} size={20} />
+                        </FlatButton>
+                    )}
+                </div>
+
+                {errorMessage && (
+                    <Text variant="12-reg" color="error-default">
+                        {errorMessage}
+                    </Text>
                 )}
             </div>
+        );
+    },
+);
 
-            {errorMessage && (
-                <Text variant="12-reg" color="error-default">
-                    {errorMessage}
-                </Text>
-            )}
-        </div>
-    );
-};
+TextInput.displayName = 'TextInput';
 
 export default TextInput;

@@ -16,8 +16,8 @@ export const FeedbackForm = () => {
     const { control, handleSubmit } = useForm<FeedbackData>({
         defaultValues: { email: '', phone: '' },
     });
-    const submit = useCallback((data: FeedbackData) => {
-        console.log(data);
+    const submit = useCallback((_: FeedbackData) => {
+        alert('TODO');
     }, []);
     return (
         <Form onSubmit={handleSubmit(submit)}>

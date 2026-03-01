@@ -1,3 +1,5 @@
+@use '@/styles/mixins/colors';
+
 .icon {
     display: inline-flex;
     align-items: center;
@@ -26,6 +28,9 @@
             }
         }
     }
+
+    // Применяем миксин для цветов
+    @include colors.color-variants('color');
 
     // Размеры
     &--size-14 {

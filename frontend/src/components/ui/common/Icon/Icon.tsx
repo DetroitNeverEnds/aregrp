@@ -2,6 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import styles from './Icon.module.scss';
 import { iconMap, type IconName } from './iconConfig';
+import type { ColorVariant } from '../types/colors';
 
 export type IconSize = 14 | 16 | 20 | 24 | 32 | 50;
 
@@ -10,6 +11,8 @@ export interface IconProps extends React.SVGAttributes<SVGElement> {
     name: IconName;
     /** Размер иконки в пикселях */
     size?: IconSize;
+    /** Цвет иконки (использует ту же палитру, что и Text) */
+    color?: ColorVariant;
     /** Дополнительный CSS класс */
     className?: string;
     /** Описание иконки для accessibility */
@@ -23,6 +26,7 @@ export interface IconProps extends React.SVGAttributes<SVGElement> {
 export const Icon: React.FC<IconProps> = ({
     name,
     size = 24,
+    color,
     className = '',
     style,
     'aria-label': ariaLabel,
@@ -37,7 +41,12 @@ export const Icon: React.FC<IconProps> = ({
         return null;
     }
 
-    const iconClassNames = classNames(styles.icon, styles[`icon--size-${size}`], className);
+    const iconClassNames = classNames(
+        styles.icon,
+        styles[`icon--size-${size}`],
+        color && styles[`icon--color-${color}`],
+        className,
+    );
 
     // Определяем aria-атрибуты
     const ariaProps: React.AriaAttributes & { role?: string } = {};

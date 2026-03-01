@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import classNames from 'classnames';
 import styles from './Flex.module.scss';
 
@@ -7,7 +7,7 @@ export type FlexJustify = 'start' | 'end' | 'center' | 'between' | 'around' | 'e
 export type FlexAlign = 'start' | 'end' | 'center' | 'stretch' | 'baseline';
 export type FlexWrap = 'nowrap' | 'wrap' | 'wrap-reverse';
 
-export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface FlexProps {
     /** Направление flex */
     direction?: FlexDirection;
     /** Выравнивание по главной оси (justify-content) */
@@ -23,48 +23,65 @@ export interface FlexProps extends React.HTMLAttributes<HTMLDivElement> {
     inline?: boolean;
     /** Ширина 100% */
     fullWidth?: boolean;
+    /** Обрезать содержимое с многоточием */
+    ellipsis?: boolean;
     /** Содержимое */
     children?: React.ReactNode;
+    /** Дополнительный CSS класс */
+    className?: string;
+    /** Дополнительные стили */
+    style?: React.CSSProperties;
+    /** Обработчик клика */
+    onClick?: React.MouseEventHandler<HTMLDivElement>;
+    /** Роль элемента */
+    role?: string;
 }
 
-export const Flex: React.FC<FlexProps> = ({
-    direction = 'column',
-    justify = 'start',
-    align = 'center',
-    // alignItems = 'center',
-    wrap = 'nowrap',
-    gap,
-    inline = false,
-    fullWidth = false,
-    className = '',
-    style,
-    children,
-    ...props
-}) => {
-    const flexClassNames = classNames(
-        styles.flex,
-        styles[`flex--direction-${direction}`],
-        styles[`flex--justify-${justify}`],
-        styles[`flex--align-${align}`],
-        // styles[`flex--align-items-${alignItems}`],
-        styles[`flex--wrap-${wrap}`],
+export const Flex = forwardRef<HTMLDivElement, FlexProps>(
+    (
         {
-            [styles['flex--inline']]: inline,
-            [styles['flex--full-width']]: fullWidth,
+            direction = 'column',
+            justify = 'start',
+            align = 'center',
+            // alignItems = 'center',
+            wrap = 'nowrap',
+            gap,
+            inline = false,
+            fullWidth = false,
+            ellipsis = false,
+            className = '',
+            style,
+            children,
+            ...props
         },
-        className,
-    );
+        ref,
+    ) => {
+        const flexClassNames = classNames(
+            styles.flex,
+            styles[`flex--direction-${direction}`],
+            styles[`flex--justify-${justify}`],
+            styles[`flex--align-${align}`],
+            // styles[`flex--align-items-${alignItems}`],
+            styles[`flex--wrap-${wrap}`],
+            {
+                [styles['flex--inline']]: inline,
+                [styles['flex--full-width']]: fullWidth,
+                [styles['flex--ellipsis']]: ellipsis,
+            },
+            className,
+        );
 
-    const flexStyle: React.CSSProperties = {
-        ...style,
-        ...(gap !== undefined && { gap: typeof gap === 'number' ? `${gap}px` : gap }),
-    };
+        const flexStyle: React.CSSProperties = {
+            ...style,
+            ...(gap !== undefined && { gap: typeof gap === 'number' ? `${gap}px` : gap }),
+        };
 
-    return (
-        <div className={flexClassNames} style={flexStyle} {...props}>
-            {children}
-        </div>
-    );
-};
+        return (
+            <div className={flexClassNames} style={flexStyle} {...props} ref={ref}>
+                {children}
+            </div>
+        );
+    },
+);
 
 export default Flex;

@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    box-sizing: border-box;
 }
 
 .input-container {
@@ -21,12 +22,13 @@
 
     // Размеры
     &--lg {
-        padding: 15px 20px 15px 20px;
-        padding-left: 20px;
+        // padding: 15px 20px 15px 20px;
+        padding: 0 20px;
     }
 
     &--md {
-        padding: 10px 20px 10px 20px;
+        // padding: 10px 20px 10px 20px;
+        padding: 0 20px;
     }
 
     // Состояния
@@ -62,10 +64,20 @@
     border: 0;
     background: transparent;
     flex-grow: 1;
+    flex-shrink: 1;
     font-size: 16px;
     line-height: 24px;
-    font-weight: 400;
+    font-weight: $font-weight-regular;
     outline: none;
+    width: 100%;
+
+    &--lg {
+        padding: 15px 0;
+    }
+
+    &--md {
+        padding: 10px 0;
+    }
 
     &::placeholder {
         color: $gray-50;
@@ -77,6 +89,17 @@
 
         &::placeholder {
             color: $gray-opacity-50-40;
+        }
+    }
+
+    // Скрываем стрелочки для type="number"
+    &[type='number'] {
+        -moz-appearance: textfield;
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
     }
 }
