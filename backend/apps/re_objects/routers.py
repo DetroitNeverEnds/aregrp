@@ -4,7 +4,7 @@
 Краткое описание ручек поиска:
 
 1) GET /api/v1/premises — поиск помещений с фильтрами и пагинацией (sale_type опционально).
-   Ответ: { items: [...], total, page, page_size, total_pages }. Параметры: sale_type, available, building, building_uuids, min/max price, min/max area, order_by, page, page_size.
+   Ответ: { items: [...], total, page, page_size, total_pages }. Параметры: sale_type, available (необяз.), building, building_uuids, min/max price, min/max area, order_by, page, page_size.
 2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
 3) GET /api/v1/buildings/ — список зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
 4) GET /api/v1/buildings/catalogue/{uuid} — информация о здании по UUID.
@@ -62,7 +62,10 @@ async def building_filter_list(
         None,
         description=f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — только с помещениями под аренду, {settings.RE_OBJECTS_SALE_TYPE_SALE} — под продажу",
     ),
-    available: bool = Query(True, description="Только здания со свободными помещениями (true) или с занятыми (false)"),
+    available: Optional[bool] = Query(
+        None,
+        description="true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра.",
+    ),
 ):
     """Список зданий для мультиселекта фильтра. Ответ: [{ uuid, name, address }, ...]."""
     items = await get_buildings_for_filter(sale_type=sale_type, available=available)
@@ -121,7 +124,7 @@ async def premise_list(
     ),
     available: Optional[bool] = Query(
         None,
-        description="true — свободные, false — занятые; по умолчанию true",
+        description="true — свободные, false — занятые. Не передано — без фильтра по доступности.",
     ),
     building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
     building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
