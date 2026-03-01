@@ -26,7 +26,6 @@ from ..models import Building, Premise
 from ..schemas import (
     BuildingCatalogueOut,
     BuildingCatalogueResponse,
-    BuildingListResponse,
     BuildingOptionOut,
     MediaItemOut,
     PremiseListOut,
@@ -197,29 +196,21 @@ def _premise_filter_for_buildings(
 async def get_buildings_for_filter(
     sale_type: Optional[str] = None,
     available: Optional[bool] = None,
-) -> BuildingListResponse:
+) -> list[BuildingOptionOut]:
     """
     Список зданий для фильтра (чекбоксы «бизнес-центры»).
 
     Возвращает здания, у которых есть хотя бы одно помещение с учётом sale_type и available.
     available: True/False — фильтр по статусу, None — без фильтра (любые помещения).
-    Ответ: { items, total }.
+    Ответ: список [{ uuid, name, address }, ...].
     """
     premise_filter = _premise_filter_for_buildings(sale_type, available)
     subq = Premise.objects.filter(premise_filter).values("building_id").distinct()
     qs = Building.objects.filter(id__in=Subquery(subq)).order_by("name")
-    items = [
+    return [
         BuildingOptionOut(uuid=str(b.uuid), name=b.name, address=b.address)
         async for b in qs
     ]
-    total = len(items)
-    return BuildingListResponse(
-        items=items,
-        total=total,
-        page=1,
-        page_size=total,
-        total_pages=1 if total > 0 else 0,
-    )
 
 
 def _build_building_media(building: Building) -> list[MediaItemOut]:

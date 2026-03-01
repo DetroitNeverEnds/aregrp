@@ -17,34 +17,25 @@ class TestPremisesBuildings:
     """GET /premises/buildings — список зданий для фильтра."""
 
     async def test_premises_buildings_success(self, client, building_with_premise):
-        """Успешный ответ, структура items, total."""
+        """Успешный ответ — массив [{ uuid, name, address }, ...]."""
         response = await client.get("/premises/buildings")
 
         assert response.status_code == 200
         data = response.json()
-        assert "items" in data
-        assert "total" in data
-        assert "page" in data
-        assert "page_size" in data
-        assert isinstance(data["items"], list)
-        if data["items"]:
-            item = data["items"][0]
+        assert isinstance(data, list)
+        if data:
+            item = data[0]
             assert "uuid" in item
             assert "name" in item
             assert "address" in item
 
     async def test_premises_buildings_structure(self, client):
-        """Структура ответа: items, total, page, page_size."""
+        """Ответ — массив, без items/total/page."""
         response = await client.get("/premises/buildings")
 
         assert response.status_code == 200
         data = response.json()
-        assert "items" in data
-        assert "total" in data
-        assert "page" in data
-        assert "page_size" in data
-        assert isinstance(data["items"], list)
-        assert data["total"] >= 0
+        assert isinstance(data, list)
 
     async def test_premises_buildings_available_filter(self, client, building_with_premise):
         """Фильтр available=true и available=false."""

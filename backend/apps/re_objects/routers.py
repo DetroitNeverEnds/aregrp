@@ -26,7 +26,7 @@ from .errors import ReObjectsErrorCodes, create_re_objects_error
 from .schemas import (
     BuildingCatalogueOut,
     BuildingCatalogueResponse,
-    BuildingListResponse,
+    BuildingOptionOut,
     PremiseDetailOut,
     PremiseListResponse,
 )
@@ -49,7 +49,7 @@ buildings_router = Router(tags=["Buildings"])
 
 @premises_router.get(
     "/buildings",
-    response={200: BuildingListResponse},
+    response={200: list[BuildingOptionOut]},
     summary="Список зданий для фильтра",
     description=(
         "Здания, у которых есть помещения (с учётом sale_type и available). "

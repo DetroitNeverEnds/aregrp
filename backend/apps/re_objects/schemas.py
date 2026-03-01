@@ -74,16 +74,6 @@ class BuildingOptionOut(Schema):
     address: str
 
 
-class BuildingListResponse(Schema):
-    """Ответ списка зданий для фильтра: items, total, page, page_size, total_pages."""
-
-    items: list[BuildingOptionOut]
-    total: int
-    page: int
-    page_size: int
-    total_pages: int
-
-
 class MediaItemOut(Schema):
     """Элемент медиа: фото или видео."""
 

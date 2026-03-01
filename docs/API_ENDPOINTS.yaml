@@ -44,7 +44,7 @@ site_settings:
 
 buildings:
   - GET /buildings/
-    список зданий
+    список зданий (с пагинацией: items, total, page, page_size, total_pages)
     response:
       items:
         uuid: string
@@ -57,6 +57,7 @@ buildings:
       total: number
       page: number
       page_size: number
+      total_pages: number
 
   - GET /buildings/catalogue/<uuid>
     информация о здании
@@ -79,18 +80,10 @@ buildings:
 
 premises:
   - GET /premises/buildings
-    список зданий для фильтра поиска
-    response:
-      items:
-        uuid: string
-        name: string
-        address: string
-      total: number
-      page: number
-      page_size: number
+    список зданий для фильтра — просто массив [{ uuid, name, address }, ...], без пагинации
 
   - GET /premises
-    каталог помещений (sale_type в query: rent|sale)
+    каталог помещений (с пагинацией: page, page_size в query; items, total, total_pages в ответе)
     response:
       items:
         uuid: string
@@ -104,6 +97,7 @@ premises:
       total: number
       page: number
       page_size: number
+      total_pages: number
 
   - GET /premises/<uuid>
     детали помещения
