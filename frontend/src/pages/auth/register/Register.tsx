@@ -33,9 +33,7 @@ export const Register: React.FC = () => {
         });
 
     const { mutate: registerMutate, isPending } = useRegisterMutation({
-        onSuccess: data => {
-            console.log('Регистрация успешна:', data.user);
-            // TODO: Сохранить токены и данные пользователя
+        onSuccess: () => {
             navigate('/');
         },
         onError: error => {

@@ -42,15 +42,6 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
 
     // TODO: Сбрасывать форму, когда меняется фильтр
     // useEffect(() => {
-    //     console.log('aaa', {
-    //         building_uuids: '',
-    //         min_area: 1,
-    //         max_area: 1,
-    //         min_price: 1,
-    //         max_price: 1,
-    //         ...filter,
-    //     });
-
     //     reset({
     //         building_uuids: '',
     //         min_area: 1,

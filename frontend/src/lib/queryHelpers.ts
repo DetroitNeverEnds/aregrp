@@ -14,17 +14,6 @@ export type QueryResult<T> = {
  *
  * @param apiCall - Функция API запроса
  * @returns Функция, возвращающая QueryResult
- *
- * @example
- * ```typescript
- * const getUserSafe = wrapApiCall(getUser);
- * const result = await getUserSafe();
- * if (result.error) {
- *   console.error(result.error);
- * } else {
- *   console.log(result.data);
- * }
- * ```
  */
 export function wrapApiCall<TArgs extends unknown[], TResponse>(
     apiCall: (...args: TArgs) => Promise<TResponse>,

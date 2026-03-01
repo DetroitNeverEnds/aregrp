@@ -23,7 +23,6 @@ export const ForgotPassword: React.FC = () => {
 
     const { mutate: requestResetMutate, isPending } = useRequestPasswordResetMutation({
         onSuccess: data => {
-            console.log('Письмо для сброса пароля отправлено');
             setSuccessMessage(data.message || t('auth.forgotPassword.successMessage'));
         },
         onError: error => {

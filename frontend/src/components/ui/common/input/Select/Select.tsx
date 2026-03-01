@@ -79,8 +79,6 @@ export function Select<T>(props: SelectProps<T>) {
 
     const handleSelect = useCallback(
         (selectedIndex: number) => {
-            console.log(selectedIndex);
-
             if (!disabled) {
                 if (multiple) {
                     const newOptions = selectedOptions.includes(selectedIndex)
@@ -115,8 +113,6 @@ export function Select<T>(props: SelectProps<T>) {
         },
         [disabled, multiple, onChange],
     );
-
-    console.log(options, selectedOptions);
 
     return (
         <Dropdown
