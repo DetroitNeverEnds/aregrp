@@ -84,16 +84,6 @@ class BuildingListResponse(Schema):
     total_pages: int
 
 
-class BuildingCatalogueResponse(Schema):
-    """Ответ каталога зданий: items, total, page, page_size, total_pages."""
-
-    items: list[BuildingCatalogueOut]
-    total: int
-    page: int
-    page_size: int
-    total_pages: int
-
-
 class MediaItemOut(Schema):
     """Элемент медиа: фото или видео."""
 
@@ -111,3 +101,13 @@ class BuildingCatalogueOut(Schema):
     min_sale_price: Optional[float] = None
     min_rent_price: Optional[float] = None
     media: list[MediaItemOut]
+
+
+class BuildingCatalogueResponse(Schema):
+    """Ответ каталога зданий: items, total, page, page_size, total_pages."""
+
+    items: list[BuildingCatalogueOut]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
