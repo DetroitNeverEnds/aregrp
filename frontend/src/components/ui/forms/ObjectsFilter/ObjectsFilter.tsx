@@ -83,6 +83,7 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                                 options={businessCenterOptions || []}
                                 placeholder={t('components.objectFilter.allCenters')}
                                 size="lg"
+                                fullWidth
                                 value={value?.split(',') || []}
                                 onChange={uuids => onChange(uuids.join(','))}
                                 className={styles.bcSelect}

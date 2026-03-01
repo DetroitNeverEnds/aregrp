@@ -1,6 +1,8 @@
 .dropdown-container {
     position: relative;
-    width: 100%;
+    &--full-width {
+        width: 100%;
+    }
 }
 
 .dropdown-button {
@@ -20,6 +22,11 @@
 
     &--sm {
         padding: 10px 16px;
+    }
+
+    &--tiny {
+        padding: 0;
+        border: 0;
     }
 }
 

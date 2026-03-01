@@ -6,7 +6,7 @@ import { Flex } from '../Flex';
 import Icon from '../Icon';
 import FlatButton from '../FlatButton';
 
-export type Size = 'lg' | 'sm';
+export type Size = 'lg' | 'sm' | 'tiny';
 
 export interface DropdownProps {
     trigger: ReactNode;
@@ -15,8 +15,8 @@ export interface DropdownProps {
     onOpenChange?: (isOpen: boolean) => void;
 
     disabled?: boolean;
-    // maxHeight?: number;
     contentSameTriggerWidth?: boolean;
+    fullWidth?: boolean;
     className?: string;
     triggerClassName?: string;
     dropdownClassName?: string;
@@ -29,6 +29,7 @@ export function Dropdown({
     isOpened: externalIsOpened,
     onOpenChange,
     disabled = false,
+    fullWidth = false,
     // contentSameTriggerWidth = true,
     className,
     triggerClassName,
@@ -94,7 +95,14 @@ export function Dropdown({
     const dropdownClassNames = classNames(styles['dropdown-content'], dropdownClassName);
 
     return (
-        <div className={classNames(styles['dropdown-container'], className)} ref={containerRef}>
+        <div
+            className={classNames(
+                styles['dropdown-container'],
+                { [styles['dropdown-container--full-width']]: fullWidth },
+                className,
+            )}
+            ref={containerRef}
+        >
             <Flex
                 direction="row"
                 justify="between"

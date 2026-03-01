@@ -32,7 +32,7 @@ const meta = {
     argTypes: {
         size: {
             control: 'select',
-            options: ['lg', 'sm'],
+            options: ['lg', 'sm', 'tiny'],
             description: 'Размер компонента',
         },
         disabled: {
@@ -115,6 +115,15 @@ export const Small: Story = {
         options: sampleOptions,
         placeholder: 'Выберите опцию',
         size: 'sm',
+    },
+};
+
+export const Tiny: Story = {
+    render: args => <ControlledSelect {...args} />,
+    args: {
+        options: sampleOptions,
+        placeholder: 'Выберите опцию',
+        size: 'tiny',
     },
 };
 

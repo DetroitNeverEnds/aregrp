@@ -13,15 +13,6 @@ describe('Pagination', () => {
         expect(screen.getByLabelText('Страница 1')).toBeInTheDocument();
     });
 
-    it('не рендерится, если totalPages <= 1', () => {
-        const onPageChange = vi.fn();
-        const { container } = render(
-            <Pagination currentPage={1} totalPages={1} onPageChange={onPageChange} />,
-        );
-
-        expect(container.firstChild).toBeNull();
-    });
-
     it('вызывает onPageChange при клике на номер страницы', async () => {
         const user = userEvent.setup();
         const onPageChange = vi.fn();

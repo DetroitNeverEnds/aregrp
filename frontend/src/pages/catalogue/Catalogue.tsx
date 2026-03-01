@@ -13,6 +13,8 @@ import { usePremises } from '@/queries';
 import { Loader } from '@/components/ui/common/Loader';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Page } from '@/components/ui/layout/Page/Page';
+import { Select, type SelectOption } from '@/components/ui/common/input/Select';
+import type { OrderBy } from '@/api';
 
 const ResultsView = () => {
     const { t } = useTranslation();
@@ -57,7 +59,7 @@ const ResultsView = () => {
 
 export const Catalogue = () => {
     const { t } = useTranslation();
-    const { filter, getLinkToCatalogue } = useFilterSearchParams();
+    const { filter, setFilter, getLinkToCatalogue } = useFilterSearchParams();
     const headerSettings: HeaderProps = useMemo(
         () => ({
             theme: 'light',
@@ -73,6 +75,23 @@ export const Catalogue = () => {
     );
     useHeaderSettings(headerSettings);
 
+    const orderByOptions: SelectOption<OrderBy>[] = useMemo(() => {
+        return [
+            { value: 'default', label: { title: t('pages.catalogue.sort.default') } },
+            { value: 'price_asc', label: { title: t('pages.catalogue.sort.price_asc') } },
+            { value: 'price_desc', label: { title: t('pages.catalogue.sort.price_desc') } },
+            { value: 'area_asc', label: { title: t('pages.catalogue.sort.area_asc') } },
+            { value: 'area_desc', label: { title: t('pages.catalogue.sort.area_desc') } },
+        ];
+    }, [t]);
+
+    const handleOptionSelect = useCallback(
+        (value?: OrderBy) => {
+            setFilter({ ...filter, order_by: value === 'default' ? undefined : value });
+        },
+        [filter, setFilter],
+    );
+
     return (
         <Page>
             <Flex justify="center" align="center" fullWidth>
@@ -86,7 +105,16 @@ export const Catalogue = () => {
                             </Text>
                             <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
                         </Flex>
-                        <ObjectsFilter />
+                        <Flex align="start" gap={20} fullWidth>
+                            <Select
+                                size="tiny"
+                                options={orderByOptions}
+                                value={filter.order_by}
+                                placeholder={t('pages.catalogue.sort.default')}
+                                onChange={handleOptionSelect}
+                            />
+                            <ObjectsFilter />
+                        </Flex>
                         <ResultsView />
                     </Contaier>
                 </VerticalMainContainer>

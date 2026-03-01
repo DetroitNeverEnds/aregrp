@@ -16,6 +16,11 @@
         padding: 10px 20px;
     }
 
+    .select-container--sm & {
+        padding: 0;
+        border: 0;
+    }
+
     // Состояния
     .select-container:hover:not(.select-container--disabled) & {
         border-color: $primary-700;

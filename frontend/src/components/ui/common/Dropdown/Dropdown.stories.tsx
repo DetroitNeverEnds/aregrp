@@ -36,14 +36,6 @@ const meta = {
             control: 'boolean',
             description: 'Отключенное состояние',
         },
-        maxHeight: {
-            control: 'number',
-            description: 'Максимальная высота содержимого',
-        },
-        matchTriggerWidth: {
-            control: 'boolean',
-            description: 'Должен ли dropdown соответствовать ширине триггера',
-        },
     },
 } satisfies Meta<typeof Dropdown>;
 

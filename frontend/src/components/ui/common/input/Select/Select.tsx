@@ -25,6 +25,7 @@ interface BaseSelectProps<T> {
     emptyMessage?: string;
     placeholder?: string;
     size?: Size;
+    fullWidth?: boolean;
     disabled?: boolean;
     errorMessage?: string;
     clearable?: boolean;
@@ -60,6 +61,7 @@ export function Select<T>(props: SelectProps<T>) {
         onChange,
         placeholder = 'Выберите значение',
         size = 'lg',
+        fullWidth = false,
         disabled = false,
         className = '',
         multiple = false,
@@ -120,6 +122,7 @@ export function Select<T>(props: SelectProps<T>) {
             isOpened={isDropdownOpen}
             onOpenChange={setIsDropdownOpen}
             disabled={disabled}
+            fullWidth={fullWidth}
             trigger={
                 selectedOptions.length > 0 ? (
                     <Flex direction="row" justify="between" className={styles.trigger}>
@@ -141,11 +144,6 @@ export function Select<T>(props: SelectProps<T>) {
                 )
             }
             className={className}
-            // triggerClassName={
-            //     (multiple ? selected === 0 : singleValue === undefined)
-            //         ? styles.unselectedTrigger
-            //         : styles.selectedTrigger
-            // }
         >
             <Flex gap={1} align="start" direction="column">
                 {options.map((option, index) =>

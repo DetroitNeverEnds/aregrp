@@ -63,7 +63,10 @@ export interface PremiseListResponse {
     total: number;
     page: number;
     page_size: number;
+    total_pages: number;
 }
+
+export type OrderBy = 'default' | 'price_asc' | 'price_desc' | 'area_asc' | 'area_desc';
 
 /**
  * Параметры фильтрации помещений
@@ -77,7 +80,7 @@ export interface PremiseFilterParams {
     max_price?: number;
     min_area?: number;
     max_area?: number;
-    order_by?: 'default' | 'price_asc' | 'price_desc' | 'area_asc' | 'area_desc';
+    order_by?: OrderBy;
     page?: number;
     page_size?: number;
 }

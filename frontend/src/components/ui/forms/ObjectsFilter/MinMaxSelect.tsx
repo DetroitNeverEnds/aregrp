@@ -62,6 +62,7 @@ export function MinMaxSelect({
         <Flex gap={8} className={styles.container} fullWidth>
             <Dropdown
                 size="lg"
+                fullWidth
                 trigger={triggerContent}
                 disabled={disabled}
                 dropdownClassName={styles['from-to-select-dropdown']}
