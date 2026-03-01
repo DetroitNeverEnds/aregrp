@@ -113,8 +113,8 @@ export const Contacts = () => {
                 <Column className={styles.mapColumn}>
                     <YandexMap
                         markerCoordinates={[
-                            contacts?.coordinates.lat || 0,
-                            contacts?.coordinates.lng || 0,
+                            contacts?.coordinates?.lat || 0,
+                            contacts?.coordinates?.lng || 0,
                         ]}
                         zoom={13}
                         markerHint="AREGRP"
