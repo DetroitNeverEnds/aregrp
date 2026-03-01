@@ -57,12 +57,13 @@ class PremiseDetailOut(PremiseListOut):
 
 
 class PremiseListResponse(Schema):
-    """Ответ списка помещений: массив items, total, page, page_size."""
+    """Ответ списка помещений: items, total, page, page_size, total_pages."""
 
     items: list[PremiseListOut]
     total: int
     page: int
     page_size: int
+    total_pages: int
 
 
 class BuildingOptionOut(Schema):
@@ -71,6 +72,26 @@ class BuildingOptionOut(Schema):
     uuid: str
     name: str
     address: str
+
+
+class BuildingListResponse(Schema):
+    """Ответ списка зданий для фильтра: items, total, page, page_size, total_pages."""
+
+    items: list[BuildingOptionOut]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
+
+
+class BuildingCatalogueResponse(Schema):
+    """Ответ каталога зданий: items, total, page, page_size, total_pages."""
+
+    items: list[BuildingCatalogueOut]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
 
 
 class MediaItemOut(Schema):

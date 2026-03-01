@@ -19,9 +19,13 @@ from uuid import UUID
 from django.conf import settings
 from django.db.models import Min, Q, Subquery
 
+from core.pagination import get_paginated_list
+
 from ..models import Building, Premise
 from ..schemas import (
     BuildingCatalogueOut,
+    BuildingCatalogueResponse,
+    BuildingListResponse,
     BuildingOptionOut,
     MediaItemOut,
     PremiseListOut,
@@ -190,20 +194,28 @@ def _premise_filter_for_buildings(
 async def get_buildings_for_filter(
     sale_type: Optional[str] = None,
     available: bool = True,
-) -> list[BuildingOptionOut]:
+) -> BuildingListResponse:
     """
     Список зданий для фильтра (чекбоксы «бизнес-центры»).
 
     Возвращает здания, у которых есть хотя бы одно помещение с учётом sale_type и available.
-    Фронт запрашивает один раз при загрузке и подставляет список в мультиселект.
+    Ответ: { items, total }.
     """
     premise_filter = _premise_filter_for_buildings(sale_type, available)
     subq = Premise.objects.filter(premise_filter).values("building_id").distinct()
     qs = Building.objects.filter(id__in=Subquery(subq)).order_by("name")
-    return [
+    items = [
         BuildingOptionOut(uuid=str(b.uuid), name=b.name, address=b.address)
         async for b in qs
     ]
+    total = len(items)
+    return BuildingListResponse(
+        items=items,
+        total=total,
+        page=1,
+        page_size=total,
+        total_pages=1 if total > 0 else 0,
+    )
 
 
 def _build_building_media(building: Building) -> list[MediaItemOut]:
@@ -218,12 +230,11 @@ def _build_building_media(building: Building) -> list[MediaItemOut]:
     return media
 
 
-async def get_buildings_catalogue() -> list[BuildingCatalogueOut]:
+async def get_buildings_catalogue() -> BuildingCatalogueResponse:
     """
     Каталог зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
 
-    Возвращает все здания с помещениями. min_rent_price / min_sale_price — минимум цен
-    по помещениям с available_for_rent / available_for_sale.
+    Возвращает все здания с помещениями. Ответ: { items, total }.
     """
     qs = (
         Building.objects.prefetch_related("images", "videos")
@@ -241,11 +252,11 @@ async def get_buildings_catalogue() -> list[BuildingCatalogueOut]:
         .distinct()
         .order_by("name")
     )
-    result: list[BuildingCatalogueOut] = []
+    items: list[BuildingCatalogueOut] = []
     async for b in qs:
         min_rent_val = float(b.min_rent) if b.min_rent is not None else None
         min_sale_val = float(b.min_sale) if b.min_sale is not None else None
-        result.append(
+        items.append(
             BuildingCatalogueOut(
                 uuid=str(b.uuid),
                 title=b.name,
@@ -256,7 +267,14 @@ async def get_buildings_catalogue() -> list[BuildingCatalogueOut]:
                 media=_build_building_media(b),
             )
         )
-    return result
+    total = len(items)
+    return BuildingCatalogueResponse(
+        items=items,
+        total=total,
+        page=1,
+        page_size=total,
+        total_pages=1 if total > 0 else 0,
+    )
 
 
 def _build_premise_media(p: Premise) -> PremiseMediaOut:
@@ -312,21 +330,16 @@ async def get_premise_list(params: PremiseFilterParams) -> PremiseListResponse:
     """
     Возвращает пагинированный список помещений по параметрам фильтрации.
 
-    Использует async ORM (acount, async for). Возвращает items, total, page, page_size.
+    Использует get_paginated_list (core.pagination).
     """
     qs = get_filtered_premise_queryset(params)
-    total = await qs.acount()
-    start = (params.page - 1) * params.page_size
-    page_qs = qs[start : start + params.page_size]
-    items: list[PremiseListOut] = []
-    async for p in page_qs:
-        items.append(premise_to_list_out(p))
-    return PremiseListResponse(
-        items=items,
-        total=total,
+    result = await get_paginated_list(
+        qs,
         page=params.page,
         page_size=params.page_size,
+        to_out=premise_to_list_out,
     )
+    return PremiseListResponse(**result)
 
 
 async def get_premise_by_uuid(premise_uuid: UUID) -> Optional[PremiseDetailOut]:

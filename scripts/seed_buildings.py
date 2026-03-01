@@ -49,6 +49,14 @@ STREETS = [
     "ул. Адоратского", "ул. Султановская", "ул. Кремлёвская", "ул. Центральная",
 ]
 
+# Шаблоны номеров помещений (подставляется случайное число)
+PREMISE_NUMBER_TEMPLATES = [
+    "Помещение {n}",
+    "Офис {n}",
+    "№ {n}",
+    "{n}",
+]
+
 # Описания зданий
 BUILDING_DESCRIPTIONS = [
     "Современный бизнес-центр класса А с развитой инфраструктурой.",
@@ -245,7 +253,8 @@ def main() -> int:
         for j in range(args.premises_per_building):
             area = round(random.uniform(20, 200), 1)
             price = random.randint(30000, 150000)
-            number = f"{j + 1}"  # Номер помещения в здании (1–10)
+            num = random.randint(1, 999)
+            number = random.choice(PREMISE_NUMBER_TEMPLATES).format(n=num)
             desc = f"Офисное помещение {area} м², аренда от {price} ₽/мес."
 
             resp_p = create_premise(

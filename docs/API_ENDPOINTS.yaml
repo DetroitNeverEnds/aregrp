@@ -1,0 +1,159 @@
+# ═══════════════════════════════════════════════════════════════════
+# API v1 — эндпоинты и схемы
+# ═══════════════════════════════════════════════════════════════════
+#
+#   auth          — вход, регистрация, токены, сброс пароля
+#   site_settings — настройки сайта, контакты, обратная связь
+#   buildings     — каталог зданий, инфо, этажи
+#   premises      — помещения (каталог, аренда, продажа, детали)
+#   cases         — кейсы
+#   user          — профиль, объекты, бронирования
+#
+# ═══════════════════════════════════════════════════════════════════
+
+# ───────────────────────────────────────────────────────────────────
+# AUTH
+# ───────────────────────────────────────────────────────────────────
+
+auth:
+  - POST /api/v1/auth/login
+  - POST /api/v1/auth/register
+  - POST /api/v1/auth/logout
+  - POST /api/v1/auth/refresh-token
+  - POST /api/v1/auth/password-reset
+  - POST /api/v1/auth/password-reset/confirm
+
+
+# ───────────────────────────────────────────────────────────────────
+# SITE SETTINGS
+# ───────────────────────────────────────────────────────────────────
+
+site_settings:
+  - GET /api/v1/site-settings/main-info
+  - GET /api/v1/site-settings/contacts
+  - POST /api/v1/feedback?origin
+
+
+# ───────────────────────────────────────────────────────────────────
+# BUILDINGS
+# ───────────────────────────────────────────────────────────────────
+
+buildings:
+  - GET /api/v1/buildings/catalogue
+    response:
+      items:
+        uuid: string
+        title: string
+        address: string
+        description: string
+        min_sale_price: number   # optional
+        min_rent_price: number   # optional
+        media: MedialList
+      total: number
+      page: number
+      page_size: number
+
+  - GET /api/v1/buildings/info/<uuid>
+    общая информация о здании
+
+  - GET /api/v1/buildings/info/<uuid>/floor/<number>
+    информация об этаже
+
+
+# ───────────────────────────────────────────────────────────────────
+# PREMISES
+# ───────────────────────────────────────────────────────────────────
+
+premises:
+  - GET /api/v1/premises/buildings
+    список зданий для фильтра поиска
+    response:
+      items:
+        uuid: string
+        name: string
+        address: string
+      total: number
+      page: number
+      page_size: number
+
+  - GET /api/v1/premises
+    каталог помещений
+    response:
+      items:
+        uuid: string
+        name: string
+        price: number
+        address: string
+        floor: number      # optional
+        area: number
+        has_tenant: boolean
+        media: object
+      total: number
+      page: number
+      page_size: number
+
+  - GET /api/v1/premises/rent
+    аренда (схема как catalogue)
+
+  - GET /api/v1/premises/sale
+    продажа (схема как catalogue)
+
+  - GET /api/v1/premises/<uuid>
+    детали помещения
+    response:
+      uuid: string
+      name: string
+      price: number
+      address: string
+      floor: number
+      area: number
+      has_tenant: boolean
+      media: object
+      description: string      # optional
+      price_per_sqm: number   # optional
+      ceiling_height: number   # optional
+      has_windows: boolean
+      has_parking: boolean
+      is_furnished: boolean
+
+  - GET /api/v1/premises/link?uuid=...
+    referral-ссылка
+
+
+# ───────────────────────────────────────────────────────────────────
+# CASES
+# ───────────────────────────────────────────────────────────────────
+
+cases:
+  - GET /api/v1/cases/<cat>
+    strategies
+
+  - GET /api/v1/cases/all
+    все кейсы
+
+
+# ───────────────────────────────────────────────────────────────────
+# USER
+# ───────────────────────────────────────────────────────────────────
+
+user:
+  - GET /api/v1/profile/user
+    информация о пользователе
+
+  - PUT /api/v1/profile/profile
+    обновление профиля
+
+  - GET /api/v1/profile/objects
+    объекты пользователя
+
+  - GET /api/v1/profile/bookings
+    бронирования
+
+
+# ───────────────────────────────────────────────────────────────────
+# ОБЩИЕ СХЕМЫ
+# ───────────────────────────────────────────────────────────────────
+
+MedialList:
+  type: "photo | video"
+  link: string
