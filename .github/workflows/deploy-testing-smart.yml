@@ -1,0 +1,253 @@
+name: Auto Merge and Deploy Testing
+
+on:
+    # Запуск по расписанию (каждые 30 минут)
+    # schedule:
+    #     - cron: '*/30 * * * *'
+    
+    # Ручной запуск с возможностью указать лейбл
+    workflow_dispatch:
+        inputs:
+            label:
+                description: 'Label to filter PRs (default: testing)'
+                required: false
+                default: 'testing'
+                type: string
+
+env:
+    REGISTRY: ghcr.io
+    REGISTRY_PREFIX: ghcr.io/detroitneverends/aregrp/
+    # TAG будет формироваться из merged веток
+    TAG: testing-${{ github.run_number }}
+
+jobs:
+    find-and-merge:
+        name: Find and Merge PRs
+        runs-on: ubuntu-latest
+        outputs:
+            merged: ${{ steps.merge.outputs.merged }}
+            pr_numbers: ${{ steps.merge.outputs.pr_numbers }}
+        
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Find and merge PRs with label
+              id: merge
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  LABEL: ${{ github.event.inputs.label || 'testing' }}
+              run: |
+                  echo "Searching for PRs with label: $LABEL"
+                  
+                  # Получаем список открытых PR с нужным лейблом
+                  PRS=$(gh pr list --state open --label "$LABEL" --json number,headRefName,title --jq '.[] | "\(.number)|\(.headRefName)|\(.title)"')
+                  
+                  if [ -z "$PRS" ]; then
+                      echo "No PRs found with label '$LABEL'"
+                      echo "merged=false" >> $GITHUB_OUTPUT
+                      exit 0
+                  fi
+                  
+                  echo "Found PRs:"
+                  echo "$PRS"
+                  
+                  # Переключаемся на main
+                  git checkout main
+                  git pull origin main
+                  
+                  # Создаем временную ветку для мержа
+                  MERGE_BRANCH="auto-merge-${{ github.run_number }}"
+                  git checkout -b "$MERGE_BRANCH"
+                  
+                  MERGED_PRS=""
+                  FAILED_PRS=""
+                  
+                  # Мержим каждый PR
+                  while IFS='|' read -r PR_NUMBER BRANCH TITLE; do
+                      echo ""
+                      echo "========================================="
+                      echo "Processing PR #$PR_NUMBER: $TITLE"
+                      echo "Branch: $BRANCH"
+                      echo "========================================="
+                      
+                      # Получаем последние изменения из ветки PR
+                      git fetch origin "$BRANCH"
+                      
+                      # Пытаемся смержить
+                      if git merge --no-ff --no-edit "origin/$BRANCH" -m "Merge PR #$PR_NUMBER: $TITLE"; then
+                          echo "✅ Successfully merged PR #$PR_NUMBER"
+                          MERGED_PRS="$MERGED_PRS $PR_NUMBER"
+                      else
+                          echo "❌ Failed to merge PR #$PR_NUMBER (conflicts)"
+                          FAILED_PRS="$FAILED_PRS $PR_NUMBER"
+                          # Отменяем неудачный мерж
+                          git merge --abort || true
+                      fi
+                  done <<< "$PRS"
+                  
+                  echo ""
+                  echo "========================================="
+                  echo "Merge Summary"
+                  echo "========================================="
+                  
+                  if [ -n "$MERGED_PRS" ]; then
+                      echo "✅ Successfully merged PRs:$MERGED_PRS"
+                      echo "merged=true" >> $GITHUB_OUTPUT
+                      echo "pr_numbers=$MERGED_PRS" >> $GITHUB_OUTPUT
+                      
+                      # Пушим временную ветку
+                      git push origin "$MERGE_BRANCH"
+                      
+                      # Создаем PR для мержа в main
+                      gh pr create \
+                          --title "🚀 Auto-merge testing PRs:$MERGED_PRS" \
+                          --body "Автоматический мерж PR с лейблом '$LABEL':%0A%0AMerged PRs:$MERGED_PRS%0A%0AЭтот PR будет автоматически смержен в main." \
+                          --base main \
+                          --head "$MERGE_BRANCH" \
+                          --label "auto-merge"
+                      
+                      # Получаем номер созданного PR
+                      MERGE_PR=$(gh pr list --head "$MERGE_BRANCH" --json number --jq '.[0].number')
+                      
+                      # Автоматически мержим в main
+                      gh pr merge "$MERGE_PR" --merge --auto
+                      
+                  else
+                      echo "❌ No PRs were successfully merged"
+                      echo "merged=false" >> $GITHUB_OUTPUT
+                  fi
+                  
+                  if [ -n "$FAILED_PRS" ]; then
+                      echo "⚠️  Failed to merge PRs (conflicts):$FAILED_PRS"
+                  fi
+
+    build-and-push:
+        name: Build and Push
+        needs: find-and-merge
+        if: needs.find-and-merge.outputs.merged == 'true'
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        
+        steps:
+            - name: Checkout merged code
+              uses: actions/checkout@v4
+              with:
+                  ref: main
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to the Container registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create temporary .env files for build validation
+              run: |
+                  mkdir -p backend
+                  touch backend/.env backend/.env.postgres
+                  echo "Created temporary .env files for docker-compose validation"
+
+            - name: Build and Push
+              env:
+                  REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}
+                  TAG: ${{ env.TAG }}
+                  VITE_YANDEX_MAPS_API_KEY: ${{ secrets.VITE_YANDEX_MAPS_API_KEY }}
+              run: docker compose build && docker compose push
+
+    deploy:
+        name: Deploy to Testing
+        needs: [find-and-merge, build-and-push]
+        if: needs.find-and-merge.outputs.merged == 'true'
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout merged code
+              uses: actions/checkout@v4
+              with:
+                  ref: main
+
+            - name: Copy docker-compose via SCP
+              uses: appleboy/scp-action@master
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USER }}
+                  key: ${{ secrets.VPS_SSH_KEY }}
+                  source: "docker-compose.yml"
+                  target: "/home/${{ secrets.VPS_USER }}/aregrp/"
+
+            - name: Create environment files from secrets
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USER }}
+                  key: ${{ secrets.VPS_SSH_KEY }}
+                  script: |
+                      cd ~/aregrp/
+                      mkdir -p backend
+                      
+                      echo "${{ secrets.ENV_FILE }}" > backend/.env
+                      echo "${{ secrets.ENV_POSTGRES_FILE }}" > backend/.env.postgres
+                      
+                      if [ -s backend/.env ] && [ -s backend/.env.postgres ]; then
+                          echo "✅ Environment files created successfully"
+                      else
+                          echo "❌ ERROR: Environment files are empty!"
+                          exit 1
+                      fi
+
+            - name: Deploy containers
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USER }}
+                  key: ${{ secrets.VPS_SSH_KEY }}
+                  script: |
+                      cd ~/aregrp/
+                      
+                      # Создаем директории для персистентных данных
+                      sudo mkdir -p /var/lib/aregrp-data/postgres_data
+                      sudo mkdir -p /var/lib/aregrp-data/media
+                      sudo mkdir -p /var/lib/aregrp-data/static
+                      
+                      sudo chown -R 999:999 /var/lib/aregrp-data/postgres_data || true
+                      sudo chmod 700 /var/lib/aregrp-data/postgres_data || true
+                      sudo chown -R $USER:$USER /var/lib/aregrp-data/media /var/lib/aregrp-data/static || true
+                      sudo chmod -R 755 /var/lib/aregrp-data/media /var/lib/aregrp-data/static || true
+                      
+                      # Логинимся в реестр
+                      echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                      
+                      # Экспортируем переменные
+                      export REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
+                      export TAG=${{ env.TAG }}
+                      export VITE_YANDEX_MAPS_API_KEY=${{ secrets.VITE_YANDEX_MAPS_API_KEY }}
+                      
+                      # Деплоим
+                      docker compose pull
+                      docker compose up -d --remove-orphans
+                      
+                      echo "Checking containers..."
+                      docker compose ps
+                      
+                      # Чистим старые образы
+                      docker image prune -f
+
+            - name: Notify success
+              if: success()
+              run: |
+                  echo "✅ Successfully deployed merged PRs: ${{ needs.find-and-merge.outputs.pr_numbers }}"
+                  echo "🚀 Tag: ${{ env.TAG }}"
