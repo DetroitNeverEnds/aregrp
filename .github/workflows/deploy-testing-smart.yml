@@ -5,11 +5,16 @@ on:
     # schedule:
     #     - cron: '*/30 * * * *'
     
-    # Ручной запуск с возможностью указать лейбл
+    # Для тестирования: запуск при изменении workflow или добавлении лейбла "testing"
+    pull_request:
+        paths:
+            - '.github/workflows/deploy-testing-smart.yml'
+    
+    # Ручной запуск с возможностью указать лейбл или конкретный PR
     workflow_dispatch:
         inputs:
             label:
-                description: 'Label to filter PRs (default: testing)'
+                description: 'Label to filter PRs (используется в режиме label)'
                 required: false
                 default: 'testing'
                 type: string
@@ -40,16 +45,53 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
 
-            - name: Find and merge PRs with label
+            - name: Determine mode and get PRs
+              id: get-prs
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  # Определяем режим работы
+                  if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+                      # Запуск из PR с лейблом - берем номер текущего PR
+                      PR_NUMBER="${{ github.event.pull_request.number }}"
+                      echo "MODE=pr_number" >> $GITHUB_ENV
+                      echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+                      echo "🎯 Mode: Deploy specific PR #$PR_NUMBER (triggered by label)"
+                  elif [[ "${{ github.event.inputs.mode }}" == "pr_number" ]]; then
+                      # Ручной запуск с указанием номера PR
+                      PR_NUMBER="${{ github.event.inputs.pr_number }}"
+                      echo "MODE=pr_number" >> $GITHUB_ENV
+                      echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
+                      echo "🎯 Mode: Deploy specific PR #$PR_NUMBER"
+                  else
+                      # Режим по лейблу
+                      LABEL="${{ github.event.inputs.label || 'testing' }}"
+                      echo "MODE=label" >> $GITHUB_ENV
+                      echo "LABEL=$LABEL" >> $GITHUB_ENV
+                      echo "🏷️  Mode: Deploy PRs with label '$LABEL'"
+                  fi
+
+            - name: Find and merge PRs
               id: merge
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  LABEL: ${{ github.event.inputs.label || 'testing' }}
               run: |
-                  echo "Searching for PRs with label: $LABEL"
-                  
-                  # Получаем список открытых PR с нужным лейблом
-                  PRS=$(gh pr list --state open --label "$LABEL" --json number,headRefName,title --jq '.[] | "\(.number)|\(.headRefName)|\(.title)"')
+                  if [[ "$MODE" == "pr_number" ]]; then
+                      echo "Getting PR #$PR_NUMBER details..."
+                      PR_DATA=$(gh pr view "$PR_NUMBER" --json number,headRefName,title --jq '"\(.number)|\(.headRefName)|\(.title)"')
+                      
+                      if [ -z "$PR_DATA" ]; then
+                          echo "❌ PR #$PR_NUMBER not found or not open"
+                          echo "merged=false" >> $GITHUB_OUTPUT
+                          exit 1
+                      fi
+                      
+                      PRS="$PR_DATA"
+                      echo "Found PR #$PR_NUMBER"
+                  else
+                      echo "Searching for PRs with label: $LABEL"
+                      PRS=$(gh pr list --state open --label "$LABEL" --json number,headRefName,title --jq '.[] | "\(.number)|\(.headRefName)|\(.title)"')
+                  fi
                   
                   if [ -z "$PRS" ]; then
                       echo "No PRs found with label '$LABEL'"
