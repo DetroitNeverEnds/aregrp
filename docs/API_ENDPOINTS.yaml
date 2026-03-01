@@ -2,6 +2,8 @@
 # API v1 — эндпоинты и схемы
 # ═══════════════════════════════════════════════════════════════════
 #
+# base: /api/v1
+#
 #   auth          — вход, регистрация, токены, сброс пароля
 #   site_settings — настройки сайта, контакты, обратная связь
 #   buildings     — каталог зданий, инфо, этажи
@@ -11,17 +13,19 @@
 #
 # ═══════════════════════════════════════════════════════════════════
 
+base: /api/v1
+
 # ───────────────────────────────────────────────────────────────────
 # AUTH
 # ───────────────────────────────────────────────────────────────────
 
 auth:
-  - POST /api/v1/auth/login
-  - POST /api/v1/auth/register
-  - POST /api/v1/auth/logout
-  - POST /api/v1/auth/refresh-token
-  - POST /api/v1/auth/password-reset
-  - POST /api/v1/auth/password-reset/confirm
+  - POST /auth/login
+  - POST /auth/register
+  - POST /auth/logout
+  - POST /auth/refresh-token
+  - POST /auth/password-reset
+  - POST /auth/password-reset/confirm
 
 
 # ───────────────────────────────────────────────────────────────────
@@ -29,9 +33,9 @@ auth:
 # ───────────────────────────────────────────────────────────────────
 
 site_settings:
-  - GET /api/v1/site-settings/main-info
-  - GET /api/v1/site-settings/contacts
-  - POST /api/v1/feedback?origin
+  - GET /site-settings/main-info
+  - GET /site-settings/contacts
+  - POST /feedback?origin
 
 
 # ───────────────────────────────────────────────────────────────────
@@ -39,7 +43,8 @@ site_settings:
 # ───────────────────────────────────────────────────────────────────
 
 buildings:
-  - GET /api/v1/buildings/catalogue
+  - GET /buildings/
+    список зданий
     response:
       items:
         uuid: string
@@ -53,11 +58,19 @@ buildings:
       page: number
       page_size: number
 
-  - GET /api/v1/buildings/info/<uuid>
-    общая информация о здании
+  - GET /buildings/catalogue/<uuid>
+    информация о здании
+    response:
+      uuid: string
+      title: string
+      address: string
+      description: string
+      min_sale_price: number   # optional
+      min_rent_price: number   # optional
+      media: MedialList
 
-  - GET /api/v1/buildings/info/<uuid>/floor/<number>
-    информация об этаже
+  - GET /buildings/info/<uuid>/floor/<number>
+    информация об этаже (TODO)
 
 
 # ───────────────────────────────────────────────────────────────────
@@ -65,7 +78,7 @@ buildings:
 # ───────────────────────────────────────────────────────────────────
 
 premises:
-  - GET /api/v1/premises/buildings
+  - GET /premises/buildings
     список зданий для фильтра поиска
     response:
       items:
@@ -76,8 +89,8 @@ premises:
       page: number
       page_size: number
 
-  - GET /api/v1/premises
-    каталог помещений
+  - GET /premises
+    каталог помещений (sale_type в query: rent|sale)
     response:
       items:
         uuid: string
@@ -92,13 +105,7 @@ premises:
       page: number
       page_size: number
 
-  - GET /api/v1/premises/rent
-    аренда (схема как catalogue)
-
-  - GET /api/v1/premises/sale
-    продажа (схема как catalogue)
-
-  - GET /api/v1/premises/<uuid>
+  - GET /premises/<uuid>
     детали помещения
     response:
       uuid: string
@@ -116,7 +123,7 @@ premises:
       has_parking: boolean
       is_furnished: boolean
 
-  - GET /api/v1/premises/link?uuid=...
+  - GET /premises/link?uuid=...
     referral-ссылка
 
 
@@ -125,10 +132,10 @@ premises:
 # ───────────────────────────────────────────────────────────────────
 
 cases:
-  - GET /api/v1/cases/<cat>
+  - GET /cases/<cat>
     strategies
 
-  - GET /api/v1/cases/all
+  - GET /cases/all
     все кейсы
 
 
@@ -137,16 +144,16 @@ cases:
 # ───────────────────────────────────────────────────────────────────
 
 user:
-  - GET /api/v1/profile/user
+  - GET /profile/user
     информация о пользователе
 
-  - PUT /api/v1/profile/profile
+  - PUT /profile/profile
     обновление профиля
 
-  - GET /api/v1/profile/objects
+  - GET /profile/objects
     объекты пользователя
 
-  - GET /api/v1/profile/bookings
+  - GET /profile/bookings
     бронирования
 
 

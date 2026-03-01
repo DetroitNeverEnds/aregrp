@@ -4,13 +4,11 @@
 Краткое описание ручек поиска:
 
 1) GET /api/v1/premises — поиск помещений с фильтрами и пагинацией (sale_type опционально).
-2) GET /api/v1/premises/rent — то же, только для аренды (sale_type=rent).
-3) GET /api/v1/premises/sale — то же, только для продажи (sale_type=sale).
-   Ответ у 1–3: { items: [...], total, page, page_size, total_pages }. Параметры: available, building (поиск по тексту), building_uuids (фильтр по UUID зданий), min/max price, min/max area, order_by, page, page_size. В каждом item: uuid, name, price, address, floor, area, has_tenant, media.
-4) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available. Фронт запрашивает один раз и подставляет в чекбоксы.
-5) GET /api/v1/buildings/catalogue — каталог зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
-
-6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
+   Ответ: { items: [...], total, page, page_size, total_pages }. Параметры: sale_type, available, building, building_uuids, min/max price, min/max area, order_by, page, page_size.
+2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
+3) GET /api/v1/buildings/ — список зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
+4) GET /api/v1/buildings/catalogue/{uuid} — информация о здании по UUID.
+5) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished). 404 — ProblemDetail.
 
 Вся логика в services.premise_service; роутер только парсит query (в т.ч. через parse_building_uuids)
@@ -26,6 +24,7 @@ from ninja import Query, Router
 from api.schemas import ProblemDetail
 from .errors import ReObjectsErrorCodes, create_re_objects_error
 from .schemas import (
+    BuildingCatalogueOut,
     BuildingCatalogueResponse,
     BuildingListResponse,
     PremiseDetailOut,
@@ -33,6 +32,7 @@ from .schemas import (
 )
 from .services import (
     PremiseFilterParams,
+    get_building_by_uuid,
     get_buildings_catalogue,
     get_buildings_for_filter,
     get_premise_by_uuid,
@@ -41,11 +41,14 @@ from .services import (
 )
 
 
-re_objects_router = Router()
+premises_router = Router(tags=["Premises"])
+buildings_router = Router(tags=["Buildings"])
 
 
-@re_objects_router.get(
-    "/premises/buildings",
+# ─── Premises (prefix /premises) ─────────────────────────────────────────────
+
+@premises_router.get(
+    "/buildings",
     response={200: BuildingListResponse},
     summary="Список зданий для фильтра",
     description=(
@@ -53,7 +56,7 @@ re_objects_router = Router()
         "Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры»."
     ),
 )
-async def building_list(
+async def building_filter_list(
     request,
     sale_type: Optional[str] = Query(
         None,
@@ -66,20 +69,42 @@ async def building_list(
     return 200, items
 
 
-@re_objects_router.get(
-    "/buildings/catalogue",
+# ─── Buildings (prefix /buildings) ───────────────────────────────────────────
+
+@buildings_router.get(
+    "/",
     response={200: BuildingCatalogueResponse},
-    summary="Каталог зданий",
+    summary="Список зданий",
     description="Список зданий с помещениями: uuid, title, address, description, min_sale_price, min_rent_price, media.",
 )
-async def building_catalogue(request):
-    """Каталог зданий для страницы каталога. Ответ: [{ uuid, title, address, description, min_sale_price?, min_rent_price?, media }, ...]."""
+async def building_catalogue_list(request):
+    """Список зданий для страницы каталога. Ответ: [{ uuid, title, address, description, min_sale_price?, min_rent_price?, media }, ...]."""
     items = await get_buildings_catalogue()
     return 200, items
 
 
-@re_objects_router.get(
-    "/premises",
+@buildings_router.get(
+    "/catalogue/{building_uuid}",
+    response={200: BuildingCatalogueOut, 404: ProblemDetail},
+    summary="Информация о здании",
+    description="Детальная информация о здании по UUID: uuid, title, address, description, min_sale_price, min_rent_price, media.",
+)
+async def building_detail(request, building_uuid: UUID):
+    """Возвращает информацию о здании по UUID или 404 (ProblemDetail)."""
+    result = await get_building_by_uuid(building_uuid)
+    if result is None:
+        return 404, create_re_objects_error(
+            status=404,
+            code=ReObjectsErrorCodes.NOT_FOUND,
+            title="Not Found",
+            detail="Здание не найдено.",
+            instance=f"/api/v1/buildings/catalogue/{building_uuid}",
+        )
+    return 200, result
+
+
+@premises_router.get(
+    "",
     response={200: PremiseListResponse},
     summary="Список помещений с фильтрами и пагинацией",
     description=(
@@ -126,82 +151,8 @@ async def premise_list(
     return 200, result
 
 
-@re_objects_router.get(
-    "/premises/rent",
-    response={200: PremiseListResponse},
-    summary="Список помещений для аренды",
-    description="То же, что GET /premises?sale_type=rent. Остальные фильтры и пагинация — как у общего списка.",
-)
-async def premise_list_rent(
-    request,
-    available: Optional[bool] = Query(None, description="true — свободные, false — занятые; по умолчанию true"),
-    building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
-    building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
-    min_price: Optional[Decimal] = Query(None, description="Минимальная цена, ₽/мес"),
-    max_price: Optional[Decimal] = Query(None, description="Максимальная цена, ₽/мес"),
-    min_area: Optional[Decimal] = Query(None, description="Минимальная площадь, м²"),
-    max_area: Optional[Decimal] = Query(None, description="Максимальная площадь, м²"),
-    order_by: str = Query("default", description="default|price_asc|price_desc|area_asc|area_desc"),
-    page: int = Query(1, ge=1, description="Номер страницы"),
-    page_size: int = Query(20, ge=1, le=100, description="Размер страницы"),
-):
-    """Список помещений только для аренды (sale_type=rent). Схема ответа та же."""
-    params = PremiseFilterParams(
-        sale_type=settings.RE_OBJECTS_SALE_TYPE_RENT,
-        available=available,
-        building_query=building,
-        building_uuids=parse_building_uuids(building_uuids),
-        min_price=min_price,
-        max_price=max_price,
-        min_area=min_area,
-        max_area=max_area,
-        order_by=order_by,
-        page=page,
-        page_size=page_size,
-    )
-    result = await get_premise_list(params)
-    return 200, result
-
-
-@re_objects_router.get(
-    "/premises/sale",
-    response={200: PremiseListResponse},
-    summary="Список помещений для продажи",
-    description="То же, что GET /premises?sale_type=sale. Остальные фильтры и пагинация — как у общего списка.",
-)
-async def premise_list_sale(
-    request,
-    available: Optional[bool] = Query(None, description="true — свободные, false — занятые; по умолчанию true"),
-    building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
-    building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
-    min_price: Optional[Decimal] = Query(None, description="Минимальная цена, ₽/мес"),
-    max_price: Optional[Decimal] = Query(None, description="Максимальная цена, ₽/мес"),
-    min_area: Optional[Decimal] = Query(None, description="Минимальная площадь, м²"),
-    max_area: Optional[Decimal] = Query(None, description="Максимальная площадь, м²"),
-    order_by: str = Query("default", description="default|price_asc|price_desc|area_asc|area_desc"),
-    page: int = Query(1, ge=1, description="Номер страницы"),
-    page_size: int = Query(20, ge=1, le=100, description="Размер страницы"),
-):
-    """Список помещений только для продажи (sale_type=sale). Схема ответа та же."""
-    params = PremiseFilterParams(
-        sale_type=settings.RE_OBJECTS_SALE_TYPE_SALE,
-        available=available,
-        building_query=building,
-        building_uuids=parse_building_uuids(building_uuids),
-        min_price=min_price,
-        max_price=max_price,
-        min_area=min_area,
-        max_area=max_area,
-        order_by=order_by,
-        page=page,
-        page_size=page_size,
-    )
-    result = await get_premise_list(params)
-    return 200, result
-
-
-@re_objects_router.get(
-    "/premises/{premise_uuid}",
+@premises_router.get(
+    "/{premise_uuid}",
     response={200: PremiseDetailOut, 404: ProblemDetail},
     summary="Детальная информация о помещении",
 )

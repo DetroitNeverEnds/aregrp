@@ -6,6 +6,7 @@
 - get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address).
 - get_buildings_catalogue() — каталог зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
+- get_building_by_uuid(building_uuid) — здание по UUID или None.
 - get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
@@ -274,6 +275,43 @@ async def get_buildings_catalogue() -> BuildingCatalogueResponse:
         page=1,
         page_size=total,
         total_pages=1 if total > 0 else 0,
+    )
+
+
+async def get_building_by_uuid(building_uuid: UUID) -> Optional[BuildingCatalogueOut]:
+    """
+    Возвращает здание по UUID в виде BuildingCatalogueOut или None.
+
+    Только здания с помещениями. Использует aget() и prefetch images, videos.
+    """
+    try:
+        b = await (
+            Building.objects.prefetch_related("images", "videos")
+            .annotate(
+                min_rent=Min(
+                    "premises__price_per_month",
+                    filter=Q(premises__available_for_rent=True),
+                ),
+                min_sale=Min(
+                    "premises__price_per_month",
+                    filter=Q(premises__available_for_sale=True),
+                ),
+            )
+            .filter(premises__isnull=False)
+            .aget(uuid=building_uuid)
+        )
+    except Building.DoesNotExist:
+        return None
+    min_rent_val = float(b.min_rent) if b.min_rent is not None else None
+    min_sale_val = float(b.min_sale) if b.min_sale is not None else None
+    return BuildingCatalogueOut(
+        uuid=str(b.uuid),
+        title=b.name,
+        address=b.address,
+        description=b.description or "",
+        min_sale_price=min_sale_val,
+        min_rent_price=min_rent_val,
+        media=_build_building_media(b),
     )
 
 

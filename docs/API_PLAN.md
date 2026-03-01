@@ -70,14 +70,12 @@ Contacts / Site Settings:
 
 Buildings:
 - short-list (селект) /api/v1/premises/buildings
-- catalogue /api/v1/buildings/catalogue
-- Common Info /api/v1/buildings/info/<uuid>
-- Floor info /api/v1/buildings/info/<uuid>/floor/<number>
+- список /api/v1/buildings/
+- инфо о здании /api/v1/buildings/catalogue/<uuid>
+- Floor info /api/v1/buildings/info/<uuid>/floor/<number> (TODO)
 
 Premises:
-- catalogue /api/v1/premises
-- аренда /api/v1/premises/rent
-- продажа /api/v1/premises/sale
+- catalogue /api/v1/premises (sale_type в query: rent|sale)
 - деталь /api/v1/premises/<uuid>
 - referal-link /api/v1/premises/link?uuid
 
@@ -93,7 +91,7 @@ User:
 
 ---
 
-/api/v1/buildings/catalogue:
+/api/v1/buildings/ (список) и /api/v1/buildings/catalogue/<uuid> (инфо):
 - uuid (string)
 - title (string)
 - address (string)
@@ -140,15 +138,13 @@ total, page, page_size
 **Buildings:**
 
 - [x]  /api/v1/premises/buildings
-- [x]  /api/v1/buildings/catalogue
-- [ ]  /api/v1/buildings/info/<uuid>
+- [x]  /api/v1/buildings/
+- [x]  /api/v1/buildings/catalogue/<uuid>
 - [ ]  /api/v1/buildings/info/<uuid>/floor/<number>
 
 **Premises:**
 
 - [x]  /api/v1/premises
-- [x]  /api/v1/premises/rent
-- [x]  /api/v1/premises/sale
 - [x]  /api/v1/premises/<uuid>
 - [ ]  /api/v1/premises/link?uuid
 
