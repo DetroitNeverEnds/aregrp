@@ -1,8 +1,9 @@
 import type { PropsWithChildren } from 'react';
 import { Button } from '@/components/ui/common/Button';
-import { Flex } from '@/components/ui/common/Flex';
 import { Pagination } from '@/components/ui/common/Pagination';
 import Container from '@/components/ui/layout/Container';
+
+import styles from './CardContainer.module.scss';
 
 export type PaginationConfig = {
     currentPage?: number;
@@ -19,9 +20,7 @@ export type CardContainerProps = PropsWithChildren & {
 export const CardContainer = (props: CardContainerProps) => {
     return (
         <Container align="center">
-            <Flex direction="row" justify="between" gap={24} fullWidth>
-                {props.children}
-            </Flex>
+            <div className={styles.container}>{props.children}</div>
             {props.pagination && (
                 <Pagination
                     currentPage={props.pagination.currentPage || 1}

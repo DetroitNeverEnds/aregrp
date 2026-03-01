@@ -4,6 +4,7 @@ import styles from './Pagination.module.scss';
 import { Flex } from '@/components/ui/common/Flex';
 import { Button } from '@/components/ui/common/Button';
 import Text from '@/components/ui/common/Text';
+import _ from 'lodash';
 
 export type PaginationProps = {
     /** Текущая страница (1-based) */
@@ -28,11 +29,14 @@ export const Pagination: React.FC<PaginationProps> = ({
 }) => {
     const pages = useMemo(
         () => ({
-            hasLeadingEclipsis: totalPages >= 5 && currentPage > 3,
-            hasTrailingEclipsis: totalPages >= 5 && currentPage < totalPages - 2,
-            pageNumbers: [currentPage - 1, currentPage, currentPage + 1].filter(
-                page => page > 1 && page < totalPages,
-            ),
+            hasLeadingEclipsis: totalPages > 5 && currentPage > 3,
+            hasTrailingEclipsis: totalPages > 5 && currentPage < totalPages - 2,
+            pageNumbers:
+                totalPages <= 5
+                    ? _.range(2, totalPages, 1)
+                    : [currentPage - 1, currentPage, currentPage + 1].filter(
+                          page => page > 1 && page < totalPages,
+                      ),
         }),
         [currentPage, totalPages],
     );
@@ -42,10 +46,6 @@ export const Pagination: React.FC<PaginationProps> = ({
             onPageChange(page);
         }
     };
-
-    if (totalPages <= 1) {
-        return null;
-    }
 
     return (
         <Flex

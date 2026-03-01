@@ -12,6 +12,7 @@ import { CardContainer } from '@/components/ui/layout/CardsContainer';
 import { usePremises } from '@/queries';
 import { Loader } from '@/components/ui/common/Loader';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
+import { Page } from '@/components/ui/layout/Page/Page';
 
 const ResultsView = () => {
     const { t } = useTranslation();
@@ -73,21 +74,23 @@ export const Catalogue = () => {
     useHeaderSettings(headerSettings);
 
     return (
-        <Flex justify="center" align="center" fullWidth>
-            <VerticalMainContainer>
-                <Contaier>
-                    <Flex direction="row" justify="between" fullWidth>
-                        <Text variant="h2">
-                            {filter.sale_type === 'sale'
-                                ? t('pages.catalogue.title.sale')
-                                : t('pages.catalogue.title.rent')}
-                        </Text>
-                        <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
-                    </Flex>
-                    <ObjectsFilter />
-                    <ResultsView />
-                </Contaier>
-            </VerticalMainContainer>
-        </Flex>
+        <Page>
+            <Flex justify="center" align="center" fullWidth>
+                <VerticalMainContainer>
+                    <Contaier>
+                        <Flex direction="row" justify="between" fullWidth>
+                            <Text variant="h2">
+                                {filter.sale_type === 'sale'
+                                    ? t('pages.catalogue.title.sale')
+                                    : t('pages.catalogue.title.rent')}
+                            </Text>
+                            <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
+                        </Flex>
+                        <ObjectsFilter />
+                        <ResultsView />
+                    </Contaier>
+                </VerticalMainContainer>
+            </Flex>
+        </Page>
     );
 };

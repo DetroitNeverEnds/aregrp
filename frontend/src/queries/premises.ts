@@ -45,7 +45,7 @@ export function usePremises(
 ): UseQueryResult<QueryResult<PremiseListResponse>, Error> {
     return useQuery({
         queryKey: ['premises', params],
-        queryFn: () => wrapApiCall(getPremises)(params),
+        queryFn: () => wrapApiCall(getPremises)({ page_size: 12, ...params }),
     });
 }
 

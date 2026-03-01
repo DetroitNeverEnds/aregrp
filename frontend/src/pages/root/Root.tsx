@@ -19,6 +19,7 @@ import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainCo
 import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContainer';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { BenifitsWorking } from '@/components/ui/cards/Benefits';
+import { Page } from '@/components/ui/layout/Page/Page';
 
 type Data = {
     coordinates: [number, number][];
@@ -42,7 +43,7 @@ export const Root = () => {
     const buildings = useBuildingsCatalogue().data?.data || [];
 
     return (
-        <div>
+        <Page>
             <Welcome />
             <VerticalMainContainer>
                 {/* Map and default buildings */}
@@ -130,6 +131,6 @@ export const Root = () => {
                 {/* Feedback form */}
                 <FeedbackFormRow />
             </VerticalMainContainer>
-        </div>
+        </Page>
     );
 };
