@@ -22,6 +22,8 @@ jobs:
     merge-prs:
         name: Merge PRs
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
         outputs:
             has_prs: ${{ steps.merge.outputs.has_prs }}
             merge_branch: ${{ steps.merge.outputs.merge_branch }}
