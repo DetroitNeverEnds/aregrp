@@ -521,7 +521,7 @@
     },
     "/api/v1/premises/buildings": {
       "get": {
-        "operationId": "apps_re_objects_routers_building_list",
+        "operationId": "apps_re_objects_routers_building_filter_list",
         "summary": "Список зданий для фильтра",
         "parameters": [
           {
@@ -546,13 +546,19 @@
             "in": "query",
             "name": "available",
             "schema": {
-              "default": true,
-              "description": "Только здания со свободными помещениями (true) или с занятыми (false)",
-              "title": "Available",
-              "type": "boolean"
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра.",
+              "title": "Available"
             },
             "required": false,
-            "description": "Только здания со свободными помещениями (true) или с занятыми (false)"
+            "description": "true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра."
           }
         ],
         "responses": {
@@ -561,36 +567,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BuildingListResponse"
+                  "items": {
+                    "$ref": "#/components/schemas/BuildingOptionOut"
+                  },
+                  "title": "Response",
+                  "type": "array"
                 }
               }
             }
           }
         },
         "description": "Здания, у которых есть помещения (с учётом sale_type и available). Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры».",
-        "tags": [
-          "Premises"
-        ]
-      }
-    },
-    "/api/v1/buildings/catalogue": {
-      "get": {
-        "operationId": "apps_re_objects_routers_building_catalogue",
-        "summary": "Каталог зданий",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BuildingCatalogueResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "Список зданий с помещениями: uuid, title, address, description, min_sale_price, min_rent_price, media.",
         "tags": [
           "Premises"
         ]
@@ -631,11 +618,11 @@
                   "type": "null"
                 }
               ],
-              "description": "true — свободные, false — занятые; по умолчанию true",
+              "description": "true — свободные, false — занятые. Не передано — без фильтра по доступности.",
               "title": "Available"
             },
             "required": false,
-            "description": "true — свободные, false — занятые; по умолчанию true"
+            "description": "true — свободные, false — занятые. Не передано — без фильтра по доступности."
           },
           {
             "in": "query",
@@ -819,416 +806,6 @@
         ]
       }
     },
-    "/api/v1/premises/rent": {
-      "get": {
-        "operationId": "apps_re_objects_routers_premise_list_rent",
-        "summary": "Список помещений для аренды",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "available",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "true — свободные, false — занятые; по умолчанию true",
-              "title": "Available"
-            },
-            "required": false,
-            "description": "true — свободные, false — занятые; по умолчанию true"
-          },
-          {
-            "in": "query",
-            "name": "building",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Поиск по адресу или названию здания",
-              "title": "Building"
-            },
-            "required": false,
-            "description": "Поиск по адресу или названию здания"
-          },
-          {
-            "in": "query",
-            "name": "building_uuids",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Фильтр по UUID зданий (через запятую)",
-              "title": "Building Uuids"
-            },
-            "required": false,
-            "description": "Фильтр по UUID зданий (через запятую)"
-          },
-          {
-            "in": "query",
-            "name": "min_price",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Минимальная цена, ₽/мес",
-              "title": "Min Price"
-            },
-            "required": false,
-            "description": "Минимальная цена, ₽/мес"
-          },
-          {
-            "in": "query",
-            "name": "max_price",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Максимальная цена, ₽/мес",
-              "title": "Max Price"
-            },
-            "required": false,
-            "description": "Максимальная цена, ₽/мес"
-          },
-          {
-            "in": "query",
-            "name": "min_area",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Минимальная площадь, м²",
-              "title": "Min Area"
-            },
-            "required": false,
-            "description": "Минимальная площадь, м²"
-          },
-          {
-            "in": "query",
-            "name": "max_area",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Максимальная площадь, м²",
-              "title": "Max Area"
-            },
-            "required": false,
-            "description": "Максимальная площадь, м²"
-          },
-          {
-            "in": "query",
-            "name": "order_by",
-            "schema": {
-              "default": "default",
-              "description": "default|price_asc|price_desc|area_asc|area_desc",
-              "title": "Order By",
-              "type": "string"
-            },
-            "required": false,
-            "description": "default|price_asc|price_desc|area_asc|area_desc"
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "default": 1,
-              "description": "Номер страницы",
-              "minimum": 1,
-              "title": "Page",
-              "type": "integer"
-            },
-            "required": false,
-            "description": "Номер страницы"
-          },
-          {
-            "in": "query",
-            "name": "page_size",
-            "schema": {
-              "default": 20,
-              "description": "Размер страницы",
-              "maximum": 100,
-              "minimum": 1,
-              "title": "Page Size",
-              "type": "integer"
-            },
-            "required": false,
-            "description": "Размер страницы"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PremiseListResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "То же, что GET /premises?sale_type=rent. Остальные фильтры и пагинация — как у общего списка.",
-        "tags": [
-          "Premises"
-        ]
-      }
-    },
-    "/api/v1/premises/sale": {
-      "get": {
-        "operationId": "apps_re_objects_routers_premise_list_sale",
-        "summary": "Список помещений для продажи",
-        "parameters": [
-          {
-            "in": "query",
-            "name": "available",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "boolean"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "true — свободные, false — занятые; по умолчанию true",
-              "title": "Available"
-            },
-            "required": false,
-            "description": "true — свободные, false — занятые; по умолчанию true"
-          },
-          {
-            "in": "query",
-            "name": "building",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Поиск по адресу или названию здания",
-              "title": "Building"
-            },
-            "required": false,
-            "description": "Поиск по адресу или названию здания"
-          },
-          {
-            "in": "query",
-            "name": "building_uuids",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Фильтр по UUID зданий (через запятую)",
-              "title": "Building Uuids"
-            },
-            "required": false,
-            "description": "Фильтр по UUID зданий (через запятую)"
-          },
-          {
-            "in": "query",
-            "name": "min_price",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Минимальная цена, ₽/мес",
-              "title": "Min Price"
-            },
-            "required": false,
-            "description": "Минимальная цена, ₽/мес"
-          },
-          {
-            "in": "query",
-            "name": "max_price",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Максимальная цена, ₽/мес",
-              "title": "Max Price"
-            },
-            "required": false,
-            "description": "Максимальная цена, ₽/мес"
-          },
-          {
-            "in": "query",
-            "name": "min_area",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Минимальная площадь, м²",
-              "title": "Min Area"
-            },
-            "required": false,
-            "description": "Минимальная площадь, м²"
-          },
-          {
-            "in": "query",
-            "name": "max_area",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Максимальная площадь, м²",
-              "title": "Max Area"
-            },
-            "required": false,
-            "description": "Максимальная площадь, м²"
-          },
-          {
-            "in": "query",
-            "name": "order_by",
-            "schema": {
-              "default": "default",
-              "description": "default|price_asc|price_desc|area_asc|area_desc",
-              "title": "Order By",
-              "type": "string"
-            },
-            "required": false,
-            "description": "default|price_asc|price_desc|area_asc|area_desc"
-          },
-          {
-            "in": "query",
-            "name": "page",
-            "schema": {
-              "default": 1,
-              "description": "Номер страницы",
-              "minimum": 1,
-              "title": "Page",
-              "type": "integer"
-            },
-            "required": false,
-            "description": "Номер страницы"
-          },
-          {
-            "in": "query",
-            "name": "page_size",
-            "schema": {
-              "default": 20,
-              "description": "Размер страницы",
-              "maximum": 100,
-              "minimum": 1,
-              "title": "Page Size",
-              "type": "integer"
-            },
-            "required": false,
-            "description": "Размер страницы"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PremiseListResponse"
-                }
-              }
-            }
-          }
-        },
-        "description": "То же, что GET /premises?sale_type=sale. Остальные фильтры и пагинация — как у общего списка.",
-        "tags": [
-          "Premises"
-        ]
-      }
-    },
     "/api/v1/premises/{premise_uuid}": {
       "get": {
         "operationId": "apps_re_objects_routers_premise_detail",
@@ -1270,6 +847,73 @@
         "description": "Возвращает одну запись по UUID или 404 (ProblemDetail), только статус AVAILABLE.",
         "tags": [
           "Premises"
+        ]
+      }
+    },
+    "/api/v1/buildings/": {
+      "get": {
+        "operationId": "apps_re_objects_routers_building_catalogue_list",
+        "summary": "Список зданий",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildingCatalogueResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Список зданий с помещениями: uuid, title, address, description, min_sale_price, min_rent_price, media.",
+        "tags": [
+          "Buildings"
+        ]
+      }
+    },
+    "/api/v1/buildings/catalogue/{building_uuid}": {
+      "get": {
+        "operationId": "apps_re_objects_routers_building_detail",
+        "summary": "Информация о здании",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "building_uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Building Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildingCatalogueOut"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Детальная информация о здании по UUID: uuid, title, address, description, min_sale_price, min_rent_price, media.",
+        "tags": [
+          "Buildings"
         ]
       }
     },
@@ -2081,43 +1725,6 @@
         "title": "CoordinatesOut",
         "type": "object"
       },
-      "BuildingListResponse": {
-        "description": "Ответ списка зданий для фильтра: items, total, page, page_size, total_pages.",
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/BuildingOptionOut"
-            },
-            "title": "Items",
-            "type": "array"
-          },
-          "total": {
-            "title": "Total",
-            "type": "integer"
-          },
-          "page": {
-            "title": "Page",
-            "type": "integer"
-          },
-          "page_size": {
-            "title": "Page Size",
-            "type": "integer"
-          },
-          "total_pages": {
-            "title": "Total Pages",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "items",
-          "total",
-          "page",
-          "page_size",
-          "total_pages"
-        ],
-        "title": "BuildingListResponse",
-        "type": "object"
-      },
       "BuildingOptionOut": {
         "description": "Здание для фильтра (чекбоксы «бизнес-центры»): uuid, название, адрес.",
         "properties": {
@@ -2140,125 +1747,6 @@
           "address"
         ],
         "title": "BuildingOptionOut",
-        "type": "object"
-      },
-      "BuildingCatalogueOut": {
-        "description": "Здание в каталоге: uuid, title, address, description, min_sale_price, min_rent_price, media.",
-        "properties": {
-          "uuid": {
-            "title": "Uuid",
-            "type": "string"
-          },
-          "title": {
-            "title": "Title",
-            "type": "string"
-          },
-          "address": {
-            "title": "Address",
-            "type": "string"
-          },
-          "description": {
-            "title": "Description",
-            "type": "string"
-          },
-          "min_sale_price": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Min Sale Price"
-          },
-          "min_rent_price": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Min Rent Price"
-          },
-          "media": {
-            "items": {
-              "$ref": "#/components/schemas/MediaItemOut"
-            },
-            "title": "Media",
-            "type": "array"
-          }
-        },
-        "required": [
-          "uuid",
-          "title",
-          "address",
-          "description",
-          "media"
-        ],
-        "title": "BuildingCatalogueOut",
-        "type": "object"
-      },
-      "BuildingCatalogueResponse": {
-        "description": "Ответ каталога зданий: items, total, page, page_size, total_pages.",
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/BuildingCatalogueOut"
-            },
-            "title": "Items",
-            "type": "array"
-          },
-          "total": {
-            "title": "Total",
-            "type": "integer"
-          },
-          "page": {
-            "title": "Page",
-            "type": "integer"
-          },
-          "page_size": {
-            "title": "Page Size",
-            "type": "integer"
-          },
-          "total_pages": {
-            "title": "Total Pages",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "items",
-          "total",
-          "page",
-          "page_size",
-          "total_pages"
-        ],
-        "title": "BuildingCatalogueResponse",
-        "type": "object"
-      },
-      "MediaItemOut": {
-        "description": "Элемент медиа: фото или видео.",
-        "properties": {
-          "type": {
-            "enum": [
-              "photo",
-              "video"
-            ],
-            "title": "Type",
-            "type": "string"
-          },
-          "link": {
-            "title": "Link",
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "link"
-        ],
-        "title": "MediaItemOut",
         "type": "object"
       },
       "MediaPhotoOut": {
@@ -2538,6 +2026,125 @@
           "media"
         ],
         "title": "PremiseDetailOut",
+        "type": "object"
+      },
+      "BuildingCatalogueOut": {
+        "description": "Здание в каталоге: uuid, title, address, description, min_sale_price, min_rent_price, media.",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "min_sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Sale Price"
+          },
+          "min_rent_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Rent Price"
+          },
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/MediaItemOut"
+            },
+            "title": "Media",
+            "type": "array"
+          }
+        },
+        "required": [
+          "uuid",
+          "title",
+          "address",
+          "description",
+          "media"
+        ],
+        "title": "BuildingCatalogueOut",
+        "type": "object"
+      },
+      "BuildingCatalogueResponse": {
+        "description": "Ответ каталога зданий: items, total, page, page_size, total_pages.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BuildingCatalogueOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "BuildingCatalogueResponse",
+        "type": "object"
+      },
+      "MediaItemOut": {
+        "description": "Элемент медиа: фото или видео.",
+        "properties": {
+          "type": {
+            "enum": [
+              "photo",
+              "video"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "link": {
+            "title": "Link",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "link"
+        ],
+        "title": "MediaItemOut",
         "type": "object"
       }
     },
