@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import styles from './Checkbox.module.scss';
 import { Icon, type IconSize } from '../../Icon';
@@ -43,9 +43,6 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     onChange,
     ...props
 }) => {
-    const inputRef = useRef<HTMLInputElement>(null);
-    const [isChecked, setIsChecked] = React.useState(checked);
-
     // Определяем, есть ли ошибка
     const hasError = Boolean(errorMessage);
 
@@ -56,7 +53,6 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     // Обработчик изменения для отслеживания состояния
     const handleChange = React.useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
-            setIsChecked(e.target.checked);
             onChange?.(e);
         },
         [onChange],
@@ -71,7 +67,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     );
 
     const checkboxClassNames = classNames(styles.checkbox, styles[`checkbox--${size}`], {
-        [styles['checkbox--checked']]: isChecked,
+        [styles['checkbox--checked']]: checked,
         [styles['checkbox--disabled']]: disabled,
         [styles['checkbox--error']]: hasError,
     });
@@ -81,7 +77,6 @@ export const Checkbox: React.FC<CheckboxProps> = ({
             <label className={styles['checkbox-label']}>
                 <div className={styles['checkbox-wrapper']}>
                     <input
-                        ref={inputRef}
                         type="checkbox"
                         className={styles['checkbox-input']}
                         checked={checked}
@@ -90,7 +85,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
                         {...props}
                     />
                     <div className={checkboxClassNames}>
-                        {isChecked && (
+                        {checked && (
                             <Icon
                                 name="check"
                                 size={iconSize}

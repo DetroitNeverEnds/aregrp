@@ -16,7 +16,7 @@ export const TwoColumnsContainer = (props: TwoColumnsContainerProps) => {
 
 export const Column = (props: FlexProps) => {
     return (
-        <Flex {...props} className={classNames(styles.column, props.className)}>
+        <Flex align="start" {...props} className={classNames(styles.column, props.className)}>
             {props.children}
         </Flex>
     );

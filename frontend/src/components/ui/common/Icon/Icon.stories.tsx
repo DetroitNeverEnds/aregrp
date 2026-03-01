@@ -1,9 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Icon, type IconSize } from './Icon';
 import { iconNames } from './iconConfig';
+import { Flex } from '../Flex';
+import { Text } from '../Text';
 
 const meta = {
-    title: 'Components/Icon',
+    title: 'UI/Common/Icon',
     component: Icon,
     parameters: {
         layout: 'centered',
@@ -76,24 +78,6 @@ export const Default: Story = {
     },
 };
 
-export const WithCustomSize: Story = {
-    args: {
-        name: 'search',
-        size: 32,
-    },
-};
-
-export const WithCustomColor: Story = {
-    args: {
-        name: 'sample',
-    },
-    render: () => (
-        <span style={{ color: 'red' }}>
-            <Icon name="sample" />
-        </span>
-    ),
-};
-
 // Все размеры
 export const AllSizes: Story = {
     args: { name: 'sample' },
@@ -125,20 +109,39 @@ export const AllIcons: Story = {
     ),
 };
 
-export const AllIconsColor: Story = {
+// Все цвета палитры
+export const AllColors: Story = {
     args: { name: 'sample' },
     render: () => (
-        <div
-            style={{
-                display: 'flex',
-                width: '100%',
-                gap: '16px',
-                flexWrap: 'wrap',
-            }}
-        >
-            {iconNames.map(iconName => (
-                <Icon key={iconName} name={iconName} size={24} color="red" />
-            ))}
-        </div>
+        <Flex direction="column" gap={12} align="start">
+            <Text variant="16-med">Gray цвета:</Text>
+            <Flex gap={8} direction="row" wrap="wrap">
+                <Icon name="sample" size={24} color="gray-0" />
+                <Icon name="sample" size={24} color="gray-5" />
+                <Icon name="sample" size={24} color="gray-10" />
+                <Icon name="sample" size={24} color="gray-20" />
+                <Icon name="sample" size={24} color="gray-30" />
+                <Icon name="sample" size={24} color="gray-50" />
+                <Icon name="sample" size={24} color="gray-70" />
+                <Icon name="sample" size={24} color="gray-100" />
+            </Flex>
+            <Text variant="16-med">Primary цвета:</Text>
+            <Flex gap={8} direction="row" wrap="wrap">
+                <Icon name="sample" size={24} color="primary-200" />
+                <Icon name="sample" size={24} color="primary-300" />
+                <Icon name="sample" size={24} color="primary-400" />
+                <Icon name="sample" size={24} color="primary-500" />
+                <Icon name="sample" size={24} color="primary-600" />
+                <Icon name="sample" size={24} color="primary-700" />
+                <Icon name="sample" size={24} color="primary-800" />
+                <Icon name="sample" size={24} color="primary-900" />
+                <Icon name="sample" size={24} color="primary-1000" />
+                <Icon name="sample" size={24} color="primary-yellow" />
+            </Flex>
+            <Text variant="16-med">Error цвет:</Text>
+            <Flex gap={8} direction="row" wrap="wrap">
+                <Icon name="sample" size={24} color="error-default" />
+            </Flex>
+        </Flex>
     ),
 };

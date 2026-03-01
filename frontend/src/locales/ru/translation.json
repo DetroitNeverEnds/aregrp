@@ -7,147 +7,216 @@
             "noAccount": "Ещё нет аккаунта?",
             "register": "Регистрация"
         },
-        "fields": {
-            "email": "Email",
-            "password": "Пароль",
-            "confirmPassword": "Подтвердите пароль"
-        },
-        "placeholders": {
-            "fullName": "Ваше имя",
-            "organisationName": "Название организации",
-            "INN": "ИНН",
-            "email": "Email",
-            "phone": "Номер телефона",
-            "password": "Пароль",
-            "confirmPassword": "Повторите пароль",
-            "newPassword": "Новый пароль",
-            "confirmNewPassword": "Подтвердите новый пароль"
-        },
         "errors": {
-            "fieldRequired": "Заполните это поле",
-            "policyAgrementRequired": "Подтвердите, что вы согласны с политикой конфиденциальности",
             "emailInvalid": "Некорректный email",
-            "passwordsNotMatch": "Пароли не совпадают"
+            "fieldRequired": "Заполните это поле",
+            "passwordsNotMatch": "Пароли не совпадают",
+            "policyAgrementRequired": "Подтвердите, что вы согласны с политикой конфиденциальности"
         },
-        "login": {
-            "title": "Вход",
-            "submit": "Войти",
-            "rememberMe": "Запомнить пароль",
-            "forgotPassword": "Забыли пароль?"
-        },
-        "register": {
-            "title": "Регистрация",
-            "subtitle": "Создайте новый аккаунт",
-            "submit": "Зарегистрироваться",
-            "policyAgrement": {
-                "text": "Я соглашаюсь с ",
-                "link": "политикой конфиденциальности"
-            }
+        "fields": {
+            "confirmPassword": "Подтвердите пароль",
+            "email": "Email",
+            "password": "Пароль"
         },
         "forgotPassword": {
-            "title": "Сброс пароля",
             "description": "Введите свой email и мы отправим вам код для восстановления пароля",
-            "submit": "Сбросить пароль"
+            "submit": "Сбросить пароль",
+            "title": "Сброс пароля"
+        },
+        "login": {
+            "forgotPassword": "Забыли пароль?",
+            "rememberMe": "Запомнить пароль",
+            "submit": "Войти",
+            "title": "Вход"
+        },
+        "placeholders": {
+            "confirmNewPassword": "Подтвердите новый пароль",
+            "confirmPassword": "Повторите пароль",
+            "email": "Email",
+            "fullName": "Ваше имя",
+            "INN": "ИНН",
+            "newPassword": "Новый пароль",
+            "organisationName": "Название организации",
+            "password": "Пароль",
+            "phone": "Номер телефона"
+        },
+        "register": {
+            "policyAgrement": {
+                "link": "политикой конфиденциальности",
+                "text": "Я соглашаюсь с "
+            },
+            "submit": "Зарегистрироваться",
+            "subtitle": "Создайте новый аккаунт",
+            "title": "Регистрация"
         },
         "restorePassword": {
-            "title": "Сброс пароля",
             "description": "Введите новый пароль",
-            "submit": "Сбросить пароль"
+            "submit": "Сбросить пароль",
+            "title": "Сброс пароля"
+        }
+    },
+    "bc": {
+        "contacts": "Контакты",
+        "main": "Главная"
+    },
+    "benefits": {
+        "officeBuildings": {
+            "description": "Предоставлять возможность выгодно инвестировать средства в коммерческую недвижимость",
+            "stats": {
+                "businessCenters": "бизнес-центров",
+                "officePremises": "офисных помещений"
+            },
+            "subtitle": "Наша цель:",
+            "title": "Офисные здания"
+        },
+        "sale": {
+            "description": "Покупайте и инвестируйте в дизайнерские офисы в Казани без комиссии от собственника",
+            "items": {
+                "highLiquidity": {
+                    "subtitle": "Офисы можно легко продать или сдать в аренду",
+                    "title": "Высокая ликвидность"
+                },
+                "longTermAsset": {
+                    "subtitle": "Офисная недвижимость может расти в цене со временем",
+                    "title": "Долгосрочный актив"
+                },
+                "noRent": {
+                    "subtitle": "Если планируете вести бизнес в офисе",
+                    "title": "Без затрат на аренду"
+                },
+                "stableIncome": {
+                    "subtitle": "Доход от аренды недвижимости в виде арендной платы",
+                    "title": "Стабильный доход"
+                }
+            },
+            "subtitle": "Преимущества:",
+            "title": "Преимущества покупки и инвестиций в офис"
+        },
+        "working": {
+            "description": "Мы гарантируем полную приватность во всех\nаспектах процесса покупки недвижимости",
+            "items": {
+                "accessibleLocation": "Доступное расположение\nбизнес-центров в разных\nрайонах",
+                "cleanDeal": "Чистая сделка, полное\nдокументальное\nсопровождение",
+                "designerRepair": "Дизайнерский ремонт\nв офисах и общественных\nместах",
+                "wetPoint": "Наличие в каждом офисе\nмокрой точки"
+            },
+            "subtitle": "Наша преимущества:",
+            "title": "Работать с нами\nвыгодно и безопасно"
+        }
+    },
+    "common": {
+        "area": "Площадь",
+        "buyment": "Покупка",
+        "email": "Email",
+        "from": "От",
+        "login": "Войти",
+        "messanger": "Мессенджер",
+        "phone": "Телефон",
+        "price": "Цена",
+        "rentment": "Аренда",
+        "send": "Отправить",
+        "telegram": "Telegram",
+        "to": "До",
+        "whatsapp": "WhatsApp"
+    },
+    "components": {
+        "objectFilter": {
+            "allCenters": "Все бизнес центры"
         }
     },
     "errors": {
-        "ACCOUNTS_INVALID_CREDENTIALS": "Неверный email или пароль",
-        "ACCOUNTS_EMAIL_EXISTS": "Пользователь с таким email уже существует",
-        "ACCOUNTS_PHONE_EXISTS": "Пользователь с таким номером телефона уже существует",
-        "ACCOUNTS_PASSWORD_MISMATCH": "Пароли не совпадают",
-        "ACCOUNTS_PASSWORD_VALIDATION_FAILED": "Пароль не соответствует требованиям безопасности",
-        "ACCOUNTS_INVALID_USER_TYPE": "Недопустимый тип пользователя",
-        "ACCOUNTS_MISSING_ORGANIZATION_NAME": "Необходимо указать название организации",
-        "ACCOUNTS_MISSING_INN": "Необходимо указать ИНН",
-        "ACCOUNTS_UNAUTHORIZED": "Необходима авторизация",
-        "ACCOUNTS_TOKEN_EXPIRED": "Срок действия токена истёк",
-        "ACCOUNTS_INVALID_TOKEN": "Недействительный токен",
-        "ACCOUNTS_NO_REFRESH_TOKEN": "Отсутствует токен обновления",
-        "ACCOUNTS_USER_NOT_FOUND": "Пользователь не найден",
         "ACCOUNTS_EMAIL_ALREADY_USED": "Этот email уже используется",
-        "ACCOUNTS_PHONE_ALREADY_USED": "Этот номер телефона уже используется",
+        "ACCOUNTS_EMAIL_EXISTS": "Пользователь с таким email уже существует",
+        "ACCOUNTS_INVALID_CREDENTIALS": "Неверный email или пароль",
         "ACCOUNTS_INVALID_CURRENT_PASSWORD": "Неверный текущий пароль",
-        "ACCOUNTS_REGISTRATION_ERROR": "Ошибка при регистрации",
+        "ACCOUNTS_INVALID_TOKEN": "Недействительный токен",
+        "ACCOUNTS_INVALID_USER_TYPE": "Недопустимый тип пользователя",
         "ACCOUNTS_LOGIN_ERROR": "Ошибка при входе",
+        "ACCOUNTS_MISSING_INN": "Необходимо указать ИНН",
+        "ACCOUNTS_MISSING_ORGANIZATION_NAME": "Необходимо указать название организации",
+        "ACCOUNTS_NO_REFRESH_TOKEN": "Отсутствует токен обновления",
+        "ACCOUNTS_PASSWORD_MISMATCH": "Пароли не совпадают",
         "ACCOUNTS_PASSWORD_RESET_ERROR": "Ошибка при сбросе пароля",
-        "ACCOUNTS_PASSWORD_RESET_TOKEN_INVALID": "Недействительный токен сброса пароля",
         "ACCOUNTS_PASSWORD_RESET_TOKEN_EXPIRED": "Срок действия токена сброса пароля истёк",
-        "FEEDBACK_NOT_FOUND": "Обращение не найдено",
+        "ACCOUNTS_PASSWORD_RESET_TOKEN_INVALID": "Недействительный токен сброса пароля",
+        "ACCOUNTS_PASSWORD_VALIDATION_FAILED": "Пароль не соответствует требованиям безопасности",
+        "ACCOUNTS_PHONE_ALREADY_USED": "Этот номер телефона уже используется",
+        "ACCOUNTS_PHONE_EXISTS": "Пользователь с таким номером телефона уже существует",
+        "ACCOUNTS_REGISTRATION_ERROR": "Ошибка при регистрации",
+        "ACCOUNTS_TOKEN_EXPIRED": "Срок действия токена истёк",
+        "ACCOUNTS_UNAUTHORIZED": "Необходима авторизация",
+        "ACCOUNTS_USER_NOT_FOUND": "Пользователь не найден",
         "FEEDBACK_CREATION_ERROR": "Ошибка при создании обращения",
-        "FEEDBACK_UPDATE_ERROR": "Ошибка при обновлении обращения",
         "FEEDBACK_DELETE_ERROR": "Ошибка при удалении обращения",
+        "FEEDBACK_NOT_FOUND": "Обращение не найдено",
+        "FEEDBACK_UPDATE_ERROR": "Ошибка при обновлении обращения",
         "FEEDBACK_VALIDATION_ERROR": "Ошибка валидации обращения",
+        "SITE_SETTINGS_ERROR": "Ошибка настроек сайта",
         "SITE_SETTINGS_NOT_FOUND": "Настройки сайта не найдены",
-        "SITE_SETTINGS_ERROR": "Ошибка настроек сайта"
-    },
-    "common": {
-        "login": "Войти",
-        "phone": "Телефон",
-        "email": "Email",
-        "messanger": "Мессенджер",
-        "whatsapp": "WhatsApp",
-        "telegram": "Telegram",
-        "send": "Отправить"
-    },
-    "header": {
-        "sale": "Продажа",
-        "rent": "Аренда",
-        "investors": "Инвесторам",
-        "agents": "Агентам",
-        "contacts": "Контакты",
-        "cases": "Наши кейсы"
-    },
-    "bc": {
-        "main": "Главная",
-        "contacts": "Контакты"
-    },
-    "pages": {
-        "contacts": {
-            "connectUs": "Свяжитесь с нами",
-            "anyVariant": "любым способом",
-            "requisite": "Реквизиты компании",
-            "ie": "Индивидульный предприниматель",
-            "inn": "ИНН",
-            "ogrn": "ОГРН",
-            "legal_adress": "Юридический адрес",
-            "planView": "Запишитесь на живой просмотр офисов",
-            "fillForm": "Заполните форму и мы свяжемся с вами",
-            "forDetails": "для обсуждения деталей",
-            "salesOffice": "Офис продаж"
-        }
+        "REQUEST_ERROR": "Ошибка при создании запроса"
     },
     "footer": {
-        "contactUs": "Свяжитесь с нами удобным способом",
-        "description": "Продажа и аренда офисных помещений в Казани от 1.3 млн.",
-        "ie": "ИП",
-        "inn": "ИНН",
-        "navigation": {
-            "title": "Навигация по сайту",
-            "main": "Главная",
-            "sale": "Продажа",
-            "rent": "Аренда",
-            "investors": "Инвесторам",
-            "agents": "Риелторам",
-            "contacts": "Контакты"
-        },
-        "legal": {
-            "title": "Юридическая информация",
-            "privacy": "Политика конфиденциальности",
-            "payment": "Бронирование и оплата"
-        },
         "contacts": {
-            "title": "Контакты",
-            "phone": "8 (986) 909-05-34",
             "email": "info@aregrp.ru",
+            "phone": "8 (986) 909-05-34",
             "telegram": "Telegram",
+            "title": "Контакты",
             "whatsapp": "WhatsApp"
         },
+        "contactUs": "Свяжитесь с нами удобным способом",
         "copyright": "© 2024 Все права защищены",
-        "development": "Разработка сайта"
+        "description": "Продажа и аренда офисных помещений в Казани от 1.3 млн.",
+        "development": "Разработка сайта",
+        "ie": "ИП",
+        "inn": "ИНН",
+        "legal": {
+            "payment": "Бронирование и оплата",
+            "privacy": "Политика конфиденциальности",
+            "title": "Юридическая информация"
+        },
+        "navigation": {
+            "agents": "Риелторам",
+            "contacts": "Контакты",
+            "investors": "Инвесторам",
+            "main": "Главная",
+            "rent": "Аренда",
+            "sale": "Продажа",
+            "title": "Навигация по сайту"
+        }
+    },
+    "header": {
+        "agents": "Агентам",
+        "cases": "Наши кейсы",
+        "contacts": "Контакты",
+        "investors": "Инвесторам",
+        "rent": "Аренда",
+        "sale": "Продажа"
+    },
+    "layout": {
+        "errorLoading": "Ошибка при загрузке",
+        "failedToCreateRequest": "Не удалось создать запрос"
+    },
+    "pages": {
+        "catalogue": {
+            "noResults": "Ничего не найдено",
+            "subtitle": "Выберите подходящий объект, используя фильтр",
+            "title": {
+                "rent": "Аренда офисов",
+                "sale": "Продажа офисов"
+            }
+        },
+        "contacts": {
+            "anyVariant": "любым способом",
+            "connectUs": "Свяжитесь с нами",
+            "fillForm": "Заполните форму и мы свяжемся с вами",
+            "forDetails": "для обсуждения деталей",
+            "ie": "Индивидульный предприниматель",
+            "inn": "ИНН",
+            "legal_adress": "Юридический адрес",
+            "ogrn": "ОГРН",
+            "planView": "Запишитесь на живой просмотр офисов",
+            "requisite": "Реквизиты компании",
+            "salesOffice": "Офис продаж"
+        }
     }
 }

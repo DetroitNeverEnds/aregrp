@@ -19,7 +19,7 @@ on:
     # pull_request:
     #     branches: [main]
     #     paths:
-    #         - "**/*"
+    #         - "frontend/**/*"
     # workflow_dispatch:
     
     # Новые условия: запуск при push в main
