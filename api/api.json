@@ -561,17 +561,36 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/BuildingOptionOut"
-                  },
-                  "title": "Response",
-                  "type": "array"
+                  "$ref": "#/components/schemas/BuildingListResponse"
                 }
               }
             }
           }
         },
         "description": "Здания, у которых есть помещения (с учётом sale_type и available). Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры».",
+        "tags": [
+          "Premises"
+        ]
+      }
+    },
+    "/api/v1/buildings/catalogue": {
+      "get": {
+        "operationId": "apps_re_objects_routers_building_catalogue",
+        "summary": "Каталог зданий",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildingCatalogueResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Список зданий с помещениями: uuid, title, address, description, min_sale_price, min_rent_price, media.",
         "tags": [
           "Premises"
         ]
@@ -1253,6 +1272,271 @@
           "Premises"
         ]
       }
+    },
+    "/api/v1/dev/buildings": {
+      "post": {
+        "operationId": "apps_re_objects_dev_routers_create_building_with_floor",
+        "summary": "Создание здания с этажом и медиа",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Создаёт здание, сразу добавляет базовый этаж (номер 1). Загружает фото и видео. Файлы: multipart/form-data. Варианты: images + videos отдельно, или files — все файлы (разделяются по расширению).",
+        "tags": [
+          "Dev / Test"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "title": "MultiPartBodyParams",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "Название здания",
+                    "title": "Name",
+                    "type": "string"
+                  },
+                  "address": {
+                    "description": "Адрес",
+                    "title": "Address",
+                    "type": "string"
+                  },
+                  "city_id": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "ID города (если не указан — город по умолчанию)",
+                    "title": "City Id"
+                  },
+                  "description": {
+                    "default": "",
+                    "description": "Описание здания",
+                    "title": "Description",
+                    "type": "string"
+                  },
+                  "total_floors": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Количество этажей",
+                    "title": "Total Floors"
+                  },
+                  "year_built": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Год постройки",
+                    "title": "Year Built"
+                  },
+                  "images": {
+                    "anyOf": [
+                      {
+                        "items": {
+                          "format": "binary",
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Фото здания (jpg, png, webp, gif)",
+                    "title": "Images"
+                  },
+                  "videos": {
+                    "anyOf": [
+                      {
+                        "items": {
+                          "format": "binary",
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Видео здания (mp4, mov, avi, webm)",
+                    "title": "Videos"
+                  },
+                  "files": {
+                    "anyOf": [
+                      {
+                        "items": {
+                          "format": "binary",
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Все медиа (фото+видео) — разделяются по расширению",
+                    "title": "Files"
+                  }
+                },
+                "required": [
+                  "name",
+                  "address"
+                ]
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/dev/premises/{building_uuid}": {
+      "post": {
+        "operationId": "apps_re_objects_dev_routers_create_premise_in_building",
+        "summary": "Создание помещения в здании с фото",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "building_uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Building Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Создаёт помещение в здании по UUID. Этаж берётся по floor_number (по умолчанию 1). Файлы: multipart/form-data, поле images или files — множественная загрузка фото.",
+        "tags": [
+          "Dev / Test"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "title": "MultiPartBodyParams",
+                "type": "object",
+                "properties": {
+                  "area": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                        "type": "string"
+                      }
+                    ],
+                    "description": "Площадь, м²",
+                    "title": "Area"
+                  },
+                  "price_per_month": {
+                    "anyOf": [
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                        "type": "string"
+                      }
+                    ],
+                    "description": "Цена аренды в месяц, ₽",
+                    "title": "Price Per Month"
+                  },
+                  "number": {
+                    "default": "",
+                    "description": "Номер помещения",
+                    "title": "Number",
+                    "type": "string"
+                  },
+                  "description": {
+                    "default": "",
+                    "description": "Описание",
+                    "title": "Description",
+                    "type": "string"
+                  },
+                  "floor_number": {
+                    "default": 1,
+                    "description": "Номер этажа (должен существовать в здании)",
+                    "title": "Floor Number",
+                    "type": "integer"
+                  },
+                  "available_for_rent": {
+                    "default": true,
+                    "description": "Доступно для аренды",
+                    "title": "Available For Rent",
+                    "type": "boolean"
+                  },
+                  "available_for_sale": {
+                    "default": false,
+                    "description": "Доступно для продажи",
+                    "title": "Available For Sale",
+                    "type": "boolean"
+                  },
+                  "images": {
+                    "anyOf": [
+                      {
+                        "items": {
+                          "format": "binary",
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Фото помещения",
+                    "title": "Images"
+                  },
+                  "files": {
+                    "anyOf": [
+                      {
+                        "items": {
+                          "format": "binary",
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Фото помещения (альтернатива images)",
+                    "title": "Files"
+                  }
+                },
+                "required": [
+                  "area",
+                  "price_per_month"
+                ]
+              }
+            }
+          },
+          "required": true
+        }
+      }
     }
   },
   "components": {
@@ -1797,6 +2081,43 @@
         "title": "CoordinatesOut",
         "type": "object"
       },
+      "BuildingListResponse": {
+        "description": "Ответ списка зданий для фильтра: items, total, page, page_size, total_pages.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BuildingOptionOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "BuildingListResponse",
+        "type": "object"
+      },
       "BuildingOptionOut": {
         "description": "Здание для фильтра (чекбоксы «бизнес-центры»): uuid, название, адрес.",
         "properties": {
@@ -1819,6 +2140,125 @@
           "address"
         ],
         "title": "BuildingOptionOut",
+        "type": "object"
+      },
+      "BuildingCatalogueOut": {
+        "description": "Здание в каталоге: uuid, title, address, description, min_sale_price, min_rent_price, media.",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "min_sale_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Sale Price"
+          },
+          "min_rent_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Rent Price"
+          },
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/MediaItemOut"
+            },
+            "title": "Media",
+            "type": "array"
+          }
+        },
+        "required": [
+          "uuid",
+          "title",
+          "address",
+          "description",
+          "media"
+        ],
+        "title": "BuildingCatalogueOut",
+        "type": "object"
+      },
+      "BuildingCatalogueResponse": {
+        "description": "Ответ каталога зданий: items, total, page, page_size, total_pages.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BuildingCatalogueOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "BuildingCatalogueResponse",
+        "type": "object"
+      },
+      "MediaItemOut": {
+        "description": "Элемент медиа: фото или видео.",
+        "properties": {
+          "type": {
+            "enum": [
+              "photo",
+              "video"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "link": {
+            "title": "Link",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "link"
+        ],
+        "title": "MediaItemOut",
         "type": "object"
       },
       "MediaPhotoOut": {
@@ -1933,7 +2373,7 @@
         "type": "object"
       },
       "PremiseListResponse": {
-        "description": "Ответ списка помещений: массив items, total, page, page_size.",
+        "description": "Ответ списка помещений: items, total, page, page_size, total_pages.",
         "properties": {
           "items": {
             "items": {
@@ -1953,13 +2393,18 @@
           "page_size": {
             "title": "Page Size",
             "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
           }
         },
         "required": [
           "items",
           "total",
           "page",
-          "page_size"
+          "page_size",
+          "total_pages"
         ],
         "title": "PremiseListResponse",
         "type": "object"
