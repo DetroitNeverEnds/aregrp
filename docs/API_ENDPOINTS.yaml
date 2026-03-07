@@ -44,7 +44,10 @@ site_settings:
 
 buildings:
   - GET /buildings/
-    список зданий (с пагинацией: items, total, page, page_size, total_pages)
+    список зданий (пагинация: page, page_size)
+    query:
+      page: number
+      page_size: number
     response:
       items:
         uuid: string
@@ -59,19 +62,8 @@ buildings:
       page_size: number
       total_pages: number
 
-  - GET /buildings/catalogue/<uuid>
-    информация о здании (каталог)
-    response:
-      uuid: string
-      title: string
-      address: string
-      description: string
-      min_sale_price: number   # optional
-      min_rent_price: number   # optional
-      media: MedialList
-
-  - GET /buildings/info/<uuid>
-    общая информация о здании (с категориями медиа)
+  - GET /buildings/<uuid>
+    информация о здании (media_categories, media)
     response:
       uuid: string
       title: string
@@ -90,7 +82,7 @@ buildings:
       title: string            # optional
       is_primary: boolean     # для фото
 
-  - GET /buildings/info/<uuid>/floor/<number>
+  - GET /buildings/<uuid>/floor/<number>
     информация об этаже (TODO)
 
 

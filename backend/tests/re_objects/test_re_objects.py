@@ -67,28 +67,41 @@ class TestBuildingsList:
             assert "media" in item
 
     async def test_buildings_list_structure(self, client):
-        """Структура ответа: items, total, media в каждом item."""
+        """Структура ответа: items, total, page, page_size, total_pages."""
         response = await client.get("/buildings/")
 
         assert response.status_code == 200
         data = response.json()
         assert "items" in data
         assert "total" in data
+        assert "page" in data
+        assert "page_size" in data
+        assert "total_pages" in data
         assert isinstance(data["items"], list)
         assert data["total"] >= 0
         for item in data["items"]:
             assert "uuid" in item
             assert "media" in item
 
+    async def test_buildings_list_pagination(self, client, building_with_premise):
+        """Пагинация page, page_size."""
+        response = await client.get("/buildings/?page=1&page_size=6")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["page"] == 1
+        assert data["page_size"] == 6
+
+
 
 @pytest.mark.django_db
-class TestBuildingInfo:
-    """GET /buildings/info/{uuid} — общая информация о здании (медиа, категории)."""
+class TestBuildingDetail:
+    """GET /buildings/{uuid} — информация о здании."""
 
-    async def test_building_info_success(self, client, building_with_premise):
+    async def test_building_detail_success(self, client, building_with_premise):
         """Успешное получение здания по UUID — media_categories, media."""
         building, _ = building_with_premise
-        response = await client.get(f"/buildings/info/{building.uuid}")
+        response = await client.get(f"/buildings/{building.uuid}")
 
         assert response.status_code == 200
         data = response.json()
@@ -100,36 +113,10 @@ class TestBuildingInfo:
         assert isinstance(data["media_categories"], list)
         assert isinstance(data["media"], list)
 
-    async def test_building_info_not_found(self, client):
-        """404 для несуществующего UUID."""
-        fake_uuid = uuid4()
-        response = await client.get(f"/buildings/info/{fake_uuid}")
-
-        assert response.status_code == 404
-        data = response.json()
-        assert "detail" in data or "title" in data
-
-
-@pytest.mark.django_db
-class TestBuildingDetail:
-    """GET /buildings/catalogue/{uuid} — информация о здании."""
-
-    async def test_building_detail_success(self, client, building_with_premise):
-        """Успешное получение здания по UUID."""
-        building, _ = building_with_premise
-        response = await client.get(f"/buildings/catalogue/{building.uuid}")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["uuid"] == str(building.uuid)
-        assert data["title"] == building.name
-        assert data["address"] == building.address
-        assert "media" in data
-
     async def test_building_detail_not_found(self, client):
         """404 для несуществующего UUID."""
         fake_uuid = uuid4()
-        response = await client.get(f"/buildings/catalogue/{fake_uuid}")
+        response = await client.get(f"/buildings/{fake_uuid}")
 
         assert response.status_code == 404
         data = response.json()

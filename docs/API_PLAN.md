@@ -71,7 +71,7 @@ Contacts / Site Settings:
 Buildings:
 - short-list (селект) /api/v1/premises/buildings
 - список /api/v1/buildings/
-- инфо о здании /api/v1/buildings/catalogue/<uuid>
+- инфо о здании /api/v1/buildings/<uuid>
 - Floor info /api/v1/buildings/info/<uuid>/floor/<number> (TODO)
 
 Premises:
@@ -91,7 +91,7 @@ User:
 
 ---
 
-/api/v1/buildings/ (список) и /api/v1/buildings/catalogue/<uuid> (инфо):
+/api/v1/buildings/ (список) и /api/v1/buildings/<uuid> (инфо):
 - uuid (string)
 - title (string)
 - address (string)
@@ -139,7 +139,7 @@ total, page, page_size
 
 - [x]  /api/v1/premises/buildings
 - [x]  /api/v1/buildings/
-- [x]  /api/v1/buildings/catalogue/<uuid>
+- [x]  /api/v1/buildings/<uuid>
 - [ ]  /api/v1/buildings/info/<uuid>/floor/<number>
 
 **Premises:**

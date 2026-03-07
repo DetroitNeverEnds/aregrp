@@ -5,8 +5,7 @@
 - parse_building_uuids(value) — парсит строку 'uuid1,uuid2,...' в список UUID для фильтра зданий.
 - get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
-- get_buildings_catalogue() — каталог зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
-- get_building_by_uuid(building_uuid) — здание по UUID или None.
+- get_buildings_catalogue(page, page_size) — каталог зданий с пагинацией.
 - get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
 - get_premises_for_floor(building_uuid, floor_number) — список помещений на этаже.
 
@@ -229,77 +228,8 @@ def _build_building_media(building: Building) -> list[MediaItemOut]:
     return media
 
 
-async def get_buildings_catalogue() -> BuildingCatalogueResponse:
-    """
-    Каталог зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
-
-    Возвращает все здания с помещениями. Ответ: { items, total }.
-    """
-    qs = (
-        Building.objects.prefetch_related("images", "videos")
-        .annotate(
-            min_rent=Min(
-                "premises__price_per_month",
-                filter=Q(premises__available_for_rent=True),
-            ),
-            min_sale=Min(
-                "premises__price_per_month",
-                filter=Q(premises__available_for_sale=True),
-            ),
-        )
-        .filter(premises__isnull=False)
-        .distinct()
-        .order_by("name")
-    )
-    items: list[BuildingCatalogueOut] = []
-    async for b in qs:
-        min_rent_val = float(b.min_rent) if b.min_rent is not None else None
-        min_sale_val = float(b.min_sale) if b.min_sale is not None else None
-        items.append(
-            BuildingCatalogueOut(
-                uuid=str(b.uuid),
-                title=b.name,
-                address=b.address,
-                description=b.description or "",
-                min_sale_price=min_sale_val,
-                min_rent_price=min_rent_val,
-                media=_build_building_media(b),
-            )
-        )
-    total = len(items)
-    return BuildingCatalogueResponse(
-        items=items,
-        total=total,
-        page=1,
-        page_size=total,
-        total_pages=1 if total > 0 else 0,
-    )
-
-
-async def get_building_by_uuid(building_uuid: UUID) -> Optional[BuildingCatalogueOut]:
-    """
-    Возвращает здание по UUID в виде BuildingCatalogueOut или None.
-
-    Только здания с помещениями. Использует aget() и prefetch images, videos.
-    """
-    try:
-        b = await (
-            Building.objects.prefetch_related("images", "videos")
-            .annotate(
-                min_rent=Min(
-                    "premises__price_per_month",
-                    filter=Q(premises__available_for_rent=True),
-                ),
-                min_sale=Min(
-                    "premises__price_per_month",
-                    filter=Q(premises__available_for_sale=True),
-                ),
-            )
-            .filter(premises__isnull=False)
-            .aget(uuid=building_uuid)
-        )
-    except Building.DoesNotExist:
-        return None
+def building_to_catalogue_out(b: Building) -> BuildingCatalogueOut:
+    """Маппинг Building -> BuildingCatalogueOut (uuid, title, address, description, min_sale_price, min_rent_price, media)."""
     min_rent_val = float(b.min_rent) if b.min_rent is not None else None
     min_sale_val = float(b.min_sale) if b.min_sale is not None else None
     return BuildingCatalogueOut(
@@ -311,6 +241,45 @@ async def get_building_by_uuid(building_uuid: UUID) -> Optional[BuildingCatalogu
         min_rent_price=min_rent_val,
         media=_build_building_media(b),
     )
+
+
+def get_buildings_catalogue_queryset():
+    """Строит queryset зданий с помещениями и аннотациями min_rent, min_sale."""
+    return (
+        Building.objects.filter(premises__isnull=False)
+        .prefetch_related("images", "videos")
+        .annotate(
+            min_rent=Min(
+                "premises__price_per_month",
+                filter=Q(premises__available_for_rent=True),
+            ),
+            min_sale=Min(
+                "premises__price_per_month",
+                filter=Q(premises__available_for_sale=True),
+            ),
+        )
+        .distinct()
+        .order_by("name")
+    )
+
+
+async def get_buildings_catalogue(
+    page: int = 1,
+    page_size: int = 6,
+) -> BuildingCatalogueResponse:
+    """
+    Каталог зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
+
+    Пагинация: page, page_size. Ответ: { items, total, page, page_size, total_pages }.
+    """
+    qs = get_buildings_catalogue_queryset()
+    result = await get_paginated_list(
+        qs,
+        page=page,
+        page_size=page_size,
+        to_out=building_to_catalogue_out,
+    )
+    return BuildingCatalogueResponse(**result)
 
 
 def _build_building_info_media(building: Building) -> tuple[list[str], list[BuildingMediaItemOut]]:

@@ -6,10 +6,9 @@
 1) GET /api/v1/premises — поиск помещений с фильтрами и пагинацией (sale_type опционально).
    Ответ: { items: [...], total, page, page_size, total_pages }. Параметры: sale_type, available (необяз.), building, building_uuids, min/max price, min/max area, order_by, page, page_size.
 2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
-3) GET /api/v1/buildings/ — список зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
-4) GET /api/v1/buildings/catalogue/{uuid} — информация о здании по UUID (каталог).
-5) GET /api/v1/buildings/info/{uuid} — общая информация о здании (media_categories, media).
-6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
+3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
+4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
+5) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished). 404 — ProblemDetail.
 
 Вся логика в services.premise_service; роутер только парсит query (в т.ч. через parse_building_uuids)
@@ -35,7 +34,6 @@ from .schemas import (
 )
 from .services import (
     PremiseFilterParams,
-    get_building_by_uuid,
     get_building_info,
     get_buildings_catalogue,
     get_buildings_for_filter,
@@ -84,22 +82,26 @@ async def building_filter_list(
     "/",
     response={200: BuildingCatalogueResponse},
     summary="Список зданий",
-    description="Список зданий с помещениями: uuid, title, address, description, min_sale_price, min_rent_price, media.",
+    description="Список зданий с помещениями. Пагинация: page, page_size. Ответ: items, total, page, page_size, total_pages.",
 )
-async def building_catalogue_list(request):
-    """Список зданий для страницы каталога. Ответ: [{ uuid, title, address, description, min_sale_price?, min_rent_price?, media }, ...]."""
-    items = await get_buildings_catalogue()
-    return 200, items
+async def building_catalogue_list(
+    request,
+    page: int = Query(1, ge=1, description="Номер страницы"),
+    page_size: int = Query(6, ge=1, le=100, description="Размер страницы"),
+):
+    """Список зданий для каталога с пагинацией. Ответ: items, total, page, page_size, total_pages."""
+    result = await get_buildings_catalogue(page=page, page_size=page_size)
+    return 200, result
 
 
 @buildings_router.get(
-    "/info/{building_uuid}",
+    "/{building_uuid}",
     response={200: BuildingInfoOut, 404: ProblemDetail},
-    summary="Общая информация о здании",
+    summary="Информация о здании",
     description="Детальная информация о здании: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
 )
-async def building_info(request, building_uuid: UUID):
-    """Возвращает общую информацию о здании по UUID (с категориями и медиа) или 404."""
+async def building_detail(request, building_uuid: UUID):
+    """Информация о здании по UUID: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media. 404 — ProblemDetail."""
     result = await get_building_info(building_uuid)
     if result is None:
         return 404, create_re_objects_error(
@@ -107,27 +109,7 @@ async def building_info(request, building_uuid: UUID):
             code=ReObjectsErrorCodes.NOT_FOUND,
             title="Not Found",
             detail="Здание не найдено.",
-            instance=f"/api/v1/buildings/info/{building_uuid}",
-        )
-    return 200, result
-
-
-@buildings_router.get(
-    "/catalogue/{building_uuid}",
-    response={200: BuildingCatalogueOut, 404: ProblemDetail},
-    summary="Информация о здании",
-    description="Детальная информация о здании по UUID: uuid, title, address, description, min_sale_price, min_rent_price, media.",
-)
-async def building_detail(request, building_uuid: UUID):
-    """Возвращает информацию о здании по UUID или 404 (ProblemDetail)."""
-    result = await get_building_by_uuid(building_uuid)
-    if result is None:
-        return 404, create_re_objects_error(
-            status=404,
-            code=ReObjectsErrorCodes.NOT_FOUND,
-            title="Not Found",
-            detail="Здание не найдено.",
-            instance=f"/api/v1/buildings/catalogue/{building_uuid}",
+            instance=f"/api/v1/buildings/{building_uuid}",
         )
     return 200, result
 
@@ -141,7 +123,7 @@ async def building_detail(request, building_uuid: UUID):
     description="Список помещений для этажа здания: name (номер/название), label_area, label_price, is_occupied.",
 )
 async def floor_premises_list(request, building_uuid: UUID, floor_number: int):
-    """Возвращает список помещений на указанном этаже здания."""
+    """Помещения этажа: [{ name, label_area, label_price, is_occupied }, ...]."""
     items = await get_premises_for_floor(building_uuid=building_uuid, floor_number=floor_number)
     return 200, items
 
@@ -200,6 +182,7 @@ async def premise_list(
     "/{premise_uuid}",
     response={200: PremiseDetailOut, 404: ProblemDetail},
     summary="Детальная информация о помещении",
+    description="Помещение по UUID: uuid, name, price, address, floor, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail.",
 )
 async def premise_detail(request, premise_uuid: UUID):
     """Возвращает одну запись по UUID или 404 (ProblemDetail), только статус AVAILABLE."""
