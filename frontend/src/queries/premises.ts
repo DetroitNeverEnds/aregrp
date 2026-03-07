@@ -7,7 +7,6 @@ import {
     getPremisesForSale,
     getPremiseDetail,
     type BuildingOption,
-    type BuildingCatalogue,
     type PremiseListResponse,
     type PremiseFilterParams,
     type BuildingFilterParams,
