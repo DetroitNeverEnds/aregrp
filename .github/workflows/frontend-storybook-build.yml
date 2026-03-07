@@ -1,0 +1,54 @@
+name: Storybook Build
+
+on:
+    workflow_call:
+        inputs:
+            output-path:
+                description: "Where to put built Storybook (relative to frontend/)"
+                required: false
+                type: string
+                default: "storybook-static"
+            artifact-name:
+                description: "Uploaded artifact name"
+                required: false
+                type: string
+                default: "storybook-static"
+            retention-days:
+                description: "Artifact retention days"
+                required: false
+                type: number
+                default: 7
+    workflow_dispatch:
+
+defaults:
+    run:
+        working-directory: frontend
+
+jobs:
+    build-storybook:
+        name: Build Storybook
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+                  cache-dependency-path: frontend/package-lock.json
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build Storybook
+              run: npm run storybook:build -- -o "${{ inputs.output-path }}"
+
+            - name: Upload Storybook artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ${{ inputs.artifact-name }}
+                  path: frontend/${{ inputs.output-path }}
+                  retention-days: ${{ inputs.retention-days }}
