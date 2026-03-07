@@ -9,15 +9,16 @@ export const useFilterSearchParams = (): {
     gotoFilter: (filter: PremiseFilterParams) => void;
     getLinkToCatalogue: (filter: PremiseFilterParams) => string;
 } => {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const setFilter = useCallback(
         async (filter: PremiseFilterParams) => {
             searchParams.set('filter', JSON.stringify(filter));
+            setSearchParams(searchParams);
             await queryClient.invalidateQueries({ queryKey: ['premises', filter] });
         },
-        [searchParams, queryClient],
+        [searchParams, setSearchParams, queryClient],
     );
     const gotoFilter = useCallback(
         async (filter: PremiseFilterParams) => {

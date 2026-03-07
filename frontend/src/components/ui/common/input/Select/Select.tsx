@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import classNames from 'classnames';
 import styles from './Select.module.scss';
 import Text from '../../Text/Text';
@@ -11,7 +11,7 @@ import FlatButton from '@/components/ui/common/FlatButton';
 import Icon from '@/components/ui/common/Icon';
 
 type Label = {
-    title: string;
+    title: string | ReactNode;
     description?: string;
 };
 
@@ -36,22 +36,11 @@ interface BaseSelectProps<T> {
     maxHeight?: number;
 }
 
-type SingleOnChange<T> = (value: T | undefined) => void;
-type MultiOnChange<T> = (value: T[]) => void;
-
-interface SingleSelectProps<T> extends BaseSelectProps<T> {
-    multiple?: false;
-    value?: T | undefined;
-    onChange?: SingleOnChange<T>;
-}
-
-interface MultiSelectProps<T> extends BaseSelectProps<T> {
-    multiple: true;
+export interface SelectProps<T> extends BaseSelectProps<T> {
+    multiple?: boolean;
     value?: T[];
-    onChange?: MultiOnChange<T>;
+    onChange?: (value: T[]) => void;
 }
-
-export type SelectProps<T> = SingleSelectProps<T> | MultiSelectProps<T>;
 
 export function Select<T>(props: SelectProps<T>) {
     const {
@@ -59,24 +48,23 @@ export function Select<T>(props: SelectProps<T>) {
         emptyMessage,
         value,
         onChange,
+        multiple = false,
         placeholder = 'Выберите значение',
         size = 'lg',
         fullWidth = false,
         disabled = false,
         className = '',
-        multiple = false,
         clearable = false,
     } = props;
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    const [selectedOptions, setSelectedOptions] = useState<number[]>(() =>
-        (multiple
-            ? (value as T[]).map(option => options.findIndex(item => item.value === option))
-            : value
-              ? [options.findIndex(item => item.value === (value as T))]
-              : []
-        ).filter(i => i >= 0),
+    const selectedOptions = useMemo<number[]>(
+        () =>
+            value
+                ?.map(option => options.findIndex(item => item.value === option))
+                .filter(i => i >= 0) || [],
+        [value, options],
     );
 
     const handleSelect = useCallback(
@@ -86,13 +74,9 @@ export function Select<T>(props: SelectProps<T>) {
                     const newOptions = selectedOptions.includes(selectedIndex)
                         ? selectedOptions.filter(i => i !== selectedIndex)
                         : [selectedIndex, ...selectedOptions].sort();
-                    setSelectedOptions(newOptions);
-                    (onChange as MultiOnChange<T> | undefined)?.(
-                        _.at(options, newOptions).map(i => i.value),
-                    );
+                    onChange?.(_.at(options, newOptions).map(i => i.value));
                 } else {
-                    setSelectedOptions([selectedIndex]);
-                    (onChange as SingleOnChange<T> | undefined)?.(options[selectedIndex].value);
+                    onChange?.([options[selectedIndex].value]);
                     setIsDropdownOpen(false);
                 }
             }
@@ -104,16 +88,10 @@ export function Select<T>(props: SelectProps<T>) {
         (e: React.MouseEvent<HTMLButtonElement>) => {
             e.stopPropagation();
             if (!disabled) {
-                setSelectedOptions([]);
-                if (multiple) {
-                    (onChange as MultiOnChange<T> | undefined)?.([]);
-                } else {
-                    (onChange as SingleOnChange<T> | undefined)?.(undefined);
-                    setIsDropdownOpen(false);
-                }
+                onChange?.([]);
             }
         },
-        [disabled, multiple, onChange],
+        [disabled, onChange],
     );
 
     return (
@@ -162,14 +140,7 @@ export function Select<T>(props: SelectProps<T>) {
                             gap={8}
                             direction="row"
                         >
-                            <Checkbox
-                                size="sm"
-                                checked={selectedOptions.includes(index)}
-                                // onChange={() => handleSelect(index)}
-                                // onClick={e => e.stopPropagation()}
-                                // onClick={() => {}}
-                                // onChange={() => {}}
-                            />
+                            <Checkbox size="sm" checked={selectedOptions.includes(index)} />
                             <Flex direction="column" align="start" gap={4} style={{ flex: 1 }}>
                                 <Text ellipsis variant="16-reg">
                                     {option.label.title}
@@ -211,5 +182,21 @@ export function Select<T>(props: SelectProps<T>) {
                 )}
             </Flex>
         </Dropdown>
+    );
+}
+
+export interface SingleSelectProps<T> extends BaseSelectProps<T> {
+    value?: T | undefined;
+    onChange?: (value: T | undefined) => void;
+}
+
+export function SingleSelect<T>({ onChange, value, ...props }: SingleSelectProps<T>) {
+    return (
+        <Select<T>
+            {...props}
+            multiple={false}
+            value={value ? [value] : []}
+            onChange={val => onChange?.(val ? val[0] : undefined)}
+        />
     );
 }

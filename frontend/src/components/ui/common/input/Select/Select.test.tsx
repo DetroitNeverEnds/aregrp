@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
+import '@testing-library/jest-dom/vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { Select } from './Select';
+import { Select, SingleSelect } from './Select';
 
 const mockOptions = [
     { value: '1', label: { title: 'Опция 1', description: 'Описание 1' } },
@@ -62,11 +63,11 @@ describe('Select', () => {
         const option = screen.getByText('Опция 1');
         fireEvent.click(option);
 
-        expect(handleChange).toHaveBeenCalledWith('1');
+        expect(handleChange).toHaveBeenCalledWith(['1']);
     });
 
     it('отображает выбранное значение', () => {
-        render(<Select options={mockOptions} value="2" />);
+        render(<Select options={mockOptions} value={['2']} />);
         expect(screen.getByText('Опция 2')).toBeInTheDocument();
     });
 
@@ -146,5 +147,29 @@ describe('Select', () => {
         );
         const selectContainer = container.querySelector('.custom-select-class');
         expect(selectContainer).toBeInTheDocument();
+    });
+
+    describe('SingleSelect', () => {
+        it('вызывает onChange с одиночным значением', async () => {
+            const handleChange = vi.fn();
+            render(<SingleSelect options={mockOptions} onChange={handleChange} />);
+
+            const trigger = screen.getByText('Выберите значение');
+            fireEvent.click(trigger);
+
+            await waitFor(() => {
+                expect(screen.getByRole('listbox')).toBeInTheDocument();
+            });
+
+            const option = screen.getByText('Опция 1');
+            fireEvent.click(option);
+
+            expect(handleChange).toHaveBeenCalledWith('1');
+        });
+
+        it('отображает выбранное значение', () => {
+            render(<SingleSelect options={mockOptions} value="2" />);
+            expect(screen.getByText('Опция 2')).toBeInTheDocument();
+        });
     });
 });

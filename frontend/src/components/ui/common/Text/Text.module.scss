@@ -21,6 +21,23 @@ $font-montserrat: $font-family-base;
     // Применяем миксин для цветов
     @include colors.color-variants('color');
 
+    // Выравнивание текста
+    &--align-left {
+        text-align: left;
+    }
+
+    &--align-center {
+        text-align: center;
+    }
+
+    &--align-right {
+        text-align: right;
+    }
+
+    &--align-justify {
+        text-align: justify;
+    }
+
     // Заголовки
     &--h1 {
         font-size: 50px;

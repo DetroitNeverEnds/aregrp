@@ -7,11 +7,12 @@ import {
     getPremisesForSale,
     getPremiseDetail,
     type BuildingOption,
-    type BuildingCatalogue,
     type PremiseListResponse,
     type PremiseFilterParams,
     type BuildingFilterParams,
     type PremiseDetail,
+    type BuildingCatalogueParams,
+    type BuildingsCatalogueResponse,
 } from '../api';
 import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
 
@@ -30,10 +31,12 @@ export function useBuildings(
 /**
  * Хук для получения каталога зданий
  */
-export function useBuildingsCatalogue(): UseQueryResult<QueryResult<BuildingCatalogue[]>, Error> {
+export function useBuildingsCatalogue(
+    params?: BuildingCatalogueParams,
+): UseQueryResult<QueryResult<BuildingsCatalogueResponse>, Error> {
     return useQuery({
-        queryKey: ['buildings', 'catalogue'],
-        queryFn: () => wrapApiCall(getBuildingsCatalogue)(),
+        queryKey: ['buildings', 'catalogue', params],
+        queryFn: () => wrapApiCall(getBuildingsCatalogue)(params),
     });
 }
 
@@ -45,7 +48,7 @@ export function usePremises(
 ): UseQueryResult<QueryResult<PremiseListResponse>, Error> {
     return useQuery({
         queryKey: ['premises', params],
-        queryFn: () => wrapApiCall(getPremises)({ page_size: 12, ...params }),
+        queryFn: () => wrapApiCall(getPremises)({ page_size: 6, ...params }),
     });
 }
 

@@ -13,19 +13,25 @@ import { usePremises } from '@/queries';
 import { Loader } from '@/components/ui/common/Loader';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Page } from '@/components/ui/layout/Page/Page';
-import { Select, type SelectOption } from '@/components/ui/common/input/Select';
+import { type SelectOption } from '@/components/ui/common/input/Select';
 import type { OrderBy } from '@/api';
+import { SingleSelect } from '@/components/ui/common/input/Select/Select';
+import Config from '@/config';
 
 const ResultsView = () => {
     const { t } = useTranslation();
     const { filter, setFilter } = useFilterSearchParams();
-    const { data: queryData, isFetching } = usePremises(filter);
+    const { data: queryData, isFetching } = usePremises({
+        page_size: Config.pageSizeCatalogue,
+        ...filter,
+    });
     const data = queryData?.data;
     const offices = data?.items;
     const error = queryData?.error;
 
     const onPageChange = useCallback(
         (page: number) => {
+            window.scrollTo({ top: 0 });
             setFilter({ ...filter, page });
         },
         [filter, setFilter],
@@ -91,6 +97,7 @@ export const Catalogue = () => {
         },
         [filter, setFilter],
     );
+    console.log(filter);
 
     return (
         <Page>
@@ -106,7 +113,7 @@ export const Catalogue = () => {
                             <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
                         </Flex>
                         <Flex align="start" gap={20} fullWidth>
-                            <Select
+                            <SingleSelect
                                 size="tiny"
                                 options={orderByOptions}
                                 value={filter.order_by}
