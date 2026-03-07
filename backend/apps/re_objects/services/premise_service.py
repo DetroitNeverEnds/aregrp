@@ -5,7 +5,7 @@
 - parse_building_uuids(value) — парсит строку 'uuid1,uuid2,...' в список UUID для фильтра зданий.
 - get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
-- get_buildings_catalogue(page, page_size) — каталог зданий с пагинацией.
+- get_buildings(page, page_size) — список зданий с пагинацией.
 - get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
 - get_premises_for_floor(building_uuid, floor_number) — список помещений на этаже.
 
@@ -24,9 +24,9 @@ from core.pagination import get_paginated_list
 
 from ..models import Building, Floor, Premise
 from ..schemas import (
-    BuildingCatalogueOut,
-    BuildingCatalogueResponse,
-    BuildingInfoOut,
+    BuildingDetailOut,
+    BuildingListOut,
+    BuildingListResponse,
     BuildingMediaItemOut,
     BuildingOptionOut,
     FloorPremiseOut,
@@ -228,11 +228,11 @@ def _build_building_media(building: Building) -> list[MediaItemOut]:
     return media
 
 
-def building_to_catalogue_out(b: Building) -> BuildingCatalogueOut:
-    """Маппинг Building -> BuildingCatalogueOut (uuid, title, address, description, min_sale_price, min_rent_price, media)."""
+def building_to_list_out(b: Building) -> BuildingListOut:
+    """Маппинг Building -> BuildingListOut (uuid, title, address, description, min_sale_price, min_rent_price, media)."""
     min_rent_val = float(b.min_rent) if b.min_rent is not None else None
     min_sale_val = float(b.min_sale) if b.min_sale is not None else None
-    return BuildingCatalogueOut(
+    return BuildingListOut(
         uuid=str(b.uuid),
         title=b.name,
         address=b.address,
@@ -243,7 +243,7 @@ def building_to_catalogue_out(b: Building) -> BuildingCatalogueOut:
     )
 
 
-def get_buildings_catalogue_queryset():
+def get_buildings_queryset():
     """Строит queryset зданий с помещениями и аннотациями min_rent, min_sale."""
     return (
         Building.objects.filter(premises__isnull=False)
@@ -263,26 +263,26 @@ def get_buildings_catalogue_queryset():
     )
 
 
-async def get_buildings_catalogue(
+async def get_buildings(
     page: int = 1,
     page_size: int = 6,
-) -> BuildingCatalogueResponse:
+) -> BuildingListResponse:
     """
-    Каталог зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
+    Список зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
 
     Пагинация: page, page_size. Ответ: { items, total, page, page_size, total_pages }.
     """
-    qs = get_buildings_catalogue_queryset()
+    qs = get_buildings_queryset()
     result = await get_paginated_list(
         qs,
         page=page,
         page_size=page_size,
-        to_out=building_to_catalogue_out,
+        to_out=building_to_list_out,
     )
-    return BuildingCatalogueResponse(**result)
+    return BuildingListResponse(**result)
 
 
-def _build_building_info_media(building: Building) -> tuple[list[str], list[BuildingMediaItemOut]]:
+def _build_building_detail_media(building: Building) -> tuple[list[str], list[BuildingMediaItemOut]]:
     """
     Собирает категории и медиа здания.
 
@@ -325,9 +325,9 @@ def _build_building_info_media(building: Building) -> tuple[list[str], list[Buil
     return (sorted(categories), media)
 
 
-async def get_building_info(building_uuid: UUID) -> Optional[BuildingInfoOut]:
+async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
     """
-    Возвращает общую информацию о здании по UUID: базовые поля + media_categories + media.
+    Здание по UUID: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
     Только здания с помещениями. Использует aget() и prefetch images, videos.
     """
@@ -351,11 +351,11 @@ async def get_building_info(building_uuid: UUID) -> Optional[BuildingInfoOut]:
     except Building.DoesNotExist:
         return None
 
-    media_categories, media = _build_building_info_media(b)
+    media_categories, media = _build_building_detail_media(b)
     min_rent_val = float(b.min_rent) if b.min_rent is not None else None
     min_sale_val = float(b.min_sale) if b.min_sale is not None else None
 
-    return BuildingInfoOut(
+    return BuildingDetailOut(
         uuid=str(b.uuid),
         title=b.name,
         address=b.address,

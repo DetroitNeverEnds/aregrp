@@ -24,9 +24,8 @@ from ninja import Query, Router
 from api.schemas import ProblemDetail
 from .errors import ReObjectsErrorCodes, create_re_objects_error
 from .schemas import (
-    BuildingCatalogueOut,
-    BuildingCatalogueResponse,
-    BuildingInfoOut,
+    BuildingDetailOut,
+    BuildingListResponse,
     BuildingOptionOut,
     FloorPremiseOut,
     PremiseDetailOut,
@@ -34,8 +33,8 @@ from .schemas import (
 )
 from .services import (
     PremiseFilterParams,
-    get_building_info,
-    get_buildings_catalogue,
+    get_building,
+    get_buildings,
     get_buildings_for_filter,
     get_premise_by_uuid,
     get_premise_list,
@@ -80,29 +79,29 @@ async def building_filter_list(
 
 @buildings_router.get(
     "/",
-    response={200: BuildingCatalogueResponse},
+    response={200: BuildingListResponse},
     summary="Список зданий",
     description="Список зданий с помещениями. Пагинация: page, page_size. Ответ: items, total, page, page_size, total_pages.",
 )
-async def building_catalogue_list(
+async def building_list(
     request,
     page: int = Query(1, ge=1, description="Номер страницы"),
     page_size: int = Query(6, ge=1, le=100, description="Размер страницы"),
 ):
-    """Список зданий для каталога с пагинацией. Ответ: items, total, page, page_size, total_pages."""
-    result = await get_buildings_catalogue(page=page, page_size=page_size)
+    """Список зданий с пагинацией. Ответ: items, total, page, page_size, total_pages."""
+    result = await get_buildings(page=page, page_size=page_size)
     return 200, result
 
 
 @buildings_router.get(
     "/{building_uuid}",
-    response={200: BuildingInfoOut, 404: ProblemDetail},
-    summary="Информация о здании",
-    description="Детальная информация о здании: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+    response={200: BuildingDetailOut, 404: ProblemDetail},
+    summary="Здание по UUID",
+    description="Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
 )
 async def building_detail(request, building_uuid: UUID):
-    """Информация о здании по UUID: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media. 404 — ProblemDetail."""
-    result = await get_building_info(building_uuid)
+    """Здание по UUID. 404 — ProblemDetail."""
+    result = await get_building(building_uuid)
     if result is None:
         return 404, create_re_objects_error(
             status=404,

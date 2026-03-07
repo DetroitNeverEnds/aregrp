@@ -7,8 +7,8 @@ from .premise_service import (
     get_premise_by_uuid,
     get_filtered_premise_queryset,
     get_buildings_for_filter,
-    get_buildings_catalogue,
-    get_building_info,
+    get_buildings,
+    get_building,
     get_premises_for_floor,
     parse_building_uuids,
 )
@@ -19,8 +19,8 @@ __all__ = [
     "get_premise_by_uuid",
     "get_filtered_premise_queryset",
     "get_buildings_for_filter",
-    "get_buildings_catalogue",
-    "get_building_info",
+    "get_buildings",
+    "get_building",
     "get_premises_for_floor",
     "parse_building_uuids",
 ]

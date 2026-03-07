@@ -81,8 +81,8 @@ class MediaItemOut(Schema):
     link: str
 
 
-class BuildingCatalogueOut(Schema):
-    """Здание в каталоге: uuid, title, address, description, min_sale_price, min_rent_price, media."""
+class BuildingListOut(Schema):
+    """Здание в списке: uuid, title, address, description, min_sale_price, min_rent_price, media."""
 
     uuid: str
     title: str
@@ -103,8 +103,8 @@ class BuildingMediaItemOut(Schema):
     is_primary: bool = False
 
 
-class BuildingInfoOut(Schema):
-    """Общая информация о здании: базовые поля + media_categories + media."""
+class BuildingDetailOut(Schema):
+    """Здание (деталь): uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media."""
 
     uuid: str
     title: str
@@ -118,10 +118,10 @@ class BuildingInfoOut(Schema):
     media: list[BuildingMediaItemOut]
 
 
-class BuildingCatalogueResponse(Schema):
-    """Ответ каталога зданий: items, total, page, page_size, total_pages."""
+class BuildingListResponse(Schema):
+    """Ответ списка зданий: items, total, page, page_size, total_pages."""
 
-    items: list[BuildingCatalogueOut]
+    items: list[BuildingListOut]
     total: int
     page: int
     page_size: int

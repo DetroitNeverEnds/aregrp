@@ -63,7 +63,7 @@ buildings:
       total_pages: number
 
   - GET /buildings/<uuid>
-    информация о здании (media_categories, media)
+    здание по UUID (media_categories, media)
     response:
       uuid: string
       title: string

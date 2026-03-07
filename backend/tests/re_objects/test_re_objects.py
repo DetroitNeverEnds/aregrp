@@ -96,7 +96,7 @@ class TestBuildingsList:
 
 @pytest.mark.django_db
 class TestBuildingDetail:
-    """GET /buildings/{uuid} — информация о здании."""
+    """GET /buildings/{uuid} — здание по UUID."""
 
     async def test_building_detail_success(self, client, building_with_premise):
         """Успешное получение здания по UUID — media_categories, media."""
