@@ -1,12 +1,12 @@
-import { AuthApiClient, type AuthApiClientConfig } from './AuthApiClient';
+import { ApiClient, type ApiClientConfig } from './ApiClient';
 
-let apiClientInstance: AuthApiClient | null = null;
+let apiClientInstance: ApiClient | null = null;
 
-export function initializeApiClient(config: AuthApiClientConfig): void {
-    apiClientInstance = new AuthApiClient(config);
+export function initializeApiClient(config: ApiClientConfig): void {
+    apiClientInstance = new ApiClient(config);
 }
 
-function getApiClient(): AuthApiClient {
+function getApiClient(): ApiClient {
     if (!apiClientInstance) {
         throw new Error('API client not initialized. Call initializeApiClient() first.');
     }
@@ -17,10 +17,13 @@ export const api = {
     /**
      * GET запрос
      */
-    get<TRequest, TResponse>(endpoint: string): (params: TRequest) => Promise<TResponse> {
-        return async () => {
+    get<TRequest, TResponse>(endpoint: string): (params?: TRequest) => Promise<TResponse> {
+        return async (params?: TRequest) => {
             const client = getApiClient();
-            return await client.get<TResponse>(endpoint);
+            return await client.get<TResponse>(
+                endpoint,
+                params as Record<string, string | number | boolean>,
+            );
         };
     },
 

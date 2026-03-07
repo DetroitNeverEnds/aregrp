@@ -16,6 +16,8 @@
         "skipLibCheck": true,
         /* Bundler mode */
         "moduleResolution": "bundler",
+        "resolvePackageJsonExports": true,
+        "resolvePackageJsonImports": true,
         "allowImportingTsExtensions": true,
         "verbatimModuleSyntax": true,
         "moduleDetection": "force",
@@ -28,15 +30,10 @@
         "erasableSyntaxOnly": true,
         "noFallthroughCasesInSwitch": true,
         "noUncheckedSideEffectImports": true,
-        // "typeRoots": [
-        //     "./node_modules/@types",
-        //     "./node_modules/@yandex/ymaps3-types"
-        // ],
-        // "paths": {
-        //     "ymaps3": [
-        //         "./node_modules/@yandex/ymaps3-types"
-        //     ]
-        // },
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
     },
     "include": [
         "src"

@@ -6,6 +6,7 @@
     transition: color 0.2s ease;
     font-family: $font-family-base;
     max-width: 100%;
+    font-weight: $font-weight-medium;
 
     &__ellipsis {
         overflow: hidden;
@@ -60,19 +61,16 @@
     // Размеры
     &--sm {
         font-size: 12px;
-        font-weight: 500;
         line-height: 120%;
     }
 
     &--md {
         font-size: 14px;
-        font-weight: 500;
         line-height: 120%;
     }
 
     &--lg {
         font-size: 16px;
-        font-weight: 500;
         line-height: 140%;
     }
 

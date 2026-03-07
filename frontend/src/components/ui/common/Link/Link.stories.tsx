@@ -4,7 +4,7 @@ import { Link } from './Link';
 import { iconNames } from '../Icon';
 
 const meta = {
-    title: 'Components/Link',
+    title: 'UI/Common/Link',
     component: Link,
     parameters: {
         layout: 'centered',

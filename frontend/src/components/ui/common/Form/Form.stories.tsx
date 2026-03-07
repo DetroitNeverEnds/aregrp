@@ -6,7 +6,7 @@ import { Checkbox } from '../input/Checkbox';
 import { Text } from '../Text';
 
 const meta = {
-    title: 'UI/Common/Form',
+    title: 'UI/Form/Form',
     component: Form,
     parameters: {
         layout: 'centered',

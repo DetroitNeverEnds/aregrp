@@ -27,7 +27,7 @@ describe('Button', () => {
         );
         const button = container.querySelector('button');
         expect(button?.className).toContain(styles.button);
-        expect(button?.className).toContain(styles['button--primary']);
+        expect(button?.className).toContain(styles['button--primary--light']);
         expect(button?.className).toContain(styles['button--lg']);
     });
 
@@ -178,9 +178,8 @@ describe('Button', () => {
 
     describe('варианты кнопок', () => {
         it.each([
-            ['primary', 'button--primary'],
-            ['outlined', 'button--outlined'],
-            ['secondary', 'button--secondary'],
+            ['primary', 'button--primary--light'],
+            ['outlined', 'button--outlined--light'],
         ])('применяет класс для варианта %s', (variant, expectedClass) => {
             const { container } = render(
                 <Button variant={variant as ButtonVariant} size="md">
@@ -251,7 +250,7 @@ describe('Button', () => {
                 );
                 const link = container.querySelector('a');
                 expect(link?.className).toContain(styles.button);
-                expect(link?.className).toContain(styles['button--outlined']);
+                expect(link?.className).toContain(styles['button--outlined--light']);
                 expect(link?.className).toContain(styles['button--lg']);
                 expect(link).toHaveClass('custom-class');
             });

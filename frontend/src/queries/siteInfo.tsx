@@ -1,13 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
-import { siteInfo } from '../api/handlers/siteSettings/info';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { siteInfo, type InfoResponse } from '../api/handlers/siteSettings/info';
+import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
 
-export const useSiteInfo = () => {
+export const useSiteInfo = (): UseQueryResult<QueryResult<InfoResponse>, Error> => {
     return useQuery({
         queryKey: ['site-info'],
-        queryFn: () =>
-            siteInfo({
-                params: undefined,
-                body: undefined,
-            }),
+        queryFn: () => wrapApiCall(siteInfo)(),
     });
 };

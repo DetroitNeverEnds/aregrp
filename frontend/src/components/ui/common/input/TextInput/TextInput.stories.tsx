@@ -3,7 +3,7 @@ import { TextInput, type TextInputProps, type TextInputSize } from './TextInput'
 import { iconNames } from '../../Icon';
 
 const meta = {
-    title: 'Components/TextInput',
+    title: 'UI/Input/TextInput',
     component: TextInput,
     parameters: {
         layout: 'centered',

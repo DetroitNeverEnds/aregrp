@@ -6,13 +6,13 @@ type ContactsRequest = {
 };
 
 type ContactsResponse = {
-    ogrn: string;
-    legal_address: string;
-    coordinates: {
+    ogrn?: string | null;
+    legal_address?: string | null;
+    coordinates?: {
         lat: number;
         lng: number;
-    };
-    sales_center_address: string;
+    } | null;
+    sales_center_address?: string | null;
 };
 
 export const siteContacts = api.get<ContactsRequest, ContactsResponse>('/site-settings/contacts');

@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Text.module.scss';
+import type { ColorVariant } from '../types/colors';
 
 export type TextVariant =
     | 'h1'
@@ -8,6 +9,8 @@ export type TextVariant =
     | 'h3'
     | 'h4'
     | 'h5'
+    | '10-reg'
+    | '10-med'
     | '12-reg'
     | '12-med'
     | '14-reg'
@@ -21,31 +24,11 @@ export type TextVariant =
     | '24-reg'
     | '24-med';
 
-export type TextColor =
-    | 'gray-0'
-    | 'gray-5'
-    | 'gray-10'
-    | 'gray-20'
-    | 'gray-30'
-    | 'gray-50'
-    | 'gray-70'
-    | 'gray-100'
-    | 'primary-200'
-    | 'primary-300'
-    | 'primary-400'
-    | 'primary-500'
-    | 'primary-600'
-    | 'primary-700'
-    | 'primary-800'
-    | 'primary-900'
-    | 'primary-1000'
-    | 'error-default';
-
 export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
     /** Вариант текста (определяет размер и толщину шрифта) */
     variant?: TextVariant;
     /** Цвет текста */
-    color?: TextColor;
+    color?: ColorVariant;
     ellipsis?: boolean;
 }
 

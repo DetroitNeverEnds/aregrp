@@ -2,21 +2,31 @@ import { type PropsWithChildren } from 'react';
 import { useSiteInfo } from '../../queries/siteInfo';
 import _ from 'lodash';
 import { Loader } from '../ui/common/Loader';
-import Text from '../ui/common/Text';
+import { useUser } from '../../queries/profile';
+import { ErrorLoading } from '@/components/ui/layout/ErrorLoading/ErrorLoading';
+import { useTranslation } from 'react-i18next';
 
 export const QueryWaiter = (props: PropsWithChildren) => {
     const siteInfo = useSiteInfo();
-    // add more
+    const user = useUser();
+    const { t } = useTranslation();
 
-    if (_.every([siteInfo.isPending])) {
-        return <Loader />;
+    // Ждём завершения всех запросов
+    if (_.some([siteInfo.isPending, user.isPending])) {
+        return <Loader variant="overlay" />;
     }
-    if (_.some([siteInfo.isError])) {
+
+    // Fail if errors (только критичные запросы)
+    if (siteInfo.data?.error) {
         return (
-            <Text variant="24-reg" color="error-default">
-                Error loading site
-            </Text>
+            <ErrorLoading
+                message={t(
+                    `errors.${siteInfo.data.error.code}`,
+                    `code: ${siteInfo.data.error.code}`,
+                )}
+            />
         );
     }
+
     return props.children;
 };

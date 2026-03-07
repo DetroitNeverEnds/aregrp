@@ -2,38 +2,33 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import styles from './Button.module.scss';
-import { Icon, type IconName } from '../Icon';
+import { Icon, type IconName } from '@/components/ui/common/Icon';
+import { type ColorVariant } from '@/components/ui/common/types/colors';
 
-export type ButtonVariant = 'primary' | 'outlined' | 'secondary';
+export type ButtonVariant = 'primary' | 'outlined' | 'secondary' | 'flat';
+export type ButtonTheme = 'light' | 'dark';
 export type ButtonSize = 'lg' | 'md';
 export type ButtonWidth = 'auto' | 'max';
 
 interface BaseButtonProps {
-    /** Тип кнопки (определяет визуальный стиль) */
     variant?: ButtonVariant;
-    /** Размер кнопки */
+    theme?: ButtonTheme;
     size?: ButtonSize;
-    /** Ширина кнопки: auto - по содержимому, max - на всю ширину контейнера */
     width?: ButtonWidth;
-    /** Содержимое кнопки (текст и/или иконки) */
     children?: React.ReactNode;
-    /** Иконка для отображения в кнопке */
     icon?: IconName;
-    /** Показывать только иконку без текста */
+    iconColor?: ColorVariant;
     onlyIcon?: boolean;
-    /** Дополнительные CSS классы */
     className?: string;
 }
 
 type ButtonAsButton = BaseButtonProps &
     Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseButtonProps> & {
-        /** Ссылка для перехода (если указана, рендерится Link вместо button) */
         to?: never;
     };
 
 type ButtonAsLink = BaseButtonProps &
     Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseButtonProps> & {
-        /** Ссылка для перехода (если указана, рендерится Link вместо button) */
         to: string;
     };
 
@@ -42,10 +37,12 @@ export type ButtonProps = ButtonAsButton | ButtonAsLink;
 export const Button: React.FC<ButtonProps> = props => {
     const {
         variant = 'primary',
+        theme = 'light',
         size = 'md',
         width = 'auto',
         children,
         icon,
+        iconColor = undefined,
         onlyIcon = false,
         className = '',
         ...restProps
@@ -53,7 +50,7 @@ export const Button: React.FC<ButtonProps> = props => {
 
     const buttonClassNames = classNames(
         styles.button,
-        styles[`button--${variant}`],
+        styles[`button--${variant}--${theme}`],
         styles[`button--${size}`],
         styles[`button--width-${width}`],
         {
@@ -74,6 +71,7 @@ export const Button: React.FC<ButtonProps> = props => {
                     size={24}
                     aria-hidden={!onlyIcon}
                     className={styles.button__icon}
+                    color={iconColor}
                 />
             )}
             {!onlyIcon && <span className={styles.button__content}>{children}</span>}

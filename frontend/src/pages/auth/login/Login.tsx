@@ -28,9 +28,7 @@ export const Login: React.FC = () => {
     });
 
     const { mutate: loginMutate, isPending } = useLoginMutation({
-        onSuccess: data => {
-            console.log('Вход выполнен успешно:', data.user);
-            // TODO: Сохранить токены и данные пользователя
+        onSuccess: () => {
             navigate('/');
         },
         onError: error => {

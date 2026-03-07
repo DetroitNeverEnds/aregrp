@@ -1,9 +1,7 @@
+@use '@/styles/mixins/colors';
+
 // Базовые переменные для типографики
 $font-montserrat: $font-family-base;
-
-// Веса шрифтов
-$font-weight-regular: 400;
-$font-weight-medium: 500;
 
 // Базовый класс
 .text {
@@ -14,83 +12,14 @@ $font-weight-medium: 500;
     max-width: 100%;
 
     &__ellipsis {
+        display: block;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
 
-    // Цвета текста
-    &--color-gray-0 {
-        color: $gray-0;
-    }
-
-    &--color-gray-5 {
-        color: $gray-5;
-    }
-
-    &--color-gray-10 {
-        color: $gray-10;
-    }
-
-    &--color-gray-20 {
-        color: $gray-20;
-    }
-
-    &--color-gray-30 {
-        color: $gray-30;
-    }
-
-    &--color-gray-50 {
-        color: $gray-50;
-    }
-
-    &--color-gray-70 {
-        color: $gray-70;
-    }
-
-    &--color-gray-100 {
-        color: $gray-100;
-    }
-
-    &--color-primary-200 {
-        color: $primary-200;
-    }
-
-    &--color-primary-300 {
-        color: $primary-300;
-    }
-
-    &--color-primary-400 {
-        color: $primary-400;
-    }
-
-    &--color-primary-500 {
-        color: $primary-500;
-    }
-
-    &--color-primary-600 {
-        color: $primary-600;
-    }
-
-    &--color-primary-700 {
-        color: $primary-700;
-    }
-
-    &--color-primary-800 {
-        color: $primary-800;
-    }
-
-    &--color-primary-900 {
-        color: $primary-900;
-    }
-
-    &--color-primary-1000 {
-        color: $primary-1000;
-    }
-
-    &--color-error-default {
-        color: $error-default;
-    }
+    // Применяем миксин для цветов
+    @include colors.color-variants('color');
 
     // Заголовки
     &--h1 {
@@ -125,6 +54,19 @@ $font-weight-medium: 500;
         font-size: 24px;
         line-height: 110%;
         letter-spacing: 0;
+        font-weight: $font-weight-medium;
+    }
+
+    // 10px варианты
+    &--10-reg {
+        font-size: 10px;
+        line-height: 120%;
+        letter-spacing: 0;
+        font-weight: $font-weight-regular;
+    }
+
+    &--10-med {
+        @extend .text--10-reg;
         font-weight: $font-weight-medium;
     }
 

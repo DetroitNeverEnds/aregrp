@@ -11,6 +11,13 @@
         width: 100%;
     }
 
+    &--ellipsis {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     // Direction
     &--direction-row {
         flex-direction: row;

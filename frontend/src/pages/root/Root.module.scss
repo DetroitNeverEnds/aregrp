@@ -1,0 +1,23 @@
+.welcome {
+    height: 700px;
+    margin-bottom: 100px;
+}
+
+.map {
+    height: 580px;
+}
+
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(544px, 1fr));
+    gap: 40px;
+    width: 100%;
+}
+
+.benifits {
+    &__number {
+        &__title {
+            font-size: 42px;
+        }
+    }
+}

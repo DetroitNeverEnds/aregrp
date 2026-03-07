@@ -23,7 +23,6 @@
         "@yandex/ymaps3-default-ui-theme": "^0.0.24",
         "axios": "^1.13.4",
         "axios-auth-refresh": "^3.3.6",
-        "axios-jwt": "^4.0.3",
         "classnames": "^2.5.1",
         "i18next": "^25.7.3",
         "i18next-browser-languagedetector": "^8.2.0",
