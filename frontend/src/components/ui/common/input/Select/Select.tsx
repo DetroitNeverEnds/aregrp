@@ -36,13 +36,13 @@ interface BaseSelectProps<T> {
     maxHeight?: number;
 }
 
-interface MultiSelectProps<T> extends BaseSelectProps<T> {
+export interface SelectProps<T> extends BaseSelectProps<T> {
     multiple?: boolean;
     value?: T[];
     onChange?: (value: T[]) => void;
 }
 
-export function Select<T>(props: MultiSelectProps<T>) {
+export function Select<T>(props: SelectProps<T>) {
     const {
         options,
         emptyMessage,
@@ -185,7 +185,7 @@ export function Select<T>(props: MultiSelectProps<T>) {
     );
 }
 
-interface SingleSelectProps<T> extends BaseSelectProps<T> {
+export interface SingleSelectProps<T> extends BaseSelectProps<T> {
     value?: T | undefined;
     onChange?: (value: T | undefined) => void;
 }
