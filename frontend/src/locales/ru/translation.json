@@ -122,6 +122,10 @@
     "components": {
         "objectFilter": {
             "allCenters": "Все бизнес центры"
+        },
+        "OfficeCard": {
+            "hasTennant": "Есть",
+            "noTennant": "Нет"
         }
     },
     "errors": {
@@ -203,6 +207,13 @@
             "title": {
                 "rent": "Аренда офисов",
                 "sale": "Продажа офисов"
+            },
+            "sort": {
+                "default": "По умолчанию",
+                "price_asc": "По возрастанию цены",
+                "price_desc": "По убыванию цены",
+                "area_asc": "По возрастанию площади",
+                "area_desc": "По убыванию площади"
             }
         },
         "contacts": {

@@ -29,12 +29,15 @@ export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
     variant?: TextVariant;
     /** Цвет текста */
     color?: ColorVariant;
+    /** Выравнивание текста */
+    align?: 'left' | 'center' | 'right' | 'justify';
     ellipsis?: boolean;
 }
 
 export const Text: React.FC<TextProps> = ({
     variant = '16-reg',
     color,
+    align,
     className = '',
     ellipsis = false,
     ...props
@@ -44,6 +47,7 @@ export const Text: React.FC<TextProps> = ({
         { [styles.text__ellipsis]: ellipsis },
         styles[`text--${variant}`],
         color && styles[`text--color-${color}`],
+        align && styles[`text--align-${align}`],
         className,
     );
 

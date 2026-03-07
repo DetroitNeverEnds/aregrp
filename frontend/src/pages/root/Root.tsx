@@ -20,6 +20,10 @@ import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContain
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { BenifitsWorking } from '@/components/ui/cards/Benefits';
 import { Page } from '@/components/ui/layout/Page/Page';
+import _ from 'lodash';
+import Config from '@/config';
+import { useNavigate } from 'react-router-dom';
+import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 
 type Data = {
     coordinates: [number, number][];
@@ -32,6 +36,8 @@ const headerSettings: HeaderProps = {
 
 export const Root = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { getLinkToCatalogue } = useFilterSearchParams();
 
     useHeaderSettings(headerSettings);
 
@@ -39,8 +45,11 @@ export const Root = () => {
         coordinates: [[44.650540230512846, 42.65871198485353]],
     };
 
-    const premises = usePremises({}).data?.data;
-    const buildings = useBuildingsCatalogue().data?.data || [];
+    // const buildingsData = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
+    const premises = usePremises({ page_size: Config.pageSizeMain }).data?.data;
+    const buildings = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
+
+    console.log(buildings);
 
     return (
         <Page>
@@ -66,7 +75,7 @@ export const Root = () => {
                     <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
 
                     <CardContainer loadMore={() => alert('todo')}>
-                        {buildings.map(item => (
+                        {buildings?.items.map(item => (
                             <ObjectCard key={item.uuid} item={item} />
                         ))}
                     </CardContainer>
@@ -120,7 +129,11 @@ export const Root = () => {
                             <OfficeCard key={item.uuid} item={item} />
                         ))}
                     </CardContainer>
-                    <Button variant="outlined" href="TODO" onClick={() => alert('TODO')}>
+                    <Button
+                        variant="outlined"
+                        href="TODO"
+                        onClick={() => navigate(getLinkToCatalogue({ sale_type: 'sale' }))}
+                    >
                         Перейти в каталог
                     </Button>
                 </Container>

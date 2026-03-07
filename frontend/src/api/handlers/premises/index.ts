@@ -2,10 +2,11 @@ import { api } from '../../base/api';
 import type {
     BuildingOption,
     BuildingFilterParams,
-    BuildingCatalogue,
     PremiseListResponse,
     PremiseFilterParams,
     PremiseDetail,
+    BuildingsCatalogueResponse,
+    BuildingCatalogueParams,
 } from './types';
 
 /**
@@ -16,7 +17,9 @@ export const getBuildings = api.get<BuildingFilterParams, BuildingOption[]>('/pr
 /**
  * Получить каталог зданий
  */
-export const getBuildingsCatalogue = api.get<void, BuildingCatalogue[]>('/buildings/catalogue');
+export const getBuildingsCatalogue = api.get<BuildingCatalogueParams, BuildingsCatalogueResponse>(
+    '/buildings',
+);
 
 /**
  * Получить список помещений с фильтрами
