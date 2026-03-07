@@ -60,7 +60,7 @@ buildings:
       total_pages: number
 
   - GET /buildings/catalogue/<uuid>
-    информация о здании
+    информация о здании (каталог)
     response:
       uuid: string
       title: string
@@ -70,8 +70,37 @@ buildings:
       min_rent_price: number   # optional
       media: MedialList
 
+  - GET /buildings/info/<uuid>
+    общая информация о здании (с категориями медиа)
+    response:
+      uuid: string
+      title: string
+      address: string
+      description: string
+      total_floors: number     # optional
+      year_built: number      # optional
+      min_sale_price: number  # optional
+      min_rent_price: number  # optional
+      media_categories: [string]   # уникальные категории из фото и видео
+      media: [BuildingMediaItem]
+    BuildingMediaItem:
+      type: "photo" | "video"
+      category: string
+      url: string
+      title: string            # optional
+      is_primary: boolean     # для фото
+
   - GET /buildings/info/<uuid>/floor/<number>
     информация об этаже (TODO)
+
+
+# ───────────────────────────────────────────────────────────────────
+# FLOORS
+# ───────────────────────────────────────────────────────────────────
+
+floors:
+  - GET /floors/<building_uuid>/<floor_number>
+    список помещений на этаже [{ name, label_area, label_price, is_occupied }, ...]
 
 
 # ───────────────────────────────────────────────────────────────────

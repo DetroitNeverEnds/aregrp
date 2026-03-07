@@ -7,8 +7,9 @@
    Ответ: { items: [...], total, page, page_size, total_pages }. Параметры: sale_type, available (необяз.), building, building_uuids, min/max price, min/max area, order_by, page, page_size.
 2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
 3) GET /api/v1/buildings/ — список зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
-4) GET /api/v1/buildings/catalogue/{uuid} — информация о здании по UUID.
-5) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
+4) GET /api/v1/buildings/catalogue/{uuid} — информация о здании по UUID (каталог).
+5) GET /api/v1/buildings/info/{uuid} — общая информация о здании (media_categories, media).
+6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished). 404 — ProblemDetail.
 
 Вся логика в services.premise_service; роутер только парсит query (в т.ч. через parse_building_uuids)
@@ -26,23 +27,28 @@ from .errors import ReObjectsErrorCodes, create_re_objects_error
 from .schemas import (
     BuildingCatalogueOut,
     BuildingCatalogueResponse,
+    BuildingInfoOut,
     BuildingOptionOut,
+    FloorPremiseOut,
     PremiseDetailOut,
     PremiseListResponse,
 )
 from .services import (
     PremiseFilterParams,
     get_building_by_uuid,
+    get_building_info,
     get_buildings_catalogue,
     get_buildings_for_filter,
     get_premise_by_uuid,
     get_premise_list,
+    get_premises_for_floor,
     parse_building_uuids,
 )
 
 
 premises_router = Router(tags=["Premises"])
 buildings_router = Router(tags=["Buildings"])
+floors_router = Router(tags=["Floors"])
 
 
 # ─── Premises (prefix /premises) ─────────────────────────────────────────────
@@ -87,6 +93,26 @@ async def building_catalogue_list(request):
 
 
 @buildings_router.get(
+    "/info/{building_uuid}",
+    response={200: BuildingInfoOut, 404: ProblemDetail},
+    summary="Общая информация о здании",
+    description="Детальная информация о здании: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+)
+async def building_info(request, building_uuid: UUID):
+    """Возвращает общую информацию о здании по UUID (с категориями и медиа) или 404."""
+    result = await get_building_info(building_uuid)
+    if result is None:
+        return 404, create_re_objects_error(
+            status=404,
+            code=ReObjectsErrorCodes.NOT_FOUND,
+            title="Not Found",
+            detail="Здание не найдено.",
+            instance=f"/api/v1/buildings/info/{building_uuid}",
+        )
+    return 200, result
+
+
+@buildings_router.get(
     "/catalogue/{building_uuid}",
     response={200: BuildingCatalogueOut, 404: ProblemDetail},
     summary="Информация о здании",
@@ -105,6 +131,22 @@ async def building_detail(request, building_uuid: UUID):
         )
     return 200, result
 
+
+# ─── Floors (prefix /floors) ──────────────────────────────────────────────────
+
+@floors_router.get(
+    "/{building_uuid}/{floor_number}",
+    response={200: list[FloorPremiseOut]},
+    summary="Помещения на этаже",
+    description="Список помещений для этажа здания: name (номер/название), label_area, label_price, is_occupied.",
+)
+async def floor_premises_list(request, building_uuid: UUID, floor_number: int):
+    """Возвращает список помещений на указанном этаже здания."""
+    items = await get_premises_for_floor(building_uuid=building_uuid, floor_number=floor_number)
+    return 200, items
+
+
+# ─── Premises (продолжение) ───────────────────────────────────────────────────
 
 @premises_router.get(
     "",

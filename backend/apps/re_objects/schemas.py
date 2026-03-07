@@ -93,6 +93,31 @@ class BuildingCatalogueOut(Schema):
     media: list[MediaItemOut]
 
 
+class BuildingMediaItemOut(Schema):
+    """Медиа здания: фото или видео с категорией."""
+
+    type: Literal["photo", "video"]
+    category: str
+    url: str
+    title: Optional[str] = None
+    is_primary: bool = False
+
+
+class BuildingInfoOut(Schema):
+    """Общая информация о здании: базовые поля + media_categories + media."""
+
+    uuid: str
+    title: str
+    address: str
+    description: str
+    total_floors: Optional[int] = None
+    year_built: Optional[int] = None
+    min_sale_price: Optional[float] = None
+    min_rent_price: Optional[float] = None
+    media_categories: list[str]
+    media: list[BuildingMediaItemOut]
+
+
 class BuildingCatalogueResponse(Schema):
     """Ответ каталога зданий: items, total, page, page_size, total_pages."""
 
@@ -101,3 +126,12 @@ class BuildingCatalogueResponse(Schema):
     page: int
     page_size: int
     total_pages: int
+
+
+class FloorPremiseOut(Schema):
+    """Помещение на этаже: номер/название, площадь, стоимость, занятость."""
+
+    name: str  # номер помещения (Premise.number или название)
+    label_area: str  # площадь, например "50 м²"
+    label_price: str  # стоимость, например "100 000 ₽/мес"
+    is_occupied: bool  # True — занято, False — свободно

@@ -8,6 +8,7 @@
 - get_buildings_catalogue() — каталог зданий (uuid, title, address, description, min_sale_price, min_rent_price, media).
 - get_building_by_uuid(building_uuid) — здание по UUID или None.
 - get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
+- get_premises_for_floor(building_uuid, floor_number) — список помещений на этаже.
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
 - публичные функции — async, обращаются к БД через async ORM (aget, acount, async for);
@@ -22,11 +23,14 @@ from django.db.models import Min, Q, Subquery
 
 from core.pagination import get_paginated_list
 
-from ..models import Building, Premise
+from ..models import Building, Floor, Premise
 from ..schemas import (
     BuildingCatalogueOut,
     BuildingCatalogueResponse,
+    BuildingInfoOut,
+    BuildingMediaItemOut,
     BuildingOptionOut,
+    FloorPremiseOut,
     MediaItemOut,
     PremiseListOut,
     PremiseListResponse,
@@ -309,6 +313,93 @@ async def get_building_by_uuid(building_uuid: UUID) -> Optional[BuildingCatalogu
     )
 
 
+def _build_building_info_media(building: Building) -> tuple[list[str], list[BuildingMediaItemOut]]:
+    """
+    Собирает категории и медиа здания.
+
+    Возвращает (media_categories, media), где media_categories — уникальные категории
+    из images и videos, media — список BuildingMediaItemOut (type, category, url, title, is_primary).
+    """
+    categories: set[str] = set()
+    media: list[BuildingMediaItemOut] = []
+
+    for img in sorted(building.images.all(), key=lambda x: (x.order, x.pk)):
+        if img.file:
+            cat = img.category.strip() if img.category else ""
+            if cat:
+                categories.add(cat)
+            media.append(
+                BuildingMediaItemOut(
+                    type="photo",
+                    category=cat,
+                    url=img.file.url,
+                    title=img.title or None,
+                    is_primary=img.is_primary,
+                )
+            )
+
+    for vid in sorted(building.videos.all(), key=lambda x: (x.order, x.pk)):
+        if vid.file:
+            cat = vid.category.strip() if vid.category else ""
+            if cat:
+                categories.add(cat)
+            media.append(
+                BuildingMediaItemOut(
+                    type="video",
+                    category=cat,
+                    url=vid.file.url,
+                    title=vid.title or None,
+                    is_primary=False,
+                )
+            )
+
+    return (sorted(categories), media)
+
+
+async def get_building_info(building_uuid: UUID) -> Optional[BuildingInfoOut]:
+    """
+    Возвращает общую информацию о здании по UUID: базовые поля + media_categories + media.
+
+    Только здания с помещениями. Использует aget() и prefetch images, videos.
+    """
+    try:
+        b = await (
+            Building.objects.select_related("city")
+            .prefetch_related("images", "videos")
+            .annotate(
+                min_rent=Min(
+                    "premises__price_per_month",
+                    filter=Q(premises__available_for_rent=True),
+                ),
+                min_sale=Min(
+                    "premises__price_per_month",
+                    filter=Q(premises__available_for_sale=True),
+                ),
+            )
+            .filter(premises__isnull=False)
+            .aget(uuid=building_uuid)
+        )
+    except Building.DoesNotExist:
+        return None
+
+    media_categories, media = _build_building_info_media(b)
+    min_rent_val = float(b.min_rent) if b.min_rent is not None else None
+    min_sale_val = float(b.min_sale) if b.min_sale is not None else None
+
+    return BuildingInfoOut(
+        uuid=str(b.uuid),
+        title=b.name,
+        address=b.address,
+        description=b.description or "",
+        total_floors=b.total_floors,
+        year_built=b.year_built,
+        min_sale_price=min_sale_val,
+        min_rent_price=min_rent_val,
+        media_categories=media_categories,
+        media=media,
+    )
+
+
 def _build_premise_media(p: Premise) -> PremiseMediaOut:
     """Собирает блок медиа помещения: фото из PremiseImage (по order), видео пока пустой список."""
     photos = [
@@ -390,3 +481,50 @@ async def get_premise_by_uuid(premise_uuid: UUID) -> Optional[PremiseDetailOut]:
     except Premise.DoesNotExist:
         return None
     return premise_to_detail_out(p)
+
+
+def _format_price(value: Decimal) -> str:
+    """Форматирует цену: 100000 -> '100 000 ₽/мес'."""
+    if value is None:
+        return "—"
+    s = f"{int(value):,}".replace(",", " ")
+    return f"{s} ₽/мес"
+
+
+def _format_area(value: Decimal) -> str:
+    """Форматирует площадь: 50 -> '50 м²'."""
+    if value is None:
+        return "—"
+    return f"{value} м²"
+
+
+async def get_premises_for_floor(
+    building_uuid: UUID,
+    floor_number: int,
+) -> list[FloorPremiseOut]:
+    """
+    Список помещений на этаже здания.
+
+    building_uuid: UUID здания.
+    floor_number: номер этажа.
+    Возвращает: [{ name, label_area, label_price, is_occupied }, ...].
+    """
+    try:
+        floor = await Floor.objects.select_related("building").aget(
+            building__uuid=building_uuid,
+            number=floor_number,
+        )
+    except Floor.DoesNotExist:
+        return []
+
+    items: list[FloorPremiseOut] = []
+    async for p in Premise.objects.filter(floor=floor).order_by("number", "id"):
+        items.append(
+            FloorPremiseOut(
+                name=p.number or "Помещение",
+                label_area=_format_area(p.area),
+                label_price=_format_price(p.price_per_month),
+                is_occupied=(p.status != Premise.Status.AVAILABLE),
+            )
+        )
+    return items
