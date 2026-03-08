@@ -1,0 +1,53 @@
+@use '@/styles/variables' as *;
+
+.floorView {
+    // CSS-переменные на основе variables.scss, чтобы JS мог ставить fill через var(...)
+    --floor-room-free: #{$primary-700};
+    --floor-room-hover: #{$primary-800};
+    --floor-room-occupied: #{$error-default};
+
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__svgRoot {
+        width: 100%;
+        height: 100%;
+        display: block;
+
+        // нормализуем поведение вставленного svg
+        :global(svg) {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        // На случай если браузер рисует фокус-обводку для SVG элементов с tabindex/role.
+        :global(g[role='button']:focus),
+        :global(g[role='button']:focus-visible) {
+            outline: none;
+        }
+    }
+
+    &__room {
+        cursor: pointer;
+        fill: $primary-700;
+
+        &:hover {
+            fill: $primary-800;
+        }
+
+        // Убираем системную обводку/фокус при клике по комнате
+        &:focus,
+        &:focus-visible {
+            outline: none;
+        }
+    }
+
+    &__room--occupied {
+        cursor: not-allowed;
+        fill: $error-default;
+    }
+}
