@@ -4,7 +4,7 @@ Smoke-тесты для API помещений и зданий (re_objects).
 Проверяют, что все ручки отвечают 200 (или 404 где ожидаемо) и возвращают ожидаемую структуру.
 """
 import pytest
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 
 @pytest.fixture
@@ -142,6 +142,8 @@ class TestPremisesList:
         if data["items"]:
             item = data["items"][0]
             assert "uuid" in item
+            assert "building_uuid" in item
+            UUID(item["building_uuid"])
             assert "name" in item
             assert "price" in item
             assert "address" in item
@@ -183,6 +185,8 @@ class TestPremiseDetail:
         assert response.status_code == 200
         data = response.json()
         assert data["uuid"] == str(premise.uuid)
+        assert "building_uuid" in data
+        UUID(data["building_uuid"])
         assert "name" in data
         assert "price" in data
         assert "address" in data

@@ -388,6 +388,7 @@ def premise_to_list_out(p: Premise) -> PremiseListOut:
     """Маппинг Premise -> PremiseListOut (uuid, name, price, address, floor, area, has_tenant, media)."""
     return PremiseListOut(
         uuid=str(p.uuid),
+        building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
         price=p.price_per_month,
         address=p.building.address,
@@ -402,6 +403,7 @@ def premise_to_detail_out(p: Premise) -> PremiseDetailOut:
     """Маппинг Premise -> PremiseDetailOut (все поля списка + description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished)."""
     return PremiseDetailOut(
         uuid=str(p.uuid),
+        building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
         price=p.price_per_month,
         address=p.building.address,

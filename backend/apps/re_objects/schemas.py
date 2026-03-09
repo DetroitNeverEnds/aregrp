@@ -36,6 +36,7 @@ class PremiseListOut(Schema):
     """Помещение в списке (карточка в выдаче)."""
 
     uuid: str  # Публичный идентификатор (UUID)
+    building_uuid: str  # UUID здания, к которому относится помещение
     name: str
     price: Decimal
     address: str
