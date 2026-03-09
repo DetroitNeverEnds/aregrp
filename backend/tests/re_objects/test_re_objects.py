@@ -209,16 +209,22 @@ class TestFloorPremises:
     """GET /floors/{building_uuid}/{floor_number} — помещения на этаже."""
 
     async def test_floor_premises_success(self, client, building_with_premise):
-        """Успешный ответ — массив [{ name, label_area, label_price, is_occupied }, ...]."""
+        """Успешный ответ — объект этажа с premises."""
         building, premise = building_with_premise
         floor_number = premise.floor.number if premise.floor else 1
         response = await client.get(f"/floors/{building.uuid}/{floor_number}")
 
         assert response.status_code == 200
         data = response.json()
-        assert isinstance(data, list)
-        if data:
-            item = data[0]
+        assert isinstance(data, dict)
+        assert data["building_uuid"] == str(building.uuid)
+        assert data["floor_number"] == floor_number
+        assert "schema_svg" in data
+        assert "premises" in data
+        assert isinstance(data["premises"], list)
+        if data["premises"]:
+            item = data["premises"][0]
+            assert "uuid" in item
             assert "name" in item
             assert "label_area" in item
             assert "label_price" in item
@@ -226,9 +232,13 @@ class TestFloorPremises:
             assert isinstance(item["is_occupied"], bool)
 
     async def test_floor_premises_nonexistent_floor(self, client, building_with_premise):
-        """Пустой список для несуществующего этажа."""
+        """Пустой premises-список для несуществующего этажа."""
         building, _ = building_with_premise
         response = await client.get(f"/floors/{building.uuid}/999")
 
         assert response.status_code == 200
-        assert response.json() == []
+        data = response.json()
+        assert data["building_uuid"] == str(building.uuid)
+        assert data["floor_number"] == 999
+        assert data["schema_svg"] is None
+        assert data["premises"] == []

@@ -92,7 +92,16 @@ buildings:
 
 floors:
   - GET /floors/<building_uuid>/<floor_number>
-    список помещений на этаже [{ name, label_area, label_price, is_occupied }, ...]
+    данные этажа:
+      building_uuid: string
+      floor_number: number
+      schema_svg: string # содержимое SVG или null
+      premises:
+        - uuid: string
+          name: string
+          label_area: string
+          label_price: string
+          is_occupied: boolean
 
 
 # ───────────────────────────────────────────────────────────────────

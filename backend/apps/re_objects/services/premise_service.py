@@ -7,7 +7,7 @@
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
 - get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
-- get_premises_for_floor(building_uuid, floor_number) — список помещений на этаже.
+- get_premises_for_floor(building_uuid, floor_number) — данные этажа (building_uuid, floor_number, schema_svg, premises).
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
 - публичные функции — async, обращаются к БД через async ORM (aget, acount, async for);
@@ -17,6 +17,7 @@ from decimal import Decimal
 from typing import Optional
 from uuid import UUID
 
+from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.db.models import Min, Q, Subquery
 
@@ -30,6 +31,7 @@ from ..schemas import (
     BuildingMediaItemOut,
     BuildingOptionOut,
     FloorPremiseOut,
+    FloorResponseOut,
     MediaItemOut,
     PremiseListOut,
     PremiseListResponse,
@@ -472,13 +474,13 @@ def _format_area(value: Decimal) -> str:
 async def get_premises_for_floor(
     building_uuid: UUID,
     floor_number: int,
-) -> list[FloorPremiseOut]:
+) -> FloorResponseOut:
     """
     Список помещений на этаже здания.
 
     building_uuid: UUID здания.
     floor_number: номер этажа.
-    Возвращает: [{ name, label_area, label_price, is_occupied }, ...].
+    Возвращает объект с UUID здания, номером этажа, SVG-схемой и списком помещений.
     """
     try:
         floor = await Floor.objects.select_related("building").aget(
@@ -486,16 +488,50 @@ async def get_premises_for_floor(
             number=floor_number,
         )
     except Floor.DoesNotExist:
-        return []
+        return FloorResponseOut(
+            building_uuid=str(building_uuid),
+            floor_number=floor_number,
+            schema_svg=None,
+            premises=[],
+        )
 
     items: list[FloorPremiseOut] = []
     async for p in Premise.objects.filter(floor=floor).order_by("number", "id"):
         items.append(
             FloorPremiseOut(
+                uuid=str(p.uuid),
                 name=p.number or "Помещение",
                 label_area=_format_area(p.area),
                 label_price=_format_price(p.price_per_month),
                 is_occupied=(p.status != Premise.Status.AVAILABLE),
             )
         )
-    return items
+    schema_svg = await _read_floor_schema_svg(floor)
+    return FloorResponseOut(
+        building_uuid=str(floor.building.uuid),
+        floor_number=floor.number,
+        schema_svg=schema_svg,
+        premises=items,
+    )
+
+
+@sync_to_async
+def _read_floor_schema_svg(floor: Floor) -> Optional[str]:
+    """Читает SVG-схему этажа и возвращает её как текст."""
+    if not floor.schema_svg:
+        return None
+
+    try:
+        floor.schema_svg.open("rb")
+        data = floor.schema_svg.read()
+    except (OSError, ValueError):
+        return None
+    finally:
+        try:
+            floor.schema_svg.close()
+        except (OSError, ValueError):
+            pass
+
+    if isinstance(data, bytes):
+        return data.decode("utf-8", errors="replace")
+    return str(data)

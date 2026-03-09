@@ -8,7 +8,8 @@
 2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
 4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
-5) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
+5) GET /api/v1/floors/{building_uuid}/{floor_number} — данные этажа: building_uuid, floor_number, schema_svg, premises.
+6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished). 404 — ProblemDetail.
 
 Вся логика в services.premise_service; роутер только парсит query (в т.ч. через parse_building_uuids)
@@ -27,7 +28,7 @@ from .schemas import (
     BuildingDetailOut,
     BuildingListResponse,
     BuildingOptionOut,
-    FloorPremiseOut,
+    FloorResponseOut,
     PremiseDetailOut,
     PremiseListResponse,
 )
@@ -117,12 +118,12 @@ async def building_detail(request, building_uuid: UUID):
 
 @floors_router.get(
     "/{building_uuid}/{floor_number}",
-    response={200: list[FloorPremiseOut]},
+    response={200: FloorResponseOut},
     summary="Помещения на этаже",
-    description="Список помещений для этажа здания: name (номер/название), label_area, label_price, is_occupied.",
+    description="Данные этажа: building_uuid, floor_number, schema_svg (текст SVG) и premises [{ uuid, name, label_area, label_price, is_occupied }].",
 )
 async def floor_premises_list(request, building_uuid: UUID, floor_number: int):
-    """Помещения этажа: [{ name, label_area, label_price, is_occupied }, ...]."""
+    """Данные этажа с SVG-схемой и списком помещений."""
     items = await get_premises_for_floor(building_uuid=building_uuid, floor_number=floor_number)
     return 200, items
 

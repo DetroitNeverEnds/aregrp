@@ -132,7 +132,17 @@ class BuildingListResponse(Schema):
 class FloorPremiseOut(Schema):
     """Помещение на этаже: номер/название, площадь, стоимость, занятость."""
 
+    uuid: str
     name: str  # номер помещения (Premise.number или название)
     label_area: str  # площадь, например "50 м²"
     label_price: str  # стоимость, например "100 000 ₽/мес"
     is_occupied: bool  # True — занято, False — свободно
+
+
+class FloorResponseOut(Schema):
+    """Ответ по этажу: UUID здания, номер этажа, SVG-схема и список помещений."""
+
+    building_uuid: str
+    floor_number: int
+    schema_svg: Optional[str] = None
+    premises: list[FloorPremiseOut]

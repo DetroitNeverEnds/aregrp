@@ -156,6 +156,12 @@ class Building(models.Model):
         return f"{self.name} ({self.city.name})"
 
 
+def floor_schema_svg_upload_path(instance, filename):
+    """Генерирует путь для SVG-схемы этажа."""
+    safe_name = filename or "schema.svg"
+    return f"floors/{instance.building_id}/floor_{instance.number}/{safe_name}"
+
+
 class Floor(models.Model):
     """
     Этаж в здании.
@@ -176,6 +182,16 @@ class Floor(models.Model):
         verbose_name="Описание",
         blank=True,
         help_text="Описание этажа (например, 'Офисный этаж')"
+    )
+    schema_svg = models.FileField(
+        upload_to=floor_schema_svg_upload_path,
+        verbose_name="SVG-схема этажа",
+        help_text="Файл схемы этажа в формате SVG",
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=["svg"]),
+        ],
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
