@@ -19,7 +19,7 @@ export interface OfficeCardProps {
 export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
     const { t } = useTranslation();
 
-    const { price, address, area, floor, has_tenant } = item;
+    const { uuid, price, address, area, floor, has_tenant } = item;
 
     // Форматирование цены
     const formatPrice = (price: string) => {
@@ -31,6 +31,15 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
             maximumFractionDigits: 0,
         }).format(numPrice);
     };
+
+    const link = useMemo(
+        () =>
+            `/building/79a50a33-cc50-443e-b5dc-f0f8cb72c161?${new URLSearchParams({
+                selectedPremise: uuid,
+                floor: String(floor),
+            })}`,
+        [floor, uuid],
+    );
 
     const traits = useMemo(() => {
         return [
@@ -70,7 +79,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
                         ))}
                     </Flex>
                     <Button
-                        href="TODO"
+                        to={link}
                         size="lg"
                         variant="primary"
                         icon="arrow-button"

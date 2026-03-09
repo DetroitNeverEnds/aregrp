@@ -11,6 +11,7 @@ import { Catalogue } from './pages/catalogue';
 import { Investors } from './pages/investors';
 import { Agents } from './pages/agents';
 import { Cases } from './pages/cases';
+import { BuildingPage } from '@/pages/building';
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/cases" element={<Cases />} />
+                <Route path="/building/:buildingUuid" element={<BuildingPage />} />
             </Route>
         </Routes>
     );

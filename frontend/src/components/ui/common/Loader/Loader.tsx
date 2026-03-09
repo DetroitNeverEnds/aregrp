@@ -21,7 +21,7 @@ export interface LoaderProps {
 
 export const Loader: React.FC<LoaderProps> = ({
     variant = 'block',
-    height,
+    height = 100,
     spinnerSize = 'lg',
     className = '',
     spinnerColor,

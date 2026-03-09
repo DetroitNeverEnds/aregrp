@@ -15,9 +15,13 @@ export { ApiClient, type ApiClientConfig } from './base/ApiClient';
 // API фабрика и утилиты
 export { api, initializeApiClient } from './base/api';
 
-// Handlers
+/**
+ * Handlers
+ */
 export * from './handlers/auth';
 export * from './handlers/premises';
+export * from './handlers/buildings';
+export * from './handlers/floors';
 
 // Profile handlers (экспортируем только функции, типы уже экспортированы из auth)
 export { getUser, updateProfile, changePassword } from './handlers/profile';

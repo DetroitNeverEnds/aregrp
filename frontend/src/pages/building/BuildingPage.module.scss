@@ -1,0 +1,38 @@
+@use '@/components/ui/building/FloorSchema/FloorSchema.module.scss' as *;
+
+.officeCard {
+    width: 550px;
+}
+
+.floorchema {
+    flex-grow: 1;
+
+    &__header {
+        &__text {
+            flex-shrink: 1;
+        }
+        &__link {
+            flex-shrink: 0;
+        }
+    }
+
+    &__legend {
+        @mixin square {
+            width: 20px;
+            height: 20px;
+        }
+
+        &__free {
+            @include square;
+            background-color: $free-room-color;
+        }
+        &__occupied {
+            @include square;
+            background-color: $occupied-room-color;
+        }
+        &__other {
+            @include square;
+            background-color: $other-room-color;
+        }
+    }
+}

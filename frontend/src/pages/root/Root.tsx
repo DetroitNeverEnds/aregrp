@@ -4,7 +4,7 @@ import { useHeaderSettings } from '../../hooks/useHeaderSettings';
 import { ObjectsFilter } from '../../components/ui/forms/ObjectsFilter';
 import Text from '../../components/ui/common/Text';
 import { YandexMap } from '../../components/ui/common/YandexMap';
-import { ObjectCard } from '../../components/ui/cards/ObjectCard';
+import { BuildingCard } from '../../components/ui/cards/BuildingCard';
 
 import styles from './Root.module.scss';
 import { Button } from '../../components/ui/common/Button';
@@ -49,8 +49,6 @@ export const Root = () => {
     const premises = usePremises({ page_size: Config.pageSizeMain }).data?.data;
     const buildings = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
 
-    console.log(buildings);
-
     return (
         <Page>
             <Welcome />
@@ -76,7 +74,7 @@ export const Root = () => {
 
                     <CardContainer loadMore={() => alert('todo')}>
                         {buildings?.items.map(item => (
-                            <ObjectCard key={item.uuid} item={item} />
+                            <BuildingCard key={item.uuid} item={item} />
                         ))}
                     </CardContainer>
                 </Container>

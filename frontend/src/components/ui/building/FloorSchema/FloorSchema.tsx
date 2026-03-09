@@ -1,15 +1,29 @@
 import React, { useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
-import styles from './FloorView.module.scss';
-import type { FloorViewProps } from './types';
+import styles from './FloorSchema.module.scss';
+import type { FloorPremiseOut } from '@/api';
+
+export type FloorRoom = FloorPremiseOut;
 
 type RoomListeners = {
     group: SVGGElement;
     onClick?: () => void;
 };
 
-export const FloorView: React.FC<FloorViewProps> = ({ svg, rooms, className }) => {
+export type FloorSchemaProps = {
+    svg: string;
+    rooms: FloorRoom[];
+    className?: string;
+    onRoomSelect?: (room: FloorRoom) => void;
+};
+
+export const FloorSchema: React.FC<FloorSchemaProps> = ({
+    svg,
+    rooms,
+    onRoomSelect,
+    className,
+}) => {
     const rootRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -22,22 +36,24 @@ export const FloorView: React.FC<FloorViewProps> = ({ svg, rooms, className }) =
 
         rooms.forEach(room => {
             // Важно: id может начинаться с цифры, поэтому CSS селектор вида "#105" невалиден.
-            const group = root.querySelector<SVGGElement>(`g[id="${room.id_area}"]`);
+            const group = root.querySelector<SVGGElement>(`g[id="${room.name}"]`);
             if (!group) {
                 return;
             }
 
-            group.setAttribute('data-premise-uuid', room.uuid);
+            group.setAttribute('data-premise-name', room.name);
 
             const roomPath = group.querySelector<SVGPathElement>('path[id="room"]');
             roomPath?.setAttribute(
                 'class',
-                room.is_occupied ? styles['floorView__room--occupied'] : styles['floorView__room'],
+                room.is_occupied
+                    ? styles['floorSchema__room--occupied']
+                    : styles['floorSchema__room--free'],
             );
 
             if (room.is_occupied) {
                 group.setAttribute('aria-disabled', 'true');
-                group.setAttribute('tabindex', '-1');
+                group.removeAttribute('tabindex');
                 group.removeAttribute('role');
 
                 return;
@@ -49,7 +65,7 @@ export const FloorView: React.FC<FloorViewProps> = ({ svg, rooms, className }) =
 
             const numberTspan = group.querySelector<SVGTSpanElement>('text#number_area tspan');
             if (numberTspan) {
-                numberTspan.textContent = room.id_area;
+                numberTspan.textContent = room.name;
             }
 
             const areaTspan = group.querySelector<SVGTSpanElement>('text#label_area tspan');
@@ -62,17 +78,7 @@ export const FloorView: React.FC<FloorViewProps> = ({ svg, rooms, className }) =
                 priceTspan.textContent = room.label_price;
             }
 
-            const onClick = () => {
-                alert(
-                    [
-                        `uuid: ${room.uuid}`,
-                        `room: ${room.name ?? room.id_area}`,
-                        `area: ${room.label_area}`,
-                        `price: ${room.label_price}`,
-                        `occupied: ${String(room.is_occupied)}`,
-                    ].join('\n'),
-                );
-            };
+            const onClick = () => onRoomSelect?.(room);
 
             group.addEventListener('click', onClick);
 
@@ -89,13 +95,13 @@ export const FloorView: React.FC<FloorViewProps> = ({ svg, rooms, className }) =
                 }
             });
         };
-    }, [rooms, svg]);
+    }, [onRoomSelect, rooms, svg]);
 
     return (
-        <div className={classNames(styles.floorView, className)}>
+        <div className={classNames(styles.floorSchema, className)}>
             <div
                 ref={rootRef}
-                className={styles.floorView__svgRoot}
+                className={styles.floorSchema__svgRoot}
                 // SVG приходит из API: в прототипе вставляем как есть
                 dangerouslySetInnerHTML={{ __html: svg }}
             />
@@ -103,4 +109,4 @@ export const FloorView: React.FC<FloorViewProps> = ({ svg, rooms, className }) =
     );
 };
 
-export default FloorView;
+export default FloorSchema;

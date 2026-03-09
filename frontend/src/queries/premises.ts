@@ -2,6 +2,8 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import {
     getBuildings,
     getBuildingsCatalogue,
+    getBuildingDetail,
+    getFloorPremises,
     getPremises,
     getPremisesForRent,
     getPremisesForSale,
@@ -13,6 +15,8 @@ import {
     type PremiseDetail,
     type BuildingCatalogueParams,
     type BuildingsCatalogueResponse,
+    type BuildingDetailOut,
+    type FloorPremiseOut,
 } from '../api';
 import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
 
@@ -84,5 +88,32 @@ export function usePremiseDetail(uuid: string): UseQueryResult<QueryResult<Premi
         queryKey: ['premises', uuid],
         queryFn: () => wrapApiCall(getPremiseDetail)(uuid),
         enabled: !!uuid,
+    });
+}
+
+/**
+ * Хук для получения детальной информации о здании
+ */
+export function useBuildingDetail(
+    buildingUuid: string,
+): UseQueryResult<QueryResult<BuildingDetailOut>, Error> {
+    return useQuery({
+        queryKey: ['buildings', 'detail', buildingUuid],
+        queryFn: () => wrapApiCall(getBuildingDetail)(buildingUuid),
+        enabled: !!buildingUuid,
+    });
+}
+
+/**
+ * Хук для получения помещений на этаже
+ */
+export function useFloorPremises(
+    buildingUuid: string,
+    floorNumber?: number,
+): UseQueryResult<QueryResult<FloorPremiseOut[]>, Error> {
+    return useQuery({
+        queryKey: ['floors', buildingUuid, floorNumber],
+        queryFn: () => wrapApiCall(getFloorPremises)(buildingUuid, floorNumber as number),
+        enabled: !!buildingUuid && typeof floorNumber === 'number',
     });
 }

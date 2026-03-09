@@ -6,7 +6,7 @@ import { useCallback, useMemo } from 'react';
 import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
-import { Contaier } from '@/components/ui/layout/Container';
+import { Container } from '@/components/ui/layout/Container';
 import { ObjectsFilter } from '@/components/ui/forms/ObjectsFilter';
 import { CardContainer } from '@/components/ui/layout/CardsContainer';
 import { usePremises } from '@/queries';
@@ -97,13 +97,12 @@ export const Catalogue = () => {
         },
         [filter, setFilter],
     );
-    console.log(filter);
 
     return (
         <Page>
             <Flex justify="center" align="center" fullWidth>
                 <VerticalMainContainer>
-                    <Contaier>
+                    <Container>
                         <Flex direction="row" justify="between" fullWidth>
                             <Text variant="h2">
                                 {filter.sale_type === 'sale'
@@ -123,7 +122,7 @@ export const Catalogue = () => {
                             <ObjectsFilter />
                         </Flex>
                         <ResultsView />
-                    </Contaier>
+                    </Container>
                 </VerticalMainContainer>
             </Flex>
         </Page>
