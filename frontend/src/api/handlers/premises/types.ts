@@ -34,7 +34,6 @@ export interface PremiseMedia {
  */
 export interface PremiseListItem {
     uuid: string;
-    building_uuid: string;
     name: string;
     price: string;
     address: string;
