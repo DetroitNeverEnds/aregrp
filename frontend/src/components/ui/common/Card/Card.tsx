@@ -4,7 +4,7 @@ import { Flex, type FlexProps } from '../Flex';
 
 export interface CardProps extends FlexProps {
     size?: 'l' | 'xl';
-    background: 'white' | 'gray';
+    background?: 'white' | 'gray';
     isPin?: boolean;
 }
 
