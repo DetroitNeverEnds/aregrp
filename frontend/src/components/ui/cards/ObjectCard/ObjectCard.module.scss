@@ -1,8 +1,9 @@
 @use '@/styles/variables' as *;
 
 .objectCard {
-    width: 540px;
+    // width: 540px;
     // height: 541px;
+    min-width: 0;
 
     &__imageWrapper {
         width: 100%;

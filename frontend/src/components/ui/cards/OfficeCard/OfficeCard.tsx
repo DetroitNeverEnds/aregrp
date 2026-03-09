@@ -6,6 +6,7 @@ import { Gallery } from '../../common/Gallery/Gallery';
 import styles from './OfficeCard.module.scss';
 import type { PremiseListItem } from '@/api';
 import { Divider } from '@/components/ui/common/Divider';
+import { useTranslation } from 'react-i18next';
 
 export interface OfficeCardProps {
     item: PremiseListItem;
@@ -16,7 +17,9 @@ export interface OfficeCardProps {
  * Отображает информацию о помещении с галереей изображений и кнопкой перехода
  */
 export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
-    const { price, address, area, floor } = item;
+    const { t } = useTranslation();
+
+    const { price, address, area, floor, has_tenant } = item;
 
     // Форматирование цены
     const formatPrice = (price: string) => {
@@ -34,9 +37,14 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
             { label: 'Адрес', value: address },
             { label: 'Этаж', value: floor },
             { label: 'Площадь', value: `${area} м²` },
-            { label: 'Арендатор', value: 'John Doe' },
+            {
+                label: 'Арендатор',
+                value: has_tenant
+                    ? t(`components.OfficeCard.hasTennant`)
+                    : t(`components.OfficeCard.noTennant`),
+            },
         ];
-    }, [address, area, floor]);
+    }, [address, area, floor, has_tenant, t]);
 
     return (
         <div className={styles.officeCard}>
@@ -45,7 +53,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
             <Flex direction="column" gap={20} className={styles.officeCard__content}>
                 <Flex direction="row" justify="between" fullWidth>
                     <Text variant="24-med">{address}</Text>
-                    <Text variant="20-med" color="gray-70">
+                    <Text variant="20-med" color="gray-70" align="right">
                         {formatPrice(price)} / месяц
                     </Text>
                 </Flex>

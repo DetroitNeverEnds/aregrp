@@ -101,6 +101,16 @@ export interface BuildingOption {
 export interface BuildingFilterParams {
     sale_type?: SaleType;
     available?: boolean;
+    page?: number;
+    page_size?: number;
+}
+
+/**
+ * Параметры для получения каталога зданий
+ */
+export interface BuildingCatalogueParams {
+    page?: number;
+    page_size?: number;
 }
 
 /**
@@ -123,3 +133,11 @@ export interface BuildingCatalogue {
     min_rent_price?: number | null;
     media: MediaItem[];
 }
+
+export type BuildingsCatalogueResponse = {
+    items: BuildingCatalogue[];
+    total: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
+};
