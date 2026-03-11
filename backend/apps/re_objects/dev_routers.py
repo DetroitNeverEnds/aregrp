@@ -3,7 +3,9 @@
 
 Использование:
 1) POST /api/v1/dev/buildings — создание здания + базовый этаж + загрузка фото/видео
-2) POST /api/v1/dev/premises/{building_uuid} — создание помещения в здании + загрузка фото
+2) POST /api/v1/dev/buildings/{uuid}/floors — создание этажа в здании
+3) POST /api/v1/dev/buildings/{uuid}/media — добавление медиа здания с категорией
+4) POST /api/v1/dev/premises/{building_uuid} — создание помещения в здании + загрузка фото
 """
 from decimal import Decimal
 from typing import List, Optional
@@ -119,6 +121,83 @@ def create_building_with_floor(
         "floor_created": 1,
         "images_count": len(img_files),
         "videos_count": len(vid_files),
+    }
+
+
+@dev_router.post(
+    "/dev/buildings/{building_uuid}/floors",
+    summary="Создание этажа в здании",
+    description="Создаёт этаж в здании по UUID. Номер этажа должен быть уникальным в рамках здания.",
+)
+def create_floor_in_building(
+    request,
+    building_uuid: UUID,
+    number: int = Form(..., description="Номер этажа"),
+    description: str = Form("", description="Описание этажа"),
+):
+    """Создаёт этаж в здании."""
+    try:
+        building = Building.objects.get(uuid=building_uuid)
+    except Building.DoesNotExist:
+        return 404, {"detail": f"Здание с uuid={building_uuid} не найдено"}
+
+    if Floor.objects.filter(building=building, number=number).exists():
+        return 400, {"detail": f"Этаж {number} уже существует в здании"}
+
+    floor = Floor.objects.create(
+        building=building,
+        number=number,
+        description=description or "",
+    )
+    return 200, {
+        "id": floor.id,
+        "building_uuid": str(building.uuid),
+        "number": floor.number,
+        "description": floor.description,
+    }
+
+
+@dev_router.post(
+    "/dev/buildings/{building_uuid}/media",
+    summary="Добавление медиа здания с категорией",
+    description="Добавляет фото к зданию с указанной категорией. Файлы: multipart/form-data.",
+)
+def add_building_media(
+    request,
+    building_uuid: UUID,
+    category: str = Form("", description="Категория (фасад, инфраструктура, вход, общие зоны, этаж_N и т.д.)"),
+    files: Optional[List[UploadedFile]] = File(None, description="Фото здания"),
+):
+    """Добавляет изображения к зданию с категорией."""
+    try:
+        building = Building.objects.get(uuid=building_uuid)
+    except Building.DoesNotExist:
+        return 404, {"detail": f"Здание с uuid={building_uuid} не найдено"}
+
+    img_files, _ = _split_files_by_type(list(files or []))
+    if not img_files:
+        return 400, {"detail": "Не переданы изображения"}
+
+    max_order = (
+        BuildingImage.objects.filter(building=building).order_by("-order").values_list("order", flat=True).first()
+        or 0
+    )
+    cat = (category or "").strip()
+    has_images = BuildingImage.objects.filter(building=building).exists()
+
+    for i, f in enumerate(img_files, start=1):
+        BuildingImage.objects.create(
+            building=building,
+            file=f,
+            order=max_order + i,
+            category=cat,
+            is_primary=(not has_images and i == 1),
+        )
+
+    return 200, {
+        "building_uuid": str(building.uuid),
+        "category": cat,
+        "added_count": len(img_files),
     }
 
 
