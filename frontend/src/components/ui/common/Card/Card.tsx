@@ -5,12 +5,14 @@ import { Flex, type FlexProps } from '../Flex';
 export interface CardProps extends FlexProps {
     size?: 'l' | 'xl';
     background?: 'white' | 'gray';
+    withShadow?: boolean;
     isPin?: boolean;
 }
 
 export const Card = ({
     size = 'l',
     background = 'white',
+    withShadow = false,
     isPin = false,
     className,
     ...props
@@ -24,6 +26,7 @@ export const Card = ({
                 styles[`container__size-${size}`],
                 styles[`container__background-${background}`],
                 {
+                    [styles.container__withShadow]: withShadow,
                     [styles.pin]: isPin,
                 },
             )}

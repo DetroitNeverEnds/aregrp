@@ -41,6 +41,7 @@ export interface PremiseListItem {
     area: string;
     has_tenant: boolean;
     media: PremiseMedia;
+    building_uuid: string;
 }
 
 /**

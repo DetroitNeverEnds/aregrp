@@ -4,8 +4,10 @@
 
 export type BuildingMediaItem = {
     type: 'photo' | 'video';
-    link: string;
+    category: string;
+    url: string;
     title?: string | null;
+    is_primary?: boolean;
 };
 
 export type BuildingMediaCategory = string;

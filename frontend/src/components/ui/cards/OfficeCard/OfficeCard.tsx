@@ -19,7 +19,7 @@ export interface OfficeCardProps {
 export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
     const { t } = useTranslation();
 
-    const { uuid, price, address, area, floor, has_tenant } = item;
+    const { uuid, price, address, area, floor, has_tenant, building_uuid } = item;
 
     // Форматирование цены
     const formatPrice = (price: string) => {
@@ -34,11 +34,11 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
 
     const link = useMemo(
         () =>
-            `/building/79a50a33-cc50-443e-b5dc-f0f8cb72c161?${new URLSearchParams({
+            `/building/${building_uuid}?${new URLSearchParams({
                 selectedPremise: uuid,
                 floor: String(floor),
             })}`,
-        [floor, uuid],
+        [building_uuid, floor, uuid],
     );
 
     const traits = useMemo(() => {

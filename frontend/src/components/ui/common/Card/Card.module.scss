@@ -14,6 +14,12 @@
     &__background-gray {
         background-color: $gray-10;
     }
+
+    &__withShadow {
+        box-shadow:
+            0 0 16px 0 rgba(30, 32, 35, 0.1),
+            0 4px 8px 0 rgba(30, 32, 35, 0.05);
+    }
 }
 
 .pin {

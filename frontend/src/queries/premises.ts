@@ -3,6 +3,7 @@ import {
     getBuildings,
     getBuildingsCatalogue,
     getBuildingDetail,
+    getFloor,
     getFloorPremises,
     getPremises,
     getPremisesForRent,
@@ -17,6 +18,7 @@ import {
     type BuildingsCatalogueResponse,
     type BuildingDetailOut,
     type FloorPremiseOut,
+    type FloorResponseOut,
 } from '../api';
 import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
 
@@ -83,11 +85,11 @@ export function usePremisesForSale(
 /**
  * Хук для получения детальной информации о помещении
  */
-export function usePremiseDetail(uuid: string): UseQueryResult<QueryResult<PremiseDetail>, Error> {
+export function usePremiseDetail(uuid?: string): UseQueryResult<QueryResult<PremiseDetail>, Error> {
     return useQuery({
-        queryKey: ['premises', uuid],
-        queryFn: () => wrapApiCall(getPremiseDetail)(uuid),
-        enabled: !!uuid,
+        queryKey: ['premises', 'detail', uuid],
+        queryFn: () => wrapApiCall(getPremiseDetail)(uuid || ''),
+        enabled: uuid !== undefined,
     });
 }
 
@@ -112,8 +114,22 @@ export function useFloorPremises(
     floorNumber?: number,
 ): UseQueryResult<QueryResult<FloorPremiseOut[]>, Error> {
     return useQuery({
-        queryKey: ['floors', buildingUuid, floorNumber],
+        queryKey: ['floors', 'premises', buildingUuid, floorNumber],
         queryFn: () => wrapApiCall(getFloorPremises)(buildingUuid, floorNumber as number),
+        enabled: !!buildingUuid && typeof floorNumber === 'number',
+    });
+}
+
+/**
+ * Хук для получения данных этажа (schema_svg + premises)
+ */
+export function useFloor(
+    buildingUuid: string,
+    floorNumber?: number,
+): UseQueryResult<QueryResult<FloorResponseOut>, Error> {
+    return useQuery({
+        queryKey: ['floors', 'detail', buildingUuid, floorNumber],
+        queryFn: () => wrapApiCall(getFloor)(buildingUuid, floorNumber as number),
         enabled: !!buildingUuid && typeof floorNumber === 'number',
     });
 }
