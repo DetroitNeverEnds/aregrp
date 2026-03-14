@@ -12,27 +12,18 @@ from ninja import Schema
 
 
 
-class MediaPhotoOut(Schema):
-    """Один элемент фото в блоке медиа помещения."""
+class BaseMediaItemOut(Schema):
+    """Базовая схема медиа: type, url."""
 
-    type: Literal["photo"] = "photo"
+    type: Literal["photo", "video"]
     url: str
+
+
+class BuildingMediaItemOut(BaseMediaItemOut):
+    """Медиа здания: + category, title."""
+
+    category: str = ""
     title: Optional[str] = None
-
-
-class MediaVideoOut(Schema):
-    """Один элемент видео в блоке медиа помещения (пока не используется)."""
-
-    type: Literal["video"] = "video"
-    url: str
-    title: Optional[str] = None
-
-
-class PremiseMediaOut(Schema):
-    """Медиа помещения: списки фото и видео."""
-
-    photos: list[MediaPhotoOut]
-    videos: list[MediaVideoOut]
 
 
 class PremiseListOut(Schema):
@@ -46,7 +37,7 @@ class PremiseListOut(Schema):
     floor: Optional[int] = None
     area: Decimal
     has_tenant: bool
-    media: PremiseMediaOut
+    media: list[BaseMediaItemOut]
 
 
 class PremiseDetailOut(PremiseListOut):
@@ -78,13 +69,6 @@ class BuildingOptionOut(Schema):
     address: str
 
 
-class MediaItemOut(Schema):
-    """Элемент медиа: фото или видео."""
-
-    type: Literal["photo", "video"]
-    link: str
-
-
 class BuildingListOut(Schema):
     """Здание в списке: uuid, title, address, description, min_sale_price, min_rent_price, media."""
 
@@ -94,16 +78,7 @@ class BuildingListOut(Schema):
     description: str
     min_sale_price: Optional[float] = None
     min_rent_price: Optional[float] = None
-    media: list[MediaItemOut]
-
-
-class BuildingMediaItemOut(Schema):
-    """Медиа здания: фото или видео с категорией."""
-
-    type: Literal["photo", "video"]
-    category: str
-    url: str
-    title: Optional[str] = None
+    media: list[BaseMediaItemOut]
 
 
 class BuildingDetailOut(Schema):

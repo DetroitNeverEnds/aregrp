@@ -25,6 +25,7 @@ from core.pagination import get_paginated_list
 
 from ..models import Building, Floor, Premise
 from ..schemas import (
+    BaseMediaItemOut,
     BuildingDetailOut,
     BuildingListOut,
     BuildingListResponse,
@@ -32,13 +33,9 @@ from ..schemas import (
     BuildingOptionOut,
     FloorPremiseOut,
     FloorResponseOut,
-    MediaItemOut,
     PremiseListOut,
     PremiseListResponse,
     PremiseDetailOut,
-    PremiseMediaOut,
-    MediaPhotoOut,
-    MediaVideoOut,
 )
 
 
@@ -218,16 +215,19 @@ async def get_buildings_for_filter(
     ]
 
 
-def _build_building_media(building: Building) -> list[MediaItemOut]:
-    """Собирает медиа здания: фото и видео в формате [{type, link}, ...]."""
-    media: list[MediaItemOut] = []
-    for img in sorted(building.images.all(), key=lambda x: (x.order, x.pk)):
+def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
+    """Собирает медиа здания: один плоский список images + videos, сортировка по order."""
+    items: list[tuple[int, int, str, str]] = []
+    for img in building.images.all():
         if img.file:
-            media.append(MediaItemOut(type="photo", link=img.file.url))
-    for vid in sorted(building.videos.all(), key=lambda x: (x.order, x.pk)):
+            items.append((img.order, img.pk, "photo", img.file.url))
+    for vid in building.videos.all():
         if vid.file:
-            media.append(MediaItemOut(type="video", link=vid.file.url))
-    return media
+            items.append((vid.order, vid.pk, "video", vid.file.url))
+    items.sort(key=lambda x: (x[0], x[1]))
+    return [
+        BaseMediaItemOut(type=t, url=url) for _, _, t, url in items
+    ]
 
 
 def building_to_list_out(b: Building) -> BuildingListOut:
@@ -288,42 +288,29 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
     """
     Собирает категории и медиа здания.
 
-    Возвращает (media_categories, media), где media_categories — уникальные категории
-    из images и videos, media — список BuildingMediaItemOut (type, category, url, title, is_primary).
+    Возвращает (media_categories, media). Один плоский список images + videos, сортировка по order.
     """
     categories: set[str] = set()
-    media: list[BuildingMediaItemOut] = []
+    items: list[tuple[int, int, str, str, str, Optional[str]]] = []
 
-    for img in sorted(building.images.all(), key=lambda x: (x.order, x.pk)):
+    for img in building.images.all():
         if img.file:
             cat = img.category.strip() if img.category else ""
             if cat:
                 categories.add(cat)
-            media.append(
-                BuildingMediaItemOut(
-                    type="photo",
-                    category=cat,
-                    url=img.file.url,
-                    title=img.title or None,
-                    is_primary=img.is_primary,
-                )
-            )
-
-    for vid in sorted(building.videos.all(), key=lambda x: (x.order, x.pk)):
+            items.append((img.order, img.pk, "photo", img.file.url, cat, img.title or None))
+    for vid in building.videos.all():
         if vid.file:
             cat = vid.category.strip() if vid.category else ""
             if cat:
                 categories.add(cat)
-            media.append(
-                BuildingMediaItemOut(
-                    type="video",
-                    category=cat,
-                    url=vid.file.url,
-                    title=vid.title or None,
-                    is_primary=False,
-                )
-            )
+            items.append((vid.order, vid.pk, "video", vid.file.url, cat, vid.title or None))
 
+    items.sort(key=lambda x: (x[0], x[1]))
+    media = [
+        BuildingMediaItemOut(type=t, url=url, category=cat, title=title)
+        for _, _, t, url, cat, title in items
+    ]
     return (sorted(categories), media)
 
 
@@ -371,16 +358,13 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
     )
 
 
-def _build_premise_media(p: Premise) -> PremiseMediaOut:
-    """Собирает блок медиа помещения: фото из PremiseImage (по order), видео пока пустой список."""
-    photos = [
-        MediaPhotoOut(url=img.file.url, title=img.title or None)
+def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
+    """Собирает медиа помещения: плоский список с type, url. Видео помещений в модели пока нет."""
+    return [
+        BaseMediaItemOut(type="photo", url=img.file.url)
         for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk))
         if img.file
     ]
-    # Видео помещений в модели пока нет — структура под будущее
-    videos: list[MediaVideoOut] = []
-    return PremiseMediaOut(photos=photos, videos=videos)
 
 
 def premise_to_list_out(p: Premise) -> PremiseListOut:
