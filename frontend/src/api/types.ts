@@ -34,13 +34,33 @@ export type ApiErrorCode =
     | 'RE_OBJECTS_NOT_FOUND';
 
 /**
- * Ответ API с ошибкой (Problem Details RFC 7807)
+ * Ошибка API по RFC 7807 (Problem Details for HTTP APIs) из OpenAPI (api.json).
+ *
+ * Отличия от "классического" RFC7807:
+ * - поле instance в OpenAPI nullable и не является required
+ * - поле code — enum ApiErrorCode
  */
-export interface ApiError {
+export interface ProblemDetail {
     type: string;
+    status: number;
     title: string;
+    detail: string;
+    instance?: string | null;
+    code: ApiErrorCode;
+}
+
+/**
+ * Ошибки, сформированные клиентом (сеть, таймауты, нестандартные ответы и т.п.)
+ */
+export type ClientErrorCode = 'UNKNOWN_ERROR' | 'NETWORK_ERROR' | 'REQUEST_ERROR';
+
+export interface ClientError {
+    type: 'about:blank';
+    title: 'API Error' | 'Network Error' | 'Request Error';
     status: number;
     detail: string;
-    instance: string;
-    code: string;
+    instance?: string | null;
+    code: ClientErrorCode;
 }
+
+export type ApiError = ProblemDetail | ClientError;

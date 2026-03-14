@@ -1121,6 +1121,122 @@
         }
       }
     },
+    "/api/v1/dev/buildings/{building_uuid}/floors": {
+      "post": {
+        "operationId": "apps_re_objects_dev_routers_create_floor_in_building",
+        "summary": "Создание этажа в здании",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "building_uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Building Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Создаёт этаж в здании по UUID. Номер этажа должен быть уникальным в рамках здания.",
+        "tags": [
+          "Dev / Test"
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "title": "FormParams",
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "description": "Номер этажа",
+                    "title": "Number",
+                    "type": "integer"
+                  },
+                  "description": {
+                    "default": "",
+                    "description": "Описание этажа",
+                    "title": "Description",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "number"
+                ]
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/dev/buildings/{building_uuid}/media": {
+      "post": {
+        "operationId": "apps_re_objects_dev_routers_add_building_media",
+        "summary": "Добавление медиа здания с категорией",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "building_uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Building Uuid",
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Добавляет фото к зданию с указанной категорией. Файлы: multipart/form-data.",
+        "tags": [
+          "Dev / Test"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "title": "MultiPartBodyParams",
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "default": "",
+                    "description": "Категория (фасад, инфраструктура, вход, общие зоны, этаж_N и т.д.)",
+                    "title": "Category",
+                    "type": "string"
+                  },
+                  "files": {
+                    "anyOf": [
+                      {
+                        "items": {
+                          "format": "binary",
+                          "type": "string"
+                        },
+                        "type": "array"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "description": "Фото здания",
+                    "title": "Files"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/api/v1/dev/premises/{building_uuid}": {
       "post": {
         "operationId": "apps_re_objects_dev_routers_create_premise_in_building",
@@ -1820,59 +1936,27 @@
         "title": "BuildingOptionOut",
         "type": "object"
       },
-      "MediaPhotoOut": {
-        "description": "Один элемент фото в блоке медиа помещения.",
+      "BaseMediaItemOut": {
+        "description": "Базовая схема медиа: type, url.",
         "properties": {
+          "type": {
+            "enum": [
+              "photo",
+              "video"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
           "url": {
             "title": "Url",
             "type": "string"
-          },
-          "title": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Title"
-          },
-          "is_primary": {
-            "default": false,
-            "title": "Is Primary",
-            "type": "boolean"
           }
         },
         "required": [
+          "type",
           "url"
         ],
-        "title": "MediaPhotoOut",
-        "type": "object"
-      },
-      "MediaVideoOut": {
-        "description": "Один элемент видео в блоке медиа помещения (пока не используется).",
-        "properties": {
-          "url": {
-            "title": "Url",
-            "type": "string"
-          },
-          "title": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Title"
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "title": "MediaVideoOut",
+        "title": "BaseMediaItemOut",
         "type": "object"
       },
       "PremiseListOut": {
@@ -1920,7 +2004,11 @@
             "type": "boolean"
           },
           "media": {
-            "$ref": "#/components/schemas/PremiseMediaOut"
+            "items": {
+              "$ref": "#/components/schemas/BaseMediaItemOut"
+            },
+            "title": "Media",
+            "type": "array"
           }
         },
         "required": [
@@ -1973,31 +2061,6 @@
         "title": "PremiseListResponse",
         "type": "object"
       },
-      "PremiseMediaOut": {
-        "description": "Медиа помещения: списки фото и видео.",
-        "properties": {
-          "photos": {
-            "items": {
-              "$ref": "#/components/schemas/MediaPhotoOut"
-            },
-            "title": "Photos",
-            "type": "array"
-          },
-          "videos": {
-            "items": {
-              "$ref": "#/components/schemas/MediaVideoOut"
-            },
-            "title": "Videos",
-            "type": "array"
-          }
-        },
-        "required": [
-          "photos",
-          "videos"
-        ],
-        "title": "PremiseMediaOut",
-        "type": "object"
-      },
       "PremiseDetailOut": {
         "description": "Помещение: полная информация для страницы объекта (все поля списка + описание и доп. параметры).",
         "properties": {
@@ -2043,7 +2106,11 @@
             "type": "boolean"
           },
           "media": {
-            "$ref": "#/components/schemas/PremiseMediaOut"
+            "items": {
+              "$ref": "#/components/schemas/BaseMediaItemOut"
+            },
+            "title": "Media",
+            "type": "array"
           },
           "description": {
             "anyOf": [
@@ -2152,7 +2219,7 @@
           },
           "media": {
             "items": {
-              "$ref": "#/components/schemas/MediaItemOut"
+              "$ref": "#/components/schemas/BaseMediaItemOut"
             },
             "title": "Media",
             "type": "array"
@@ -2203,29 +2270,6 @@
           "total_pages"
         ],
         "title": "BuildingListResponse",
-        "type": "object"
-      },
-      "MediaItemOut": {
-        "description": "Элемент медиа: фото или видео.",
-        "properties": {
-          "type": {
-            "enum": [
-              "photo",
-              "video"
-            ],
-            "title": "Type",
-            "type": "string"
-          },
-          "link": {
-            "title": "Link",
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "link"
-        ],
-        "title": "MediaItemOut",
         "type": "object"
       },
       "BuildingDetailOut": {
@@ -2318,7 +2362,7 @@
         "type": "object"
       },
       "BuildingMediaItemOut": {
-        "description": "Медиа здания: фото или видео с категорией.",
+        "description": "Медиа здания: + category, title.",
         "properties": {
           "type": {
             "enum": [
@@ -2328,12 +2372,13 @@
             "title": "Type",
             "type": "string"
           },
-          "category": {
-            "title": "Category",
-            "type": "string"
-          },
           "url": {
             "title": "Url",
+            "type": "string"
+          },
+          "category": {
+            "default": "",
+            "title": "Category",
             "type": "string"
           },
           "title": {
@@ -2346,16 +2391,10 @@
               }
             ],
             "title": "Title"
-          },
-          "is_primary": {
-            "default": false,
-            "title": "Is Primary",
-            "type": "boolean"
           }
         },
         "required": [
           "type",
-          "category",
           "url"
         ],
         "title": "BuildingMediaItemOut",

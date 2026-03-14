@@ -4,7 +4,7 @@ import axios, {
     type AxiosError,
     type InternalAxiosRequestConfig,
 } from 'axios';
-import type { ApiError } from '../types';
+import type { ApiError, ProblemDetail } from '../types';
 
 /**
  * Конфигурация базового API клиента
@@ -20,11 +20,6 @@ export interface Request<Params, Body> {
     body: Body;
 }
 
-interface RefreshTokenResponse {
-    message: string;
-    access_token: string;
-    refresh_token: string;
-}
 
 /**
  * Базовый класс для работы с API на основе axios
@@ -67,11 +62,13 @@ export class ApiClient {
         );
     }
 
-    protected isProblemDetail(obj: unknown): obj is ApiError {
+    protected isProblemDetail(obj: unknown): obj is ProblemDetail {
         if (typeof obj !== 'object' || obj === null) {
             return false;
         }
-        const required: (keyof ApiError)[] = ['type', 'title', 'status', 'detail', 'instance'];
+
+        // instance в OpenAPI nullable и не required — поэтому не проверяем его наличие
+        const required: (keyof ProblemDetail)[] = ['type', 'title', 'status', 'detail', 'code'];
         return required.every(key => key in obj);
     }
 
@@ -83,7 +80,7 @@ export class ApiClient {
         if (error.response?.status === 401 && !originalRequest._retry) {
             try {
                 originalRequest._retry = true;
-                await axios.post<RefreshTokenResponse>('/api/v1/auth/refresh-token', {});
+                await axios.post('/api/v1/auth/refresh-token', {});
                 return this.axiosInstance(originalRequest);
             } catch (refreshError) {
                 console.error(refreshError);
@@ -98,19 +95,19 @@ export class ApiClient {
             const status = error.response.status;
             const data = error.response.data;
 
-            // Если ответ содержит Problem Detail
+            // Если ответ содержит Problem Detail (RFC7807 + code enum)
             if (this.isProblemDetail(data)) {
                 return data;
             }
 
-            // Иначе создаем стандартную ошибку
+            // Иначе формируем клиентскую ошибку (спека не гарантирует формат)
             const errorData = data as { message?: string; detail?: string };
             return {
                 type: 'about:blank',
                 title: 'API Error',
                 status,
                 detail: errorData?.message || errorData?.detail || 'Unknown error',
-                instance: error.config?.url || '',
+                instance: error.config?.url ?? null,
                 code: 'UNKNOWN_ERROR',
             };
         } else if (error.request) {
@@ -120,7 +117,7 @@ export class ApiClient {
                 title: 'Network Error',
                 status: 0,
                 detail: error.message || 'No response from server',
-                instance: error.config?.url || '',
+                instance: error.config?.url ?? null,
                 code: 'NETWORK_ERROR',
             };
         } else {
@@ -130,7 +127,7 @@ export class ApiClient {
                 title: 'Request Error',
                 status: 0,
                 detail: error.message || 'Failed to create request',
-                instance: '',
+                instance: null,
                 code: 'REQUEST_ERROR',
             };
         }

@@ -21,6 +21,6 @@ export type FloorPremiseOut = {
 export type FloorResponseOut = {
     building_uuid: string;
     floor_number: number;
-    schema_svg: string;
+    schema_svg?: string | null;
     premises: FloorPremiseOut[];
 };

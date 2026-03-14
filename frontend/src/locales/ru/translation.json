@@ -157,7 +157,9 @@
         "FEEDBACK_VALIDATION_ERROR": "Ошибка валидации обращения",
         "SITE_SETTINGS_ERROR": "Ошибка настроек сайта",
         "SITE_SETTINGS_NOT_FOUND": "Настройки сайта не найдены",
-        "REQUEST_ERROR": "Ошибка при создании запроса"
+        "REQUEST_ERROR": "Ошибка при создании запроса",
+
+        "somethingWrong": "Что-то пошло не так"
     },
     "footer": {
         "contacts": {

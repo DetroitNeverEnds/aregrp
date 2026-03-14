@@ -32,19 +32,8 @@ export const Gallery = ({
 }: GalleryProps) => {
     const [currentMediaIndex, setCurrentMediaIndex] = useState<number>(0);
     const media: GalleryMedia[] = useMemo(() => {
-        return _.concat(
-            rawMedia || [],
-            premise?.media.photos.map(item => ({
-                type: 'photo',
-                url: item.url,
-            })) || [],
-            premise?.media.videos.map(item => ({
-                type: 'video',
-                url: item.url,
-            })) || [],
-            building?.media.map(el => ({ type: el.type, url: el.link })) || [],
-        );
-    }, [building?.media, rawMedia, premise?.media.photos, premise?.media.videos]);
+        return _.concat(rawMedia || [], premise?.media || [], building?.media || []);
+    }, [rawMedia, premise?.media, building?.media]);
 
     return (
         <div className={classNames(styles.container, styles[`container__size-${size}`], className)}>

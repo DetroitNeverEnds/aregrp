@@ -17,15 +17,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '150',
         floor: 2,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image1,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image1 }],
     },
     {
         uuid: '2',
@@ -36,15 +28,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '85',
         floor: 1,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image2,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image2 }],
     },
     {
         uuid: '3',
@@ -55,15 +39,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '200',
         floor: 3,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image3,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image3 }],
     },
     {
         uuid: '4',
@@ -74,15 +50,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '120',
         floor: 1,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image4,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image4 }],
     },
     {
         uuid: '5',
@@ -93,15 +61,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '180',
         floor: 2,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image5,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image5 }],
     },
     {
         uuid: '6',
@@ -112,14 +72,6 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '95',
         floor: 1,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image5,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image5 }],
     },
 ];

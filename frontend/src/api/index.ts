@@ -3,7 +3,7 @@
  */
 
 // Базовые типы
-export type { ApiError as ProblemDetail } from './types';
+export type { ProblemDetail } from './types';
 export { type ApiError } from './types';
 
 // Базовые классы (для расширенного использования)

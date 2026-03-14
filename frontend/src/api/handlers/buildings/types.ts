@@ -4,10 +4,9 @@
 
 export type BuildingMediaItem = {
     type: 'photo' | 'video';
-    category: string;
     url: string;
+    category?: string;
     title?: string | null;
-    is_primary?: boolean;
 };
 
 export type BuildingMediaCategory = string;
@@ -16,7 +15,7 @@ export interface BuildingDetailOut {
     uuid: string;
     title: string;
     address: string;
-    description?: string | null;
+    description: string;
     total_floors?: number | null;
     year_built?: number | null;
     min_sale_price?: number | null;
