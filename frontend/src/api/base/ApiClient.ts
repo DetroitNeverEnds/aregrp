@@ -20,7 +20,6 @@ export interface Request<Params, Body> {
     body: Body;
 }
 
-
 /**
  * Базовый класс для работы с API на основе axios
  *
