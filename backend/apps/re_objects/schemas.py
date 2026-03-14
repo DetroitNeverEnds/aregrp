@@ -10,17 +10,20 @@ from typing import Literal, Optional
 from ninja import Schema
 
 
+
+
 class MediaPhotoOut(Schema):
     """Один элемент фото в блоке медиа помещения."""
 
+    type: Literal["photo"] = "photo"
     url: str
     title: Optional[str] = None
-    is_primary: bool = False
 
 
 class MediaVideoOut(Schema):
     """Один элемент видео в блоке медиа помещения (пока не используется)."""
 
+    type: Literal["video"] = "video"
     url: str
     title: Optional[str] = None
 
@@ -101,7 +104,6 @@ class BuildingMediaItemOut(Schema):
     category: str
     url: str
     title: Optional[str] = None
-    is_primary: bool = False
 
 
 class BuildingDetailOut(Schema):

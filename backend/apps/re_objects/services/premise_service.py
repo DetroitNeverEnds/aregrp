@@ -374,12 +374,9 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
 def _build_premise_media(p: Premise) -> PremiseMediaOut:
     """Собирает блок медиа помещения: фото из PremiseImage (по order), видео пока пустой список."""
     photos = [
-        MediaPhotoOut(
-            url=img.file.url,
-            title=img.title or None,
-            is_primary=img.is_primary,
-        )
+        MediaPhotoOut(url=img.file.url, title=img.title or None)
         for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk))
+        if img.file
     ]
     # Видео помещений в модели пока нет — структура под будущее
     videos: list[MediaVideoOut] = []

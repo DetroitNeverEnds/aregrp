@@ -12,6 +12,7 @@ dependencies = [
     "pre-commit>=4.2.0",
     "pyjwt>=2.8.0",
     "python-decouple>=3.8",
+    "requests>=2.31.0",
     "pyyaml>=6.0.2",
     "ruff>=0.11.13",
     "uvicorn>=0.34.2",
@@ -27,3 +28,7 @@ dev = [
     "pytest-django>=4.8.0",
     "pytest-asyncio>=0.23.0",
 ]
+
+[tool.uv]
+# Dev-зависимости включены по умолчанию при uv sync и uv run
+default-groups = ["dev"]
