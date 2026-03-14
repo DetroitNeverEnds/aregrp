@@ -1,5 +1,5 @@
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
-import { fetchFloorRoomsMock, fetchFloorSvgMock } from '@/components/ui/building/FloorSchema/mocks';
+import { fetchFloorSvgMock } from '@/components/ui/building/FloorSchema/mocks';
 import { Benefits } from '@/components/ui/cards/Benefits/Benefits';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Button } from '@/components/ui/common/Button';
