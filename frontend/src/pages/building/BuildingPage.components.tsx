@@ -250,7 +250,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
                             {buildingInfo?.title} ({buildingInfo?.address})
                         </Text>
                     </Flex>
-                    <Flex gap={40}>
+                    <Flex gap={40} fullWidth>
                         <Flex direction="row" gap={20}>
                             {legend.map(({ title, style }) => (
                                 <Flex key={title} direction="row" gap={8}>
