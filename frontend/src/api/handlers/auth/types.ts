@@ -10,10 +10,10 @@ export interface UserData {
     username: string;
     email: string;
     user_type: string;
-    full_name?: string;
-    phone?: string;
-    organization_name?: string;
-    inn?: string;
+    full_name?: string | null;
+    phone?: string | null;
+    organization_name?: string | null;
+    inn?: string | null;
 }
 
 /**
@@ -38,8 +38,8 @@ export interface RegisterData {
     password1: string;
     password2: string;
     use_cookies?: boolean;
-    organization_name?: string;
-    inn?: string;
+    organization_name?: string | null;
+    inn?: string | null;
 }
 
 /**
@@ -68,5 +68,5 @@ export interface PasswordResetConfirmData {
 }
 
 export interface Message {
-    message: string;
+    message?: string;
 }

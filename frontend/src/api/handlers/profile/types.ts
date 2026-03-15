@@ -9,11 +9,11 @@ export type { UserData, Message } from '../auth/types';
  * Данные для обновления профиля
  */
 export interface UpdateProfileData {
-    full_name?: string;
-    email?: string;
-    phone?: string;
-    organization_name?: string;
-    inn?: string;
+    full_name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    organization_name?: string | null;
+    inn?: string | null;
 }
 
 /**

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useTypedSearchParams } from '@/hooks/useTypedSearchParams';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthForm } from '../../../components/ui/auth/AuthForm';
 import { TextInput } from '../../../components/ui/common/input/TextInput';
@@ -14,11 +15,15 @@ type RestorePasswordFormData = {
     newPassword2: string;
 };
 
+const parseRestorePasswordSearchParams = (raw: Record<string, string | undefined>) => ({
+    token: raw.token ?? '',
+});
+
 export const RestorePassword: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const token = searchParams.get('token') || '';
+    const [params] = useTypedSearchParams(parseRestorePasswordSearchParams);
+    const token = params.token;
 
     const { handleSubmit, control, formState, setError } = useForm<RestorePasswordFormData>({
         defaultValues: {

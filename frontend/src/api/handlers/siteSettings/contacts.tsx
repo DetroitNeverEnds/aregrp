@@ -1,11 +1,6 @@
 import { api } from '../../base/api';
 
-type ContactsRequest = {
-    params: undefined;
-    body: undefined;
-};
-
-type ContactsResponse = {
+export type ContactsResponse = {
     ogrn?: string | null;
     legal_address?: string | null;
     coordinates?: {
@@ -15,4 +10,4 @@ type ContactsResponse = {
     sales_center_address?: string | null;
 };
 
-export const siteContacts = api.get<ContactsRequest, ContactsResponse>('/site-settings/contacts');
+export const siteContacts = api.get<void, ContactsResponse>('/site-settings/contacts');

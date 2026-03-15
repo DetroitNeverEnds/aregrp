@@ -23,7 +23,7 @@ type BenifitConfig = {
     }[];
 };
 
-export const BenefitsWorking = (props: BenefitsProps) => {
+export const Benefits = (props: BenefitsProps) => {
     const { t } = useTranslation();
     const benefit: BenifitConfig = useMemo(
         () =>
@@ -58,22 +58,22 @@ export const BenefitsWorking = (props: BenefitsProps) => {
                     items: [
                         {
                             icon: 'benefit-8',
-                            title: t('benefits.sale.items.highLiquidity'),
+                            title: t('benefits.sale.items.highLiquidity.title'),
                             subtitle: t('benefits.sale.items.highLiquidity.subtitle'),
                         },
                         {
                             icon: 'benefit-7',
-                            title: t('benefits.sale.items.longTermAsset'),
+                            title: t('benefits.sale.items.longTermAsset.title'),
                             subtitle: t('benefits.sale.items.longTermAsset.subtitle'),
                         },
                         {
                             icon: 'benefit-5',
-                            title: t('benefits.sale.items.stableIncome'),
+                            title: t('benefits.sale.items.stableIncome.title'),
                             subtitle: t('benefits.sale.items.stableIncome.subtitle'),
                         },
                         {
                             icon: 'benefit-6',
-                            title: t('benefits.sale.items.noRent'),
+                            title: t('benefits.sale.items.noRent.title'),
                             subtitle: t('benefits.sale.items.noRent.subtitle'),
                         },
                     ],

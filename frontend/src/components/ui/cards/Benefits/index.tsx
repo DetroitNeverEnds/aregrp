@@ -1,1 +1,1 @@
-export { BenefitsWorking as BenifitsWorking } from './Benefits';
+export { Benefits as BenifitsWorking } from './Benefits';

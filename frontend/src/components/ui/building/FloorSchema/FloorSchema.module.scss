@@ -1,0 +1,68 @@
+@use '@/styles/variables.scss' as *;
+
+$free-room-color: $primary-700;
+$free-room-color-hover: $primary-800;
+$occupied-room-color: $error-default;
+$other-room-color: $primary-200;
+
+.floorSchema {
+    // width: 100%;
+    // height: 100%;
+    max-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__svgRoot {
+        width: 100%;
+        height: 100%;
+        display: block;
+
+        // нормализуем поведение вставленного svg
+        :global(svg) {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        // Убираем системную обводку при фокусе мышью, но сохраняем её для клавиатуры (:focus-visible)
+        :global(svg:focus:not(:focus-visible)),
+        :global(svg *:focus:not(:focus-visible)) {
+            outline: none;
+        }
+    }
+
+    &__room {
+        %roomBase {
+            // Убираем системную обводку/фокус при клике по комнате
+            &:focus,
+            &:focus-visible {
+                outline: none;
+            }
+        }
+
+        &--free {
+            @extend %roomBase;
+            cursor: pointer;
+            fill: $free-room-color;
+
+            &:hover {
+                fill: $free-room-color-hover;
+            }
+        }
+        &--selected {
+            @extend %roomBase;
+            cursor: pointer;
+            fill: $free-room-color-hover;
+
+            &:hover {
+                fill: $primary-900;
+            }
+        }
+        &--occupied {
+            @extend %roomBase;
+            cursor: not-allowed;
+            fill: $occupied-room-color;
+        }
+    }
+}

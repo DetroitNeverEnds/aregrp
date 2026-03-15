@@ -1,0 +1,60 @@
+@use '@/components/ui/building/FloorSchema/FloorSchema.module.scss' as *;
+
+.detailsPanelWrapper {
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+}
+
+.officeCard {
+    width: 500px;
+    overflow: hidden;
+}
+
+.floorchema,
+.floorSchema {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    transition: width 0.3s ease;
+
+    &__header {
+        &__text {
+            flex-shrink: 1;
+        }
+        &__link {
+            flex-shrink: 0;
+        }
+    }
+
+    &__legend {
+        @mixin square {
+            width: 20px;
+            height: 20px;
+        }
+
+        &__free {
+            @include square;
+            background-color: $free-room-color;
+        }
+        &__occupied {
+            @include square;
+            background-color: $occupied-room-color;
+        }
+        &__other {
+            @include square;
+            background-color: $other-room-color;
+        }
+    }
+}
+
+.premiseDetails {
+    &__gallery {
+        height: 400px;
+    }
+}
+
+.gallery {
+    width: 100%;
+    height: 650px;
+    box-sizing: border-box;
+}

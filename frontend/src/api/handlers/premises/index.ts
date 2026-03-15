@@ -18,7 +18,7 @@ export const getBuildings = api.get<BuildingFilterParams, BuildingOption[]>('/pr
  * Получить каталог зданий
  */
 export const getBuildingsCatalogue = api.get<BuildingCatalogueParams, BuildingsCatalogueResponse>(
-    '/buildings',
+    '/buildings/',
 );
 
 /**
@@ -29,18 +29,20 @@ export const getPremises = api.get<PremiseFilterParams, PremiseListResponse>('/p
 /**
  * Получить список помещений для аренды
  */
-export const getPremisesForRent = api.get<
-    Omit<PremiseFilterParams, 'sale_type'>,
-    PremiseListResponse
->('/premises/rent');
+export const getPremisesForRent = (
+    params?: Omit<PremiseFilterParams, 'sale_type'>,
+): Promise<PremiseListResponse> => {
+    return getPremises({ ...(params ?? {}), sale_type: 'rent' });
+};
 
 /**
  * Получить список помещений для продажи
  */
-export const getPremisesForSale = api.get<
-    Omit<PremiseFilterParams, 'sale_type'>,
-    PremiseListResponse
->('/premises/sale');
+export const getPremisesForSale = (
+    params?: Omit<PremiseFilterParams, 'sale_type'>,
+): Promise<PremiseListResponse> => {
+    return getPremises({ ...(params ?? {}), sale_type: 'sale' });
+};
 
 /**
  * Получить детальную информацию о помещении по UUID

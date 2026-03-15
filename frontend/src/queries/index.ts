@@ -7,5 +7,8 @@ export {
     usePremisesForRent,
     usePremisesForSale,
     usePremiseDetail,
+    useBuildingDetail,
+    useFloorPremises,
+    useFloor,
 } from './premises';
 export { useUser } from './profile';

@@ -1,7 +1,25 @@
 .container {
-    border-radius: $border-radius-l;
-    padding: 20px;
-    background-color: $gray-0;
+    &__size-l {
+        border-radius: $border-radius-l;
+        padding: 20px;
+    }
+    &__size-xl {
+        border-radius: $border-radius-xl;
+        padding: 24px;
+    }
+
+    &__background-white {
+        background-color: $gray-0;
+    }
+    &__background-gray {
+        background-color: $gray-10;
+    }
+
+    &__withShadow {
+        box-shadow:
+            0 0 16px 0 rgba(30, 32, 35, 0.1),
+            0 4px 8px 0 rgba(30, 32, 35, 0.05);
+    }
 }
 
 .pin {

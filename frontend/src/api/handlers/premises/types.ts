@@ -5,28 +5,11 @@
 export type SaleType = 'rent' | 'sale';
 
 /**
- * Фото помещения
+ * Базовая схема медиа (OpenAPI: BaseMediaItemOut)
  */
-export interface MediaPhoto {
+export interface BaseMediaItem {
+    type: 'photo' | 'video';
     url: string;
-    title?: string;
-    is_primary: boolean;
-}
-
-/**
- * Видео помещения
- */
-export interface MediaVideo {
-    url: string;
-    title?: string;
-}
-
-/**
- * Медиа помещения
- */
-export interface PremiseMedia {
-    photos: MediaPhoto[];
-    videos: MediaVideo[];
 }
 
 /**
@@ -37,22 +20,23 @@ export interface PremiseListItem {
     name: string;
     price: string;
     address: string;
-    floor?: number;
+    floor?: number | null;
     area: string;
     has_tenant: boolean;
-    media: PremiseMedia;
+    media: BaseMediaItem[];
+    building_uuid: string;
 }
 
 /**
  * Детальная информация о помещении
  */
 export interface PremiseDetail extends PremiseListItem {
-    description?: string;
-    price_per_sqm?: string;
-    ceiling_height?: string;
-    has_windows: boolean;
-    has_parking: boolean;
-    is_furnished: boolean;
+    description?: string | null;
+    price_per_sqm?: string | null;
+    ceiling_height?: string | null;
+    has_windows?: boolean;
+    has_parking?: boolean;
+    is_furnished?: boolean;
 }
 
 /**
@@ -100,8 +84,6 @@ export interface BuildingOption {
 export interface BuildingFilterParams {
     sale_type?: SaleType;
     available?: boolean;
-    page?: number;
-    page_size?: number;
 }
 
 /**
@@ -113,15 +95,7 @@ export interface BuildingCatalogueParams {
 }
 
 /**
- * Элемент медиа здания
- */
-export interface MediaItem {
-    type: 'photo' | 'video';
-    link: string;
-}
-
-/**
- * Здание в каталоге
+ * Здание в каталоге (OpenAPI: BuildingListOut)
  */
 export interface BuildingCatalogue {
     uuid: string;
@@ -130,7 +104,7 @@ export interface BuildingCatalogue {
     description: string;
     min_sale_price?: number | null;
     min_rent_price?: number | null;
-    media: MediaItem[];
+    media: BaseMediaItem[];
 }
 
 export type BuildingsCatalogueResponse = {

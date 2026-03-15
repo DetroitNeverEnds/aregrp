@@ -10,110 +10,68 @@ const image5 = 'http://localhost:3845/assets/faee4f1213c9c3ae4f0bf3f8d2255e31f16
 export const mockOfficeCards: PremiseListItem[] = [
     {
         uuid: '1',
+        building_uuid: '',
         name: 'Двух-этажный бизнес-центр со своим паркингом в приволжском районе г. Казань рядом с ТРЦ "KazanMall"',
         address: 'Роторная 1д',
         price: '2550000',
         area: '150',
         floor: 2,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image1,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image1 }],
     },
     {
         uuid: '2',
+        building_uuid: '',
         name: 'Многофункциональный трехэтажный бизнес-центр со своим паркингом в Советском г. Казани',
         address: 'ул. Аделя Кутуя, 68A',
         price: '1000000',
         area: '85',
         floor: 1,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image2,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image2 }],
     },
     {
         uuid: '3',
+        building_uuid: '',
         name: 'Офисное здание в центре города г. Казани',
         address: 'ул. Татарстана 20',
         price: '3322200',
         area: '200',
         floor: 3,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image3,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image3 }],
     },
     {
         uuid: '4',
+        building_uuid: '',
         name: 'Коммерческая недвижимость в ЖК«Салават Купере»',
         address: 'ул. Зилантовская 22/15',
         price: '2550000',
         area: '120',
         floor: 1,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image4,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image4 }],
     },
     {
         uuid: '5',
+        building_uuid: '',
         name: 'Многофункциональный бизнес-центр с паркингом в Кировском районе г. Казани',
         address: 'Фрунзе 5',
         price: '2588500',
         area: '180',
         floor: 2,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image5,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image5 }],
     },
     {
         uuid: '6',
+        building_uuid: '',
         name: 'Многофункциональный бизнес-центр с паркингом в Кировском районе г. Казани',
         address: 'Маршутная 12А',
         price: '1130000',
         area: '95',
         floor: 1,
         has_tenant: false,
-        media: {
-            photos: [
-                {
-                    url: image5,
-                    is_primary: true,
-                },
-            ],
-            videos: [],
-        },
+        media: [{ type: 'photo', url: image5 }],
     },
 ];

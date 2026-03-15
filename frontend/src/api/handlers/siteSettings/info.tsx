@@ -1,10 +1,5 @@
 import { api } from '../../base/api';
 
-export type InfoRequest = {
-    params: undefined;
-    body: undefined;
-};
-
 export type InfoResponse = {
     phone: string;
     display_phone: string;
@@ -16,4 +11,4 @@ export type InfoResponse = {
     org_name?: string | null;
 };
 
-export const siteInfo = api.get<InfoRequest, InfoResponse>('/site-settings/main-info');
+export const siteInfo = api.get<void, InfoResponse>('/site-settings/main-info');

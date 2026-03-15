@@ -1,4 +1,4 @@
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
 import type {
     LoginData,
     PasswordResetData,
@@ -38,27 +38,33 @@ export type RegisterMutationData = {
 export function useRegisterMutation(
     options?: Omit<UseMutationOptions<AuthResponse, ApiError, RegisterMutationData>, 'mutationFn'>,
 ) {
+    const queryClient = useQueryClient();
+    const { onSuccess, ...restOptions } = options ?? {};
     return useMutation({
         mutationFn: (data: RegisterMutationData) => {
             const { userType, fullName, policyAgrement: _uPA, ...other } = data;
             return register({ user_type: userType, full_name: fullName, ...other });
         },
-        onSuccess(_data, _variables, _onMutateResult, context) {
-            context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+        onSuccess(data, variables, onMutateResult, mutationContext) {
+            queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+            onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
-        ...options,
+        ...restOptions,
     });
 }
 
 export function useLoginMutation(
     options?: Omit<UseMutationOptions<AuthResponse, ApiError, LoginData>, 'mutationFn'>,
 ) {
+    const queryClient = useQueryClient();
+    const { onSuccess, ...restOptions } = options ?? {};
     return useMutation({
         mutationFn: login,
-        onSuccess(_data, _variables, _onMutateResult, context) {
-            context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+        onSuccess(data, variables, onMutateResult, mutationContext) {
+            queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+            onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
-        ...options,
+        ...restOptions,
     });
 }
 

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { Flex } from '../../common/Flex';
 import { Link } from '../../common/Link';
 import { Button } from '../../common/Button';
@@ -25,6 +26,7 @@ export type HeaderProps = {
 
 export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
     const { t } = useTranslation();
+    const location = useLocation();
     const siteInfoResult = useSiteInfo().data;
     const siteInfo = siteInfoResult?.data;
     const userResult = useUser().data;
@@ -97,7 +99,11 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                             />
                         ) : (
                             <Button
-                                to="/auth/login"
+                                to={
+                                    location.pathname.startsWith('/auth')
+                                        ? '/auth/login'
+                                        : `/auth/login?redirect=${encodeURIComponent(location.pathname + location.search)}`
+                                }
                                 variant={isDark ? 'outlined' : 'primary'}
                                 theme={isDark ? 'dark' : 'light'}
                             >

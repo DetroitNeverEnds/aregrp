@@ -7,14 +7,14 @@ import { Column } from '../../layout/TwoColumnsContainer';
 import { type BuildingCatalogue } from '@/api';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 
-export interface ObjectCardProps {
+export interface BuildingCardProps {
     item: BuildingCatalogue;
 }
 
 /**
- * Компонент карточки объекта недвижимости
+ * Компонент карточки здания (building)
  */
-export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
+export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
     const {
         // title,
         description,
@@ -34,10 +34,10 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
     };
 
     return (
-        <Flex justify="between" gap={30} className={styles.objectCard}>
+        <Flex justify="between" gap={30} className={styles.buildingCard}>
             <Flex gap={20} fullWidth align="start">
                 {/* Изображение */}
-                <Gallery building={item} className={styles.objectCard__imageWrapper} />
+                <Gallery building={item} className={styles.buildingCard__imageWrapper} />
 
                 {/* Заголовок и цена */}
                 <Flex
@@ -45,12 +45,12 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
                     justify="between"
                     align="center"
                     fullWidth
-                    className={styles.objectCard__name}
+                    className={styles.buildingCard__name}
                 >
                     <Text
                         variant="24-med"
                         color="primary-900"
-                        className={styles.objectCard__name__title}
+                        className={styles.buildingCard__name__title}
                     >
                         {address}
                     </Text>
@@ -75,7 +75,11 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
                 <Divider />
 
                 {/* Описание */}
-                <Text variant="20-reg" color="gray-100" className={styles.objectCard__description}>
+                <Text
+                    variant="20-reg"
+                    color="gray-100"
+                    className={styles.buildingCard__description}
+                >
                     {description}
                 </Text>
             </Flex>
@@ -101,4 +105,4 @@ export const ObjectCard: React.FC<ObjectCardProps> = ({ item }) => {
     );
 };
 
-export default ObjectCard;
+export default BuildingCard;
