@@ -1,13 +1,22 @@
 @use '@/components/ui/building/FloorSchema/FloorSchema.module.scss' as *;
 
+.detailsPanelWrapper {
+    flex-shrink: 0;
+    overflow: hidden;
+    transition: width 0.3s ease;
+}
+
 .officeCard {
     width: 500px;
     flex-shrink: 0;
 }
 
-.floorchema {
+.floorchema,
+.floorSchema {
     flex-grow: 1;
     flex-shrink: 1;
+    min-width: 0;
+    transition: width 0.3s ease;
 
     &__header {
         &__text {

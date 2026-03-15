@@ -49,6 +49,15 @@ $other-room-color: $primary-200;
                 fill: $free-room-color-hover;
             }
         }
+        &--selected {
+            @extend %roomBase;
+            cursor: pointer;
+            fill: $free-room-color-hover;
+
+            &:hover {
+                fill: $primary-900;
+            }
+        }
         &--occupied {
             @extend %roomBase;
             cursor: not-allowed;

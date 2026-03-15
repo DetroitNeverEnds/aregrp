@@ -15,12 +15,14 @@ export type FloorSchemaProps = {
     svg: string;
     rooms: FloorRoom[];
     className?: string;
+    selectedPremiseId?: string;
     onRoomSelect?: (room: FloorRoom) => void;
 };
 
 export const FloorSchema: React.FC<FloorSchemaProps> = ({
     svg,
     rooms,
+    selectedPremiseId,
     onRoomSelect,
     className,
 }) => {
@@ -44,11 +46,14 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
             group.setAttribute('data-premise-name', room.name);
 
             const roomPath = group.querySelector<SVGPathElement>('path[id="room"]');
+            const isSelected = !room.is_occupied && room.uuid === selectedPremiseId;
             roomPath?.setAttribute(
                 'class',
                 room.is_occupied
                     ? styles['floorSchema__room--occupied']
-                    : styles['floorSchema__room--free'],
+                    : isSelected
+                      ? styles['floorSchema__room--selected']
+                      : styles['floorSchema__room--free'],
             );
 
             if (room.is_occupied) {
@@ -95,7 +100,7 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
                 }
             });
         };
-    }, [onRoomSelect, rooms, svg]);
+    }, [onRoomSelect, rooms, selectedPremiseId, svg]);
 
     return (
         <div className={classNames(styles.floorSchema, className)}>

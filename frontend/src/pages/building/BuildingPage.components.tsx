@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -22,6 +21,7 @@ import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundar
 import { Column } from '@/components/ui/layout/TwoColumnsContainer';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { useHeaderSettings } from '@/hooks/useHeaderSettings';
+import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedSearchParams';
 import { useFloor, usePremiseDetail, usePremises } from '@/queries';
 import type {
     BuildingDetailOut,
@@ -33,6 +33,16 @@ import type {
 import styles from './BuildingPage.module.scss';
 
 type BuildingInfo = BuildingDetailOut;
+
+type BuildingSearchParams = {
+    floor: number;
+    selectedPremise?: string;
+};
+
+const parseBuildingSearchParams: SearchParamsParser<BuildingSearchParams> = raw => ({
+    floor: Number(raw.floor) || 1,
+    selectedPremise: raw.selectedPremise || undefined,
+});
 
 type PremiseDetailsCardProps = {
     data: PremiseDetail;
@@ -96,26 +106,30 @@ type FloorSchemaContentProps = {
 const FloorSchemaContent = (props: FloorSchemaContentProps) => {
     const floorData = props.data;
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const searchParamsObj = useMemo(
-        () => Object.fromEntries(searchParams.entries()),
-        [searchParams],
-    );
+    const [{ selectedPremise }, rawParams, setSearchParams] =
+        useTypedSearchParams(parseBuildingSearchParams);
 
     const onPremiseSelect = useCallback(
         (room: FloorRoom) => {
-            setSearchParams({
-                ...searchParamsObj,
-                selectedPremise: room.uuid,
-            });
+            const isAlreadySelected = room.uuid === selectedPremise;
+            if (isAlreadySelected) {
+                const { selectedPremise: _, ...rest } = rawParams;
+                setSearchParams(rest);
+            } else {
+                setSearchParams({
+                    ...rawParams,
+                    selectedPremise: room.uuid,
+                });
+            }
         },
-        [searchParamsObj, setSearchParams],
+        [rawParams, selectedPremise, setSearchParams],
     );
 
     return (
         <FloorSchema
             svg={fetchFloorSvgMock()}
             rooms={floorData.premises ?? []}
+            selectedPremiseId={selectedPremise}
             onRoomSelect={onPremiseSelect}
         />
     );
@@ -201,39 +215,35 @@ export const BuildingContent = (props: BuildingContentProps) => {
     const otherPremisesQ = usePremises(otherPremisesParams);
 
     // Floor and selected premise (selected)
-    const [searchParams, setSearchParams] = useSearchParams();
-    const searchParamsObj = useMemo(
-        () => Object.fromEntries(searchParams.entries()),
-        [searchParams],
-    );
-    const { floor: currentFloor, selectedPremise } = useMemo(
-        () => ({
-            floor: Number(searchParams.get('floor')) || 1,
-            selectedPremise: searchParams.get('selectedPremise') || undefined,
-        }),
-        [searchParams],
-    );
+    const [{ floor: currentFloor, selectedPremise }, rawParams, setSearchParams] =
+        useTypedSearchParams(parseBuildingSearchParams);
 
     const floorQ = useFloor(buildingInfo.uuid, currentFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     const onFloorSelect = useCallback(
         (floor: number) => {
-            setSearchParams({ ...searchParamsObj, floor: floor.toString() });
+            const { selectedPremise: _, ...rest } = rawParams;
+            setSearchParams({ ...rest, floor: floor.toString() });
         },
-        [searchParamsObj, setSearchParams],
+        [rawParams, setSearchParams],
     );
 
     return (
         <>
             <Flex direction="row" gap={24} fullWidth>
-                {selectedPremise && (
-                    <QueryBoundary
-                        query={selectedPremiseQ}
-                        Component={PremiseDetailsCard}
-                        onRetry="default"
-                    />
-                )}
+                <div
+                    className={styles.detailsPanelWrapper}
+                    style={{ width: selectedPremise ? 500 : 0 }}
+                >
+                    {selectedPremise && (
+                        <QueryBoundary
+                            query={selectedPremiseQ}
+                            Component={PremiseDetailsCard}
+                            onRetry="default"
+                        />
+                    )}
+                </div>
                 <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
                     <Flex direction="row" justify="between" align="start">
                         <Text variant="h2" className={styles.floorchema__header__text}>
