@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TextInput, type TextInputSize } from './TextInput';
 import styles from './TextInput.module.scss';
@@ -137,13 +137,17 @@ describe('TextInput', () => {
             expect(input).toHaveAttribute('type', 'password');
 
             if (toggleButton) {
-                await user.click(toggleButton);
+                await act(async () => {
+                    await user.click(toggleButton);
+                });
             }
 
             expect(input).toHaveAttribute('type', 'text');
 
             if (toggleButton) {
-                await user.click(toggleButton);
+                await act(async () => {
+                    await user.click(toggleButton);
+                });
             }
 
             expect(input).toHaveAttribute('type', 'password');
