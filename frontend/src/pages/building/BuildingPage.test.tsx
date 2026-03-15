@@ -9,7 +9,7 @@ vi.mock('@/hooks/useHeaderSettings', () => ({
     useHeaderSettings: vi.fn(),
 }));
 
-vi.mock('@/queries', async (importOriginal) => {
+vi.mock('@/queries', async importOriginal => {
     const actual = await importOriginal<typeof import('@/queries')>();
     return {
         ...actual,

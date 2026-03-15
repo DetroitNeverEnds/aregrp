@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Catalogue } from './Catalogue';
@@ -52,7 +51,9 @@ describe('Catalogue', () => {
         } as ReturnType<typeof queries.usePremises>);
 
         render(<Catalogue />, {
-            wrapper: createWrapper(['/catalogue?filter=' + encodeURIComponent(JSON.stringify({ sale_type: 'sale' }))]),
+            wrapper: createWrapper([
+                '/catalogue?filter=' + encodeURIComponent(JSON.stringify({ sale_type: 'sale' })),
+            ]),
         });
 
         expect(screen.getByText('Продажа офисов')).toBeInTheDocument();
@@ -68,7 +69,9 @@ describe('Catalogue', () => {
         } as ReturnType<typeof queries.usePremises>);
 
         render(<Catalogue />, {
-            wrapper: createWrapper(['/catalogue?filter=' + encodeURIComponent(JSON.stringify({ sale_type: 'rent' }))]),
+            wrapper: createWrapper([
+                '/catalogue?filter=' + encodeURIComponent(JSON.stringify({ sale_type: 'rent' })),
+            ]),
         });
 
         expect(screen.getByText('Аренда офисов')).toBeInTheDocument();
