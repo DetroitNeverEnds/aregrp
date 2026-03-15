@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthForm } from '../../../components/ui/auth/AuthForm';
 import { TextInput } from '../../../components/ui/common/input/TextInput';
@@ -19,6 +19,7 @@ type LoginFormData = {
 export const Login: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { handleSubmit, control, formState, setError } = useForm<LoginFormData>({
         defaultValues: {
             email: '',
@@ -29,7 +30,8 @@ export const Login: React.FC = () => {
 
     const { mutate: loginMutate, isPending } = useLoginMutation({
         onSuccess: () => {
-            navigate('/');
+            const redirect = searchParams.get('redirect');
+            navigate(redirect && redirect.startsWith('/') ? redirect : '/');
         },
         onError: error => {
             console.error('Ошибка входа:', error);
@@ -81,7 +83,15 @@ export const Login: React.FC = () => {
                 <Flex align="end" fullWidth>
                     <Text variant="16-reg" color="gray-50">
                         {t('auth.common.noAccount')}{' '}
-                        <Link to="/auth/register" size="lg" theme="black">
+                        <Link
+                            to={
+                                searchParams.get('redirect')
+                                    ? `/auth/register?redirect=${encodeURIComponent(searchParams.get('redirect')!)}`
+                                    : '/auth/register'
+                            }
+                            size="lg"
+                            theme="black"
+                        >
                             {t('auth.common.register')}
                         </Link>
                     </Text>

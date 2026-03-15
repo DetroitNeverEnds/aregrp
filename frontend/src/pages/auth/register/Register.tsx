@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { AuthForm } from '../../../components/ui/auth/AuthForm';
 import { TextInput } from '../../../components/ui/common/input/TextInput';
@@ -17,6 +17,7 @@ type RegisterFormData = RegisterMutationData;
 export const Register: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { handleSubmit, control, setValue, watch, setError, formState } =
         useForm<RegisterFormData>({
             defaultValues: {
@@ -34,7 +35,8 @@ export const Register: React.FC = () => {
 
     const { mutate: registerMutate, isPending } = useRegisterMutation({
         onSuccess: () => {
-            navigate('/');
+            const redirect = searchParams.get('redirect');
+            navigate(redirect && redirect.startsWith('/') ? redirect : '/');
         },
         onError: error => {
             console.error('Ошибка регистрации:', error);
@@ -131,7 +133,15 @@ export const Register: React.FC = () => {
                 <Flex align="end" fullWidth>
                     <Text variant="16-reg" color="gray-50">
                         {t('auth.common.hasAccount')}{' '}
-                        <Link to="/auth/login" size="lg" theme="black">
+                        <Link
+                            to={
+                                searchParams.get('redirect')
+                                    ? `/auth/login?redirect=${encodeURIComponent(searchParams.get('redirect')!)}`
+                                    : '/auth/login'
+                            }
+                            size="lg"
+                            theme="black"
+                        >
                             {t('auth.common.login')}
                         </Link>
                     </Text>
