@@ -204,6 +204,10 @@
     },
     "pages": {
         "building": {
+            "address": "Адрес",
+            "area": "Площадь",
+            "tenant": "Арендатор",
+            "infrastructure": "Инфраструктура бизнес-центра",
             "officeCatalogue": "Каталог офисов",
             "downloadPresentation": "Скачать презентацию",
             "legend": {

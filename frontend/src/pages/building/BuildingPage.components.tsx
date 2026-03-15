@@ -65,18 +65,18 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
                 </Flex>
                 <Flex gap={8} align="start">
                     <Text variant="14-reg" color="gray-70">
-                        Адрес: {premise.address}
+                        {t('pages.building.address')}: {premise.address}
                     </Text>
                     <Text variant="14-reg" color="gray-70">
-                        Площадь: {premise.area}
-                    </Text>
-
-                    <Text variant="14-reg" color="gray-70">
-                        Этаж: {premise.floor}
+                        {t('pages.building.area')}: {premise.area}
                     </Text>
 
                     <Text variant="14-reg" color="gray-70">
-                        Арендатор:{' '}
+                        {t('pages.building.floor')}: {premise.floor}
+                    </Text>
+
+                    <Text variant="14-reg" color="gray-70">
+                        {t('pages.building.tenant')}:{' '}
                         {premise.has_tenant
                             ? t(`components.OfficeCard.hasTennant`)
                             : t(`components.OfficeCard.noTennant`)}
@@ -198,14 +198,14 @@ export const BuildingContent = (props: BuildingContentProps) => {
     useHeaderSettings(headerSettings);
 
     // Building info
-    const [currentMediaCategotyIndex, setCurrentMediaCategoryIndex] = useState(0);
-    const currentMediaCategoty = useMemo(
-        () => buildingInfo.media_categories[currentMediaCategotyIndex] || '',
-        [buildingInfo.media_categories, currentMediaCategotyIndex],
+    const [currentMediaCategoryIndex, setCurrentMediaCategoryIndex] = useState(0);
+    const currentMediaCategory = useMemo(
+        () => buildingInfo.media_categories[currentMediaCategoryIndex] || '',
+        [buildingInfo.media_categories, currentMediaCategoryIndex],
     );
     const selectedMedia: GalleryMedia[] | undefined = useMemo(
-        () => buildingInfo.media.filter(media => media.category === currentMediaCategoty),
-        [buildingInfo.media, currentMediaCategoty],
+        () => buildingInfo.media.filter(media => media.category === currentMediaCategory),
+        [buildingInfo.media, currentMediaCategory],
     );
 
     const otherPremisesParams = useMemo(
@@ -288,12 +288,12 @@ export const BuildingContent = (props: BuildingContentProps) => {
                 />
             </Container>
             <Container>
-                <Text variant="h2">Инфраструктура бизнес-центра</Text>
+                <Text variant="h2">{t('pages.building.infrastructure')}</Text>
                 <Flex direction="row" gap={12}>
                     {buildingInfo?.media_categories.map((category, index) => (
                         <Button
                             key={category}
-                            variant={category === currentMediaCategoty ? 'primary' : 'secondary'}
+                            variant={category === currentMediaCategory ? 'primary' : 'secondary'}
                             onClick={() => setCurrentMediaCategoryIndex(index)}
                         >
                             {category}
@@ -304,7 +304,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
                     size="l"
                     media={selectedMedia}
                     className={styles.gallery}
-                    key={currentMediaCategoty}
+                    key={currentMediaCategory}
                 />
             </Container>
         </>
