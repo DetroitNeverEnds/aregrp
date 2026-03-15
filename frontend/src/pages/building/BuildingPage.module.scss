@@ -2,13 +2,12 @@
 
 .detailsPanelWrapper {
     flex-shrink: 0;
-    overflow: hidden;
     transition: width 0.3s ease;
 }
 
 .officeCard {
     width: 500px;
-    flex-shrink: 0;
+    overflow: hidden;
 }
 
 .floorchema,
