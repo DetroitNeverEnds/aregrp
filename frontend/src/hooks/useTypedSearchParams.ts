@@ -1,9 +1,7 @@
 import { useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-export type SearchParamsParser<T> = (
-    raw: Record<string, string | undefined>,
-) => T;
+export type SearchParamsParser<T> = (raw: Record<string, string | undefined>) => T;
 
 /**
  * Типизированная обёртка над useSearchParams.

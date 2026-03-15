@@ -1,7 +1,12 @@
 import type { PremiseFilterParams } from '@/api';
 import { useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTypedSearchParams } from '@/hooks/useTypedSearchParams';
+
+const parseFilterSearchParams = (raw: Record<string, string | undefined>) => ({
+    filter: JSON.parse(raw.filter ?? '{}') as PremiseFilterParams,
+});
 
 export const useFilterSearchParams = (): {
     filter: PremiseFilterParams;
@@ -9,16 +14,15 @@ export const useFilterSearchParams = (): {
     gotoFilter: (filter: PremiseFilterParams) => void;
     getLinkToCatalogue: (filter: PremiseFilterParams) => string;
 } => {
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [params, rawParams, setSearchParams] = useTypedSearchParams(parseFilterSearchParams);
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const setFilter = useCallback(
         async (filter: PremiseFilterParams) => {
-            searchParams.set('filter', JSON.stringify(filter));
-            setSearchParams(searchParams);
+            setSearchParams({ ...rawParams, filter: JSON.stringify(filter) });
             await queryClient.invalidateQueries({ queryKey: ['premises', filter] });
         },
-        [searchParams, setSearchParams, queryClient],
+        [rawParams, setSearchParams, queryClient],
     );
     const gotoFilter = useCallback(
         async (filter: PremiseFilterParams) => {
@@ -27,10 +31,7 @@ export const useFilterSearchParams = (): {
         },
         [navigate, queryClient],
     );
-    const filter = useMemo(
-        () => JSON.parse(searchParams.get('filter') || '{}') as PremiseFilterParams,
-        [searchParams],
-    );
+    const filter = params.filter;
     const getLinkToCatalogue = useCallback(
         (filter: PremiseFilterParams) => `/catalogue?filter=${JSON.stringify(filter)}`,
         [],
