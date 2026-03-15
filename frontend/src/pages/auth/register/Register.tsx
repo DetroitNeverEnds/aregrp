@@ -111,7 +111,7 @@ export const Register: React.FC = () => {
                     rules={{
                         required: t('auth.errors.policyAgrementRequired'),
                     }}
-                    render={({ field: { value, ...fieldValues }, fieldState }) => (
+                    render={({ field: { value, ref: _ref, ...fieldValues }, fieldState }) => (
                         <Checkbox
                             size="lg"
                             label={

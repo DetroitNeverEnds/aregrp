@@ -65,7 +65,7 @@ export const Login: React.FC = () => {
                     <Controller
                         control={control}
                         name="rememberMe"
-                        render={({ field: { value, ...fieldValues } }) => (
+                        render={({ field: { value, ref: _ref, ...fieldValues } }) => (
                             <Checkbox
                                 size="lg"
                                 label={t('auth.login.rememberMe')}
