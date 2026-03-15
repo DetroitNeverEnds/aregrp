@@ -44,19 +44,17 @@ export class ApiClient {
 
     /**
      * Настроить перехватчики axios
+     * Сначала handleAuth (retry при 401), затем handleError (преобразование в ApiError)
      */
     protected setupInterceptors(): void {
-        // Перехватчик ответов для обработки ошибок
         this.axiosInstance.interceptors.response.use(
             response => response,
-            (error: AxiosError) => {
-                return Promise.reject(this.handleAuth(error));
-            },
-        );
-        this.axiosInstance.interceptors.response.use(
-            response => response,
-            (error: AxiosError) => {
-                return Promise.reject(this.handleError(error));
+            async (error: AxiosError) => {
+                try {
+                    return await this.handleAuth(error);
+                } catch (e) {
+                    return Promise.reject(this.handleError(e as AxiosError));
+                }
             },
         );
     }
