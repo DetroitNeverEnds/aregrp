@@ -119,7 +119,7 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                 </Column>
 
                 <Button type="submit" variant="primary" size="lg" icon="search">
-                    Поиск объектов
+                    {t('components.objectFilter.searchObjects')}
                 </Button>
             </Flex>
         </Form>

@@ -4,6 +4,7 @@ export {
     useBuildings,
     useBuildingsCatalogue,
     usePremises,
+    usePremisesInfinite,
     usePremisesForRent,
     usePremisesForSale,
     usePremiseDetail,
