@@ -14,14 +14,14 @@ vi.mock('@/queries', async importOriginal => {
     return {
         ...actual,
         useBuildingDetail: vi.fn(),
-        usePremises: vi.fn(),
+        usePremisesInfinite: vi.fn(),
         useFloor: vi.fn(),
         usePremiseDetail: vi.fn(),
     };
 });
 
 const mockUseBuildingDetail = vi.mocked(queries.useBuildingDetail);
-const mockUsePremises = vi.mocked(queries.usePremises);
+const mockUsePremisesInfinite = vi.mocked(queries.usePremisesInfinite);
 const mockUseFloor = vi.mocked(queries.useFloor);
 const mockUsePremiseDetail = vi.mocked(queries.usePremiseDetail);
 
@@ -63,11 +63,15 @@ describe('BuildingPage', () => {
             isPending: true,
             error: null,
         } as ReturnType<typeof queries.useBuildingDetail>);
-        mockUsePremises.mockReturnValue({
-            data: { data: { items: [], page: 1, total: 0, page_size: 6, total_pages: 0 } },
+        mockUsePremisesInfinite.mockReturnValue({
+            data: {
+                pages: [{ data: { items: [], page: 1, total: 0, page_size: 6, total_pages: 0 } }],
+            },
             isFetching: false,
-            error: null,
-        } as ReturnType<typeof queries.usePremises>);
+            isFetchingNextPage: false,
+            hasNextPage: false,
+            fetchNextPage: vi.fn(),
+        } as ReturnType<typeof queries.usePremisesInfinite>);
         mockUseFloor.mockReturnValue({
             data: { data: { premises: [], schema_svg: '' } },
             isPending: false,

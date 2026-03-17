@@ -1,4 +1,4 @@
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, type UseQueryResult } from '@tanstack/react-query';
 import {
     getBuildings,
     getBuildingsCatalogue,
@@ -55,6 +55,30 @@ export function usePremises(
     return useQuery({
         queryKey: ['premises', params],
         queryFn: () => wrapApiCall(getPremises)({ page_size: 6, ...params }),
+    });
+}
+
+/**
+ * Хук для получения списка помещений с пагинацией «Показать еще»
+ */
+export function usePremisesInfinite(baseParams?: Omit<PremiseFilterParams, 'page'>) {
+    const pageSize = 6;
+    return useInfiniteQuery({
+        queryKey: ['premises', 'infinite', baseParams],
+        queryFn: async ({ pageParam = 1 }) => {
+            const result = await wrapApiCall(getPremises)({
+                page_size: pageSize,
+                page: pageParam,
+                ...baseParams,
+            });
+            return result;
+        },
+        getNextPageParam: lastResult => {
+            const data = lastResult?.data;
+            if (!data || data.page >= data.total_pages) return undefined;
+            return data.page + 1;
+        },
+        initialPageParam: 1,
     });
 }
 
