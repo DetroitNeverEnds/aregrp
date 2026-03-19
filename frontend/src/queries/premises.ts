@@ -21,6 +21,7 @@ import {
     type FloorResponseOut,
 } from '../api';
 import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
+import Config from '@/config';
 
 /**
  * Хук для получения списка зданий
@@ -43,6 +44,30 @@ export function useBuildingsCatalogue(
     return useQuery({
         queryKey: ['buildings', 'catalogue', params],
         queryFn: () => wrapApiCall(getBuildingsCatalogue)(params),
+    });
+}
+
+/**
+ * Хук для получения каталога зданий с пагинацией «Показать еще»
+ */
+export function useBuildingsCatalogueInfinite(baseParams?: Omit<BuildingCatalogueParams, 'page'>) {
+    const pageSize = Config.pageSizeMain;
+    return useInfiniteQuery({
+        queryKey: ['buildings', 'catalogue', 'infinite', baseParams],
+        queryFn: async ({ pageParam = 1 }) => {
+            const result = await wrapApiCall(getBuildingsCatalogue)({
+                page_size: pageSize,
+                page: pageParam,
+                ...baseParams,
+            });
+            return result;
+        },
+        getNextPageParam: lastResult => {
+            const data = lastResult?.data;
+            if (!data || data.page >= data.total_pages) return undefined;
+            return data.page + 1;
+        },
+        initialPageParam: 1,
     });
 }
 

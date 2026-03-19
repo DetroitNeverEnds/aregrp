@@ -57,12 +57,10 @@ export function InfiniteQueryBoundary<TItem>(props: InfiniteQueryBoundaryProps<T
         <>
             {children({
                 items,
-                loadMore:
-                    hasNextPage && !isFetchingNextPage ? () => query.fetchNextPage() : undefined,
+                loadMore: hasNextPage ? () => query.fetchNextPage() : undefined,
                 hasNextPage,
                 isFetchingNextPage,
             })}
-            {isFetchingNextPage && <Loader />}
         </>
     );
 }
