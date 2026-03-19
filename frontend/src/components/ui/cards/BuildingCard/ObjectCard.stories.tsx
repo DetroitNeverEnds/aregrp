@@ -1,6 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { BuildingCatalogue } from '@/api';
 import { BuildingCard } from './ObjectCard';
+import { MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+});
 
 const mockImage =
     'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop';
@@ -23,6 +29,15 @@ const meta = {
         layout: 'centered',
     },
     tags: ['autodocs'],
+    decorators: [
+        Story => (
+            <QueryClientProvider client={queryClient}>
+                <MemoryRouter initialEntries={['/']}>
+                    <Story />
+                </MemoryRouter>
+            </QueryClientProvider>
+        ),
+    ],
 } satisfies Meta<typeof BuildingCard>;
 
 export default meta;

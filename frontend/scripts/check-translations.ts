@@ -160,7 +160,7 @@ function checkTranslations(): void {
                 console.log(`${lang}:`);
                 keys.forEach(key => {
                     const value = getNestedValue(translations[baseLang], key);
-                    console.log(`  "${key}": "${value}" // TODO: перевести`);
+                    console.log(`  "${key}": "${value}" // needs translation`);
                 });
                 console.log('');
             }
