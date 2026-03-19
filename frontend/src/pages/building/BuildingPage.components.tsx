@@ -17,18 +17,15 @@ import Container from '@/components/ui/layout/Container';
 import { FeedbackFormRow } from '@/components/ui/layout/FeedbackFormRow';
 import type { HeaderProps } from '@/components/ui/layout/MainLayout/Header';
 import { Page } from '@/components/ui/layout/Page/Page';
+import { InfiniteQueryBoundary } from '@/components/ui/layout/QueryBoundary/InfiniteQueryBoundary';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 import { Column } from '@/components/ui/layout/TwoColumnsContainer';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { useHeaderSettings } from '@/hooks/useHeaderSettings';
 import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedSearchParams';
-import { useFloor, usePremiseDetail, usePremises } from '@/queries';
-import type {
-    BuildingDetailOut,
-    FloorResponseOut,
-    PremiseDetail,
-    PremiseListResponse,
-} from '@/api';
+import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';
+import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
+import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListItem } from '@/api';
 
 import styles from './BuildingPage.module.scss';
 
@@ -43,6 +40,13 @@ const parseBuildingSearchParams: SearchParamsParser<BuildingSearchParams> = raw 
     floor: Number(raw.floor) || 1,
     selectedPremise: raw.selectedPremise || undefined,
 });
+
+const toSearchParams = (params: BuildingSearchParams): Record<string, string> => {
+    const result: Record<string, string> = {};
+    if (params.floor) result.floor = String(params.floor);
+    if (params.selectedPremise) result.selectedPremise = params.selectedPremise;
+    return result;
+};
 
 type PremiseDetailsCardProps = {
     data: PremiseDetail;
@@ -136,16 +140,17 @@ const FloorSchemaContent = (props: FloorSchemaContentProps) => {
 };
 
 type OtherPremisesCardsProps = {
-    data: PremiseListResponse;
+    items: PremiseListItem[];
+    loadMore?: () => void;
 };
 
 const OtherPremisesCards = (props: OtherPremisesCardsProps) => {
-    const premises = props.data;
+    const { items, loadMore } = props;
 
     return (
-        <CardContainer>
-            {premises.items?.map(premiseData => (
-                <OfficeCard key={premiseData.name} item={premiseData} />
+        <CardContainer loadMore={loadMore}>
+            {items.map(premiseData => (
+                <OfficeCard key={premiseData.uuid} item={premiseData} />
             ))}
         </CardContainer>
     );
@@ -208,25 +213,43 @@ export const BuildingContent = (props: BuildingContentProps) => {
         [buildingInfo.media, currentMediaCategory],
     );
 
-    const otherPremisesParams = useMemo(
-        () => ({ building_uuids: buildingInfo.uuid }),
-        [buildingInfo.uuid],
-    );
-    const otherPremisesQ = usePremises(otherPremisesParams);
+    // Floor, selected premise, and catalog filter (local state, not in URL)
+    const [params, _rawParams, setSearchParams] = useTypedSearchParams(parseBuildingSearchParams);
+    const { floor: currentFloor, selectedPremise } = params;
 
-    // Floor and selected premise (selected)
-    const [{ floor: currentFloor, selectedPremise }, rawParams, setSearchParams] =
-        useTypedSearchParams(parseBuildingSearchParams);
+    const [catalogFilter, setCatalogFilter] = useState<{
+        min_price?: number;
+        max_price?: number;
+        min_area?: number;
+        max_area?: number;
+    }>({});
+
+    const otherPremisesParams = useMemo(
+        () => ({ building_uuids: buildingInfo.uuid, ...catalogFilter }),
+        [buildingInfo.uuid, catalogFilter],
+    );
+    const premisesInfiniteQ = usePremisesInfinite(otherPremisesParams);
 
     const floorQ = useFloor(buildingInfo.uuid, currentFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     const onFloorSelect = useCallback(
         (floor: number) => {
-            const { selectedPremise: _, ...rest } = rawParams;
-            setSearchParams({ ...rest, floor: floor.toString() });
+            setSearchParams(toSearchParams({ ...params, floor, selectedPremise: undefined }));
         },
-        [rawParams, setSearchParams],
+        [params, setSearchParams],
+    );
+
+    const onCatalogFilterChange = useCallback(
+        (filter: {
+            min_price?: number;
+            max_price?: number;
+            min_area?: number;
+            max_area?: number;
+        }) => {
+            setCatalogFilter(filter);
+        },
+        [],
     );
 
     return (
@@ -280,12 +303,30 @@ export const BuildingContent = (props: BuildingContentProps) => {
                 </Card>
             </Flex>
             <Container>
-                <QueryBoundary
-                    query={otherPremisesQ}
-                    Component={OtherPremisesCards}
+                <Flex direction="row" justify="between" align="center" fullWidth>
+                    <Text variant="h2">{t('pages.building.officeCatalogue')}</Text>
+                    <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
+                </Flex>
+                <Flex gap={20} fullWidth align="start">
+                    <BuildingOfficeFilter
+                        key={JSON.stringify(catalogFilter)}
+                        value={catalogFilter}
+                        onChange={onCatalogFilterChange}
+                    />
+                </Flex>
+                <InfiniteQueryBoundary<PremiseListItem>
+                    query={premisesInfiniteQ}
                     loadingFallback={<Loader />}
                     onRetry="default"
-                />
+                >
+                    {({ items, loadMore }) =>
+                        items.length === 0 ? (
+                            <Text color="gray-50">{t('pages.catalogue.noResults')}</Text>
+                        ) : (
+                            <OtherPremisesCards items={items} loadMore={loadMore} />
+                        )
+                    }
+                </InfiniteQueryBoundary>
             </Container>
             <Container>
                 <Text variant="h2">{t('pages.building.infrastructure')}</Text>

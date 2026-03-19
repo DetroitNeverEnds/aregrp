@@ -19,7 +19,7 @@ export interface OfficeCardProps {
 export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
     const { t } = useTranslation();
 
-    const { uuid, price, address, area, floor, has_tenant, building_uuid } = item;
+    const { uuid, name, price, address, area, floor, has_tenant, building_uuid } = item;
 
     // Форматирование цены
     const formatPrice = (price: string) => {
@@ -61,7 +61,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
 
             <Flex direction="column" gap={20} className={styles.officeCard__content}>
                 <Flex direction="row" justify="between" fullWidth>
-                    <Text variant="24-med">{address}</Text>
+                    <Text variant="24-med">{name}</Text>
                     <Text variant="20-med" color="gray-70" align="right">
                         {formatPrice(price)} / месяц
                     </Text>

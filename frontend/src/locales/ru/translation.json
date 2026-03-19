@@ -121,7 +121,8 @@
     },
     "components": {
         "objectFilter": {
-            "allCenters": "Все бизнес центры"
+            "allCenters": "Все бизнес центры",
+            "searchObjects": "Поиск объектов"
         },
         "OfficeCard": {
             "hasTennant": "Есть",
