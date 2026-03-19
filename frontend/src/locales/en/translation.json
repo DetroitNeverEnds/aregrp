@@ -1,5 +1,8 @@
 {
     "welcome": "Welcome",
+    "common": {
+        "feedbackSuccess": "Thank you! Your message has been received."
+    },
     "app": {
         "title": "Vite + React",
         "count": "count is {{count}}",

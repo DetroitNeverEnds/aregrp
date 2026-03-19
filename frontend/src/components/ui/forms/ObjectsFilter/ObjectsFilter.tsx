@@ -3,7 +3,7 @@ import styles from './ObjectsFilter.module.scss';
 import MinMaxSelect from './MinMaxSelect';
 import { useTranslation } from 'react-i18next';
 import { useBuildings } from '@/queries/premises';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Column } from '@/components/ui/layout/TwoColumnsContainer';
 import { Select, type SelectOption } from '@/components/ui/common/input/Select';
 import Form from '@/components/ui/common/Form';
@@ -36,21 +36,13 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
         gotoFilter(values);
     };
 
-    const { control, handleSubmit, setValue } = useForm<PremiseFilterParams>({
+    const { control, handleSubmit, setValue, reset } = useForm<PremiseFilterParams>({
         defaultValues: { sale_type: 'sale', ...(defaultValues || {}), ...filter },
     });
 
-    // TODO: Сбрасывать форму, когда меняется фильтр
-    // useEffect(() => {
-    //     reset({
-    //         building_uuids: '',
-    //         min_area: 1,
-    //         max_area: 1,
-    //         min_price: 1,
-    //         max_price: 1,
-    //         ...filter,
-    //     });
-    // }, [filter, reset]);
+    useEffect(() => {
+        reset({ sale_type: 'sale', ...(defaultValues || {}), ...filter });
+    }, [filter, reset, defaultValues]);
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>

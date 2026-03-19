@@ -6,6 +6,7 @@ import styles from './ObjectCard.module.scss';
 import { Column } from '../../layout/TwoColumnsContainer';
 import { type BuildingCatalogue } from '@/api';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
+import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 
 export interface BuildingCardProps {
     item: BuildingCatalogue;
@@ -15,10 +16,12 @@ export interface BuildingCardProps {
  * Компонент карточки здания (building)
  */
 export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
+    const { getLinkToCatalogue } = useFilterSearchParams();
     const {
         // title,
         description,
         address,
+        uuid,
         min_rent_price: minRentPrice,
         min_sale_price: minSalePrice,
     } = item;
@@ -88,14 +91,30 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
             <Flex direction="row" gap={10} fullWidth>
                 <Column>
                     {minSalePrice && (
-                        <Button href="TODO" variant="primary" size="md" width="max">
+                        <Button
+                            to={getLinkToCatalogue({
+                                sale_type: 'sale',
+                                building_uuids: uuid,
+                            })}
+                            variant="primary"
+                            size="md"
+                            width="max"
+                        >
                             Каталог продажи
                         </Button>
                     )}
                 </Column>
                 <Column>
                     {minRentPrice && (
-                        <Button href="TODO" variant="primary" size="md" width="max">
+                        <Button
+                            to={getLinkToCatalogue({
+                                sale_type: 'rent',
+                                building_uuids: uuid,
+                            })}
+                            variant="primary"
+                            size="md"
+                            width="max"
+                        >
                             Каталог аренды
                         </Button>
                     )}

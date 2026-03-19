@@ -72,7 +72,9 @@ export const Root = () => {
                     </Flex>
                     <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
 
-                    <CardContainer loadMore={() => alert('todo')}>
+                    <CardContainer
+                        loadMore={() => navigate(getLinkToCatalogue({ sale_type: 'sale' }))}
+                    >
                         {buildings?.items.map(item => (
                             <BuildingCard key={item.uuid} item={item} />
                         ))}
@@ -129,8 +131,7 @@ export const Root = () => {
                     </CardContainer>
                     <Button
                         variant="outlined"
-                        href="TODO"
-                        onClick={() => navigate(getLinkToCatalogue({ sale_type: 'sale' }))}
+                        to={getLinkToCatalogue({ sale_type: 'sale' })}
                     >
                         Перейти в каталог
                     </Button>
