@@ -144,6 +144,7 @@ describe('Catalogue', () => {
 
         render(<Catalogue />, { wrapper: createWrapper() });
 
-        expect(screen.getByText('ул. Тестовая 1')).toBeInTheDocument();
+        // Адрес отображается в карточке как "Адрес: ул. Тестовая 1"
+        expect(screen.getByText('Адрес: ул. Тестовая 1')).toBeInTheDocument();
     });
 });
