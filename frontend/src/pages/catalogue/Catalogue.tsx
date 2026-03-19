@@ -41,7 +41,11 @@ const ResultsView = () => {
         return <Loader height={400} />;
     }
     if (error) {
-        return <Text>{t(`errors.${error.code}`, '<Unknown Error>')}</Text>;
+        return (
+            <Text color="error-default">
+                {t(`errors.${error.code}`, t('errors.somethingWrong'))}
+            </Text>
+        );
     }
     if (offices === undefined || offices.length === 0) {
         return <Text color="gray-50">{t('pages.catalogue.noResults')}</Text>;

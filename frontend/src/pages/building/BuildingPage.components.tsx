@@ -142,13 +142,14 @@ const FloorSchemaContent = (props: FloorSchemaContentProps) => {
 type OtherPremisesCardsProps = {
     items: PremiseListItem[];
     loadMore?: () => void;
+    loadMoreLoading?: boolean;
 };
 
 const OtherPremisesCards = (props: OtherPremisesCardsProps) => {
-    const { items, loadMore } = props;
+    const { items, loadMore, loadMoreLoading } = props;
 
     return (
-        <CardContainer loadMore={loadMore}>
+        <CardContainer loadMore={loadMore} loadMoreLoading={loadMoreLoading}>
             {items.map(premiseData => (
                 <OfficeCard key={premiseData.uuid} item={premiseData} />
             ))}
@@ -319,11 +320,15 @@ export const BuildingContent = (props: BuildingContentProps) => {
                     loadingFallback={<Loader />}
                     onRetry="default"
                 >
-                    {({ items, loadMore }) =>
+                    {({ items, loadMore, isFetchingNextPage }) =>
                         items.length === 0 ? (
                             <Text color="gray-50">{t('pages.catalogue.noResults')}</Text>
                         ) : (
-                            <OtherPremisesCards items={items} loadMore={loadMore} />
+                            <OtherPremisesCards
+                                items={items}
+                                loadMore={loadMore}
+                                loadMoreLoading={isFetchingNextPage}
+                            />
                         )
                     }
                 </InfiniteQueryBoundary>

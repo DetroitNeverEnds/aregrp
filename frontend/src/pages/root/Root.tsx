@@ -12,7 +12,7 @@ import Container, { FeatureCard } from '../../components/ui/layout/Container';
 import { Column } from '../../components/ui/layout/TwoColumnsContainer';
 import { Divider } from '../../components/ui/common/Divider';
 import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
-import { useBuildingsCatalogue, usePremises } from '../../queries/premises';
+import { useBuildingsCatalogueInfinite, usePremises } from '../../queries/premises';
 import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
 import { Welcome } from './components/Welcome';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
@@ -22,7 +22,6 @@ import { BenifitsWorking } from '@/components/ui/cards/Benefits';
 import { Page } from '@/components/ui/layout/Page/Page';
 import _ from 'lodash';
 import Config from '@/config';
-import { useNavigate } from 'react-router-dom';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 
 type Data = {
@@ -36,7 +35,6 @@ const headerSettings: HeaderProps = {
 
 export const Root = () => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const { getLinkToCatalogue } = useFilterSearchParams();
 
     useHeaderSettings(headerSettings);
@@ -47,7 +45,13 @@ export const Root = () => {
 
     // const buildingsData = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
     const premises = usePremises({ page_size: Config.pageSizeMain }).data?.data;
-    const buildings = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
+    const {
+        data: buildingsData,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useBuildingsCatalogueInfinite({ page_size: Config.pageSizeMain });
+    const buildings = buildingsData?.pages.flatMap(page => page?.data?.items ?? []);
 
     return (
         <Page>
@@ -72,8 +76,11 @@ export const Root = () => {
                     </Flex>
                     <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
 
-                    <CardContainer loadMore={() => alert('todo')}>
-                        {buildings?.items.map(item => (
+                    <CardContainer
+                        loadMore={hasNextPage ? () => fetchNextPage() : undefined}
+                        loadMoreLoading={isFetchingNextPage}
+                    >
+                        {buildings?.map(item => (
                             <BuildingCard key={item.uuid} item={item} />
                         ))}
                     </CardContainer>
@@ -127,11 +134,7 @@ export const Root = () => {
                             <OfficeCard key={item.uuid} item={item} />
                         ))}
                     </CardContainer>
-                    <Button
-                        variant="outlined"
-                        href="TODO"
-                        onClick={() => navigate(getLinkToCatalogue({ sale_type: 'sale' }))}
-                    >
+                    <Button variant="outlined" to={getLinkToCatalogue({ sale_type: 'sale' })}>
                         Перейти в каталог
                     </Button>
                 </Container>

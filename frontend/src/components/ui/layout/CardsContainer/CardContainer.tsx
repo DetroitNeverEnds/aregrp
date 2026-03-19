@@ -1,5 +1,6 @@
 import type { PropsWithChildren } from 'react';
 import { Button } from '@/components/ui/common/Button';
+import { Spinner } from '@/components/ui/common/Spinner';
 import { Pagination } from '@/components/ui/common/Pagination';
 import Container from '@/components/ui/layout/Container';
 
@@ -15,6 +16,8 @@ export type CardContainerProps = PropsWithChildren & {
     children: React.ReactNode;
     pagination?: PaginationConfig;
     loadMore?: () => void;
+    /** Показывать спиннер вместо кнопки «Показать ещё» во время загрузки */
+    loadMoreLoading?: boolean;
 };
 
 export const CardContainer = (props: CardContainerProps) => {
@@ -28,11 +31,14 @@ export const CardContainer = (props: CardContainerProps) => {
                     onPageChange={props.pagination.onPageChange}
                 />
             )}
-            {props.loadMore && (
-                <Button variant="outlined" onClick={props.loadMore}>
-                    Показать еще
-                </Button>
-            )}
+            {props.loadMore &&
+                (props.loadMoreLoading ? (
+                    <Spinner size="lg" aria-label="Загрузка" />
+                ) : (
+                    <Button variant="outlined" onClick={props.loadMore}>
+                        Показать еще
+                    </Button>
+                ))}
         </Container>
     );
 };
