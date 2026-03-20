@@ -16,7 +16,13 @@ from ..schemas.auth import (
     PasswordResetIn, PasswordResetConfirmIn
 )
 from ..models import CustomUser
-from ..services.auth_service import jwt_auth, generate_jwt_tokens, generate_password_reset_token, verify_password_reset_token
+from ..services.auth_service import (
+    generate_jwt_tokens,
+    generate_password_reset_token,
+    get_refresh_token_from_request,
+    jwt_auth,
+    verify_password_reset_token,
+)
 from ..services.email_service import send_password_reset_email
 from ..services.utils import get_user_data
 
@@ -468,7 +474,7 @@ async def refresh_token(request):
     """
     try:
         # Получаем refresh токен из cookies
-        refresh_token_value = request.COOKIES.get('refresh_token')
+        refresh_token_value = get_refresh_token_from_request(request)
         
         if not refresh_token_value:
             return 401, create_accounts_error(
