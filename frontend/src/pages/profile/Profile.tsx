@@ -14,15 +14,11 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import styles from './Profile.module.scss';
 import { useTypedSearchParams } from '@/hooks/useTypedSearchParams';
-import _ from 'lodash';
 import FlatButton from '@/components/ui/common/FlatButton';
-import { Card } from '@/components/ui/common/Card/Card';
 import { Page } from '@/components/ui/layout/Page/Page';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 import type { UserData } from '@/api';
-
-// const displayFallback = (value: string | null | undefined, fallback: string) =>
-//     value?.trim() ? value : fallback;
+import { ProfileMainInfoCard } from './ProfileMainInfoCard';
 
 type MenuItems = {
     label: string;
@@ -98,44 +94,9 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
     const sidebarTitle =
         (user.user_type === 'agent' ? user.organization_name : user.full_name) || '-';
 
-    const infoItems = useMemo(
-        () =>
-            user.user_type === 'agent'
-                ? [
-                      {
-                          label: t('pages.profile.orgNameLabel'),
-                          value: user.organization_name,
-                      },
-                      {
-                          label: t('pages.profile.fullNameLabel'),
-                          value: user.full_name,
-                      },
-                      {
-                          label: t('pages.profile.phoneLabel'),
-                          value: user.phone,
-                      },
-                      {
-                          label: t('pages.profile.innLabel'),
-                          value: user.inn,
-                      },
-                  ]
-                : [
-                      {
-                          label: t('pages.profile.fullNameLabel'),
-                          value: user.full_name,
-                      },
-                      {
-                          label: t('pages.profile.phoneLabel'),
-                          value: user.phone,
-                      },
-                  ],
-        [user, t],
-    );
-
     return (
         <VerticalMainContainer className={styles.page}>
             <Flex direction="row" gap={60} fullWidth align="start">
-                {/* Menu Items */}
                 <Flex direction="column" className={styles.menu} fullWidth align="start">
                     <Flex direction="column" className={styles.menu__head} align="start" fullWidth>
                         <Flex direction="row" gap={12} align="start" fullWidth>
@@ -184,34 +145,7 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                     </Flex>
                 </Flex>
 
-                <Card
-                    size="xl"
-                    direction="column"
-                    gap={30}
-                    className={styles.mainPanel}
-                    align="start"
-                >
-                    <Flex direction="row" justify="between" align="start" fullWidth>
-                        <Text variant="24-med">{t('pages.profile.mainInfo')}</Text>
-                        <FlatButton>
-                            <Flex direction="row" gap={8} align="center">
-                                <Icon name="edit" size={14} aria-hidden />
-                                <Text variant="12-med" color="gray-70">
-                                    {t('pages.profile.edit')}
-                                </Text>
-                            </Flex>
-                        </FlatButton>
-                    </Flex>
-                    <Flex direction="column" gap={24} align="start" fullWidth>
-                        {infoItems.map(item => (
-                            <Flex direction="row" gap={8} align="start" key={item.label}>
-                                <Text variant="14-reg">
-                                    {item.label}: {item.value}
-                                </Text>
-                            </Flex>
-                        ))}
-                    </Flex>
-                </Card>
+                <ProfileMainInfoCard user={user} />
             </Flex>
         </VerticalMainContainer>
     );

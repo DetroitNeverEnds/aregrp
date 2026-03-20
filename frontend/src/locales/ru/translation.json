@@ -160,7 +160,9 @@
         "FEEDBACK_VALIDATION_ERROR": "Ошибка валидации обращения",
         "SITE_SETTINGS_ERROR": "Ошибка настроек сайта",
         "SITE_SETTINGS_NOT_FOUND": "Настройки сайта не найдены",
-        "REQUEST_ERROR": "Ошибка при создании запроса",
+        "REQUEST_ERROR": "Не удалось выполнить запрос.",
+        "NETWORK_ERROR": "Сервер не ответил. Проверьте подключение к интернету.",
+        "UNKNOWN_ERROR": "Произошла неизвестная ошибка. Попробуйте позже.",
 
         "somethingWrong": "Что-то пошло не так"
     },
@@ -258,14 +260,16 @@
             "mainInfo": "Основная информация",
             "edit": "Изменить",
             "userType": {
-                "individual": "физическое лицо",
-                "agent": "юридическое лицо"
+                "individual": "Физическое лицо",
+                "agent": "Юридическое лицо"
             },
             "orgNameLabel": "Наименование юрлица",
             "fullNameLabel": "ФИО",
             "phoneLabel": "Телефон",
             "innLabel": "ИНН",
-            "notSpecified": "—"
+            "notSpecified": "—",
+            "save": "Сохранить",
+            "cancel": "Отмена"
         }
     }
 }

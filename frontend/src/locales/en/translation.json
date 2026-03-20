@@ -1,5 +1,11 @@
 {
     "welcome": "Welcome",
+    "errors": {
+        "REQUEST_ERROR": "Could not send the request.",
+        "NETWORK_ERROR": "No response from the server. Check your internet connection.",
+        "UNKNOWN_ERROR": "Something went wrong. Please try again later.",
+        "somethingWrong": "Something went wrong"
+    },
     "bc": {
         "main": "Home",
         "profile": "Account"
@@ -20,7 +26,9 @@
             "fullNameLabel": "Full name:",
             "phoneLabel": "Phone:",
             "innLabel": "TIN:",
-            "notSpecified": "—"
+            "notSpecified": "—",
+            "save": "Save",
+            "cancel": "Cancel"
         }
     },
     "common": {

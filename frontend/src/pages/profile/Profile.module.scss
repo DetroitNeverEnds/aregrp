@@ -46,4 +46,34 @@
 .mainPanel {
     flex-grow: 1;
     min-height: 100%;
+
+    &__form {
+        width: 100%;
+    }
+
+    &__formGrid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 24px;
+        row-gap: 16px;
+        width: 100%;
+
+        @media (max-width: 640px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__formField {
+        min-width: 0;
+        width: 100%;
+    }
+
+    &__formActions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: flex-start;
+        width: 100%;
+    }
 }
