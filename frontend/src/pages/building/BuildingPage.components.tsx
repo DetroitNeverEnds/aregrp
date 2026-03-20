@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useCallback, useMemo, useState } from 'react';
 import _ from 'lodash';
 
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
@@ -15,13 +15,13 @@ import Text from '@/components/ui/common/Text';
 import { CardContainer } from '@/components/ui/layout/CardsContainer';
 import Container from '@/components/ui/layout/Container';
 import { FeedbackFormRow } from '@/components/ui/layout/FeedbackFormRow';
-import type { HeaderProps } from '@/components/ui/layout/MainLayout/Header';
+import type { LayoutSettings } from '@/components/ui/layout/MainLayout/Layout';
 import { Page } from '@/components/ui/layout/Page/Page';
 import { InfiniteQueryBoundary } from '@/components/ui/layout/QueryBoundary/InfiniteQueryBoundary';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 import { Column } from '@/components/ui/layout/TwoColumnsContainer';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
-import { useHeaderSettings } from '@/hooks/useHeaderSettings';
+import { useLayoutSettings } from '@/hooks/useLayoutSettings';
 import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedSearchParams';
 import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';
 import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
@@ -184,24 +184,20 @@ export const BuildingContent = (props: BuildingContentProps) => {
         [t],
     );
 
-    // Header settings
-    const headerSettings: HeaderProps = useMemo(
+    const layoutSettings = useMemo<LayoutSettings>(
         () => ({
-            breadcrumbs: [
-                {
-                    label: t('bc.main'),
-                    to: '/',
-                },
-                {
-                    label: buildingInfo.title,
-                    to: `/building/${buildingInfo.uuid}`,
-                },
-            ],
-            theme: 'light',
+            header: {
+                theme: 'light',
+                breadcrumbs: [
+                    { to: '/', label: t('bc.main') },
+                    { to: `/building/${buildingInfo.uuid}`, label: buildingInfo.title },
+                ],
+            },
+            mainContentBackground: 'gray-0',
         }),
         [buildingInfo.title, buildingInfo.uuid, t],
     );
-    useHeaderSettings(headerSettings);
+    useLayoutSettings(layoutSettings);
 
     // Building info
     const [currentMediaCategoryIndex, setCurrentMediaCategoryIndex] = useState(0);

@@ -1,5 +1,3 @@
-@use '@/styles/variables.scss' as *;
-
 .container {
     padding: 20px 120px;
     margin-bottom: -1px;
@@ -53,64 +51,5 @@
 
     &--dark {
         border-color: $gray-opacity-0-20;
-
-        //         :global {
-        //             svg {
-        //                 color: $gray-0 !important;
-
-        //                 path,
-        //                 circle,
-        //                 rect,
-        //                 line,
-        //                 polyline,
-        //                 polygon {
-        //                     fill: $gray-0 !important;
-        //                     stroke: $gray-0 !important;
-        //                 }
-        //             }
-        //         }
-
-        //         &:hover:not(:disabled) {
-        //             background: $gray-opacity-0-10;
-        //             border-color: $gray-opacity-0-20;
-
-        //             :global {
-        //                 svg {
-        //                     color: $gray-0 !important;
-
-        //                     path,
-        //                     circle,
-        //                     rect,
-        //                     line,
-        //                     polyline,
-        //                     polygon {
-        //                         fill: $gray-0 !important;
-        //                         stroke: $gray-0 !important;
-        //                     }
-        //                 }
-        //             }
-        //         }
-
-        //         &:active:not(:disabled),
-        //         &:focus:active:not(:disabled) {
-        //             background: $gray-opacity-0-20;
-        //             border-color: $gray-opacity-0-20;
-
-        //             :global {
-        //                 svg {
-        //                     color: $gray-0 !important;
-
-        //                     path,
-        //                     circle,
-        //                     rect,
-        //                     line,
-        //                     polyline,
-        //                     polygon {
-        //                         fill: $gray-0 !important;
-        //                         stroke: $gray-0 !important;
-        //                     }
-        //                 }
-        //             }
-        //         }
     }
 }

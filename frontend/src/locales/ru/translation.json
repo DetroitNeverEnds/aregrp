@@ -57,7 +57,8 @@
     },
     "bc": {
         "contacts": "Контакты",
-        "main": "Главная"
+        "main": "Главная",
+        "profile": "Личный кабинет"
     },
     "benefits": {
         "officeBuildings": {
@@ -248,6 +249,23 @@
             "planView": "Запишитесь на живой просмотр офисов",
             "requisite": "Реквизиты компании",
             "salesOffice": "Офис продаж"
+        },
+        "profile": {
+            "menuProfile": "Данные профиля",
+            "menuObjects": "Объекты",
+            "menuBooking": "Бронь",
+            "logout": "Выйти из профиля",
+            "mainInfo": "Основная информация",
+            "edit": "Изменить",
+            "userType": {
+                "individual": "физическое лицо",
+                "agent": "юридическое лицо"
+            },
+            "orgNameLabel": "Наименование юрлица",
+            "fullNameLabel": "ФИО",
+            "phoneLabel": "Телефон",
+            "innLabel": "ИНН",
+            "notSpecified": "—"
         }
     }
 }

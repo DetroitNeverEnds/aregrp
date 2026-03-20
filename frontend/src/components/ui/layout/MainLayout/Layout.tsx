@@ -4,22 +4,41 @@ import { Footer } from './Footer';
 import { Flex } from '../../common/Flex';
 import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
+import classNames from 'classnames';
+
+/** Фон области под хедером (main). */
+export type MainLayoutContentBackground = 'gray-0' | 'gray-10';
+
+export type LayoutSettings = {
+    header: HeaderProps;
+    mainContentBackground: MainLayoutContentBackground;
+};
+
+const defaultLayoutSettings: LayoutSettings = {
+    header: {
+        theme: 'light',
+        breadcrumbs: [],
+    },
+    mainContentBackground: 'gray-0',
+};
 
 export type OutletContext = {
-    setHeaderSettings: (h: HeaderProps) => void;
+    setLayoutSettings: (s: LayoutSettings) => void;
 };
 
 export const MainLayout = () => {
-    const [headerSettings, setHeaderSettings] = useState<HeaderProps>({
-        theme: 'light',
-        breadcrumbs: [],
-    });
+    const [layoutSettings, setLayoutSettings] = useState<LayoutSettings>(defaultLayoutSettings);
 
     return (
-        <Flex className={styles.root}>
-            <Header {...headerSettings} />
+        <Flex
+            className={classNames(
+                styles.root,
+                layoutSettings.mainContentBackground === 'gray-10' && styles.contentGray10,
+            )}
+        >
+            <Header {...layoutSettings.header} />
             <div className={styles.content}>
-                <Outlet context={{ setHeaderSettings }} />
+                <Outlet context={{ setLayoutSettings }} />
             </div>
             <Footer />
         </Flex>

@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import { useMemo, Fragment } from 'react';
 import { Flex } from '../../components/ui/common/Flex';
 import Text from '../../components/ui/common/Text';
-import { useHeaderSettings } from '../../hooks/useHeaderSettings';
-import { useMemo, Fragment } from 'react';
+import { useLayoutSettings } from '../../hooks/useLayoutSettings';
+import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layout';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
 import { Column, TwoColumnsContainer } from '../../components/ui/layout/TwoColumnsContainer';
 import { useSiteInfo } from '../../queries/siteInfo';
@@ -15,21 +16,24 @@ import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
 import styles from './Contacts.module.scss';
 import { MapPin } from '../../components/ui/common/MapPin';
 import { Card } from '../../components/ui/common/Card/Card';
-import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
 
 export const Contacts = () => {
     const { t } = useTranslation();
-    const headerSettings: HeaderProps = useMemo(
+
+    const layoutSettings = useMemo<LayoutSettings>(
         () => ({
-            theme: 'light',
-            breadcrumbs: [
-                { to: '/', label: t('bc.main') },
-                { to: '/contacts', label: t('bc.contacts') },
-            ],
+            header: {
+                theme: 'light',
+                breadcrumbs: [
+                    { to: '/', label: t('bc.main') },
+                    { to: '/contacts', label: t('bc.contacts') },
+                ],
+            },
+            mainContentBackground: 'gray-0',
         }),
         [t],
     );
-    useHeaderSettings(headerSettings);
+    useLayoutSettings(layoutSettings);
     const siteInfo = useSiteInfo().data?.data;
     const contacts = useSiteContacts().data?.data;
 

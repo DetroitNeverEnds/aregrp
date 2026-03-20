@@ -44,6 +44,11 @@ import WalletBuy from '@/icons/outlined/wallet-buy.svg?react';
 import XClose from '@/icons/outlined/x-close.svg?react';
 import XmarkGrayCircle from '@/icons/outlined/xmark-gray-circle.svg?react';
 
+// Filled
+import Key from '@/icons/filled/key.svg?react';
+import Exit from '@/icons/filled/exit.svg?react';
+import Edit from '@/icons/filled/edit.svg?react';
+
 // bolt.svg
 // city.svg
 // cottage.svg
@@ -125,6 +130,11 @@ export const iconMap = {
     'wallet-buy': WalletBuy,
     'x-close': XClose,
     'xmark-gray-circle': XmarkGrayCircle,
+
+    // filled (личный кабинет и др.)
+    key: Key,
+    exit: Exit,
+    edit: Edit,
 
     // social media
     ayax: Ajax,

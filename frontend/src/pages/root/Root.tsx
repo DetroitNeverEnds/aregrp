@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Flex } from '../../components/ui/common/Flex';
-import { useHeaderSettings } from '../../hooks/useHeaderSettings';
+import { useLayoutSettings } from '../../hooks/useLayoutSettings';
+import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layout';
 import { ObjectsFilter } from '../../components/ui/forms/ObjectsFilter';
 import Text from '../../components/ui/common/Text';
 import { YandexMap } from '../../components/ui/common/YandexMap';
@@ -13,7 +14,6 @@ import { Column } from '../../components/ui/layout/TwoColumnsContainer';
 import { Divider } from '../../components/ui/common/Divider';
 import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
 import { useBuildingsCatalogueInfinite, usePremises } from '../../queries/premises';
-import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
 import { Welcome } from './components/Welcome';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
 import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContainer';
@@ -28,16 +28,19 @@ type Data = {
     coordinates: [number, number][];
 };
 
-const headerSettings: HeaderProps = {
-    theme: 'dark',
-    breadcrumbs: [],
+const layoutSettings: LayoutSettings = {
+    header: {
+        theme: 'dark',
+        breadcrumbs: [],
+    },
+    mainContentBackground: 'gray-0',
 };
 
 export const Root = () => {
     const { t } = useTranslation();
     const { getLinkToCatalogue } = useFilterSearchParams();
 
-    useHeaderSettings(headerSettings);
+    useLayoutSettings(layoutSettings);
 
     const data: Data = {
         coordinates: [[44.650540230512846, 42.65871198485353]],

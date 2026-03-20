@@ -5,8 +5,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BuildingPage } from './BuildingPage';
 import * as queries from '@/queries';
 
-vi.mock('@/hooks/useHeaderSettings', () => ({
-    useHeaderSettings: vi.fn(),
+vi.mock('@/hooks/useLayoutSettings', () => ({
+    useLayoutSettings: vi.fn(),
 }));
 
 vi.mock('@/queries', async importOriginal => {

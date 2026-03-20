@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
+import { useCallback, useMemo } from 'react';
 import { Flex } from '../../components/ui/common/Flex';
 import Text from '../../components/ui/common/Text';
-import { useHeaderSettings } from '../../hooks/useHeaderSettings';
-import { useCallback, useMemo } from 'react';
-import type { HeaderProps } from '../../components/ui/layout/MainLayout/Header';
+import { useLayoutSettings } from '../../hooks/useLayoutSettings';
+import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layout';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { Container } from '@/components/ui/layout/Container';
@@ -70,20 +70,25 @@ const ResultsView = () => {
 export const Catalogue = () => {
     const { t } = useTranslation();
     const { filter, setFilter, getLinkToCatalogue } = useFilterSearchParams();
-    const headerSettings: HeaderProps = useMemo(
+    const saleType = filter.sale_type ?? 'sale';
+
+    const layoutSettings = useMemo<LayoutSettings>(
         () => ({
-            theme: 'light',
-            breadcrumbs: [
-                { to: '/', label: t('bc.main') },
-                {
-                    to: getLinkToCatalogue({ sale_type: filter.sale_type }),
-                    label: filter.sale_type === 'sale' ? t('header.sale') : t('header.rent'),
-                },
-            ],
+            header: {
+                theme: 'light',
+                breadcrumbs: [
+                    { to: '/', label: t('bc.main') },
+                    {
+                        to: getLinkToCatalogue({ sale_type: saleType }),
+                        label: saleType === 'sale' ? t('header.sale') : t('header.rent'),
+                    },
+                ],
+            },
+            mainContentBackground: 'gray-0',
         }),
-        [filter.sale_type, t, getLinkToCatalogue],
+        [saleType, t, getLinkToCatalogue],
     );
-    useHeaderSettings(headerSettings);
+    useLayoutSettings(layoutSettings);
 
     const orderByOptions: SelectOption<OrderBy>[] = useMemo(() => {
         return [

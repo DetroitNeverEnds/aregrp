@@ -4,7 +4,7 @@ import { Flex } from '../../common/Flex';
 import { Text } from '../../common/Text';
 import { Link } from '../../common/Link';
 import { Icon } from '../../common/Icon';
-import LogoPic from '@/icons/logo/logoPic.svg?react';
+import LogoPicDarkFooter from '@/icons/logo/logoPicDarkFooter.svg?react';
 import LogoText from '@/icons/logo/logoText.svg?react';
 import ALetter from '@/icons/logo/A.svg?react';
 import RLetter from '@/icons/logo/R.svg?react';
@@ -106,9 +106,7 @@ export const Footer = () => {
                         </Flex>
 
                         {/* Логотип */}
-                        <div className={styles.footer__logo}>
-                            <LogoPic />
-                        </div>
+                        <LogoPicDarkFooter />
                     </Flex>
 
                     {/* Нижняя секция с колонками */}

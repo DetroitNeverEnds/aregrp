@@ -1,0 +1,49 @@
+.page {
+    margin-top: 60px;
+}
+
+.menu {
+    background-color: $gray-0;
+    width: 360px;
+    flex-shrink: 0;
+    min-width: 0;
+    border-radius: $border-radius-l;
+    overflow: hidden;
+
+    &__head {
+        background: $primary-700;
+        padding: 20px;
+    }
+
+    &__body {
+        &__item {
+            padding: 8px 16px;
+            display: block;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-decoration: none;
+            box-sizing: border-box;
+
+            &__active {
+                background-color: $primary-mute;
+                border-right: 4px solid $primary-700;
+            }
+        }
+    }
+    
+    &__logout {
+        width: 100%;
+        padding: 18px;
+        display: flex;
+    
+        align-items: center;
+        gap: 8px;
+    }
+}
+
+
+.mainPanel {
+    flex-grow: 1;
+    min-height: 100%;
+}

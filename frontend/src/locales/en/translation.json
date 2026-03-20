@@ -1,5 +1,28 @@
 {
     "welcome": "Welcome",
+    "bc": {
+        "main": "Home",
+        "profile": "Account"
+    },
+    "pages": {
+        "profile": {
+            "menuProfile": "Profile details",
+            "menuObjects": "Properties",
+            "menuBooking": "Booking",
+            "logout": "Log out",
+            "mainInfo": "Main information",
+            "edit": "Edit",
+            "userType": {
+                "individual": "individual",
+                "agent": "legal entity"
+            },
+            "orgNameLabel": "Legal name:",
+            "fullNameLabel": "Full name:",
+            "phoneLabel": "Phone:",
+            "innLabel": "TIN:",
+            "notSpecified": "—"
+        }
+    },
     "common": {
         "feedbackSuccess": "Thank you! Your message has been received."
     },
