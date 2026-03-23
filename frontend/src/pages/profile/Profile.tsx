@@ -145,7 +145,7 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                     </Flex>
                 </Flex>
 
-                <ProfileMainInfoCard user={user} />
+                {currentItem === 'profile' && <ProfileMainInfoCard user={user} />}
             </Flex>
         </VerticalMainContainer>
     );

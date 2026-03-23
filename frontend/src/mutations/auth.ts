@@ -42,11 +42,24 @@ export function useRegisterMutation(
     const { onSuccess, ...restOptions } = options ?? {};
     return useMutation({
         mutationFn: (data: RegisterMutationData) => {
-            const { userType, fullName, policyAgrement: _uPA, ...other } = data;
-            return register({ user_type: userType, full_name: fullName, ...other });
+            const {
+                userType,
+                fullName,
+                organisationName,
+                INN,
+                policyAgrement: _uPA,
+                ...other
+            } = data;
+            return register({
+                user_type: userType,
+                full_name: fullName,
+                organization_name: organisationName,
+                inn: INN,
+                ...other,
+            });
         },
-        onSuccess(data, variables, onMutateResult, mutationContext) {
-            queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+        async onSuccess(data, variables, onMutateResult, mutationContext) {
+            await queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
             onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
         ...restOptions,
@@ -60,8 +73,8 @@ export function useLoginMutation(
     const { onSuccess, ...restOptions } = options ?? {};
     return useMutation({
         mutationFn: login,
-        onSuccess(data, variables, onMutateResult, mutationContext) {
-            queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+        async onSuccess(data, variables, onMutateResult, mutationContext) {
+            await queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
             onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
         ...restOptions,
@@ -73,8 +86,8 @@ export function useLogoutMutation(
 ) {
     return useMutation({
         mutationFn: logout,
-        onSuccess(_data, _variables, _onMutateResult, context) {
-            context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+        async onSuccess(_data, _variables, _onMutateResult, context) {
+            await context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
         },
         ...options,
     });
@@ -94,8 +107,8 @@ export function useConfirmPasswordResetMutation(
 ) {
     return useMutation({
         mutationFn: confirmPasswordReset,
-        onSuccess(_data, _variables, _onMutateResult, context) {
-            context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+        async onSuccess(_data, _variables, _onMutateResult, context) {
+            await context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
         },
         ...options,
     });
