@@ -43,7 +43,7 @@ class TestRegistration:
         assert "refresh_token" in data
         assert "message" in data
         assert data["message"] == "User successfully registered"
-        assert data["use_cookies"] is False
+        assert data["use_cookies"] is True  # Куки всегда устанавливаются при регистрации
         
         # Проверяем данные пользователя
         user_data = data["user"]
