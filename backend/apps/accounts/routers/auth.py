@@ -234,33 +234,30 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
             "access_token": access_token,
             "refresh_token": refresh_token_value,
             "message": "User successfully registered",
-            "use_cookies": data.use_cookies
+            "use_cookies": True
         }
-        
-        # Если запрошены cookies, устанавливаем их
-        if data.use_cookies:
-            response = JsonResponse(response_data)
-            response.set_cookie(
-                'access_token',
-                access_token,
-                max_age=settings.ACCESS_TOKEN_LIFETIME_MINUTES * 60,
-                httponly=True,
-                secure=not settings.DEBUG,
-                samesite='Lax',
-                path='/'
-            )
-            response.set_cookie(
-                'refresh_token',
-                refresh_token_value,
-                max_age=settings.REFRESH_TOKEN_LIFETIME_DAYS * 24 * 60 * 60,
-                httponly=True,
-                secure=not settings.DEBUG,
-                samesite='Lax',
-                path='/'
-            )
-            return response
-        
-        return 200, response_data
+
+        # Всегда устанавливаем cookies после регистрации — пользователь должен остаться авторизованным
+        response = JsonResponse(response_data)
+        response.set_cookie(
+            'access_token',
+            access_token,
+            max_age=settings.ACCESS_TOKEN_LIFETIME_MINUTES * 60,
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite='Lax',
+            path='/'
+        )
+        response.set_cookie(
+            'refresh_token',
+            refresh_token_value,
+            max_age=settings.REFRESH_TOKEN_LIFETIME_DAYS * 24 * 60 * 60,
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite='Lax',
+            path='/'
+        )
+        return response
         
     except Exception as e:
         return 400, create_accounts_error(
