@@ -46,8 +46,8 @@ export const Contacts = () => {
                 description: t('common.email'),
             },
             {
-                title: t('common.whatsapp'),
-                link: siteInfo?.whatsapp_link,
+                title: t('common.max'),
+                link: siteInfo?.max_link,
                 description: t('common.messanger'),
             },
             {

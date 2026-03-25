@@ -117,7 +117,7 @@
         "send": "Отправить",
         "telegram": "Telegram",
         "to": "До",
-        "whatsapp": "WhatsApp"
+        "max": "Макс"
     },
     "components": {
         "objectFilter": {
@@ -165,7 +165,7 @@
             "phone": "8 (986) 909-05-34",
             "telegram": "Telegram",
             "title": "Контакты",
-            "whatsapp": "WhatsApp"
+            "max": "Макс"
         },
         "contactUs": "Свяжитесь с нами удобным способом",
         "copyright": "© 2024 Все права защищены",

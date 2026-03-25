@@ -17,7 +17,7 @@ def _create_main_settings():
         description="Тестовое описание организации",
         org_name="ООО Тест",
         inn="7707083893",
-        whatsapp_link="https://wa.me/79990001122",
+        max_link="https://max.ru/u/79990001122",
         telegram_link="https://t.me/test",
     )
     obj.save()
@@ -64,7 +64,7 @@ class TestMainInfo:
         assert data["description"] == "Тестовое описание организации"
         assert data["org_name"] == "ООО Тест"
         assert data["inn"] == "7707083893"
-        assert data["whatsapp_link"] == "https://wa.me/79990001122"
+        assert data["max_link"] == "https://max.ru/u/79990001122"
         assert data["telegram_link"] == "https://t.me/test"
 
     @pytest.fixture

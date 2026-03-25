@@ -45,7 +45,7 @@ export const Footer = () => {
                     { to: `tel:${siteInfo?.phone}`, label: siteInfo?.display_phone || '-' },
                     { to: `mailto:${siteInfo?.email}`, label: siteInfo?.email || '-' },
                     { to: siteInfo?.telegram_link || '', label: t('footer.contacts.telegram') },
-                    { to: siteInfo?.whatsapp_link || '', label: t('footer.contacts.whatsapp') },
+                    { to: siteInfo?.max_link || '', label: t('footer.contacts.max') },
                 ],
             },
         ],
@@ -78,8 +78,8 @@ export const Footer = () => {
                                     <Link to={siteInfo?.telegram_link || ''}>
                                         <Icon name="telegram" color="primary-yellow" size={50} />
                                     </Link>
-                                    <Link to={siteInfo?.whatsapp_link || ''}>
-                                        <Icon name="whatsapp" color="primary-yellow" size={50} />
+                                    <Link to={siteInfo?.max_link || ''}>
+                                        <Icon name="max" color="primary-yellow" size={50} />
                                     </Link>
                                 </Flex>
 

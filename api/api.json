@@ -480,7 +480,7 @@
             }
           }
         },
-        "description": "Возвращает основные настройки: контакты (phone, display_phone, email, whatsapp_link, telegram_link), описание, название организации (org_name), ИНН.",
+        "description": "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, telegram_link), описание, название организации (org_name), ИНН.",
         "tags": [
           "Site Settings"
         ]
@@ -1663,7 +1663,7 @@
             "title": "Email",
             "type": "string"
           },
-          "whatsapp_link": {
+          "max_link": {
             "anyOf": [
               {
                 "type": "string"
@@ -1672,7 +1672,7 @@
                 "type": "null"
               }
             ],
-            "title": "Whatsapp Link"
+            "title": "Max Link"
           },
           "telegram_link": {
             "anyOf": [

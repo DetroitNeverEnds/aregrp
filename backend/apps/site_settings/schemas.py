@@ -9,7 +9,7 @@ class MainSettingsOut(Schema):
     phone: str
     display_phone: str
     email: str
-    whatsapp_link: str | None = None
+    max_link: str | None = None
     telegram_link: str | None = None
     description: str | None = None
     org_name: str | None = None

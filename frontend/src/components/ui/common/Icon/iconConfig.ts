@@ -74,7 +74,7 @@ import Telegram from '@/icons/socialMedia/telegram_logo.svg?react';
 import TG from '@/icons/socialMedia/tg.svg?react';
 import Viber from '@/icons/socialMedia/viber_logo.svg?react';
 import VK from '@/icons/socialMedia/vk_logo.svg?react';
-import Whatsapp from '@/icons/socialMedia/whatsapp_logo.svg?react';
+import MaxMessenger from '@/icons/socialMedia/whatsapp_logo.svg?react';
 import Youtube from '@/icons/socialMedia/youtube_logo.svg?react';
 
 /**
@@ -133,7 +133,8 @@ export const iconMap = {
     tg: TG,
     viber: Viber,
     vk: VK,
-    whatsapp: Whatsapp,
+    /** Мессенджер Макс (временно та же иконка, что и у legacy WhatsApp). */
+    max: MaxMessenger,
     youtube: Youtube,
 } as const;
 
