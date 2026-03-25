@@ -256,7 +256,7 @@ def get_buildings_queryset():
                 filter=Q(premises__available_for_rent=True),
             ),
             min_sale=Min(
-                "premises__price_per_month",
+                "premises__human_price",
                 filter=Q(premises__available_for_sale=True),
             ),
         )
@@ -330,7 +330,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
                     filter=Q(premises__available_for_rent=True),
                 ),
                 min_sale=Min(
-                    "premises__price_per_month",
+                    "premises__human_price",
                     filter=Q(premises__available_for_sale=True),
                 ),
             )

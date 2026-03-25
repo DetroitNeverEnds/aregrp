@@ -2,6 +2,7 @@
 Модели для объектов недвижимости (здания, помещения).
 """
 import uuid
+from decimal import Decimal
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -293,6 +294,17 @@ class Premise(models.Model):
         null=True,
         blank=True,
     )
+    human_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        default=Decimal("0"),
+        verbose_name="Итоговая стоимость продажи (кэш), ₽",
+        help_text=(
+            "Кэш итоговой стоимости продажи и аренды за месяц — чтобы не пересчитывать при агрегации по зданиям "
+            "и при выгрузке. Пересчитывается при сохранении: при продаже — итог продажи "
+            "(price_per_month если > 0, иначе площадь × price_per_sqm); при аренде без продажи — цена за месяц; иначе 0."
+        ),
+    )
     premise_type = models.CharField(
         max_length=50,
         choices=PremiseType.choices,
@@ -378,7 +390,20 @@ class Premise(models.Model):
         city_name = self.city.name if self.city else "—"
         return f"{self.number or 'Помещение'} ({city_name}{building_info}{floor_info})"
 
+    def _compute_human_price(self) -> Decimal:
+        """Кэш для human_price: см. help_text на поле."""
+        if self.available_for_sale:
+            if self.price_per_month is not None and self.price_per_month > 0:
+                return self.price_per_month
+            if self.price_per_sqm is not None and self.area is not None:
+                return (self.area * self.price_per_sqm).quantize(Decimal("0.01"))
+            return self.price_per_month if self.price_per_month is not None else Decimal("0")
+        if self.available_for_rent:
+            return self.price_per_month if self.price_per_month is not None else Decimal("0")
+        return Decimal("0")
+
     def save(self, *args, **kwargs):
+        self.human_price = self._compute_human_price()
         # Синхронизация здания и этажа: при выборе этажа подставляем здание; при смене здания обнуляем этаж, если он из другого здания
         if self.floor_id:
             if not self.building_id:

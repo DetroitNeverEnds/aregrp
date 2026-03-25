@@ -132,7 +132,7 @@ class PremiseAdmin(admin.ModelAdmin):
     )
     ordering = ('city', 'building', 'floor__number', 'number')
     autocomplete_fields = ['city', 'building']  # floor — ChainedForeignKey, виджет от django-smart-selects
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'human_price')
     inlines = [PremiseImageInline]
 
     fieldsets = (
@@ -143,7 +143,7 @@ class PremiseAdmin(admin.ModelAdmin):
             )
         }),
         ('Параметры для поиска', {
-            'fields': ('area', 'price_per_month', 'price_per_sqm')
+            'fields': ('area', 'price_per_month', 'price_per_sqm', 'human_price')
         }),
         ('Дополнительные параметры', {
             'fields': (
