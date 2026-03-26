@@ -35,16 +35,18 @@ export function DataTable<T>({
     isLoading = false,
     getRowId,
     className,
+    width = 'max',
     tableProps,
 }: DataTableProps<T>) {
     const colCount = columns.length;
     const defaultHeaderSize = headerSizeForTableSize(size);
 
     return (
-        <Flex align="start" gap={16} aria-busy={isLoading || undefined}>
+        <Flex align="start" gap={16} aria-busy={isLoading || undefined} fullWidth={width === 'max'}>
             <Table
                 striped={striped}
                 hoverableRows={hoverableRows}
+                width={width}
                 className={className}
                 {...tableProps}
             >
@@ -88,12 +90,11 @@ export function DataTable<T>({
                                         key={column.id}
                                         size={size}
                                         align={column.cellAlign ?? 'left'}
-                                        variant="supporting"
                                         muted={column.muted}
                                         className={column.tdClassName}
                                     >
-                                        {column.cell ? (
-                                            column.cell({ row, index: rowIndex })
+                                        {column.render ? (
+                                            column.render({ row, index: rowIndex })
                                         ) : (
                                             <Flex
                                                 direction="column"

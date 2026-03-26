@@ -1,9 +1,16 @@
 .table {
-    width: 100%;
     border-collapse: collapse;
     table-layout: auto;
     font-family: $font-family-base;
     color: $gray-100;
+
+    &--width-max {
+        width: 100%;
+    }
+
+    &--width-auto {
+        width: auto;
+    }
 
     &--striped {
         tbody tr:nth-child(even) .cell {

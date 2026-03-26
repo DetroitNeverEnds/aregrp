@@ -10,6 +10,7 @@ export {
 export { horizontalPlacementFromCellAlign, resolveDataTableRowKey } from './types';
 export type {
     TableProps,
+    TableWidth,
     TableHeaderCellProps,
     TableCellProps,
     TableSortDirection,

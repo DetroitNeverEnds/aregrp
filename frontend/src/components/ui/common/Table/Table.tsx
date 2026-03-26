@@ -8,6 +8,7 @@ export {
 } from './TablePrimitives';
 export type {
     TableProps,
+    TableWidth,
     TableSortDirection,
     TableHeaderCellSize,
     TableHeaderCellAlign,

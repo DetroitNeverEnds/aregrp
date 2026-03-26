@@ -26,6 +26,11 @@ const meta = {
         striped: { control: 'boolean' },
         hoverableRows: { control: 'boolean' },
         isLoading: { control: 'boolean' },
+        width: {
+            control: 'select',
+            options: ['max', 'auto'],
+            description: '`max` — 100% ширины контейнера, `auto` — по содержимому.',
+        },
         data: { control: false },
         columns: { control: false },
         pagination: { control: false },
@@ -72,7 +77,7 @@ const dataTableExampleColumns: TableColumn<Row>[] = [
         header: '',
         headerAlign: 'right',
         cellAlign: 'right',
-        cell: ({ row }) => (
+        render: ({ row }) => (
             <Button
                 variant="outlined"
                 theme="light"
@@ -88,7 +93,7 @@ const dataTableExampleColumns: TableColumn<Row>[] = [
 
 type DataTablePlaygroundArgs = Pick<
     DataTableProps<Row>,
-    'size' | 'striped' | 'hoverableRows' | 'isLoading'
+    'size' | 'striped' | 'hoverableRows' | 'isLoading' | 'width'
 >;
 
 /** Сторис с `args` — в этом режиме в панели Controls доступны `size`, `striped` и др. */
@@ -98,6 +103,7 @@ export const DataTablePlayground: Story = {
         striped: false,
         hoverableRows: true,
         isLoading: false,
+        width: 'max',
     },
     render: () => {
         const [args] = useArgs<DataTablePlaygroundArgs>();
@@ -111,6 +117,7 @@ export const DataTablePlayground: Story = {
                     striped={args.striped ?? false}
                     hoverableRows={args.hoverableRows ?? true}
                     isLoading={args.isLoading ?? false}
+                    width={args.width ?? 'max'}
                 />
             </div>
         );
@@ -119,7 +126,7 @@ export const DataTablePlayground: Story = {
 
 /**
  * Двухстрочная ячейка: основной текст из `accessorKey`, вторая строка из `supportingAccessorKey`.
- * Колонка с `cell` этот режим отключает.
+ * Колонка с `render` этот режим отключает.
  */
 export const DataTableSupportingAccessorKey: Story = {
     parameters: {
@@ -212,9 +219,9 @@ export const DataTableSort: Story = {
             sortDirection === null
                 ? sampleRows
                 : [...sampleRows].sort((a, b) => {
-                      const cmp = a.name.localeCompare(b.name, 'ru');
-                      return sortDirection === 'asc' ? cmp : -cmp;
-                  });
+                    const cmp = a.name.localeCompare(b.name, 'ru');
+                    return sortDirection === 'asc' ? cmp : -cmp;
+                });
 
         return (
             <div style={{ maxWidth: 720 }}>

@@ -2,12 +2,20 @@ import type React from 'react';
 import type { IconName } from '@/components/ui/common/Icon';
 import type { PaginationProps } from '@/components/ui/common/Pagination';
 
+/** Ширина корневой таблицы: на всю ширину контейнера или по содержимому */
+export type TableWidth = 'auto' | 'max';
+
 /** Пропсы корневого элемента `<table>` плюс опции оформления */
-export interface TableProps extends React.TableHTMLAttributes<HTMLTableElement> {
+export interface TableProps extends Omit<React.TableHTMLAttributes<HTMLTableElement>, 'width'> {
     /** Чередование фона строк (зебра) в `tbody` */
     striped?: boolean;
     /** Подсветка строки при наведении курсора */
     hoverableRows?: boolean;
+    /**
+     * Ширина таблицы: `max` — 100% контейнера, `auto` — по содержимому (`width: auto`).
+     * @default 'max'
+     */
+    width?: TableWidth;
 }
 
 /** Направление сортировки для отображения в шапке колонки */
@@ -105,8 +113,8 @@ export type DataTableSize = Exclude<TableCellSize, 'auto'>;
 /**
  * Колонка `DataTable`.
  *
- * Контент ячейки: `cell`, `accessorKey` и/или `supportingAccessorKey`.
- * Приоритет: `cell` → иначе при наличии `supportingAccessorKey` двухстрочная ячейка (основной текст из `accessorKey`, вторичный из `supportingAccessorKey`) → иначе значение по `accessorKey`.
+ * Контент ячейки: `render`, `accessorKey` и/или `supportingAccessorKey`.
+ * Приоритет: `render` → иначе при наличии `supportingAccessorKey` двухстрочная ячейка (основной текст из `accessorKey`, вторичный из `supportingAccessorKey`) → иначе значение по `accessorKey`.
  */
 export interface TableColumn<T> {
     /** Стабильный идентификатор колонки (в т.ч. для `key` у ячеек в строке) */
@@ -136,10 +144,10 @@ export interface TableColumn<T> {
 
     /** Поле строки `T` для основного текста (одна строка или первая при двухстрочном режиме) */
     accessorKey?: keyof T;
-    /** Поле строки `T` для второй строки; не используется, если задан `cell` */
+    /** Поле строки `T` для второй строки; не используется, если задан `render` */
     supportingAccessorKey?: keyof T;
     /** Полный контент ячейки; имеет приоритет над полями `accessorKey` */
-    cell?: (ctx: { row: T; index: number }) => React.ReactNode;
+    render?: (ctx: { row: T; index: number }) => React.ReactNode;
 }
 
 export interface DataTableProps<T> {
@@ -170,8 +178,16 @@ export interface DataTableProps<T> {
     getRowId?: (row: T, index: number) => React.Key;
     /** CSS-класс на `<table>` */
     className?: string;
-    /** Остальные атрибуты `<table>` (кроме `className` и `children`) */
-    tableProps?: Omit<React.TableHTMLAttributes<HTMLTableElement>, 'className' | 'children'>;
+    /**
+     * Ширина таблицы: `max` — на всю ширину контейнера, `auto` — по содержимому.
+     * @default 'max'
+     */
+    width?: TableWidth;
+    /** Остальные атрибуты `<table>` (кроме `className`, `children` и `width`) */
+    tableProps?: Omit<
+        React.TableHTMLAttributes<HTMLTableElement>,
+        'className' | 'children' | 'width'
+    >;
 }
 
 /**

@@ -4,11 +4,7 @@ import styles from './TablePrimitives.module.scss';
 import { Icon } from '@/components/ui/common/Icon';
 import { Flex } from '@/components/ui/common/Flex';
 import type { TableProps, TableHeaderCellProps, TableCellProps } from './types';
-import {
-    horizontalPlacementFromCellAlign,
-    horizontalPlacementFromHeaderAlign,
-    sortIconName,
-} from './types';
+import { horizontalPlacementFromHeaderAlign, sortIconName } from './types';
 
 /** Обёртка над нативным `<table>` с токенами проекта */
 export const Table = ({
@@ -16,11 +12,13 @@ export const Table = ({
     className,
     striped = false,
     hoverableRows = false,
+    width = 'max',
     ...rest
 }: TableProps) => (
     <table
         className={classNames(
             styles.table,
+            styles[`table--width-${width}`],
             striped && styles['table--striped'],
             hoverableRows && styles['table--hoverableRows'],
             className,
@@ -142,45 +140,9 @@ export const TableCell = ({
     className,
     size = 'md',
     align = 'left',
-    variant = 'text',
-    supportingText,
-    actionLabel = 'Открыть',
-    onAction,
     muted = false,
     ...rest
 }: TableCellProps) => {
-    const cellInner =
-        variant === 'action' ? (
-            <Flex
-                direction="row"
-                align="center"
-                justify={horizontalPlacementFromCellAlign(align)}
-                fullWidth
-                className={styles.cellInner}
-            >
-                {children ?? (
-                    <button type="button" className={styles.actionButton} onClick={onAction}>
-                        {actionLabel}
-                    </button>
-                )}
-            </Flex>
-        ) : variant === 'supporting' ? (
-            <Flex
-                direction="column"
-                align={horizontalPlacementFromCellAlign(align)}
-                gap={2}
-                fullWidth
-                className={styles.cellTextStack}
-            >
-                <span>{children}</span>
-                {supportingText != null && supportingText !== '' && (
-                    <span className={styles.supportingText}>{supportingText}</span>
-                )}
-            </Flex>
-        ) : (
-            <span>{children}</span>
-        );
-
     return (
         <td
             className={classNames(
@@ -192,7 +154,7 @@ export const TableCell = ({
             )}
             {...rest}
         >
-            {cellInner}
+            {children}
         </td>
     );
 };

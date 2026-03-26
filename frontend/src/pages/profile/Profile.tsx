@@ -19,6 +19,7 @@ import { Page } from '@/components/ui/layout/Page/Page';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 import type { UserData } from '@/api';
 import { ProfileMainInfoCard } from './ProfileMainInfoCard';
+import { ProfileObjectsCard } from './ProfileObjectsCard';
 
 type MenuItems = {
     label: string;
@@ -146,6 +147,7 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                 </Flex>
 
                 {currentItem === 'profile' && <ProfileMainInfoCard user={user} />}
+                {currentItem === 'booking' && <ProfileObjectsCard />}
             </Flex>
         </VerticalMainContainer>
     );
