@@ -269,7 +269,19 @@
             "innLabel": "ИНН",
             "notSpecified": "—",
             "save": "Сохранить",
-            "cancel": "Отмена"
+            "cancel": "Отмена",
+            "booking": {
+                "title": "Бронь",
+                "tabRent": "Аренда",
+                "tabSale": "Продажа",
+                "columnOffice": "Офис",
+                "columnObject": "Объект",
+                "columnCommission": "Комиссия",
+                "columnExpiresAt": "Истечение срока",
+                "columnAction": "Действие",
+                "viewAction": "Посмотреть",
+                "empty": "Нет данных"
+            }
         }
     }
 }
