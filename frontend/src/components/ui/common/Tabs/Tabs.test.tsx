@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { Tabs, Tab } from './Tabs';
+import { Tabs } from './Tabs';
 
 describe('Tabs', () => {
     it('renders tablist and tabs with labels', () => {
@@ -25,20 +25,24 @@ describe('Tabs', () => {
         );
     });
 
-    it('calls onValueChange when switching tab', async () => {
+    it('calls onChange when switching tab', async () => {
         const user = userEvent.setup();
-        const onValueChange = vi.fn();
+        const onChange = vi.fn();
 
         render(
-            <Tabs value="a" onValueChange={onValueChange} idPrefix="t">
-                <Tab value="a" label="First" />
-                <Tab value="b" label="Second" />
-            </Tabs>,
+            <Tabs
+                value="a"
+                onChange={onChange}
+                tabs={[
+                    { value: 'a', label: 'First' },
+                    { value: 'b', label: 'Second' },
+                ]}
+            />,
         );
 
         await user.click(screen.getByRole('tab', { name: 'Second' }));
 
-        expect(onValueChange).toHaveBeenCalledWith('b');
+        expect(onChange).toHaveBeenCalledWith('b');
     });
 
     it('does not call onValueChange when clicking already selected tab', async () => {

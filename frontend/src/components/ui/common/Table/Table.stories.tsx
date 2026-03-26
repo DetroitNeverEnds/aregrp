@@ -219,9 +219,9 @@ export const DataTableSort: Story = {
             sortDirection === null
                 ? sampleRows
                 : [...sampleRows].sort((a, b) => {
-                    const cmp = a.name.localeCompare(b.name, 'ru');
-                    return sortDirection === 'asc' ? cmp : -cmp;
-                });
+                      const cmp = a.name.localeCompare(b.name, 'ru');
+                      return sortDirection === 'asc' ? cmp : -cmp;
+                  });
 
         return (
             <div style={{ maxWidth: 720 }}>
