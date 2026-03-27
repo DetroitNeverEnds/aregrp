@@ -6,7 +6,7 @@
 - get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
-- get_premise_by_uuid(premise_uuid) — одна запись по UUID или None.
+- get_premise_by_uuid(premise_uuid, sale_type=None) — одна запись по UUID или None; поле price при продаже — human_price (кэш в модели).
 - get_premises_for_floor(building_uuid, floor_number) — данные этажа (building_uuid, floor_number, schema_svg, premises).
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
@@ -149,19 +149,29 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     if params.building_uuids:
         qs = qs.filter(building__uuid__in=params.building_uuids)
 
+    price_field = (
+        "human_price"
+        if params.sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE
+        else "price_per_month"
+    )
     if params.min_price is not None:
-        qs = qs.filter(price_per_month__gte=params.min_price)
+        qs = qs.filter(**{f"{price_field}__gte": params.min_price})
     if params.max_price is not None:
-        qs = qs.filter(price_per_month__lte=params.max_price)
+        qs = qs.filter(**{f"{price_field}__lte": params.max_price})
     if params.min_area is not None:
         qs = qs.filter(area__gte=params.min_area)
     if params.max_area is not None:
         qs = qs.filter(area__lte=params.max_area)
 
+    price_order = (
+        "human_price"
+        if params.sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE
+        else "price_per_month"
+    )
     if params.order_by == "price_asc":
-        qs = qs.order_by("price_per_month", "id")
+        qs = qs.order_by(price_order, "id")
     elif params.order_by == "price_desc":
-        qs = qs.order_by("-price_per_month", "id")
+        qs = qs.order_by(f"-{price_order}", "id")
     elif params.order_by == "area_asc":
         qs = qs.order_by("area", "id")
     elif params.order_by == "area_desc":
@@ -367,13 +377,28 @@ def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
     ]
 
 
-def premise_to_list_out(p: Premise) -> PremiseListOut:
-    """Маппинг Premise -> PremiseListOut (uuid, name, price, address, floor, area, has_tenant, media)."""
+def _use_human_price_in_price_field(p: Premise, sale_type: Optional[str]) -> bool:
+    """Для поля price отдаём human_price (продажа), иначе price_per_month (аренда)."""
+    if sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
+        return True
+    if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
+        return False
+    return bool(p.available_for_sale and not p.available_for_rent)
+
+
+def _premise_price_for_api(p: Premise, sale_type: Optional[str]) -> Decimal:
+    if _use_human_price_in_price_field(p, sale_type):
+        return p.human_price
+    return p.price_per_month
+
+
+def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseListOut:
+    """Маппинг Premise -> PremiseListOut; price при продаже — human_price (без отдельного поля в схеме)."""
     return PremiseListOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
-        price=p.price_per_month,
+        price=_premise_price_for_api(p, sale_type),
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
@@ -382,13 +407,13 @@ def premise_to_list_out(p: Premise) -> PremiseListOut:
     )
 
 
-def premise_to_detail_out(p: Premise) -> PremiseDetailOut:
-    """Маппинг Premise -> PremiseDetailOut (все поля списка + description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished)."""
+def premise_to_detail_out(p: Premise, sale_type: Optional[str] = None) -> PremiseDetailOut:
+    """Маппинг Premise -> PremiseDetailOut; price при продаже — human_price."""
     return PremiseDetailOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
-        price=p.price_per_month,
+        price=_premise_price_for_api(p, sale_type),
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
@@ -414,16 +439,20 @@ async def get_premise_list(params: PremiseFilterParams) -> PremiseListResponse:
         qs,
         page=params.page,
         page_size=params.page_size,
-        to_out=premise_to_list_out,
+        to_out=lambda p: premise_to_list_out(p, params.sale_type),
     )
     return PremiseListResponse(**result)
 
 
-async def get_premise_by_uuid(premise_uuid: UUID) -> Optional[PremiseDetailOut]:
+async def get_premise_by_uuid(
+    premise_uuid: UUID,
+    sale_type: Optional[str] = None,
+) -> Optional[PremiseDetailOut]:
     """
     Возвращает помещение по UUID в виде PremiseDetailOut или None.
 
     Только помещения со статусом AVAILABLE. Использует aget() и prefetch images.
+    sale_type=sale: поле price — human_price (итог продажи из кэша).
     """
     try:
         p = await Premise.objects.select_related(
@@ -434,7 +463,7 @@ async def get_premise_by_uuid(premise_uuid: UUID) -> Optional[PremiseDetailOut]:
         )
     except Premise.DoesNotExist:
         return None
-    return premise_to_detail_out(p)
+    return premise_to_detail_out(p, sale_type)
 
 
 def _format_price(value: Decimal) -> str:
@@ -443,6 +472,14 @@ def _format_price(value: Decimal) -> str:
         return "—"
     s = f"{int(value):,}".replace(",", " ")
     return f"{s} ₽/мес"
+
+
+def _format_sale_total_label(value: Decimal) -> str:
+    """Итоговая стоимость продажи для подписи на схеме этажа."""
+    if value is None:
+        return "—"
+    s = f"{int(value):,}".replace(",", " ")
+    return f"{s} ₽"
 
 
 def _format_area(value: Decimal) -> str:
@@ -478,12 +515,16 @@ async def get_premises_for_floor(
 
     items: list[FloorPremiseOut] = []
     async for p in Premise.objects.filter(floor=floor).order_by("number", "id"):
+        if p.available_for_sale and not p.available_for_rent:
+            label_price = _format_sale_total_label(p.human_price)
+        else:
+            label_price = _format_price(p.price_per_month)
         items.append(
             FloorPremiseOut(
                 uuid=str(p.uuid),
                 name=p.number or "Помещение",
                 label_area=_format_area(p.area),
-                label_price=_format_price(p.price_per_month),
+                label_price=label_price,
                 is_occupied=(p.status != Premise.Status.AVAILABLE),
             )
         )

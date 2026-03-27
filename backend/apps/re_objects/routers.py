@@ -10,7 +10,7 @@
 4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
 5) GET /api/v1/floors/{building_uuid}/{floor_number} — данные этажа: building_uuid, floor_number, schema_svg, premises.
 6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
-   price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished). 404 — ProblemDetail.
+   price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished). Опционально sale_type=sale: price = human_price. 404 — ProblemDetail.
 
 Вся логика в services.premise_service; роутер только парсит query (в т.ч. через parse_building_uuids)
 и вызывает async-функции сервиса.
@@ -152,8 +152,14 @@ async def premise_list(
     ),
     building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
     building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
-    min_price: Optional[Decimal] = Query(None, description="Минимальная цена, ₽/мес"),
-    max_price: Optional[Decimal] = Query(None, description="Максимальная цена, ₽/мес"),
+    min_price: Optional[Decimal] = Query(
+        None,
+        description="Минимальная цена: при sale_type=sale — итог продажи (₽), иначе аренда за месяц (₽).",
+    ),
+    max_price: Optional[Decimal] = Query(
+        None,
+        description="Максимальная цена: при sale_type=sale — итог продажи (₽), иначе аренда за месяц (₽).",
+    ),
     min_area: Optional[Decimal] = Query(None, description="Минимальная площадь, м²"),
     max_area: Optional[Decimal] = Query(None, description="Максимальная площадь, м²"),
     order_by: str = Query("default", description="default|price_asc|price_desc|area_asc|area_desc"),
@@ -182,11 +188,26 @@ async def premise_list(
     "/{premise_uuid}",
     response={200: PremiseDetailOut, 404: ProblemDetail},
     summary="Детальная информация о помещении",
-    description="Помещение по UUID: uuid, name, price, address, floor, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail.",
+    description=(
+        "Помещение по UUID: uuid, name, price, address, floor, area, has_tenant, media, description, "
+        "price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail. "
+        f"Параметр sale_type={settings.RE_OBJECTS_SALE_TYPE_SALE}: поле price — итоговая стоимость продажи (кэш human_price). "
+        "Без параметра: только продажа — price из human_price; аренда или смешанный режим — price за месяц (price_per_month)."
+    ),
 )
-async def premise_detail(request, premise_uuid: UUID):
+async def premise_detail(
+    request,
+    premise_uuid: UUID,
+    sale_type: Optional[str] = Query(
+        None,
+        description=(
+            f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — price как итог продажи (human_price). "
+            f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — price как аренда за месяц."
+        ),
+    ),
+):
     """Возвращает одну запись по UUID или 404 (ProblemDetail), только статус AVAILABLE."""
-    result = await get_premise_by_uuid(premise_uuid)
+    result = await get_premise_by_uuid(premise_uuid, sale_type=sale_type)
     if result is None:
         return 404, create_re_objects_error(
             status=404,
