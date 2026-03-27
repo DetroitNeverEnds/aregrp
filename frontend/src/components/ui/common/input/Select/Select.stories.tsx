@@ -43,6 +43,10 @@ const meta = {
             control: 'boolean',
             description: 'Возможность очистить выбранное значение',
         },
+        filterable: {
+            control: 'boolean',
+            description: 'Поле поиска и фильтрация опций в выпадающем списке',
+        },
         errorMessage: {
             control: 'text',
             description: 'Сообщение об ошибке',
@@ -293,6 +297,15 @@ export const MultiSelectDisabled: Story = {
         multiple: true,
         disabled: true,
         value: ['1', '2'],
+    },
+};
+
+export const Filterable: Story = {
+    render: args => <ControlledSelect {...args} />,
+    args: {
+        options: simpleOptions,
+        placeholder: 'Выберите город',
+        filterable: true,
     },
 };
 
