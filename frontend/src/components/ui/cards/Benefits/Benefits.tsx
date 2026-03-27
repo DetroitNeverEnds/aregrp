@@ -99,7 +99,7 @@ export const Benefits = (props: BenefitsProps) => {
                     </Flex>
                 </Column>
             </Flex>
-            <Flex direction="row" gap={93} fullWidth>
+            <Flex direction="row" align="start" gap={93} fullWidth>
                 {benefit.items.map((benefit, index) => (
                     <Column key={index} gap={20} align="start">
                         <Icon name={benefit.icon} size={32} color="primary-yellow" />

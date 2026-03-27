@@ -1,3 +1,11 @@
+.wrapper {
+    padding: 0 $main-content-padding;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .container {
-    padding: 0px 120px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: $max-content-width;
 }

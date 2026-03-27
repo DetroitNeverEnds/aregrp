@@ -1,14 +1,24 @@
 .container {
-    padding: 20px 120px;
+    padding: 20px $main-content-padding;
     margin-bottom: -1px;
+    min-width: 100%;
 
     &--dark {
         background: $gradient-primary-700-900-lr;
     }
 }
 
+.content {
+    max-width: $max-content-width;
+    flex-grow: 1;
+}
+
+.logoContainer {
+    cursor: pointer;
+}
+
 .menuContainer {
-    padding: 16px 30px;
+    padding: 16px 0px;
     border-radius: 40px;
 }
 

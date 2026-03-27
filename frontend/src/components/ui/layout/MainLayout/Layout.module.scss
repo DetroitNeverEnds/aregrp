@@ -1,7 +1,7 @@
-@use '@/styles/variables.scss' as *;
-
 .root {
     min-height: 100vh;
+    min-width: 100%;
+    width: fit-content;
 }
 
 .content {
