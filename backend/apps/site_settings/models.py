@@ -67,11 +67,11 @@ class MainSettings(SingletonModel):
         verbose_name="Почта",
         help_text="Email адрес для связи"
     )
-    whatsapp_link = models.CharField(
+    max_link = models.CharField(
         max_length=200,
-        verbose_name="Ссылка на WhatsApp",
-        help_text="Ссылка на WhatsApp",
-        blank=True
+        verbose_name="Ссылка на Макс",
+        help_text="Ссылка на мессенджер Макс",
+        blank=True,
     )
     telegram_link = models.CharField(
         max_length=200,

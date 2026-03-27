@@ -4,7 +4,7 @@ export type InfoResponse = {
     phone: string;
     display_phone: string;
     email: string;
-    whatsapp_link?: string | null;
+    max_link?: string | null;
     telegram_link?: string | null;
     description?: string | null;
     inn?: string | null;

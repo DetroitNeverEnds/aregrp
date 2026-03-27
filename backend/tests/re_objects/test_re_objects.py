@@ -3,8 +3,13 @@ Smoke-тесты для API помещений и зданий (re_objects).
 
 Проверяют, что все ручки отвечают 200 (или 404 где ожидаемо) и возвращают ожидаемую структуру.
 """
+from decimal import Decimal
+
 import pytest
+from asgiref.sync import sync_to_async
 from uuid import UUID, uuid4
+
+from apps.re_objects.models import Building, Floor, Premise
 
 
 @pytest.fixture
@@ -172,6 +177,41 @@ class TestPremisesList:
         assert data["page"] == 1
         assert data["page_size"] == 5
 
+    async def test_premises_list_sale_price_is_human_price(self, client, city):
+        """При sale_type=sale поле price совпадает с human_price (итог продажи из кэша)."""
+
+        @sync_to_async
+        def _create():
+            building = Building.objects.create(
+                name="БЦ Продажа",
+                address="ул. Продажная, 1",
+                city=city,
+                description="",
+            )
+            floor = Floor.objects.create(building=building, number=1)
+            p = Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal("50"),
+                price_per_month=Decimal("0"),
+                price_per_sqm=Decimal("200000"),
+                status=Premise.Status.AVAILABLE,
+                available_for_rent=False,
+                available_for_sale=True,
+                number="S1",
+            )
+            return p
+
+        premise = await _create()
+        response = await client.get("/premises?sale_type=sale")
+
+        assert response.status_code == 200
+        data = response.json()
+        item = next(i for i in data["items"] if i["uuid"] == str(premise.uuid))
+        assert Decimal(str(item["price"])) == premise.human_price
+        assert Decimal(str(item["price"])) == Decimal("10000000.00")
+
 
 @pytest.mark.django_db
 class TestPremiseDetail:
@@ -193,6 +233,38 @@ class TestPremiseDetail:
         assert "area" in data
         assert "description" in data
         assert "media" in data
+
+    async def test_premise_detail_sale_type_uses_human_price(self, client, city):
+        """sale_type=sale: price равен human_price."""
+
+        @sync_to_async
+        def _create():
+            building = Building.objects.create(
+                name="БЦ Деталь",
+                address="ул. Детальная, 2",
+                city=city,
+                description="",
+            )
+            floor = Floor.objects.create(building=building, number=1)
+            return Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal("40"),
+                price_per_month=Decimal("0"),
+                price_per_sqm=Decimal("250000"),
+                status=Premise.Status.AVAILABLE,
+                available_for_rent=False,
+                available_for_sale=True,
+                number="D1",
+            )
+
+        premise = await _create()
+        response = await client.get(f"/premises/{premise.uuid}?sale_type=sale")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert Decimal(str(data["price"])) == premise.human_price
 
     async def test_premise_detail_not_found(self, client):
         """404 для несуществующего UUID."""

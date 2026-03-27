@@ -27,7 +27,7 @@ class BuildingMediaItemOut(BaseMediaItemOut):
 
 
 class PremiseListOut(Schema):
-    """Помещение в списке (карточка в выдаче)."""
+    """Помещение в списке (карточка в выдаче). Поле price: при продаже — human_price, при аренде — за месяц."""
 
     uuid: str  # Публичный идентификатор (UUID)
     building_uuid: str  # UUID здания, к которому относится помещение
