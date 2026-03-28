@@ -177,8 +177,8 @@ class TestPremisesList:
         assert data["page"] == 1
         assert data["page_size"] == 5
 
-    async def test_premises_list_sale_price_is_human_price(self, client, city):
-        """При sale_type=sale поле price совпадает с human_price (итог продажи из кэша)."""
+    async def test_premises_list_sale_price_is_full_sell(self, client, city):
+        """При sale_type=sale поле price совпадает с full_sell_price."""
 
         @sync_to_async
         def _create():
@@ -209,7 +209,7 @@ class TestPremisesList:
         assert response.status_code == 200
         data = response.json()
         item = next(i for i in data["items"] if i["uuid"] == str(premise.uuid))
-        assert Decimal(str(item["price"])) == premise.human_price
+        assert Decimal(str(item["price"])) == premise.full_sell_price
         assert Decimal(str(item["price"])) == Decimal("10000000.00")
 
 
@@ -234,8 +234,8 @@ class TestPremiseDetail:
         assert "description" in data
         assert "media" in data
 
-    async def test_premise_detail_sale_type_uses_human_price(self, client, city):
-        """sale_type=sale: price равен human_price."""
+    async def test_premise_detail_sale_type_uses_full_sell_price(self, client, city):
+        """sale_type=sale: price равен full_sell_price."""
 
         @sync_to_async
         def _create():
@@ -264,7 +264,7 @@ class TestPremiseDetail:
 
         assert response.status_code == 200
         data = response.json()
-        assert Decimal(str(data["price"])) == premise.human_price
+        assert Decimal(str(data["price"])) == premise.full_sell_price
 
     async def test_premise_detail_not_found(self, client):
         """404 для несуществующего UUID."""
