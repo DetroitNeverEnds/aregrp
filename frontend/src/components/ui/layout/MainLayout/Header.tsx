@@ -116,9 +116,9 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                             <Button
                                 variant="outlined"
                                 onlyIcon
-                                icon="whatsapp"
+                                icon="max"
                                 iconColor="primary-yellow"
-                                to={siteInfo?.whatsapp_link || ''}
+                                to={siteInfo?.max_link || ''}
                             />
                             <Button
                                 variant="outlined"
