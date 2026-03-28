@@ -88,20 +88,6 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                         >
                             {t('header.cases')}
                         </Link>
-                        <Button
-                            variant="outlined"
-                            onlyIcon
-                            icon="max"
-                            iconColor="primary-yellow"
-                            to={siteInfo?.max_link || ''}
-                        />
-                        <Button
-                            variant="outlined"
-                            onlyIcon
-                            icon="tg"
-                            iconColor="primary-yellow"
-                            to={siteInfo?.telegram_link || ''}
-                        />
                     </Flex>
                     <Flex direction="row" gap={40}>
                         <Flex direction="row" gap={10}>
