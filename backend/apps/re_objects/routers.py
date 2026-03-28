@@ -191,7 +191,7 @@ async def premise_list(
     description=(
         "Помещение по UUID: uuid, name, price, address, floor, area, has_tenant, media, description, "
         "price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail. "
-        f"Параметр sale_type={settings.RE_OBJECTS_SALE_TYPE_SALE}: поле price — итоговая стоимость продажи (кэш human_price). "
+        f"Параметр sale_type={settings.RE_OBJECTS_SALE_TYPE_SALE}: поле price — итоговая стоимость продажи (human_price). "
         "Без параметра: только продажа — price из human_price; аренда или смешанный режим — price за месяц (price_per_month)."
     ),
 )

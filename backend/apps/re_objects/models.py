@@ -307,8 +307,8 @@ class Premise(models.Model):
     price_per_sqm = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="Цена за м², ₽",
-        help_text="Стоимость аренды за квадратный метр. Задаётся вручную.",
+        verbose_name="Цена продажи за м², ₽",
+        help_text="Стоимость продажи за квадратный метр. Обязательна, если помещение доступно для продажи.",
         null=True,
         blank=True,
     )
@@ -316,10 +316,9 @@ class Premise(models.Model):
         max_digits=12,
         decimal_places=2,
         default=Decimal("0"),
-        verbose_name="Итоговая стоимость продажи (кэш), ₽",
+        verbose_name="Итоговая стоимость продажи, ₽",
         help_text=(
-            "Кэш итоговой стоимости продажи и аренды за месяц — чтобы не пересчитывать при агрегации по зданиям "
-            "и при выгрузке. Пересчитывается при сохранении: при продаже — итог продажи "
+            "Денормализованное значение для агрегатов и выгрузки. Пересчитывается при сохранении: при продаже — итог "
             "(price_per_month если > 0, иначе площадь × price_per_sqm); при аренде без продажи — цена за месяц; иначе 0."
         ),
     )
@@ -408,8 +407,20 @@ class Premise(models.Model):
         city_name = self.city.name if self.city else "—"
         return f"{self.number or 'Помещение'} ({city_name}{building_info}{floor_info})"
 
+    def clean(self):
+        super().clean()
+        errors = {}
+        if self.available_for_sale:
+            if self.price_per_sqm is None or self.price_per_sqm <= 0:
+                errors['price_per_sqm'] = 'Укажите цену продажи за м² больше 0.'
+        if self.available_for_rent:
+            if self.price_per_month is None or self.price_per_month <= 0:
+                errors['price_per_month'] = 'Укажите цену аренды в месяц больше 0.'
+        if errors:
+            raise ValidationError(errors)
+
     def _compute_human_price(self) -> Decimal:
-        """Кэш для human_price: см. help_text на поле."""
+        """Итог для human_price: см. help_text на поле."""
         if self.available_for_sale:
             if self.price_per_month is not None and self.price_per_month > 0:
                 return self.price_per_month
@@ -445,6 +456,7 @@ class Premise(models.Model):
             except City.DoesNotExist:
                 pass
 
+        self.full_clean()
         super().save(*args, **kwargs)
 
 
