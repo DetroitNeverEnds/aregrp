@@ -9,9 +9,18 @@ import { Checkbox } from '../Checkbox';
 import _ from 'lodash';
 import FlatButton from '@/components/ui/common/FlatButton';
 import Icon from '@/components/ui/common/Icon';
+import { TextInput } from '@/components/ui/common/input/TextInput';
 
 type Label = {
+    // Заголовок опции
     title: string | ReactNode;
+    /** Мета-строка, которая будет использоваться для поиска
+        (напрмер, если заголовок - ReactNode)
+
+        Имеет приоритет над заголовком при поиске.
+    */
+    titleFilterMeta?: string;
+    // Описание опции
     description?: string;
 };
 
@@ -20,8 +29,24 @@ export interface SelectOption<T> {
     label: Label;
 }
 
+function selectOptionMatchesQuery<T>(option: SelectOption<T>, query: string): boolean {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) {
+        return true;
+    }
+    const titlePart =
+        option.label.titleFilterMeta ||
+        (typeof option.label.title === 'string' ? option.label.title.toLowerCase() : '');
+    const descPart = (option.label.description ?? '').toLowerCase();
+    return titlePart.includes(normalized) || descPart.includes(normalized);
+}
+
 interface BaseSelectProps<T> {
     options: SelectOption<T>[];
+    /** Показать поле поиска и отфильтровать опции по подстроке (заголовок и описание). */
+    filterable?: boolean;
+    /** Плейсхолдер поля поиска при `filterable`. */
+    filterPlaceholder?: string;
     emptyMessage?: string;
     placeholder?: string;
     size?: Size;
@@ -55,9 +80,31 @@ export function Select<T>(props: SelectProps<T>) {
         disabled = false,
         className = '',
         clearable = false,
+        filterable = false,
+        filterPlaceholder = 'Поиск...',
     } = props;
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [filterQuery, setFilterQuery] = useState('');
+
+    const openDropdowOpenChange = useCallback(
+        (open: boolean) => {
+            if (!open) {
+                setFilterQuery('');
+            }
+            setIsDropdownOpen(open);
+        },
+        [setFilterQuery],
+    );
+
+    const visibleOptionIndices = useMemo(() => {
+        if (!filterable) {
+            return options.map((_, index) => index);
+        }
+        return options
+            .map((option, index) => (selectOptionMatchesQuery(option, filterQuery) ? index : -1))
+            .filter(i => i >= 0);
+    }, [options, filterable, filterQuery]);
 
     const selectedOptions = useMemo<number[]>(
         () =>
@@ -98,7 +145,7 @@ export function Select<T>(props: SelectProps<T>) {
         <Dropdown
             size={size}
             isOpened={isDropdownOpen}
-            onOpenChange={setIsDropdownOpen}
+            onOpenChange={openDropdowOpenChange}
             disabled={disabled}
             fullWidth={fullWidth}
             trigger={
@@ -123,59 +170,57 @@ export function Select<T>(props: SelectProps<T>) {
             }
             className={className}
         >
-            <Flex gap={1} align="start" direction="column">
-                {options.map((option, index) =>
-                    multiple ? (
-                        <Flex
-                            key={String(option.value)}
-                            onClick={() => handleSelect(index)}
-                            className={classNames(
-                                styles['select-option'],
-                                styles['select-option--multi'],
-                                {
+            <Flex gap={16} align="start" direction="column" fullWidth>
+                {filterable && (
+                    <TextInput
+                        value={filterQuery}
+                        onChange={setFilterQuery}
+                        placeholder={filterPlaceholder}
+                        leadingIcon="search"
+                        size="md"
+                        clearable
+                        disabled={disabled}
+                    />
+                )}
+                <Flex gap={1} align="start" direction="column" fullWidth>
+                    {visibleOptionIndices.map(index => {
+                        const option = options[index];
+                        return (
+                            <Flex
+                                key={String(option.value)}
+                                onClick={() => handleSelect(index)}
+                                className={classNames(styles['select-option'], {
+                                    [styles['select-option--multi']]: multiple,
                                     [styles['select-option--selected']]:
                                         selectedOptions.includes(index),
-                                },
-                            )}
-                            gap={8}
-                            direction="row"
-                        >
-                            <Checkbox size="sm" checked={selectedOptions.includes(index)} />
-                            <Flex direction="column" align="start" gap={4} style={{ flex: 1 }}>
-                                <Text ellipsis variant="16-reg">
-                                    {option.label.title}
-                                </Text>
-                                {option.label.description && (
-                                    <Text variant="10-reg" color="gray-70">
-                                        {option.label.description}
-                                    </Text>
+                                })}
+                                gap={8}
+                                direction="row"
+                            >
+                                {multiple && (
+                                    <div onClick={e => e.stopPropagation()}>
+                                        <Checkbox
+                                            size="sm"
+                                            checked={selectedOptions.includes(index)}
+                                            onChange={() => handleSelect(index)}
+                                        />
+                                    </div>
                                 )}
+                                <Flex direction="column" align="start" gap={4} style={{ flex: 1 }}>
+                                    <Text ellipsis variant="16-reg">
+                                        {option.label.title}
+                                    </Text>
+                                    {option.label.description && (
+                                        <Text variant="10-reg" color="gray-70">
+                                            {option.label.description}
+                                        </Text>
+                                    )}
+                                </Flex>
                             </Flex>
-                        </Flex>
-                    ) : (
-                        <Flex
-                            key={String(option.value)}
-                            onClick={() => handleSelect(index)}
-                            className={classNames(styles['select-option'], {
-                                [styles['select-option--selected']]:
-                                    selectedOptions.includes(index),
-                            })}
-                            direction="column"
-                            align="start"
-                            gap={4}
-                        >
-                            <Text ellipsis variant="16-reg">
-                                {option.label.title}
-                            </Text>
-                            {option.label.description && (
-                                <Text variant="10-reg" color="gray-70">
-                                    {option.label.description}
-                                </Text>
-                            )}
-                        </Flex>
-                    ),
-                )}
-                {options.length === 0 && (
+                        );
+                    })}
+                </Flex>
+                {visibleOptionIndices.length === 0 && (
                     <Text variant="16-reg" color="gray-50">
                         {emptyMessage}
                     </Text>

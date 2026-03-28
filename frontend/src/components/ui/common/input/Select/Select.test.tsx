@@ -149,6 +149,37 @@ describe('Select', () => {
         expect(selectContainer).toBeInTheDocument();
     });
 
+    it('при filterable фильтрует опции по строке поиска', async () => {
+        render(<Select options={mockOptions} filterable filterPlaceholder="Найти..." />);
+
+        fireEvent.click(screen.getByText('Выберите значение'));
+
+        await waitFor(() => {
+            expect(screen.getByRole('listbox')).toBeInTheDocument();
+        });
+
+        const search = screen.getByPlaceholderText('Найти...');
+        fireEvent.change(search, { target: { value: 'Опция 2' } });
+
+        expect(screen.queryByText('Опция 1')).not.toBeInTheDocument();
+        expect(screen.getByText('Опция 2')).toBeInTheDocument();
+    });
+
+    it('при filterable показывает сообщение если совпадений нет', async () => {
+        render(<Select options={mockOptions} filterable emptyMessage="Пусто по запросу" />);
+
+        fireEvent.click(screen.getByText('Выберите значение'));
+
+        await waitFor(() => {
+            expect(screen.getByRole('listbox')).toBeInTheDocument();
+        });
+
+        const search = screen.getByPlaceholderText('Поиск...');
+        fireEvent.change(search, { target: { value: 'zzz' } });
+
+        expect(screen.getByText('Пусто по запросу')).toBeInTheDocument();
+    });
+
     describe('SingleSelect', () => {
         it('вызывает onChange с одиночным значением', async () => {
             const handleChange = vi.fn();

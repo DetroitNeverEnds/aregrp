@@ -1,4 +1,4 @@
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import { useMutation, useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
 import {
     updateProfile,
     changePassword,
@@ -15,9 +15,15 @@ import type { ApiError } from '../api';
 export function useUpdateProfileMutation(
     options?: Omit<UseMutationOptions<UserData, ApiError, UpdateProfileData>, 'mutationFn'>,
 ) {
+    const queryClient = useQueryClient();
+    const { onSuccess, ...restOptions } = options ?? {};
     return useMutation({
         mutationFn: updateProfile,
-        ...options,
+        async onSuccess(data, variables, onMutateResult, mutationContext) {
+            await queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+            onSuccess?.(data, variables, onMutateResult, mutationContext);
+        },
+        ...restOptions,
     });
 }
 

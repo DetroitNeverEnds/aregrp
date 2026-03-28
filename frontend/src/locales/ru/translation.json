@@ -124,7 +124,9 @@
     "components": {
         "objectFilter": {
             "allCenters": "Все бизнес центры",
-            "searchObjects": "Поиск объектов"
+            "searchObjects": "Поиск объектов",
+            "nothingFound": "Ничего не найдено",
+            "searchCenters": "Поиск бизнес-центров"
         },
         "OfficeCard": {
             "hasTennant": "Есть",
@@ -269,7 +271,19 @@
             "innLabel": "ИНН",
             "notSpecified": "—",
             "save": "Сохранить",
-            "cancel": "Отмена"
+            "cancel": "Отмена",
+            "booking": {
+                "title": "Бронь",
+                "tabRent": "Аренда",
+                "tabSale": "Продажа",
+                "columnOffice": "Офис",
+                "columnObject": "Объект",
+                "columnCommission": "Комиссия",
+                "columnExpiresAt": "Истечение срока",
+                "columnAction": "Действие",
+                "viewAction": "Посмотреть",
+                "empty": "Нет данных"
+            }
         }
     }
 }

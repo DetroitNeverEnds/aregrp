@@ -19,6 +19,7 @@ import { Page } from '@/components/ui/layout/Page/Page';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 import type { UserData } from '@/api';
 import { ProfileMainInfoCard } from './ProfileMainInfoCard';
+import { ProfileObjectsCard } from './ProfileObjectsCard';
 
 type MenuItems = {
     label: string;
@@ -96,7 +97,7 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
 
     return (
         <VerticalMainContainer className={styles.page}>
-            <Flex direction="row" gap={60} fullWidth align="start">
+            <Flex direction="row" fullWidth align="start" className={styles.profileRow}>
                 <Flex direction="column" className={styles.menu} fullWidth align="start">
                     <Flex direction="column" className={styles.menu__head} align="start" fullWidth>
                         <Flex direction="row" gap={12} align="start" fullWidth>
@@ -145,7 +146,8 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                     </Flex>
                 </Flex>
 
-                <ProfileMainInfoCard user={user} />
+                {currentItem === 'profile' && <ProfileMainInfoCard user={user} />}
+                {currentItem === 'booking' && <ProfileObjectsCard />}
             </Flex>
         </VerticalMainContainer>
     );

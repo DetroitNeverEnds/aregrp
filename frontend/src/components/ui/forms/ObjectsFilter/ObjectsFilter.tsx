@@ -80,7 +80,10 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                                 onChange={uuids => onChange(uuids.join(','))}
                                 className={styles.bcSelect}
                                 multiple
+                                filterable
+                                filterPlaceholder={t('components.objectFilter.searchCenters')}
                                 clearable
+                                emptyMessage={t('components.objectFilter.nothingFound')}
                             />
                         )}
                         control={control}

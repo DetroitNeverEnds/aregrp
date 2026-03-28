@@ -1,101 +1,258 @@
-name: Deploy Testing
+name: Deploy Testing Build
 
 on:
-    workflow_call:
-        secrets:
-            VPS_HOST:
-                required: true
-            VPS_USER:
-                required: true
-            VPS_SSH_KEY:
-                required: true
-            ENV_FILE:
-                required: true
-            ENV_POSTGRES_FILE:
-                required: true
-            VITE_YANDEX_MAPS_API_KEY:
-                required: true
-    # Старые условия (закомментированы):
-    # pull_request:
-    #     branches: [main]
-    #     paths:
-    #         - "frontend/**/*"
-    # workflow_dispatch:
-    
-    # Новые условия: запуск при push в main
-    push:
-        branches: [main]
+    pull_request:
+        paths:
+            - .github/workflows/deploy-testing.yml
+    workflow_dispatch:
+        inputs:
+            label:
+                description: 'Label to filter PRs'
+                required: false
+                default: 'testing'
+                type: string
 
 env:
-    # Имя образа: ghcr.io/ваш-юзер/ваш-репо
     REGISTRY: ghcr.io
     REGISTRY_PREFIX: ghcr.io/detroitneverends/aregrp/
-    # TAG формируется в зависимости от типа запуска:
-    # - Pull Request: pr-{номер}-{номер запуска}
-    # - workflow_dispatch: {короткий хеш коммита} (первые 7 символов)
-    # - Push: {имя ветки}-{номер запуска}
-    TAG: ${{ github.event.pull_request.number && format('pr-{0}-{1}', github.event.pull_request.number, github.run_number) || (github.event_name == 'workflow_dispatch' && github.sha) || format('{0}-{1}', github.ref_name, github.run_number) }}
+    TAG: testing-${{ github.run_number }}
 
 jobs:
+    merge-prs:
+        name: Merge PRs
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: read
+        outputs:
+            has_prs: ${{ steps.merge.outputs.has_prs }}
+            merge_branch: ${{ steps.merge.outputs.merge_branch }}
+            pr_list: ${{ steps.merge.outputs.pr_list }}
+            merge_report: ${{ steps.merge.outputs.merge_report }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Summary — Git config
+              if: success()
+              run: |
+                  {
+                      echo "### Configure Git"
+                      echo "Пользователь для коммитов: \`github-actions[bot]\`."
+                      echo ""
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Find and merge PRs
+              id: merge
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  LABEL: ${{ github.event.inputs.label || 'testing' }}
+              run: |
+                  set -eu
+                  REPORT_FILE="$(mktemp)"
+
+                  echo "🔍 Searching for PRs with label: $LABEL"
+
+                  PRS_JSON=$(gh pr list --state open --label "$LABEL" --json number,headRefName,title,url,author || echo '[]')
+                  COUNT=$(echo "$PRS_JSON" | jq 'length')
+
+                  write_merge_report() {
+                      {
+                          echo "## Merge PRs"
+                          echo ""
+                          echo "Метка: \`$LABEL\`"
+                          echo ""
+                          echo "**Успешно влиты**"
+                          if [ -n "$MERGED_LIST" ]; then
+                              echo "$MERGED_LIST"
+                          else
+                              echo "_нет_"
+                          fi
+                          echo ""
+                          echo "**Ошибки слияния**"
+                          if [ -n "$FAILED_LIST" ]; then
+                              echo "$FAILED_LIST"
+                          else
+                              echo "_нет_"
+                          fi
+                          echo ""
+                      } > "$REPORT_FILE"
+                  }
+
+                  if [ "$COUNT" -eq 0 ]; then
+                      echo "ℹ️  No PRs found with label '$LABEL'"
+                      MERGED_LIST=""
+                      FAILED_LIST=""
+                      echo "has_prs=false" >> "$GITHUB_OUTPUT"
+                      echo "merge_branch=main" >> "$GITHUB_OUTPUT"
+                      echo "pr_list=" >> "$GITHUB_OUTPUT"
+                      write_merge_report
+                      {
+                          echo "### Merge PRs"
+                          tail -n +3 "$REPORT_FILE"
+                      } >> "$GITHUB_STEP_SUMMARY"
+                      {
+                          echo 'merge_report<<MERGE_REPORT_EOF'
+                          cat "$REPORT_FILE"
+                          echo 'MERGE_REPORT_EOF'
+                      } >> "$GITHUB_OUTPUT"
+                      rm -f "$REPORT_FILE"
+                      exit 0
+                  fi
+
+                  echo "✅ Found $COUNT PR(s)"
+
+                  git checkout main
+                  git pull origin main
+
+                  MERGE_BRANCH="testing-build"
+                  git branch -D "$MERGE_BRANCH" 2>/dev/null || true
+                  git push origin --delete "$MERGE_BRANCH" 2>/dev/null || true
+                  git checkout -b "$MERGE_BRANCH"
+
+                  MERGED_LIST=""
+                  FAILED_LIST=""
+                  MERGED_PR_IDS=""
+
+                  for ((i = 0; i < COUNT; i++)); do
+                      pr=$(echo "$PRS_JSON" | jq -c ".[$i]")
+                      PR_NUMBER=$(echo "$pr" | jq -r '.number')
+                      BRANCH=$(echo "$pr" | jq -r '.headRefName')
+                      TITLE=$(echo "$pr" | jq -r '.title')
+                      URL=$(echo "$pr" | jq -r '.url')
+                      AUTHOR=$(echo "$pr" | jq -r '.author.login // "unknown"')
+
+                      echo ""
+                      echo "========================================="
+                      echo "Processing PR #$PR_NUMBER: $TITLE"
+                      echo "Branch: $BRANCH"
+                      echo "========================================="
+
+                      git fetch origin "$BRANCH"
+
+                      MERGE_ERR="$(mktemp)"
+                      if git merge --no-ff --no-edit "origin/$BRANCH" -m "Merge PR #$PR_NUMBER: $TITLE" 2>"$MERGE_ERR"; then
+                          echo "✅ Successfully merged PR #$PR_NUMBER"
+                          MERGED_PR_IDS="${MERGED_PR_IDS} #${PR_NUMBER}"
+                          MERGED_LIST="${MERGED_LIST}- [#${PR_NUMBER}](${URL}) — ${TITLE} (\`${AUTHOR}\`)"$'\n'
+                      else
+                          echo "❌ Failed to merge PR #$PR_NUMBER"
+                          git merge --abort 2>/dev/null || true
+                          FAILED_LIST="${FAILED_LIST}- [#${PR_NUMBER}](${URL}) — ${TITLE} (\`${AUTHOR}\`)"$'\n'
+                      fi
+                      rm -f "$MERGE_ERR"
+                  done
+
+                  write_merge_report
+
+                  {
+                      echo "### Merge PRs"
+                      tail -n +3 "$REPORT_FILE"
+                  } >> "$GITHUB_STEP_SUMMARY"
+
+                  if [ -n "$MERGED_LIST" ]; then
+                      echo "has_prs=true" >> "$GITHUB_OUTPUT"
+                      echo "merge_branch=$MERGE_BRANCH" >> "$GITHUB_OUTPUT"
+                      echo "pr_list=${MERGED_PR_IDS# }" >> "$GITHUB_OUTPUT"
+                      git push -f origin "$MERGE_BRANCH"
+                  else
+                      echo "ℹ️  No PRs were successfully merged."
+                      echo "has_prs=false" >> "$GITHUB_OUTPUT"
+                      echo "merge_branch=main" >> "$GITHUB_OUTPUT"
+                      echo "pr_list=" >> "$GITHUB_OUTPUT"
+                  fi
+
+                  {
+                      echo 'merge_report<<MERGE_REPORT_EOF'
+                      cat "$REPORT_FILE"
+                      echo 'MERGE_REPORT_EOF'
+                  } >> "$GITHUB_OUTPUT"
+
+                  rm -f "$REPORT_FILE"
+
     build-and-push:
         name: Build and Push
+        needs: merge-prs
         runs-on: ubuntu-latest
         permissions:
             contents: read
             packages: write
+
         steps:
-            - name: Checkout code
-              id: checkout
+            - name: Checkout merged branch
               uses: actions/checkout@v6
+              with:
+                  ref: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}
 
             - name: Set up Docker Buildx
-              id: setup-buildx
               uses: docker/setup-buildx-action@v3
 
             - name: Log in to the Container registry
-              id: docker-login
               uses: docker/login-action@v3
               with:
                   registry: ${{ env.REGISTRY }}
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            # Создаем пустые .env файлы только для валидации конфигурации docker-compose
-            # Docker Compose проверяет наличие файлов из env_file даже при build
-            # Эти файлы не попадут в образ благодаря .dockerignore
-            # Реальные значения будут созданы на сервере из GitHub Secrets
             - name: Create temporary .env files for build validation
-              id: create-env-files
               run: |
                   mkdir -p backend
                   touch backend/.env backend/.env.postgres
                   echo "Created temporary .env files for docker-compose validation"
 
             - name: Build and Push
-              id: build-push
               env:
                   REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}
                   TAG: ${{ env.TAG }}
                   VITE_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
-              run: docker compose build && docker compose push
+              run: |
+                  echo "🔨 Building from branch: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}"
+                  echo "📦 Merged PRs:${{ needs.merge-prs.outputs.pr_list || '(нет)' }}"
+                  echo "🏷️  Tag: ${{ env.TAG }}"
+                  docker compose build && docker compose push
+
+            - name: Summary — Build and Push
+              if: always()
+              run: |
+                  {
+                      echo "## Build and Push"
+                      echo ""
+                      echo "Container registry:"
+                      echo ""
+                      echo "- Реестр: \`${{ env.REGISTRY }}\`"
+                      echo "- Пользователь: \`${{ github.actor }}\`"
+                      echo ""
+                      echo "TAG: \`${{ env.TAG }}\`"
+                      echo ""
+                      echo "REGISTRY_PREFIX: \`${{ env.REGISTRY_PREFIX }}\`"
+                      echo ""
+                      if [ "${{ job.status }}" != "success" ]; then
+                          echo "Сборка **не прошла** — см. логи шага Build and Push."
+                          echo ""
+                      fi
+                  } >> "$GITHUB_STEP_SUMMARY"
+
     deploy:
-        name: Deploy
-        needs: build-and-push
+        name: Deploy to Testing
+        needs: [merge-prs, build-and-push]
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout code
-              id: checkout
+            - name: Checkout merged branch
               uses: actions/checkout@v6
-
-            - name: Secrets diagnostics
-              id: secrets-check
-              run: |
-                  test -z "${{ secrets.ENV_FILE }}" && echo "ENV_FILE EMPTY" || echo "ENV_FILE PRESENT"
-                  test -z "${{ secrets.ENV_POSTGRES_FILE }}" && echo "ENV_POSTGRES_FILE EMPTY" || echo "ENV_POSTGRES_FILE PRESENT"
+              with:
+                  ref: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}
 
             - name: Copy docker-compose via SCP
-              id: copy-compose
               uses: appleboy/scp-action@master
               with:
                   host: ${{ secrets.VPS_HOST }}
@@ -105,7 +262,6 @@ jobs:
                   target: "/home/${{ secrets.VPS_USER }}/aregrp/"
 
             - name: Create environment files from secrets
-              id: create-env-files
               uses: appleboy/ssh-action@master
               with:
                   host: ${{ secrets.VPS_HOST }}
@@ -113,70 +269,19 @@ jobs:
                   key: ${{ secrets.VPS_SSH_KEY }}
                   script: |
                       cd ~/aregrp/
-                      echo "Current directory: $(pwd)"
                       mkdir -p backend
-                      
-                      # Создаем backend/.env из секрета
-                      # Используем echo с перенаправлением для безопасной передачи секретов
+
                       echo "${{ secrets.ENV_FILE }}" > backend/.env
-                      
-                      # Проверяем, что файл создан и не пустой
-                      if [ -s backend/.env ]; then
-                          echo "✅ Created backend/.env from GitHub Secrets"
-                          echo "File size: $(wc -c < backend/.env) bytes, lines: $(wc -l < backend/.env)"
-                          echo "First few lines (keys only):"
-                          head -n 3 backend/.env | sed 's/=.*/=***/' || true
-                      else
-                          echo "⚠️  ERROR: backend/.env is empty!"
-                          echo "Please configure ENV_FILE secret in Repository Settings → Secrets and variables → Actions"
-                          exit 1
-                      fi
-                      
-                      # Создаем backend/.env.postgres из секрета
                       echo "${{ secrets.ENV_POSTGRES_FILE }}" > backend/.env.postgres
-                      
-                      # Проверяем, что файл создан и не пустой
-                      if [ -s backend/.env.postgres ]; then
-                          echo "✅ Created backend/.env.postgres from GitHub Secrets"
-                          echo "File size: $(wc -c < backend/.env.postgres) bytes, lines: $(wc -l < backend/.env.postgres)"
-                          echo "First few lines (keys only):"
-                          head -n 3 backend/.env.postgres | sed 's/=.*/=***/' || true
+
+                      if [ -s backend/.env ] && [ -s backend/.env.postgres ]; then
+                          echo "✅ Environment files created successfully"
                       else
-                          echo "⚠️  ERROR: backend/.env.postgres is empty!"
-                          echo "Please configure ENV_POSTGRES_FILE secret in Repository Settings → Secrets and variables → Actions"
-                          exit 1
-                      fi
-                      
-                      # Проверяем, что файлы созданы
-                      echo ""
-                      echo "Verifying files exist:"
-                      ls -lh backend/.env* || echo "ERROR: .env files not found!"
-                      echo ""
-                      echo "Full path to files:"
-                      echo "  $(pwd)/backend/.env"
-                      echo "  $(pwd)/backend/.env.postgres"
-                      
-                      # Проверяем, что файлы созданы
-                      echo ""
-                      echo "Verifying files exist:"
-                      ls -lh backend/.env* || echo "ERROR: .env files not found!"
-                      echo ""
-                      echo "Full path to files:"
-                      echo "  $(pwd)/backend/.env"
-                      echo "  $(pwd)/backend/.env.postgres"
-                      
-                      # Проверяем, что файлы не пустые
-                      if [ ! -s backend/.env ]; then
-                          echo "❌ ERROR: backend/.env is empty! Containers will fail!"
-                          exit 1
-                      fi
-                      if [ ! -s backend/.env.postgres ]; then
-                          echo "❌ ERROR: backend/.env.postgres is empty! Database will fail!"
+                          echo "❌ ERROR: Environment files are empty!"
                           exit 1
                       fi
 
-            - name: Execute remote ssh commands
-              id: deploy-containers
+            - name: Deploy containers
               uses: appleboy/ssh-action@master
               with:
                   host: ${{ secrets.VPS_HOST }}
@@ -185,61 +290,59 @@ jobs:
                   script: |
                       cd ~/aregrp/
 
-                      # Создаем директории для персистентных данных (вне проекта, чтобы не удалялись при деплое)
-                      echo "Creating persistent data directories..."
                       sudo mkdir -p /var/lib/aregrp-data/postgres_data
                       sudo mkdir -p /var/lib/aregrp-data/media
                       sudo mkdir -p /var/lib/aregrp-data/static
-                      
-                      # Устанавливаем правильные права доступа для PostgreSQL
-                      # PostgreSQL требует, чтобы директория принадлежала пользователю postgres (UID 999 в контейнере)
+
                       sudo chown -R 999:999 /var/lib/aregrp-data/postgres_data || true
                       sudo chmod 700 /var/lib/aregrp-data/postgres_data || true
-                      
-                      # Права для media и static (обычно пользователь из контейнера backend)
                       sudo chown -R $USER:$USER /var/lib/aregrp-data/media /var/lib/aregrp-data/static || true
                       sudo chmod -R 755 /var/lib/aregrp-data/media /var/lib/aregrp-data/static || true
-                      
-                      echo "✅ Persistent data directories created"
 
-                      # Проверяем, что .env файлы созданы и доступны
-                      echo "Checking .env files before starting containers..."
-                      if [ -f backend/.env ]; then
-                          echo "✅ backend/.env exists ($(wc -l < backend/.env) lines)"
-                          echo "First line: $(head -n 1 backend/.env | cut -c1-50)..."
-                      else
-                          echo "❌ ERROR: backend/.env NOT FOUND!"
-                          exit 1
-                      fi
-                      
-                      if [ -f backend/.env.postgres ]; then
-                          echo "✅ backend/.env.postgres exists ($(wc -l < backend/.env.postgres) lines)"
-                          echo "First line: $(head -n 1 backend/.env.postgres | cut -c1-50)..."
-                      else
-                          echo "❌ ERROR: backend/.env.postgres NOT FOUND!"
-                          exit 1
-                      fi
-                      
-                      # Показываем текущую директорию и структуру
-                      echo "Current directory: $(pwd)"
-                      echo "Files in backend/:"
-                      ls -la backend/ | grep -E '\.env' || echo "No .env files found!"
-
-                      # Логинимся в реестр GitHub на самом VPS, чтобы скачать приватный образ
                       echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-                      # Экспортируем переменные окружения для docker-compose
                       export REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
                       export TAG=${{ env.TAG }}
-                      export VITE_YANDEX_MAPS_API_KEY=${{ secrets.VITE_YANDEX_MAPS_API_KEY }}
+                      export VITE_YANDEX_MAPS_API_KEY=${{ secrets.YANDEX_MAPS_API_KEY }}
 
-                      # Останавливаем, скачиваем и запускаем
+                      PULL_UP_START=$(date +%s)
                       docker compose pull
                       docker compose up -d --remove-orphans
+                      PULL_UP_END=$(date +%s)
+                      PULL_UP_SEC=$((PULL_UP_END - PULL_UP_START))
 
-                      # Проверяем, что контейнеры запустились и переменные окружения загружены
-                      echo "Checking if containers are running..."
+                      echo "Checking containers..."
                       docker compose ps
-                      
-                      # Чистим старые неиспользуемые образы, чтобы не забить диск
+
+                      echo ""
+                      echo "=== Выкатка (сервер): время и образы ==="
+                      echo "Время pull + up: ${PULL_UP_SEC} с"
+                      echo "Образы compose (размер на диске после pull):"
+                      docker compose images || true
+
                       docker image prune -f
+
+            - name: Параметры запуска (workflow)
+              if: always()
+              run: |
+                  echo "=== Параметры запуска ==="
+                  echo "workflow_run: ${{ github.run_id }}"
+                  echo "run_number: ${{ github.run_number }}"
+                  echo "event: ${{ github.event_name }}"
+                  echo "ref: ${{ github.ref }}"
+                  echo "merge_branch: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}"
+                  echo "pr_list: ${{ needs.merge-prs.outputs.pr_list || '(нет)' }}"
+                  echo "REGISTRY: ${{ env.REGISTRY }}"
+                  echo "REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}"
+                  echo "TAG: ${{ env.TAG }}"
+                  echo "actor: ${{ github.actor }}"
+                  echo "jobs: merge=${{ needs.merge-prs.result }} build=${{ needs.build-and-push.result }} deploy=${{ job.status }}"
+                  echo "Примечание: время выкатки и размеры образов на VPS — в логе шага «Deploy containers»."
+
+            - name: Summary — Deploy Testing (итоговый)
+              if: always()
+              run: |
+                  {
+                      echo "# Deploy Testing"
+                      echo ""
+                  } >> "$GITHUB_STEP_SUMMARY"

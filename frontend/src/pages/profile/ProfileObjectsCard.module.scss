@@ -1,0 +1,54 @@
+.panel {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tabsBlock {
+    width: 100%;
+}
+
+.tableWrap {
+    width: 100%;
+    min-width: 0;
+}
+
+.thGray {
+    background: $gray-10;
+}
+
+.viewButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 28px;
+    padding: 6px 16px;
+    border-radius: 4px;
+    border: 1.6px solid $gray-20;
+    background: transparent;
+    font-family: $font-family-base;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: $font-weight-medium;
+    color: $gray-70;
+    cursor: pointer;
+    width: 100%;
+    max-width: 100%;
+
+    &:hover:not(:disabled) {
+        background: $gray-opacity-20-70;
+        color: $gray-100;
+    }
+
+    &:active:not(:disabled) {
+        background: $gray-20;
+        color: $gray-70;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $primary-600;
+        outline-offset: 2px;
+    }
+}
