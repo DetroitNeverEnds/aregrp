@@ -93,7 +93,7 @@ class BuildingVideoInline(admin.TabularInline):
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
     """Админка для зданий."""
-    list_display = ('name', 'address', 'city', 'total_floors', 'year_built', 'created_at')
+    list_display = ('name', 'address', 'city', 'latitude', 'longitude', 'total_floors', 'year_built', 'created_at')
     list_filter = ('city', 'city__region', 'year_built', 'created_at')
     search_fields = ('name', 'address', 'city__name')
     ordering = ('city', 'name')

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.site_settings',
     'apps.feedback',
     'apps.re_objects',
+    'apps.bookings',
 ]
 
 MIDDLEWARE = [

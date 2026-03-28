@@ -7,7 +7,7 @@ from decimal import Decimal
 from django.db import models
 from django.core.exceptions import ValidationError
 from smart_selects.db_fields import ChainedForeignKey
-from django.core.validators import FileExtensionValidator
+from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 from django.conf import settings
 
 
@@ -143,6 +143,24 @@ class Building(models.Model):
         null=True,
         blank=True,
         help_text="Год постройки здания"
+    )
+    latitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        verbose_name="Широта",
+        help_text="Географическая широта (WGS-84), от −90 до 90",
+        validators=[MinValueValidator(Decimal("-90")), MaxValueValidator(Decimal("90"))],
+    )
+    longitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        verbose_name="Долгота",
+        help_text="Географическая долгота (WGS-84), от −180 до 180",
+        validators=[MinValueValidator(Decimal("-180")), MaxValueValidator(Decimal("180"))],
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

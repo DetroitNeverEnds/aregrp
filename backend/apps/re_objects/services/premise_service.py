@@ -27,6 +27,7 @@ from ..models import Building, Floor, Premise
 from ..schemas import (
     BaseMediaItemOut,
     BuildingDetailOut,
+    BuildingGeoPointOut,
     BuildingListOut,
     BuildingListResponse,
     BuildingMediaItemOut,
@@ -37,6 +38,18 @@ from ..schemas import (
     PremiseListResponse,
     PremiseDetailOut,
 )
+
+
+def _decimal_coord_to_float(value) -> Optional[float]:
+    return float(value) if value is not None else None
+
+
+def _building_geo_point_out(b: Building) -> Optional[BuildingGeoPointOut]:
+    lat = _decimal_coord_to_float(b.latitude)
+    lon = _decimal_coord_to_float(b.longitude)
+    if lat is None or lon is None:
+        return None
+    return BuildingGeoPointOut(lat=lat, lon=lon)
 
 
 def parse_building_uuids(value: Optional[str]) -> Optional[list[UUID]]:
@@ -249,6 +262,7 @@ def building_to_list_out(b: Building) -> BuildingListOut:
         title=b.name,
         address=b.address,
         description=b.description or "",
+        geo_point=_building_geo_point_out(b),
         min_sale_price=min_sale_val,
         min_rent_price=min_rent_val,
         media=_build_building_media(b),
@@ -359,6 +373,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
         title=b.name,
         address=b.address,
         description=b.description or "",
+        geo_point=_building_geo_point_out(b),
         total_floors=b.total_floors,
         year_built=b.year_built,
         min_sale_price=min_sale_val,
