@@ -14,7 +14,6 @@ export type {
     TableHeaderCellAlign,
     TableCellSize,
     TableCellAlign,
-    TableCellVariant,
     TableHeaderCellProps,
     TableCellProps,
     DataTableProps,

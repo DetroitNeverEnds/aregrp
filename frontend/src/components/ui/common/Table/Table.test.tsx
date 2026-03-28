@@ -34,22 +34,26 @@ describe('Table primitives', () => {
         expect(screen.getByRole('cell', { name: 'Ячейка' })).toBeInTheDocument();
     });
 
-    it('renders action cell with label', () => {
+    it('renders cell with content passed as children (e.g. action button)', () => {
+        const onClick = vi.fn();
         render(
             <Table>
                 <TableBody>
                     <TableRow>
-                        <TableCell
-                            variant="action"
-                            actionLabel="Подробнее"
-                            onAction={() => undefined}
-                        />
+                        <TableCell>
+                            <button type="button" onClick={onClick}>
+                                Подробнее
+                            </button>
+                        </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>,
         );
 
-        expect(screen.getByRole('button', { name: 'Подробнее' })).toBeInTheDocument();
+        const btn = screen.getByRole('button', { name: 'Подробнее' });
+        expect(btn).toBeInTheDocument();
+        btn.click();
+        expect(onClick).toHaveBeenCalledTimes(1);
     });
 });
 
@@ -61,7 +65,7 @@ describe('DataTable', () => {
         { id: 'b', title: 'Second' },
     ];
 
-    it('renders columns and data', () => {
+    it('renders columns and row values from data', () => {
         const columns: TableColumn<TestRow>[] = [
             { id: 'title', header: 'Название', accessorKey: 'title' },
         ];
@@ -69,8 +73,8 @@ describe('DataTable', () => {
         render(<DataTable data={rows} columns={columns} getRowId={r => r.id} />);
 
         expect(screen.getByRole('columnheader', { name: 'Название' })).toBeInTheDocument();
-        expect(screen.getByRole('cell', { name: 'First' })).toBeInTheDocument();
-        expect(screen.getByRole('cell', { name: 'Second' })).toBeInTheDocument();
+        expect(screen.getByText('First')).toBeInTheDocument();
+        expect(screen.getByText('Second')).toBeInTheDocument();
     });
 
     it('calls sortable when sort control is activated', async () => {
@@ -94,7 +98,7 @@ describe('DataTable', () => {
         expect(onSort).toHaveBeenCalledTimes(1);
     });
 
-    it('shows loader when isLoading', () => {
+    it('shows loader when isLoading and hides data rows', () => {
         const columns: TableColumn<TestRow>[] = [
             { id: 'title', header: 'Название', accessorKey: 'title' },
         ];
@@ -104,7 +108,8 @@ describe('DataTable', () => {
         );
 
         expect(container.querySelector('[aria-busy="true"]')).toBeInTheDocument();
-        expect(screen.queryByRole('cell', { name: 'First' })).not.toBeInTheDocument();
+        expect(screen.queryByText('First')).not.toBeInTheDocument();
+        expect(screen.queryByText('Second')).not.toBeInTheDocument();
     });
 
     it('shows emptyContent when no data', () => {

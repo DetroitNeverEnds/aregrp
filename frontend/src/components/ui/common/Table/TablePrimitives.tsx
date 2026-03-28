@@ -134,7 +134,7 @@ export const TableHeaderCell = ({
     );
 };
 
-/** Ячейка данных: текст, две строки или действие */
+/** Ячейка данных: разметка и интерактив — через `children` */
 export const TableCell = ({
     children,
     className,
@@ -142,19 +142,17 @@ export const TableCell = ({
     align = 'left',
     muted = false,
     ...rest
-}: TableCellProps) => {
-    return (
-        <td
-            className={classNames(
-                styles.cell,
-                styles[`cell--size-${size}`],
-                styles[`cell--align-${align}`],
-                muted && styles['cell--muted'],
-                className,
-            )}
-            {...rest}
-        >
-            {children}
-        </td>
-    );
-};
+}: TableCellProps) => (
+    <td
+        className={classNames(
+            styles.cell,
+            styles[`cell--size-${size}`],
+            styles[`cell--align-${align}`],
+            muted && styles['cell--muted'],
+            className,
+        )}
+        {...rest}
+    >
+        {children}
+    </td>
+);

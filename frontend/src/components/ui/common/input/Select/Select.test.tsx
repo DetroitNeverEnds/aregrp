@@ -158,7 +158,7 @@ describe('Select', () => {
             expect(screen.getByRole('listbox')).toBeInTheDocument();
         });
 
-        const search = screen.getByRole('textbox', { name: 'Найти...' });
+        const search = screen.getByPlaceholderText('Найти...');
         fireEvent.change(search, { target: { value: 'Опция 2' } });
 
         expect(screen.queryByText('Опция 1')).not.toBeInTheDocument();
@@ -166,7 +166,7 @@ describe('Select', () => {
     });
 
     it('при filterable показывает сообщение если совпадений нет', async () => {
-        render(<Select options={mockOptions} filterable noResultsMessage="Пусто по запросу" />);
+        render(<Select options={mockOptions} filterable emptyMessage="Пусто по запросу" />);
 
         fireEvent.click(screen.getByText('Выберите значение'));
 
@@ -174,7 +174,7 @@ describe('Select', () => {
             expect(screen.getByRole('listbox')).toBeInTheDocument();
         });
 
-        const search = screen.getByRole('textbox', { name: 'Поиск...' });
+        const search = screen.getByPlaceholderText('Поиск...');
         fireEvent.change(search, { target: { value: 'zzz' } });
 
         expect(screen.getByText('Пусто по запросу')).toBeInTheDocument();

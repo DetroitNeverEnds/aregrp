@@ -28,8 +28,6 @@ export type TableHeaderCellAlign = 'left' | 'right';
 export type TableCellSize = 'sm' | 'md' | 'lg' | 'xl' | 'auto';
 /** Горизонтальное выравнивание содержимого ячейки */
 export type TableCellAlign = 'left' | 'right' | 'center';
-/** Вариант отображения содержимого ячейки */
-export type TableCellVariant = 'text' | 'supporting' | 'action';
 
 type HorizontalPlacement = 'start' | 'end' | 'center';
 
@@ -81,22 +79,14 @@ export interface TableHeaderCellProps extends Omit<
 }
 
 /** Пропсы ячейки тела таблицы `<td>` */
-export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+export interface TableCellProps extends Omit<
+    React.TdHTMLAttributes<HTMLTableCellElement>,
+    'align'
+> {
     /** Размер (высота) ячейки */
     size?: TableCellSize;
     /** Выравнивание содержимого */
     align?: TableCellAlign;
-    /**
-     * Вариант содержимого: одна строка, две строки с подписью или кнопка действия.
-     * При `action` можно передать `children` вместо стандартной кнопки.
-     */
-    variant?: TableCellVariant;
-    /** Вторичная строка под основным текстом (для `variant="supporting"`) */
-    supportingText?: React.ReactNode;
-    /** Подпись кнопки при `variant="action"` и отсутствии `children` */
-    actionLabel?: string;
-    /** Обработчик клика по кнопке при `variant="action"` */
-    onAction?: () => void;
     /** Приглушённый фон ячейки */
     muted?: boolean;
 }
