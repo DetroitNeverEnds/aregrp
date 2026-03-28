@@ -37,15 +37,6 @@ jobs:
                   fetch-depth: 0
                   token: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Summary — Checkout
-              if: success()
-              run: |
-                  {
-                      echo "### Checkout"
-                      echo "Репозиторий получен, \`fetch-depth: 0\`."
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
             - name: Configure Git
               run: |
                   git config user.name "github-actions[bot]"
@@ -69,33 +60,52 @@ jobs:
                   set -eu
                   REPORT_FILE="$(mktemp)"
 
-                  {
-                      echo "### Find and merge PRs"
-                      echo "Поиск открытых PR с меткой: \`$LABEL\`"
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
                   echo "🔍 Searching for PRs with label: $LABEL"
 
-                  PRS_JSON=$(gh pr list --state open --label "$LABEL" --json number,headRefName,title,body,url,author || echo '[]')
+                  PRS_JSON=$(gh pr list --state open --label "$LABEL" --json number,headRefName,title,url,author || echo '[]')
                   COUNT=$(echo "$PRS_JSON" | jq 'length')
+
+                  write_merge_report() {
+                      {
+                          echo "## Merge PRs"
+                          echo ""
+                          echo "Метка: \`$LABEL\`"
+                          echo ""
+                          echo "**Успешно влиты**"
+                          if [ -n "$MERGED_LIST" ]; then
+                              echo "$MERGED_LIST"
+                          else
+                              echo "_нет_"
+                          fi
+                          echo ""
+                          echo "**Ошибки слияния**"
+                          if [ -n "$FAILED_LIST" ]; then
+                              echo "$FAILED_LIST"
+                          else
+                              echo "_нет_"
+                          fi
+                          echo ""
+                      } > "$REPORT_FILE"
+                  }
 
                   if [ "$COUNT" -eq 0 ]; then
                       echo "ℹ️  No PRs found with label '$LABEL'"
+                      MERGED_LIST=""
+                      FAILED_LIST=""
                       echo "has_prs=false" >> "$GITHUB_OUTPUT"
                       echo "merge_branch=main" >> "$GITHUB_OUTPUT"
                       echo "pr_list=" >> "$GITHUB_OUTPUT"
+                      write_merge_report
                       {
-                          echo "**Результат:** открытых PR с меткой \`$LABEL\` нет."
-                          echo ""
+                          echo "### Merge PRs"
+                          tail -n +3 "$REPORT_FILE"
                       } >> "$GITHUB_STEP_SUMMARY"
-                      echo "## Merge PRs — итог" >> "$REPORT_FILE"
-                      echo "Нет открытых PR с меткой \`$LABEL\`. Сборка выполняется с \`main\`." >> "$REPORT_FILE"
                       {
                           echo 'merge_report<<MERGE_REPORT_EOF'
                           cat "$REPORT_FILE"
                           echo 'MERGE_REPORT_EOF'
                       } >> "$GITHUB_OUTPUT"
+                      rm -f "$REPORT_FILE"
                       exit 0
                   fi
 
@@ -120,11 +130,6 @@ jobs:
                       TITLE=$(echo "$pr" | jq -r '.title')
                       URL=$(echo "$pr" | jq -r '.url')
                       AUTHOR=$(echo "$pr" | jq -r '.author.login // "unknown"')
-                      BODY=$(echo "$pr" | jq -r '.body // ""')
-                      BODY_SHORT=$(printf '%s' "$BODY" | head -c 800)
-                      if [ "${#BODY}" -gt 800 ]; then
-                          BODY_SHORT="${BODY_SHORT}…"
-                      fi
 
                       echo ""
                       echo "========================================="
@@ -138,62 +143,21 @@ jobs:
                       if git merge --no-ff --no-edit "origin/$BRANCH" -m "Merge PR #$PR_NUMBER: $TITLE" 2>"$MERGE_ERR"; then
                           echo "✅ Successfully merged PR #$PR_NUMBER"
                           MERGED_PR_IDS="${MERGED_PR_IDS} #${PR_NUMBER}"
-                          MERGED_LIST="${MERGED_LIST}- **#${PR_NUMBER}** — [${TITLE}](${URL})"$'\n'
-                          MERGED_LIST="${MERGED_LIST}  - **Автор:** \`${AUTHOR}\`"$'\n'
-                          MERGED_LIST="${MERGED_LIST}  - **Описание:** ${BODY_SHORT:-_нет текста_}"$'\n'
-                          MERGED_LIST="${MERGED_LIST}"$'\n'
+                          MERGED_LIST="${MERGED_LIST}- [#${PR_NUMBER}](${URL}) — ${TITLE} (\`${AUTHOR}\`)"$'\n'
                       else
-                          ERR_TEXT=$(head -c 1200 "$MERGE_ERR" || true)
                           echo "❌ Failed to merge PR #$PR_NUMBER"
                           git merge --abort 2>/dev/null || true
-                          FAILED_LIST="${FAILED_LIST}- **#${PR_NUMBER}** — [${TITLE}](${URL})"$'\n'
-                          FAILED_LIST="${FAILED_LIST}  - **Автор:** \`${AUTHOR}\`"$'\n'
-                          FAILED_LIST="${FAILED_LIST}  - **Описание:** ${BODY_SHORT:-_нет текста_}"$'\n'
-                          FAILED_LIST="${FAILED_LIST}  - **Ошибка:** конфликт слияния или ошибка git. Фрагмент лога:"$'\n'
-                          FAILED_LIST="${FAILED_LIST}  \`\`\`"$'\n'
-                          FAILED_LIST="${FAILED_LIST}$(printf '%s' "$ERR_TEXT" | sed 's/^/  /')"$'\n'
-                          FAILED_LIST="${FAILED_LIST}  \`\`\`"$'\n'
-                          FAILED_LIST="${FAILED_LIST}"$'\n'
+                          FAILED_LIST="${FAILED_LIST}- [#${PR_NUMBER}](${URL}) — ${TITLE} (\`${AUTHOR}\`)"$'\n'
                       fi
                       rm -f "$MERGE_ERR"
                   done
 
-                  echo "" >> "$GITHUB_STEP_SUMMARY"
-                  echo "#### Успешно влиты" >> "$GITHUB_STEP_SUMMARY"
-                  if [ -n "$MERGED_LIST" ]; then
-                      echo "$MERGED_LIST" >> "$GITHUB_STEP_SUMMARY"
-                  else
-                      echo "_нет_" >> "$GITHUB_STEP_SUMMARY"
-                  fi
-                  echo "" >> "$GITHUB_STEP_SUMMARY"
-                  echo "#### Ошибки слияния" >> "$GITHUB_STEP_SUMMARY"
-                  if [ -n "$FAILED_LIST" ]; then
-                      echo "$FAILED_LIST" >> "$GITHUB_STEP_SUMMARY"
-                  else
-                      echo "_нет_" >> "$GITHUB_STEP_SUMMARY"
-                  fi
-                  echo "" >> "$GITHUB_STEP_SUMMARY"
+                  write_merge_report
 
                   {
-                      echo "## Merge PRs — итог"
-                      echo ""
-                      echo "### Успешно померженные PR"
-                      echo ""
-                      if [ -n "$MERGED_LIST" ]; then
-                          echo "$MERGED_LIST"
-                      else
-                          echo "_Нет успешных мержей._"
-                      fi
-                      echo ""
-                      echo "### Не удалось померженные PR"
-                      echo ""
-                      if [ -n "$FAILED_LIST" ]; then
-                          echo "$FAILED_LIST"
-                      else
-                          echo "_Нет._"
-                      fi
-                      echo ""
-                  } >> "$REPORT_FILE"
+                      echo "### Merge PRs"
+                      tail -n +3 "$REPORT_FILE"
+                  } >> "$GITHUB_STEP_SUMMARY"
 
                   if [ -n "$MERGED_LIST" ]; then
                       echo "has_prs=true" >> "$GITHUB_OUTPUT"
@@ -215,22 +179,6 @@ jobs:
 
                   rm -f "$REPORT_FILE"
 
-            - name: Summary — merge job (суммарно)
-              if: always()
-              env:
-                  MERGE_REPORT: ${{ steps.merge.outputs.merge_report }}
-              run: |
-                  {
-                      echo "## Merge PRs — суммарный отчёт"
-                      echo ""
-                      if [ -n "${MERGE_REPORT:-}" ]; then
-                          echo "$MERGE_REPORT"
-                      else
-                          echo "_Отчёт недоступен (шаг не выполнен или сбой)._"
-                      fi
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
     build-and-push:
         name: Build and Push
         needs: merge-prs
@@ -245,27 +193,8 @@ jobs:
               with:
                   ref: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}
 
-            - name: Summary — Checkout (build)
-              run: |
-                  {
-                      echo "### Checkout"
-                      echo "Ветка: \`${{ needs.merge-prs.outputs.merge_branch || 'main' }}\`"
-                      if [ "${{ needs.merge-prs.outputs.has_prs }}" != "true" ]; then
-                          echo "Без смерженных PR с меткой — образы собираются с \`main\`."
-                      fi
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
-
-            - name: Summary — Buildx
-              run: |
-                  {
-                      echo "### Docker Buildx"
-                      echo "Buildx настроен."
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
 
             - name: Log in to the Container registry
               uses: docker/login-action@v3
@@ -274,27 +203,11 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Summary — Registry login
-              run: |
-                  {
-                      echo "### Вход в Container registry"
-                      echo "Реестр: \`${{ env.REGISTRY }}\`, пользователь: \`${{ github.actor }}\`"
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
             - name: Create temporary .env files for build validation
               run: |
                   mkdir -p backend
                   touch backend/.env backend/.env.postgres
                   echo "Created temporary .env files for docker-compose validation"
-
-            - name: Summary — временные .env
-              run: |
-                  {
-                      echo "### Временные .env"
-                      echo "Созданы пустые \`backend/.env\` и \`backend/.env.postgres\` для валидации compose."
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
 
             - name: Build and Push
               env:
@@ -308,32 +221,24 @@ jobs:
                   docker compose build && docker compose push
 
             - name: Summary — Build and Push
-              if: success()
-              run: |
-                  {
-                      echo "### Build and Push"
-                      echo "- Образы собраны и отправлены в реестр."
-                      echo "- **TAG:** \`${{ env.TAG }}\`"
-                      echo "- **REGISTRY_PREFIX:** \`${{ env.REGISTRY_PREFIX }}\`"
-                      if [ "${{ needs.merge-prs.outputs.has_prs }}" = "true" ]; then
-                          echo "- **PR (кратко):** ${{ needs.merge-prs.outputs.pr_list }}"
-                      else
-                          echo "- **PR:** нет успешных мержей."
-                      fi
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
-            - name: Summary — job Build and Push (суммарно)
               if: always()
               run: |
                   {
-                      echo "## Build and Push — суммарно"
-                      if [ "${{ job.status }}" = "success" ]; then
-                          echo "Статус: **успех** — образы \`${{ env.TAG }}\` запушены."
-                      else
-                          echo "Статус: **ошибка** — см. логи шагов выше."
-                      fi
+                      echo "## Build and Push"
                       echo ""
+                      echo "Container registry:"
+                      echo ""
+                      echo "- Реестр: \`${{ env.REGISTRY }}\`"
+                      echo "- Пользователь: \`${{ github.actor }}\`"
+                      echo ""
+                      echo "TAG: \`${{ env.TAG }}\`"
+                      echo ""
+                      echo "REGISTRY_PREFIX: \`${{ env.REGISTRY_PREFIX }}\`"
+                      echo ""
+                      if [ "${{ job.status }}" != "success" ]; then
+                          echo "Сборка **не прошла** — см. логи шага Build and Push."
+                          echo ""
+                      fi
                   } >> "$GITHUB_STEP_SUMMARY"
 
     deploy:
@@ -347,17 +252,6 @@ jobs:
               with:
                   ref: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}
 
-            - name: Summary — Checkout (deploy)
-              run: |
-                  {
-                      echo "### Checkout"
-                      echo "Ветка: \`${{ needs.merge-prs.outputs.merge_branch || 'main' }}\`"
-                      if [ "${{ needs.merge-prs.outputs.has_prs }}" != "true" ]; then
-                          echo "Деплой образов, собранных с \`main\` (без смерженных PR с меткой)."
-                      fi
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
             - name: Copy docker-compose via SCP
               uses: appleboy/scp-action@master
               with:
@@ -366,15 +260,6 @@ jobs:
                   key: ${{ secrets.VPS_SSH_KEY }}
                   source: "docker-compose.yml"
                   target: "/home/${{ secrets.VPS_USER }}/aregrp/"
-
-            - name: Summary — SCP docker-compose
-              if: success()
-              run: |
-                  {
-                      echo "### Копирование docker-compose"
-                      echo "Файл \`docker-compose.yml\` скопирован на VPS."
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
 
             - name: Create environment files from secrets
               uses: appleboy/ssh-action@master
@@ -395,15 +280,6 @@ jobs:
                           echo "❌ ERROR: Environment files are empty!"
                           exit 1
                       fi
-
-            - name: Summary — env на сервере
-              if: success()
-              run: |
-                  {
-                      echo "### Environment на сервере"
-                      echo "Файлы \`backend/.env\` и \`backend/.env.postgres\` созданы из секретов (непустые)."
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
 
             - name: Deploy containers
               uses: appleboy/ssh-action@master
@@ -429,62 +305,62 @@ jobs:
                       export TAG=${{ env.TAG }}
                       export VITE_YANDEX_MAPS_API_KEY=${{ secrets.YANDEX_MAPS_API_KEY }}
 
+                      PULL_UP_START=$(date +%s)
                       docker compose pull
                       docker compose up -d --remove-orphans
+                      PULL_UP_END=$(date +%s)
+                      PULL_UP_SEC=$((PULL_UP_END - PULL_UP_START))
 
                       echo "Checking containers..."
                       docker compose ps
 
+                      echo ""
+                      echo "=== Выкатка (сервер): время и образы ==="
+                      echo "Время pull + up: ${PULL_UP_SEC} с"
+                      echo "Образы compose (размер на диске после pull):"
+                      docker compose images || true
+
                       docker image prune -f
 
-            - name: Summary — контейнеры
-              if: success()
+            - name: Параметры запуска (workflow)
+              if: always()
               run: |
-                  {
-                      echo "### Деплой контейнеров"
-                      echo "Выполнены \`docker compose pull\`, \`up -d\`, проверка \`ps\`, prune образов."
-                      echo "- **TAG:** \`${{ env.TAG }}\`"
-                      echo ""
-                  } >> "$GITHUB_STEP_SUMMARY"
-
-            - name: Notify success
-              if: success()
-              run: |
-                  echo "✅ Successfully deployed testing build"
-                  echo "📦 Merged PRs:${{ needs.merge-prs.outputs.pr_list || '(нет)' }}"
-                  echo "🌿 Branch: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}"
-                  echo "🏷️  Tag: ${{ env.TAG }}"
+                  echo "=== Параметры запуска ==="
+                  echo "workflow_run: ${{ github.run_id }}"
+                  echo "run_number: ${{ github.run_number }}"
+                  echo "event: ${{ github.event_name }}"
+                  echo "ref: ${{ github.ref }}"
+                  echo "merge_branch: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}"
+                  echo "pr_list: ${{ needs.merge-prs.outputs.pr_list || '(нет)' }}"
+                  echo "REGISTRY: ${{ env.REGISTRY }}"
+                  echo "REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}"
+                  echo "TAG: ${{ env.TAG }}"
+                  echo "actor: ${{ github.actor }}"
+                  echo "jobs: merge=${{ needs.merge-prs.result }} build=${{ needs.build-and-push.result }} deploy=${{ job.status }}"
+                  echo "Примечание: время выкатки и размеры образов на VPS — в логе шага «Deploy containers»."
 
             - name: Summary — Deploy Testing (итоговый)
               if: always()
-              env:
-                  MERGE_REPORT: ${{ needs.merge-prs.outputs.merge_report }}
               run: |
                   {
-                      echo "# Deploy Testing Build — итоговый summary"
+                      echo "# Deploy Testing"
                       echo ""
-                      echo "## Параметры запуска"
-                      echo "- **Run:** ${{ github.run_id }}"
-                      echo "- **Ветка сборки:** \`${{ needs.merge-prs.outputs.merge_branch || 'main' }}\`"
-                      echo "- **Тег образов:** \`${{ env.TAG }}\`"
+                      echo "**Параметры запуска**"
                       echo ""
-                      echo "## PR: успешные и неудачные мержи"
+                      echo "| | |"
+                      echo "|---|---|"
+                      echo "| workflow run | \`${{ github.run_id }}\` |"
+                      echo "| run_number | \`${{ github.run_number }}\` |"
+                      echo "| event | \`${{ github.event_name }}\` |"
+                      echo "| ref | \`${{ github.ref }}\` |"
+                      echo "| ветка сборки | \`${{ needs.merge-prs.outputs.merge_branch || 'main' }}\` |"
+                      echo "| PR (merge) | ${{ needs.merge-prs.outputs.pr_list || '_нет_' }} |"
+                      echo "| REGISTRY | \`${{ env.REGISTRY }}\` |"
+                      echo "| REGISTRY_PREFIX | \`${{ env.REGISTRY_PREFIX }}\` |"
+                      echo "| TAG | \`${{ env.TAG }}\` |"
+                      echo "| actor | \`${{ github.actor }}\` |"
+                      echo "| merge / build / deploy | ${{ needs.merge-prs.result }} · ${{ needs.build-and-push.result }} · ${{ job.status }} |"
                       echo ""
-                      if [ -n "${MERGE_REPORT:-}" ]; then
-                          echo "$MERGE_REPORT"
-                      else
-                          echo "_Отчёт по PR недоступен._"
-                      fi
-                      echo ""
-                      echo "## Статусы джобов"
-                      echo "- **Merge PRs:** ${{ needs.merge-prs.result }}"
-                      echo "- **Build and Push:** ${{ needs.build-and-push.result }}"
-                      echo "- **Deploy to Testing:** ${{ job.status }}"
-                      echo ""
-                      if [ "${{ job.status }}" = "success" ]; then
-                          echo "✅ **Деплой на testing завершён успешно.**"
-                      else
-                          echo "❌ **Деплой завершился с ошибкой** — см. логи шагов."
-                      fi
+                      echo "Время выкатки и размеры образов на сервере — в логе шага **Deploy containers** (блок «Выкатка (сервер)»)."
                       echo ""
                   } >> "$GITHUB_STEP_SUMMARY"
