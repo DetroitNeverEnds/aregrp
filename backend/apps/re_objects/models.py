@@ -312,14 +312,14 @@ class Premise(models.Model):
         null=True,
         blank=True,
     )
-    human_price = models.DecimalField(
+    full_sell_price = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=Decimal("0"),
+        null=True,
+        blank=True,
         verbose_name="Итоговая стоимость продажи, ₽",
         help_text=(
-            "Денормализованное значение для агрегатов и выгрузки. Пересчитывается при сохранении: при продаже — итог "
-            "(price_per_month если > 0, иначе площадь × price_per_sqm); при аренде без продажи — цена за месяц; иначе 0."
+            "Площадь × цена продажи за м². Пересчитывается при каждом сохранении. "
         ),
     )
     premise_type = models.CharField(
@@ -419,20 +419,16 @@ class Premise(models.Model):
         if errors:
             raise ValidationError(errors)
 
-    def _compute_human_price(self) -> Decimal:
-        """Итог для human_price: см. help_text на поле."""
-        if self.available_for_sale:
-            if self.price_per_month is not None and self.price_per_month > 0:
-                return self.price_per_month
-            if self.price_per_sqm is not None and self.area is not None:
-                return (self.area * self.price_per_sqm).quantize(Decimal("0.01"))
-            return self.price_per_month if self.price_per_month is not None else Decimal("0")
-        if self.available_for_rent:
-            return self.price_per_month if self.price_per_month is not None else Decimal("0")
-        return Decimal("0")
+    def _compute_full_sell_price(self) -> Decimal | None:
+        """Полная стоимость продажи: площадь × цена за м². Иначе None."""
+        if not self.available_for_sale:
+            return None
+        if self.price_per_sqm is not None and self.area is not None:
+            return (self.area * self.price_per_sqm).quantize(Decimal("0.01"))
+        return None
 
     def save(self, *args, **kwargs):
-        self.human_price = self._compute_human_price()
+        self.full_sell_price = self._compute_full_sell_price()
         # Синхронизация здания и этажа: при выборе этажа подставляем здание; при смене здания обнуляем этаж, если он из другого здания
         if self.floor_id:
             if not self.building_id:
