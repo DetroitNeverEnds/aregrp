@@ -51,6 +51,7 @@ import Edit from '@/icons/filled/edit.svg?react';
 
 // Social Media
 import Ajax from '@/icons/socialMedia/ayax_logo_2.svg?react';
+import Phone from '@/icons/socialMedia/phone.svg?react';
 import OK from '@/icons/socialMedia/ok_logo.svg?react';
 import Telegram from '@/icons/socialMedia/telegram_logo.svg?react';
 import TG from '@/icons/socialMedia/tg.svg?react';
@@ -115,6 +116,7 @@ export const iconMap = {
     edit: Edit,
 
     // social media
+    phone: Phone,
     ayax: Ajax,
     ok: OK,
     telegram: Telegram,
