@@ -1,1 +1,1 @@
-export { YandexMap } from './YandexMap';
+export { YandexMap, type MarkerItem } from './YandexMap';
