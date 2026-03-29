@@ -10,6 +10,7 @@ $font-montserrat: $font-family-base;
     font-family: $font-montserrat;
     color: inherit;
     max-width: 100%;
+    min-width: 0;
 
     &__ellipsis {
         display: block;

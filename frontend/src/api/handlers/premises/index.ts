@@ -5,21 +5,12 @@ import type {
     PremiseListResponse,
     PremiseFilterParams,
     PremiseDetail,
-    BuildingsCatalogueResponse,
-    BuildingCatalogueParams,
 } from './types';
 
 /**
  * Получить список зданий для фильтра
  */
 export const getBuildings = api.get<BuildingFilterParams, BuildingOption[]>('/premises/buildings');
-
-/**
- * Получить каталог зданий
- */
-export const getBuildingsCatalogue = api.get<BuildingCatalogueParams, BuildingsCatalogueResponse>(
-    '/buildings/',
-);
 
 /**
  * Получить список помещений с фильтрами

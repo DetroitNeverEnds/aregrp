@@ -116,23 +116,34 @@ export const Contacts = () => {
                 </Column>
                 <Column className={styles.mapColumn}>
                     <YandexMap
-                        markerCoordinates={[
-                            contacts?.coordinates?.lat || 0,
-                            contacts?.coordinates?.lng || 0,
-                        ]}
                         zoom={13}
-                        markerHint="AREGRP"
-                    >
-                        <MapPin address={contacts?.sales_center_address || '-'}>
-                            <Card align="start" gap={6} isPin>
-                                <Text variant="14-med">{t('pages.contacts.salesOffice')}</Text>
-                                <Text variant="12-reg" color="gray-70">
-                                    {contacts?.sales_center_address || '-'}
-                                </Text>
-                                <img src="/img/salesOffice.png" style={{ width: '100%' }} />
-                            </Card>
-                        </MapPin>
-                    </YandexMap>
+                        staticMap
+                        markers={[
+                            {
+                                key: 'sales-office',
+                                coordinates: {
+                                    lat: contacts?.coordinates?.lat || 0,
+                                    lon: contacts?.coordinates?.lng || 0,
+                                },
+                                content: (
+                                    <MapPin address={contacts?.sales_center_address || '-'}>
+                                        <Card align="start" gap={6} isPin>
+                                            <Text variant="14-med">
+                                                {t('pages.contacts.salesOffice')}
+                                            </Text>
+                                            <Text variant="12-reg" color="gray-70">
+                                                {contacts?.sales_center_address || '-'}
+                                            </Text>
+                                            <img
+                                                src="/img/salesOffice.png"
+                                                style={{ width: '100%' }}
+                                            />
+                                        </Card>
+                                    </MapPin>
+                                ),
+                            },
+                        ]}
+                    ></YandexMap>
                 </Column>
             </TwoColumnsContainer>
 

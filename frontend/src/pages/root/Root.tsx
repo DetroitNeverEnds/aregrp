@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex } from '../../components/ui/common/Flex';
 import { useLayoutSettings } from '../../hooks/useLayoutSettings';
@@ -20,13 +21,9 @@ import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContain
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { BenifitsWorking } from '@/components/ui/cards/Benefits';
 import { Page } from '@/components/ui/layout/Page/Page';
-import _ from 'lodash';
 import Config from '@/config';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
-
-type Data = {
-    coordinates: [number, number][];
-};
+import { MapPin } from '@/components/ui/common/MapPin';
 
 const layoutSettings: LayoutSettings = {
     header: {
@@ -42,10 +39,6 @@ export const Root = () => {
 
     useLayoutSettings(layoutSettings);
 
-    const data: Data = {
-        coordinates: [[44.650540230512846, 42.65871198485353]],
-    };
-
     // const buildingsData = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
     const premises = usePremises({ page_size: Config.pageSizeMain }).data?.data;
     const {
@@ -54,7 +47,28 @@ export const Root = () => {
         hasNextPage,
         isFetchingNextPage,
     } = useBuildingsCatalogueInfinite({ page_size: Config.pageSizeMain });
-    const buildings = buildingsData?.pages.flatMap(page => page?.data?.items ?? []);
+    const buildings = useMemo(
+        () => buildingsData?.pages.flatMap(page => page?.data?.items ?? []) ?? [],
+        [buildingsData],
+    );
+    // const mapCenter = data.coordinates[0];
+    // const [selectedBuildingUuid, setSelectedBuildingUuid] = useState<string | null>(null);
+
+    // const mapMarkers: YandexMapMarkerItem[] = useMemo(() => {
+    //     return buildings.map((item, index) => ({
+    //         key: item.uuid,
+    //         coordinates: coordinateAroundCenter(mapCenter, index, buildings.length),
+    //         children: (
+    //             <BuildingMapMarker
+    //                 item={item}
+    //                 active={selectedBuildingUuid === item.uuid}
+    //                 onToggle={() =>
+    //                     setSelectedBuildingUuid(prev => (prev === item.uuid ? null : item.uuid))
+    //                 }
+    //             />
+    //         ),
+    //     }));
+    // }, [buildings, mapCenter, selectedBuildingUuid]);
 
     return (
         <Page>
@@ -77,8 +91,14 @@ export const Root = () => {
                             </Text>
                         </Flex>
                     </Flex>
-                    <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
-
+                    <YandexMap
+                        markers={buildings.map(item => ({
+                            key: item.uuid,
+                            coordinates: item.geo_point,
+                            content: <MapPin address={item.address} />,
+                        }))}
+                        className={styles.map}
+                    />
                     <CardContainer
                         loadMore={hasNextPage ? () => fetchNextPage() : undefined}
                         loadMoreLoading={isFetchingNextPage}

@@ -2,15 +2,9 @@
  * Типы для premises handlers
  */
 
-export type SaleType = 'rent' | 'sale';
+import type { BaseMediaItem } from '@/api/handlers/types';
 
-/**
- * Базовая схема медиа (OpenAPI: BaseMediaItemOut)
- */
-export interface BaseMediaItem {
-    type: 'photo' | 'video';
-    url: string;
-}
+export type SaleType = 'rent' | 'sale';
 
 /**
  * Помещение в списке
@@ -85,32 +79,3 @@ export interface BuildingFilterParams {
     sale_type?: SaleType;
     available?: boolean;
 }
-
-/**
- * Параметры для получения каталога зданий
- */
-export interface BuildingCatalogueParams {
-    page?: number;
-    page_size?: number;
-}
-
-/**
- * Здание в каталоге (OpenAPI: BuildingListOut)
- */
-export interface BuildingCatalogue {
-    uuid: string;
-    title: string;
-    address: string;
-    description: string;
-    min_sale_price?: number | null;
-    min_rent_price?: number | null;
-    media: BaseMediaItem[];
-}
-
-export type BuildingsCatalogueResponse = {
-    items: BuildingCatalogue[];
-    total: number;
-    page: number;
-    page_size: number;
-    total_pages: number;
-};
