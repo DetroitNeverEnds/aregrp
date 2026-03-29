@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Flex } from '../../components/ui/common/Flex';
 import Text from '../../components/ui/common/Text';
 import { useLayoutSettings } from '../../hooks/useLayoutSettings';
@@ -33,6 +33,7 @@ const BENEFITS_ICONS: IconName[] = [
 export const Agents = () => {
     const { t } = useTranslation();
     const siteInfo = useSiteInfo().data?.data;
+    const feedbackSectionRef = useRef<HTMLDivElement>(null);
 
     const layoutSettings = useMemo<LayoutSettings>(
         () => ({
@@ -66,7 +67,12 @@ export const Agents = () => {
         [t],
     );
 
-    const telHref = siteInfo?.phone ? `tel:${siteInfo.phone}` : undefined;
+    const scrollToFeedback = useCallback(() => {
+        feedbackSectionRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        });
+    }, []);
 
     return (
         <Page>
@@ -87,18 +93,16 @@ export const Agents = () => {
                         </Text>
                     </Flex>
                     <Flex direction="row" align="center" gap={40} wrap="wrap">
-                        {telHref && (
-                            <Button
-                                size="lg"
-                                variant="outlined"
-                                theme="dark"
-                                to={telHref}
-                                icon="phone"
-                                iconColor="primary-yellow"
-                            >
-                                {t('pages.agents.hero.orderCall')}
-                            </Button>
-                        )}
+                        <Button
+                            size="lg"
+                            variant="outlined"
+                            theme="dark"
+                            icon="phone"
+                            iconColor="primary-yellow"
+                            onClick={scrollToFeedback}
+                        >
+                            {t('pages.agents.hero.orderCall')}
+                        </Button>
                         <Flex direction="row" align="center" gap={10}>
                             {siteInfo?.max_link && (
                                 <Button
@@ -170,7 +174,7 @@ export const Agents = () => {
                     </div>
                 </Container>
 
-                <FeedbackFormRow />
+                <FeedbackFormRow ref={feedbackSectionRef} />
             </VerticalMainContainer>
         </Page>
     );
