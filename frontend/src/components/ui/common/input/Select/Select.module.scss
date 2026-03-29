@@ -1,10 +1,6 @@
 .select-container {
-    position: relative;
-    width: 100%;
-
-    &:focus-visible {
-        outline: none;
-    }
+    max-height: 500px;
+    background-color: $gray-0;
 }
 
 .select-field {

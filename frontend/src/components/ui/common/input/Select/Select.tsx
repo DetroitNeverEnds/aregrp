@@ -170,7 +170,13 @@ export function Select<T>(props: SelectProps<T>) {
             }
             className={className}
         >
-            <Flex gap={16} align="start" direction="column" fullWidth>
+            <Flex
+                gap={16}
+                align="start"
+                direction="column"
+                fullWidth
+                className={styles['select-container']}
+            >
                 {filterable && (
                     <TextInput
                         value={filterQuery}
