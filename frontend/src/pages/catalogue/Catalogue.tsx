@@ -61,7 +61,7 @@ const ResultsView = () => {
             }}
         >
             {offices.map(item => (
-                <OfficeCard key={item.uuid} item={item} />
+                <OfficeCard key={item.uuid} item={item} type={filter.sale_type || 'any'} />
             ))}
         </CardContainer>
     );

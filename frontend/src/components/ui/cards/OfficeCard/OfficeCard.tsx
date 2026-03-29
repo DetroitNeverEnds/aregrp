@@ -4,19 +4,20 @@ import { Flex } from '../../common/Flex';
 import { Text } from '../../common/Text';
 import { Gallery } from '../../common/Gallery/Gallery';
 import styles from './OfficeCard.module.scss';
-import type { PremiseListItem } from '@/api';
+import type { PremiseListItem, SaleType } from '@/api';
 import { Divider } from '@/components/ui/common/Divider';
 import { useTranslation } from 'react-i18next';
 
 export interface OfficeCardProps {
     item: PremiseListItem;
+    type: SaleType | 'any';
 }
 
 /**
  * Компонент карточки офиса
  * Отображает информацию о помещении с галереей изображений и кнопкой перехода
  */
-export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
+export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
     const { t } = useTranslation();
 
     const { uuid, name, price, address, area, floor, has_tenant, building_uuid } = item;
@@ -63,7 +64,8 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item }) => {
                 <Flex direction="row" justify="between" fullWidth>
                     <Text variant="24-med">{name}</Text>
                     <Text variant="20-med" color="gray-70" align="right">
-                        {formatPrice(price)} / месяц
+                        {formatPrice(price)}
+                        {type === 'rent' ? '/ месяц' : ''}
                     </Text>
                 </Flex>
                 <Divider />
