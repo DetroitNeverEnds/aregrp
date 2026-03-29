@@ -154,7 +154,7 @@ export const Root = () => {
                     </Flex>
                     <CardContainer>
                         {premises?.items.map(item => (
-                            <OfficeCard key={item.uuid} item={item} />
+                            <OfficeCard key={item.uuid} item={item} type="any" />
                         ))}
                     </CardContainer>
                     <Button variant="outlined" to={getLinkToCatalogue({ sale_type: 'sale' })}>
