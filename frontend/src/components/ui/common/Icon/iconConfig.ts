@@ -49,29 +49,6 @@ import Key from '@/icons/filled/key.svg?react';
 import Exit from '@/icons/filled/exit.svg?react';
 import Edit from '@/icons/filled/edit.svg?react';
 
-// bolt.svg
-// city.svg
-// cottage.svg
-// cup.svg
-// district.svg
-// download.svg
-// edit.svg
-// exit.svg
-// geolocal.svg
-// key.svg
-// laurel.svg
-// marker-pin.svg
-// medal.svg
-// medical-cross.svg
-// pedestal.svg
-// person.svg
-// phone.svg
-// play.svg
-// puzzle.svg
-// school.svg
-// search.svg
-// star.svg
-
 // Social Media
 import Ajax from '@/icons/socialMedia/ayax_logo_2.svg?react';
 import OK from '@/icons/socialMedia/ok_logo.svg?react';
@@ -79,7 +56,8 @@ import Telegram from '@/icons/socialMedia/telegram_logo.svg?react';
 import TG from '@/icons/socialMedia/tg.svg?react';
 import Viber from '@/icons/socialMedia/viber_logo.svg?react';
 import VK from '@/icons/socialMedia/vk_logo.svg?react';
-import MaxMessenger from '@/icons/socialMedia/whatsapp_logo.svg?react';
+import Whatsapp from '@/icons/socialMedia/whatsapp_logo.svg?react';
+import MaxMessenger from '@/icons/socialMedia/max_messenger.svg?react';
 import Youtube from '@/icons/socialMedia/youtube_logo.svg?react';
 
 /**
@@ -144,6 +122,7 @@ export const iconMap = {
     viber: Viber,
     vk: VK,
     /** Мессенджер Макс (временно та же иконка, что и у legacy WhatsApp). */
+    whatsapp: Whatsapp,
     max: MaxMessenger,
     youtube: Youtube,
 } as const;
