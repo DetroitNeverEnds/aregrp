@@ -103,8 +103,13 @@ export const BuildingMapMarker = ({ item, active, onToggle }: BuildingMapMarkerP
             )}
 
             <Flex direction="row" className={styles.pin}>
-                <Flex justify="center" className={classNames(styles.iconWrapper, active && styles.iconWrapperActive)}>
-                    <MarkerPinIcon className={classNames(styles.icon, active && styles.iconActive)} />
+                <Flex
+                    justify="center"
+                    className={classNames(styles.iconWrapper, active && styles.iconWrapperActive)}
+                >
+                    <MarkerPinIcon
+                        className={classNames(styles.icon, active && styles.iconActive)}
+                    />
                 </Flex>
                 <Text variant="14-med" color="primary-700" className={styles.label}>
                     {title}
