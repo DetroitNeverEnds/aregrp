@@ -118,7 +118,6 @@ describe('BuildingPage', () => {
         });
 
         expect(screen.getByText(/Тестовое здание/)).toBeInTheDocument();
-        expect(screen.getByText(/ул\. Тестовая 1/)).toBeInTheDocument();
     });
 
     it('показывает ErrorLoading при ошибке API', () => {

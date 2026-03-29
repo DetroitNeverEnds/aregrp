@@ -101,6 +101,7 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                             </Link>
                             <Button
                                 variant="outlined"
+                                theme={isDark ? 'dark' : 'light'}
                                 onlyIcon
                                 icon="max"
                                 iconColor="primary-yellow"
@@ -108,6 +109,7 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                             />
                             <Button
                                 variant="outlined"
+                                theme={isDark ? 'dark' : 'light'}
                                 onlyIcon
                                 icon="tg"
                                 iconColor="primary-yellow"
