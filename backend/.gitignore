@@ -8,7 +8,8 @@
 postgres_data/
 ../postgres_data/
 
-# Только каталог collectstatic (не игнорировать apps/*/static/ с исходниками)
+# Только STATIC_ROOT (результат collectstatic). Ведущий / = только backend/static/, не apps/*/static/.
+# Исходники: apps/<app>/static/<app>/... — коммитим, сюда не попадают.
 /static/
 !/static/.gitkeep
 
