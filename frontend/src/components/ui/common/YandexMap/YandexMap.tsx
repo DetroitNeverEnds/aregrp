@@ -1,46 +1,52 @@
-// import { useEffect, useRef } from 'react';
 import styles from './YandexMap.module.scss';
 
-// import { YMaps, Map } from '@pbe/react-yandex-maps';
 import {
     YMap,
+    YMapListener,
     YMapDefaultFeaturesLayer,
     YMapDefaultSchemeLayer,
     YMapMarker,
-    // reactify,
-} from '../../../../lib/yamaps';
+} from '@/lib/yamaps';
 import { YaMapsCustomization } from './customization';
 import classNames from 'classnames';
-import { useMemo, type PropsWithChildren } from 'react';
+import { useMemo, useSyncExternalStore, type PropsWithChildren } from 'react';
+import {
+    getActiveBuildingMarkerUuid,
+    subscribeActiveBuildingMarker,
+} from '@/lib/buildingMapMarkerActiveStore';
 import _ from 'lodash';
 import { CoordinateToMapCoordinates, type Coordinate } from '@/lib/map/types';
 import Config from '@/config';
-// import { YMapDefaultMarker } from '@yandex/ymaps3-default-ui-theme';
-
-// import type { YMap } from '@yandex/ymaps3-types';
+import type { LngLat } from '@yandex/ymaps3-types';
 
 export type MarkerItem = {
     key?: string;
     coordinates: Coordinate;
     content: React.ReactNode;
+    zIndex?: number;
 };
 
 export type YandexMapProps = {
     markers?: MarkerItem[];
-    zoom?: number;
-    center?: Coordinate;
     staticMap?: boolean;
+    onMapClick?: () => void;
     apiKey?: string;
     className?: string;
 } & PropsWithChildren;
 
 export const YandexMap = ({
     markers = [],
-    // zoom = 10,
     staticMap = false,
+    onMapClick,
     apiKey,
     className,
 }: YandexMapProps) => {
+    const activeMarkerKey = useSyncExternalStore(
+        subscribeActiveBuildingMarker,
+        getActiveBuildingMarkerUuid,
+        () => null,
+    );
+
     const bounds = useMemo(() => {
         const rawBounds = {
             lon: {
@@ -76,29 +82,46 @@ export const YandexMap = ({
             },
         };
     }, [markers]);
+
+    /** Стабильная ссылка, иначе при любом ререндере (клик по маркеру, z-index) YMap снова применяет bounds и сбрасывает камеру. */
+    const mapLocation: { bounds: [LngLat, LngLat] } = useMemo(
+        () => ({
+            bounds: [
+                CoordinateToMapCoordinates({ lat: bounds.lat.min, lon: bounds.lon.min }),
+                CoordinateToMapCoordinates({ lat: bounds.lat.max, lon: bounds.lon.max }),
+            ],
+        }),
+        [bounds],
+    );
+
     return (
         <div className={classNames(styles.wrapper, className)}>
             <YMap
-                location={{
-                    bounds: [
-                        CoordinateToMapCoordinates({ lat: bounds.lat.min, lon: bounds.lon.min }),
-                        CoordinateToMapCoordinates({ lat: bounds.lat.max, lon: bounds.lon.max }),
-                    ],
-                }}
+                location={mapLocation}
                 className={classNames(styles.map)}
                 key={apiKey}
                 behaviors={staticMap ? [] : undefined}
             >
                 <YMapDefaultSchemeLayer customization={YaMapsCustomization} />
                 <YMapDefaultFeaturesLayer />
-                {markers.map((marker, index) => (
-                    <YMapMarker
-                        key={marker.key || index}
-                        coordinates={CoordinateToMapCoordinates(marker.coordinates)}
-                    >
-                        <div className={styles.marker}>{marker.content}</div>
-                    </YMapMarker>
-                ))}
+                <YMapListener layer="any" onClick={e => e?.type !== 'marker' && onMapClick?.()} />
+                {markers.map((marker, index) => {
+                    const zIndex =
+                        marker.key != null && marker.key === activeMarkerKey
+                            ? 10
+                            : (marker.zIndex ?? 0);
+                    return (
+                        <YMapMarker
+                            zIndex={zIndex}
+                            key={marker.key || index}
+                            coordinates={CoordinateToMapCoordinates(marker.coordinates)}
+                        >
+                            <div className={styles.marker} style={{ zIndex }}>
+                                {marker.content}
+                            </div>
+                        </YMapMarker>
+                    );
+                })}
             </YMap>
         </div>
     );

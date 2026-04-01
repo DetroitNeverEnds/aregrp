@@ -116,7 +116,6 @@ export const Contacts = () => {
                 </Column>
                 <Column className={styles.mapColumn}>
                     <YandexMap
-                        zoom={13}
                         staticMap
                         markers={[
                             {

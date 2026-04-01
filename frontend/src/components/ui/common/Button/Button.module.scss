@@ -108,7 +108,7 @@
             &:active:not(:disabled),
             &:focus:active:not(:disabled) {
                 background: $gray-opacity-0-20;
-                border-color: $gray-opacity-0-70
+                border-color: $gray-opacity-0-70;
             }
         }
     }
