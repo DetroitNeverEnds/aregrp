@@ -102,8 +102,8 @@ class PremiseFilterParams:
         available: Optional[bool] = None,
         building_query: Optional[str] = None,
         building_uuids: Optional[list[UUID]] = None,
-        min_price: Optional[Decimal] = None,
-        max_price: Optional[Decimal] = None,
+        min_price: Optional[int] = None,
+        max_price: Optional[int] = None,
         min_area: Optional[Decimal] = None,
         max_area: Optional[Decimal] = None,
         order_by: str = "default",
@@ -255,8 +255,8 @@ def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
 
 def building_to_list_out(b: Building) -> BuildingListOut:
     """Маппинг Building -> BuildingListOut (uuid, title, address, description, min_sale_price, min_rent_price, media)."""
-    min_rent_val = float(b.min_rent) if b.min_rent is not None else None
-    min_sale_val = float(b.min_sale) if b.min_sale is not None else None
+    min_rent_val = int(b.min_rent) if b.min_rent is not None else None
+    min_sale_val = int(b.min_sale) if b.min_sale is not None else None
     return BuildingListOut(
         uuid=str(b.uuid),
         title=b.name,
@@ -365,8 +365,8 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
         return None
 
     media_categories, media = _build_building_detail_media(b)
-    min_rent_val = float(b.min_rent) if b.min_rent is not None else None
-    min_sale_val = float(b.min_sale) if b.min_sale is not None else None
+    min_rent_val = int(b.min_rent) if b.min_rent is not None else None
+    min_sale_val = int(b.min_sale) if b.min_sale is not None else None
 
     return BuildingDetailOut(
         uuid=str(b.uuid),
@@ -401,18 +401,18 @@ def _api_price_is_full_sell(p: Premise, sale_type: Optional[str]) -> bool:
     return bool(p.available_for_sale and not p.available_for_rent)
 
 
-def _premise_price_for_api(p: Premise, sale_type: Optional[str]) -> Optional[Decimal]:
+def _premise_price_for_api(p: Premise, sale_type: Optional[str]) -> Optional[int]:
     if _api_price_is_full_sell(p, sale_type):
         return p.full_sell_price
     return p.price_per_month
 
 
-def _premise_sale_price_for_api(p: Premise) -> Optional[Decimal]:
+def _premise_sale_price_for_api(p: Premise) -> Optional[int]:
     """Полная стоимость продажи, если помещение предлагается к продаже."""
     return p.full_sell_price if p.available_for_sale else None
 
 
-def _premise_rent_price_for_api(p: Premise) -> Optional[Decimal]:
+def _premise_rent_price_for_api(p: Premise) -> Optional[int]:
     """Аренда за месяц, если помещение в аренде."""
     return p.price_per_month if p.available_for_rent else None
 
@@ -495,7 +495,7 @@ async def get_premise_by_uuid(
     return premise_to_detail_out(p, sale_type)
 
 
-def _format_price(value: Decimal) -> str:
+def _format_price(value: Optional[int]) -> str:
     """Форматирует цену: 100000 -> '100 000 ₽/мес'."""
     if value is None:
         return "—"
@@ -503,7 +503,7 @@ def _format_price(value: Decimal) -> str:
     return f"{s} ₽/мес"
 
 
-def _format_sale_total_label(value: Optional[Decimal]) -> str:
+def _format_sale_total_label(value: Optional[int]) -> str:
     """Полная стоимость продажи для подписи на схеме этажа."""
     if value is None:
         return "—"

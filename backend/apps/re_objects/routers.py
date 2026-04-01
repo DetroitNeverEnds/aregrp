@@ -153,13 +153,13 @@ async def premise_list(
     ),
     building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
     building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
-    min_price: Optional[Decimal] = Query(
+    min_price: Optional[int] = Query(
         None,
-        description="Минимальная цена: при sale_type=sale — итог продажи (₽), иначе аренда за месяц (₽).",
+        description="Минимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
     ),
-    max_price: Optional[Decimal] = Query(
+    max_price: Optional[int] = Query(
         None,
-        description="Максимальная цена: при sale_type=sale — итог продажи (₽), иначе аренда за месяц (₽).",
+        description="Максимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
     ),
     min_area: Optional[Decimal] = Query(None, description="Минимальная площадь, м²"),
     max_area: Optional[Decimal] = Query(None, description="Максимальная площадь, м²"),

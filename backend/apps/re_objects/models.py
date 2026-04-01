@@ -2,7 +2,7 @@
 Модели для объектов недвижимости (здания, помещения).
 """
 import uuid
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 from django.db import models
 from django.core.exceptions import ValidationError
@@ -291,29 +291,23 @@ class Premise(models.Model):
         verbose_name="Площадь, м²",
         help_text="Площадь помещения в квадратных метрах"
     )
-    price_per_month = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        verbose_name="Цена аренды в месяц, ₽",
-        help_text="Стоимость аренды за месяц в рублях"
-    )
-    price_per_sqm = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name="Цена продажи за м², ₽",
-        help_text="Стоимость продажи за квадратный метр. Обязательна, если помещение доступно для продажи.",
+    price_per_month = models.PositiveBigIntegerField(
         null=True,
         blank=True,
+        verbose_name="Цена аренды в месяц, ₽",
+        help_text="Стоимость аренды за месяц в целых рублях (необязательно)",
     )
-    full_sell_price = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
+    price_per_sqm = models.PositiveBigIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Цена продажи за м², ₽",
+        help_text="Стоимость продажи за м² в целых рублях. Обязательна, если помещение доступно для продажи.",
+    )
+    full_sell_price = models.PositiveBigIntegerField(
         null=True,
         blank=True,
         verbose_name="Итоговая стоимость продажи, ₽",
-        help_text=(
-            "Площадь × цена продажи за м². Пересчитывается при каждом сохранении. "
-        ),
+        help_text="Площадь × цена продажи за м² в целых рублях. Пересчитывается при каждом сохранении.",
     )
     premise_type = models.CharField(
         max_length=50,
@@ -406,18 +400,16 @@ class Premise(models.Model):
         if self.available_for_sale:
             if self.price_per_sqm is None or self.price_per_sqm <= 0:
                 errors['price_per_sqm'] = 'Укажите цену продажи за м² больше 0.'
-        if self.available_for_rent:
-            if self.price_per_month is None or self.price_per_month <= 0:
-                errors['price_per_month'] = 'Укажите цену аренды в месяц больше 0.'
         if errors:
             raise ValidationError(errors)
 
-    def _compute_full_sell_price(self) -> Decimal | None:
-        """Полная стоимость продажи: площадь × цена за м². Иначе None."""
+    def _compute_full_sell_price(self) -> int | None:
+        """Полная стоимость продажи: площадь × цена за м², округление до целых рубля. Иначе None."""
         if not self.available_for_sale:
             return None
         if self.price_per_sqm is not None and self.area is not None:
-            return (self.area * self.price_per_sqm).quantize(Decimal("0.01"))
+            raw = self.area * Decimal(self.price_per_sqm)
+            return int(raw.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
         return None
 
     def save(self, *args, **kwargs):
