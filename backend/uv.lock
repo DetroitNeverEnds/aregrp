@@ -21,7 +21,6 @@ dependencies = [
     { name = "django" },
     { name = "django-cors-headers" },
     { name = "django-ninja" },
-    { name = "django-smart-selects" },
     { name = "django-storages" },
     { name = "pillow" },
     { name = "pre-commit" },
@@ -48,7 +47,6 @@ requires-dist = [
     { name = "django", specifier = ">=5.2.1" },
     { name = "django-cors-headers", specifier = ">=4.7.0" },
     { name = "django-ninja", specifier = ">=1.1.0" },
-    { name = "django-smart-selects", specifier = ">=1.6.0" },
     { name = "django-storages", specifier = ">=1.14.2" },
     { name = "pillow", specifier = ">=10.0.0" },
     { name = "pre-commit", specifier = ">=4.2.0" },
@@ -261,18 +259,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/65/f5/7288c62b5a59587eabee7f4fa6f4f623a9015de14d051bbb6854068d0a44/django_ninja-1.5.2.tar.gz", hash = "sha256:1554bebc28e9bbc8412f49bae4698937781b54d828c84af30c40dfced407b8cb", size = 3656023, upload-time = "2026-01-04T10:14:03.153Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/48/ad/53fb0e5496d72a94a11abdfaea69acaa6154d1e54d4aef4d5fd135a6dc7a/django_ninja-1.5.2-py3-none-any.whl", hash = "sha256:5faf09cf6e64298e822305c3f4b933608b4fce30643e36cc58f67660f20f4cac", size = 2362759, upload-time = "2026-01-04T10:14:01.447Z" },
-]
-
-[[package]]
-name = "django-smart-selects"
-version = "1.7.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/4a/33/3b512f6b38e0581be812f470424e9b819688edba03b581931534d5fcfc11/django_smart_selects-1.7.2.tar.gz", hash = "sha256:c8116718ecf2d0d0fd4cd1e52c26d2dcc586e25319aa65af7af2d51a1012df3a", size = 27931, upload-time = "2024-11-17T19:06:57.09Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/83/4ae33d1518409ac65891cc5f739cface4d8f27117fbf1eda3a515e90e86c/django_smart_selects-1.7.2-py3-none-any.whl", hash = "sha256:08c774d96285e6d169043cd548860d74d085be8d349c42437232c42bc43cd79a", size = 31651, upload-time = "2024-11-17T19:06:55.279Z" },
 ]
 
 [[package]]

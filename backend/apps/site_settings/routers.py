@@ -17,7 +17,10 @@ site_settings_router = Router()
     "/main-info",
     response={200: MainSettingsOut, 404: ProblemDetail},
     summary="Получить основные настройки сайта",
-    description="Возвращает основные настройки: контакты (phone, display_phone, email, max_link, telegram_link), описание, название организации (org_name), ИНН."
+    description=(
+        "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, "
+        "telegram_link), описание, название организации (org_name), ИНН, кейсы (cases)."
+    ),
 )
 async def get_main_settings(request):
     """
@@ -27,6 +30,7 @@ async def get_main_settings(request):
     - Контактная информация: phone, display_phone, email, max_link, telegram_link
     - Описание и название организации: description, org_name
     - ИНН: inn
+    - Кейсы: cases (JSON-массив)
 
     Эндпоинт публичный, аутентификация не требуется.
     При отсутствии настроек в БД возвращает 404.
@@ -42,7 +46,8 @@ async def get_main_settings(request):
             telegram_link=settings.telegram_link or None,
             description=settings.description or None,
             org_name=settings.org_name or None,
-            inn=settings.inn or None
+            inn=settings.inn or None,
+            cases=settings.cases if isinstance(settings.cases, list) else [],
         )
         
     except Exception as e:
@@ -59,7 +64,10 @@ async def get_main_settings(request):
     "/contacts",
     response={200: ContactsSettingsOut, 404: ProblemDetail},
     summary="Получить настройки контактов",
-    description="Возвращает реквизиты и офис из ContactsSettings: ОГРН, юридический адрес, координаты (lat/lng), адрес офиса продаж.",
+    description=(
+        "Возвращает реквизиты и офис из ContactsSettings: ОГРН, юридический адрес, "
+        "координаты (lat/lng), адрес офиса продаж."
+    ),
 )
 async def get_contacts_settings(request):
     """

@@ -19,6 +19,10 @@ class MainSettingsAdmin(admin.ModelAdmin):
         ('Информация для footer', {
             'fields': ('description', 'org_name', 'inn')
         }),
+        ('Кейсы', {
+            'fields': ('cases',),
+            'description': 'Массив объектов в формате JSON (сохраняется в API в поле cases).',
+        }),
     )
     
     def has_add_permission(self, request):
