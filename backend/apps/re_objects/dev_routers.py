@@ -11,6 +11,7 @@ from decimal import Decimal
 from typing import List, Optional
 from uuid import UUID
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from ninja import File, Form, Router, UploadedFile
 
@@ -215,6 +216,9 @@ def create_premise_in_building(
     building_uuid: UUID,
     area: Decimal = Form(..., description="Площадь, м²"),
     price_per_month: Decimal = Form(..., description="Цена аренды в месяц, ₽"),
+    price_per_sqm: Optional[Decimal] = Form(
+        None, description="Цена продажи за м², ₽ (обязательно, если доступно для продажи)",
+    ),
     number: str = Form("", description="Номер помещения"),
     description: str = Form("", description="Описание"),
     floor_number: int = Form(1, description="Номер этажа (должен существовать в здании)"),
@@ -242,25 +246,30 @@ def create_premise_in_building(
     if not img_files and all_imgs:
         img_files = all_imgs
 
-    with transaction.atomic():
-        premise = Premise.objects.create(
-            building=building,
-            city=city,
-            floor=floor,
-            area=area,
-            price_per_month=price_per_month,
-            number=number or "",
-            description=description or "",
-            available_for_rent=available_for_rent,
-            available_for_sale=available_for_sale,
-        )
-        for i, f in enumerate(img_files, start=1):
-            PremiseImage.objects.create(
-                premise=premise,
-                file=f,
-                order=i,
-                is_primary=(i == 1),
+    try:
+        with transaction.atomic():
+            premise = Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=area,
+                price_per_month=price_per_month,
+                price_per_sqm=price_per_sqm,
+                number=number or "",
+                description=description or "",
+                available_for_rent=available_for_rent,
+                available_for_sale=available_for_sale,
             )
+            for i, f in enumerate(img_files, start=1):
+                PremiseImage.objects.create(
+                    premise=premise,
+                    file=f,
+                    order=i,
+                    is_primary=(i == 1),
+                )
+    except ValidationError as e:
+        err = e.message_dict if getattr(e, 'message_dict', None) else {'__all__': list(e.messages)}
+        return 400, {'detail': err}
 
     return 200, {
         "uuid": str(premise.uuid),

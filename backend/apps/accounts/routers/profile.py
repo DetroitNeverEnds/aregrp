@@ -11,6 +11,8 @@ from ..schemas.profile import (
 )
 from ..services.auth_service import jwt_auth
 from ..services.utils import get_user_data
+from apps.bookings.schemas import BookingOut
+from apps.bookings.services import list_bookings_for_user
 
 
 profile_router = Router()
@@ -50,6 +52,18 @@ async def get_user(request):
     - `401`: Не авторизован (отсутствует или неверный JWT токен)
     """
     return 200, get_user_data(request.auth)
+
+
+@profile_router.get(
+    "/bookings",
+    response={200: list[BookingOut], 401: ProblemDetail},
+    auth=jwt_auth,
+    summary="Мои брони",
+    description="Список броней текущего пользователя (все записи, новые первые).",
+)
+async def list_my_bookings(request):
+    items = await sync_to_async(list_bookings_for_user, thread_sensitive=True)(request.auth)
+    return 200, items
 
 
 @profile_router.put(

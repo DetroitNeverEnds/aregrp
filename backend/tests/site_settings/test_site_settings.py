@@ -66,6 +66,7 @@ class TestMainInfo:
         assert data["inn"] == "7707083893"
         assert data["max_link"] == "https://max.ru/u/79990001122"
         assert data["telegram_link"] == "https://t.me/test"
+        assert data["cases"] == []
 
     @pytest.fixture
     async def main_settings_fallback(self, db):

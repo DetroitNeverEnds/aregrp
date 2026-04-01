@@ -70,10 +70,6 @@
                 background: $primary-900;
             }
 
-            // &:focus:not(:disabled) {
-            //     outline: 2px solid $primary-400;
-            //     outline-offset: 2px;
-            // }
             &:disabled {
                 background: $error-bg-disable;
                 color: $error-text-disable;
@@ -97,30 +93,22 @@
                 background: $gray-20;
                 color: $gray-70;
             }
-
-            &:focus:not(:disabled) {
-                border-color: $primary-600;
-            }
         }
 
         &--dark {
+            background: transparent;
             color: $gray-0;
             border: 1.6px solid $gray-opacity-0-20;
 
             &:hover:not(:disabled) {
-                color: $gray-0;
                 background: $gray-opacity-20-20;
                 border-color: $gray-opacity-0-40;
             }
+
             &:active:not(:disabled),
             &:focus:active:not(:disabled) {
-                color: $gray-0;
                 background: $gray-opacity-0-20;
-                border-color: $gray-opacity-0-20;
-            }
-            &:focus:not(:disabled) {
-                color: $gray-0;
-                border-color: $gray-0;
+                border-color: $gray-opacity-0-70;
             }
         }
     }

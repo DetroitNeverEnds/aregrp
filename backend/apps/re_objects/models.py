@@ -6,8 +6,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.core.validators import FileExtensionValidator
-from django.conf import settings
+from django.core.validators import FileExtensionValidator, MaxValueValidator, MinValueValidator
 
 
 class Region(models.Model):
@@ -143,6 +142,24 @@ class Building(models.Model):
         blank=True,
         help_text="Год постройки здания"
     )
+    latitude = models.DecimalField(
+        max_digits=9,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        verbose_name="Широта",
+        help_text="Географическая широта (WGS-84), от −90 до 90",
+        validators=[MinValueValidator(Decimal("-90")), MaxValueValidator(Decimal("90"))],
+    )
+    longitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=6,
+        null=True,
+        blank=True,
+        verbose_name="Долгота",
+        help_text="Географическая долгота (WGS-84), от −180 до 180",
+        validators=[MinValueValidator(Decimal("-180")), MaxValueValidator(Decimal("180"))],
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -256,7 +273,7 @@ class Premise(models.Model):
         verbose_name="Здание",
         help_text="Здание, в котором находится помещение"
     )
-    # Этаж внутри здания (опционально; в админке список фильтруется по зданию)
+    # Этаж внутри здания (опционально; в админке список этажей ограничивается выбранным зданием через autocomplete)
     floor = models.ForeignKey(
         Floor,
         on_delete=models.SET_NULL,
@@ -264,7 +281,7 @@ class Premise(models.Model):
         null=True,
         blank=True,
         verbose_name="Этаж",
-        help_text="Этаж, на котором находится помещение (должен относиться к выбранному зданию)"
+        help_text="Этаж, на котором находится помещение (должен относиться к выбранному зданию)",
     )
     
     # Параметры помещения (основные для поиска)
@@ -283,20 +300,19 @@ class Premise(models.Model):
     price_per_sqm = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="Цена за м², ₽",
-        help_text="Стоимость аренды за квадратный метр. Задаётся вручную.",
+        verbose_name="Цена продажи за м², ₽",
+        help_text="Стоимость продажи за квадратный метр. Обязательна, если помещение доступно для продажи.",
         null=True,
         blank=True,
     )
-    human_price = models.DecimalField(
+    full_sell_price = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=Decimal("0"),
-        verbose_name="Итоговая стоимость продажи (кэш), ₽",
+        null=True,
+        blank=True,
+        verbose_name="Итоговая стоимость продажи, ₽",
         help_text=(
-            "Кэш итоговой стоимости продажи и аренды за месяц — чтобы не пересчитывать при агрегации по зданиям "
-            "и при выгрузке. Пересчитывается при сохранении: при продаже — итог продажи "
-            "(price_per_month если > 0, иначе площадь × price_per_sqm); при аренде без продажи — цена за месяц; иначе 0."
+            "Площадь × цена продажи за м². Пересчитывается при каждом сохранении. "
         ),
     )
     premise_type = models.CharField(
@@ -384,20 +400,28 @@ class Premise(models.Model):
         city_name = self.city.name if self.city else "—"
         return f"{self.number or 'Помещение'} ({city_name}{building_info}{floor_info})"
 
-    def _compute_human_price(self) -> Decimal:
-        """Кэш для human_price: см. help_text на поле."""
+    def clean(self):
+        super().clean()
+        errors = {}
         if self.available_for_sale:
-            if self.price_per_month is not None and self.price_per_month > 0:
-                return self.price_per_month
-            if self.price_per_sqm is not None and self.area is not None:
-                return (self.area * self.price_per_sqm).quantize(Decimal("0.01"))
-            return self.price_per_month if self.price_per_month is not None else Decimal("0")
+            if self.price_per_sqm is None or self.price_per_sqm <= 0:
+                errors['price_per_sqm'] = 'Укажите цену продажи за м² больше 0.'
         if self.available_for_rent:
-            return self.price_per_month if self.price_per_month is not None else Decimal("0")
-        return Decimal("0")
+            if self.price_per_month is None or self.price_per_month <= 0:
+                errors['price_per_month'] = 'Укажите цену аренды в месяц больше 0.'
+        if errors:
+            raise ValidationError(errors)
+
+    def _compute_full_sell_price(self) -> Decimal | None:
+        """Полная стоимость продажи: площадь × цена за м². Иначе None."""
+        if not self.available_for_sale:
+            return None
+        if self.price_per_sqm is not None and self.area is not None:
+            return (self.area * self.price_per_sqm).quantize(Decimal("0.01"))
+        return None
 
     def save(self, *args, **kwargs):
-        self.human_price = self._compute_human_price()
+        self.full_sell_price = self._compute_full_sell_price()
         # Синхронизация здания и этажа: при выборе этажа подставляем здание; при смене здания обнуляем этаж, если он из другого здания
         if self.floor_id:
             if not self.building_id:
@@ -421,6 +445,7 @@ class Premise(models.Model):
             except City.DoesNotExist:
                 pass
 
+        self.full_clean()
         super().save(*args, **kwargs)
 
 

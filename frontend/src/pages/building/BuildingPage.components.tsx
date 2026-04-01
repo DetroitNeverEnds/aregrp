@@ -93,11 +93,12 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
                         {t('pages.building.reserve')}
                     </Button>
                 </Column>
-                <Column>
+                {/* TODO: Add details button */}
+                {/* <Column>
                     <Button variant="outlined" width="max">
                         {t('pages.building.details')}
                     </Button>
-                </Column>
+                </Column> */}
             </Flex>
         </Card>
     );
@@ -151,7 +152,7 @@ const OtherPremisesCards = (props: OtherPremisesCardsProps) => {
     return (
         <CardContainer loadMore={loadMore} loadMoreLoading={loadMoreLoading}>
             {items.map(premiseData => (
-                <OfficeCard key={premiseData.uuid} item={premiseData} />
+                <OfficeCard key={premiseData.uuid} item={premiseData} type="any" />
             ))}
         </CardContainer>
     );
@@ -251,7 +252,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
 
     return (
         <>
-            <Flex direction="row" gap={24} fullWidth>
+            <Flex direction="row" gap={24} fullWidth align="start">
                 <div
                     className={styles.detailsPanelWrapper}
                     style={{ width: selectedPremise ? 500 : 0 }}
@@ -267,7 +268,8 @@ export const BuildingContent = (props: BuildingContentProps) => {
                 <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
                     <Flex direction="row" justify="between" align="start">
                         <Text variant="h2" className={styles.floorchema__header__text}>
-                            {buildingInfo?.title} ({buildingInfo?.address})
+                            {buildingInfo?.title}
+                            {/* ({buildingInfo?.address}) */}
                         </Text>
                     </Flex>
                     <Flex gap={40} fullWidth>

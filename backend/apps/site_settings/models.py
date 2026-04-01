@@ -95,6 +95,12 @@ class MainSettings(SingletonModel):
         help_text="ИНН для отображения",
         blank=True
     )
+    cases = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Кейсы",
+        help_text='JSON-массив элементов для раздела «Кейсы» (например, [{"title": "...", "body": "..."}])',
+    )
 
     class Meta:
         verbose_name = "Основные настройки"

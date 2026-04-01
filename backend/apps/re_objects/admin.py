@@ -3,10 +3,12 @@
 """
 from django.contrib import admin
 from django.utils.html import format_html
+
 from .models import (
     Region, City, Building, Floor, Premise,
-    PremiseImage, BuildingImage, BuildingVideo
+    PremiseImage, BuildingImage, BuildingVideo,
 )
+from .widgets import FloorByBuildingAutocompleteSelect
 
 
 # Inline админки для медиафайлов помещений
@@ -93,7 +95,7 @@ class BuildingVideoInline(admin.TabularInline):
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
     """Админка для зданий."""
-    list_display = ('name', 'address', 'city', 'total_floors', 'year_built', 'created_at')
+    list_display = ('name', 'address', 'city', 'latitude', 'longitude', 'total_floors', 'year_built', 'created_at')
     list_filter = ('city', 'city__region', 'year_built', 'created_at')
     search_fields = ('name', 'address', 'city__name')
     ordering = ('city', 'name')
@@ -107,10 +109,29 @@ class FloorAdmin(admin.ModelAdmin):
     """Админка для этажей."""
     list_display = ('building', 'number', 'description', 'created_at')
     list_filter = ('building__city', 'created_at')
-    search_fields = ('building__name', 'description')
+    search_fields = ('building__name', 'description', 'number')
     ordering = ('building', 'number')
     autocomplete_fields = ['building']
     readonly_fields = ('created_at', 'updated_at')
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, may_need_distinct = super().get_search_results(request, queryset, search_term)
+        if (
+            request.GET.get('app_label') == 're_objects'
+            and request.GET.get('model_name') == 'premise'
+            and request.GET.get('field_name') == 'floor'
+        ):
+            raw = request.GET.get('building')
+            if raw:
+                try:
+                    bid = int(raw)
+                except (TypeError, ValueError):
+                    queryset = queryset.none()
+                else:
+                    queryset = queryset.filter(building_id=bid)
+            else:
+                queryset = queryset.none()
+        return queryset, may_need_distinct
 
 
 @admin.register(Premise)
@@ -131,29 +152,19 @@ class PremiseAdmin(admin.ModelAdmin):
         'description', 'building__address'
     )
     ordering = ('city', 'building', 'floor__number', 'number')
-    autocomplete_fields = ['city', 'building']
-    readonly_fields = ('created_at', 'updated_at', 'human_price')
+    autocomplete_fields = ['city', 'building', 'floor']
+    readonly_fields = ('created_at', 'updated_at', 'full_sell_price')
+    inlines = [PremiseImageInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == 'floor':
-            match = getattr(request, 'resolver_match', None)
-            object_id = match.kwargs.get('object_id') if match else None
-            if object_id:
-                building_id = (
-                    Premise.objects.filter(pk=object_id)
-                    .values_list('building_id', flat=True)
-                    .first()
-                )
-                if building_id:
-                    kwargs['queryset'] = Floor.objects.filter(building_id=building_id).order_by('number')
-                else:
-                    kwargs['queryset'] = Floor.objects.none()
-            else:
-                kwargs['queryset'] = Floor.objects.select_related('building').order_by(
-                    'building__name', 'number'
-                )
+        if db_field.name == 'floor' and db_field.name in self.get_autocomplete_fields(request):
+            db = kwargs.get('using')
+            kwargs['widget'] = FloorByBuildingAutocompleteSelect(
+                db_field,
+                self.admin_site,
+                using=db,
+            )
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-    inlines = [PremiseImageInline]
 
     fieldsets = (
         ('Основная информация', {
@@ -163,7 +174,7 @@ class PremiseAdmin(admin.ModelAdmin):
             )
         }),
         ('Параметры для поиска', {
-            'fields': ('area', 'price_per_month', 'price_per_sqm', 'human_price')
+            'fields': ('area', 'price_per_month', 'price_per_sqm', 'full_sell_price')
         }),
         ('Дополнительные параметры', {
             'fields': (

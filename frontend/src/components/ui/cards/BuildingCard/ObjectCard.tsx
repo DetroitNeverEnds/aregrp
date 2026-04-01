@@ -64,10 +64,10 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                                     от {formatPrice(Number(minSalePrice))}
                                 </Text>
                             )}
-                            {minSalePrice && minRentPrice && <Text> или </Text>}
                             {minRentPrice && (
                                 <Text variant="14-reg" color="gray-70">
-                                    от {formatPrice(minRentPrice)}/месяц
+                                    {minSalePrice && minRentPrice && 'или'} от{' '}
+                                    {formatPrice(minRentPrice)}/месяц
                                 </Text>
                             )}
                         </Flex>

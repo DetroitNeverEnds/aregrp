@@ -12,3 +12,62 @@ alwaysApply: false
 - **ВСЕГДА генерируй миграции Django только через manage.py. Не пишем миграции сами никогда
 - **Только BACKEND** — изменения вносить только в `backend/` (Python, Django, Ninja API)
 
+# StopList / Django Template Project Rules
+
+## Dependency Management
+
+- **Use `uv`** as the package manager (fast replacement for `pip`)
+- All dependencies are managed through `pyproject.toml`
+- To install dependencies use: `uv sync`
+- To run commands use: `uv run <command>`
+- Example: `uv run manage.py runserver`
+- Dev tools (ruff, pre-commit): `uv sync --group dev`
+
+## Django Application Architecture
+
+### Application Structure
+
+Each Django application should have the following structure:
+
+```
+app_name/
+    __init__.py
+    models.py
+    admin.py
+    views.py          # Thin layer (или api.py + Django Ninja для HTTP API)
+    urls.py
+    services/         # Folder with business logic
+        __init__.py
+        service1.py
+        service2.py
+    tests/
+        __init__.py
+        test_models.py
+        test_service1.py
+        test_views.py
+```
+
+### Separation of Concerns
+
+#### Views (views.py)
+- **Thin layer** for request/response handling, validation, calling services
+- Views MUST NOT contain business logic
+- Delegate logic to `services/`
+
+#### Services (services/ folder)
+- **All business logic** lives in services
+- Services should not depend on HTTP details
+
+## Testing
+
+- Tests in `tests/` per app; mirror structure with `test_<module>.py`
+
+## Commit Messages
+
+Follow **Conventional Commits**: https://www.conventionalcommits.org/
+
+## Code Style
+
+- Use `ruff` (see `ruff.toml`)
+- Line length: 120 characters
+- Prefer single quotes for strings

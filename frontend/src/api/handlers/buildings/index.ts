@@ -1,5 +1,16 @@
 import { api } from '../../base/api';
-import type { BuildingDetailOut } from './types';
+import type {
+    BuildingDetailOut,
+    BuildingsCatalogueResponse,
+    BuildingCatalogueParams,
+} from './types';
+
+/**
+ * Получить каталог зданий
+ */
+export const getBuildingsCatalogue = api.get<BuildingCatalogueParams, BuildingsCatalogueResponse>(
+    '/buildings/',
+);
 
 /**
  * Здание по UUID

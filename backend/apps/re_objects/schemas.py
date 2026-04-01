@@ -27,12 +27,12 @@ class BuildingMediaItemOut(BaseMediaItemOut):
 
 
 class PremiseListOut(Schema):
-    """Помещение в списке (карточка в выдаче). Поле price: при продаже — human_price, при аренде — за месяц."""
+    """Помещение в списке. price: при продаже — полная стоимость продажи (или null), при аренде — за месяц."""
 
     uuid: str  # Публичный идентификатор (UUID)
     building_uuid: str  # UUID здания, к которому относится помещение
     name: str
-    price: Decimal
+    price: Optional[Decimal] = None
     address: str
     floor: Optional[int] = None
     area: Decimal
@@ -69,25 +69,34 @@ class BuildingOptionOut(Schema):
     address: str
 
 
+class BuildingGeoPointOut(Schema):
+    """Точка на карте (WGS-84): lat — широта, lon — долгота."""
+
+    lat: float
+    lon: float
+
+
 class BuildingListOut(Schema):
-    """Здание в списке: uuid, title, address, description, min_sale_price, min_rent_price, media."""
+    """Здание в списке: uuid, title, address, description, geo_point, min_sale_price, min_rent_price, media."""
 
     uuid: str
     title: str
     address: str
     description: str
+    geo_point: Optional[BuildingGeoPointOut] = None
     min_sale_price: Optional[float] = None
     min_rent_price: Optional[float] = None
     media: list[BaseMediaItemOut]
 
 
 class BuildingDetailOut(Schema):
-    """Здание (деталь): uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media."""
+    """Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media."""
 
     uuid: str
     title: str
     address: str
     description: str
+    geo_point: Optional[BuildingGeoPointOut] = None
     total_floors: Optional[int] = None
     year_built: Optional[int] = None
     min_sale_price: Optional[float] = None
