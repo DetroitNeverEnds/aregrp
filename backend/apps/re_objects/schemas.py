@@ -2,7 +2,7 @@
 Схемы API для объектов недвижимости (помещения).
 
 Используются в GET /premises (список с фильтрами и пагинацией) и GET /premises/{uuid} (деталь).
-Поля ответа: uuid, название, стоимость, адрес, этаж, площадь, has_tenant, media (фото/видео).
+Поля ответа: uuid, название, price (legacy), sale_price, rent_price, адрес, этаж, площадь, has_tenant, media.
 """
 from decimal import Decimal
 from typing import Literal, Optional
@@ -27,12 +27,19 @@ class BuildingMediaItemOut(BaseMediaItemOut):
 
 
 class PremiseListOut(Schema):
-    """Помещение в списке. price: при продаже — полная стоимость продажи (или null), при аренде — за месяц."""
+    """Помещение в списке.
+
+    price — устаревшее поле для обратной совместимости (как раньше: от sale_type/флагов).
+    sale_price — полная стоимость продажи, если помещение в продаже; иначе null.
+    rent_price — аренда за месяц, если в аренде; иначе null.
+    """
 
     uuid: str  # Публичный идентификатор (UUID)
     building_uuid: str  # UUID здания, к которому относится помещение
     name: str
     price: Optional[Decimal] = None
+    sale_price: Optional[Decimal] = None
+    rent_price: Optional[Decimal] = None
     address: str
     floor: Optional[int] = None
     area: Decimal

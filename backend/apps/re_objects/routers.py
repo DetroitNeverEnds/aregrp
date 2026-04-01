@@ -10,7 +10,8 @@
 4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
 5) GET /api/v1/floors/{building_uuid}/{floor_number} — данные этажа: building_uuid, floor_number, schema_svg, premises.
 6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
-   price_per_sqm, ...). sale_type=sale: price — полная стоимость продажи; sale_type=rent: аренда за месяц. 404 — ProblemDetail.
+   price_per_sqm, ...). Всегда: sale_price, rent_price (по флагам available_for_sale / available_for_rent).
+   Поле price — обратная совместимость (зависит от sale_type). 404 — ProblemDetail.
 
 Вся логика в services.premise_service; роутер только парсит query (в т.ч. через parse_building_uuids)
 и вызывает async-функции сервиса.
@@ -189,10 +190,11 @@ async def premise_list(
     response={200: PremiseDetailOut, 404: ProblemDetail},
     summary="Детальная информация о помещении",
     description=(
-        "Помещение по UUID: uuid, name, price, address, floor, area, has_tenant, media, description, "
-        "price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail. "
-        f"Параметр sale_type={settings.RE_OBJECTS_SALE_TYPE_SALE}: price — полная стоимость продажи или null. "
-        "Без параметра: только продажа — полная продажа; аренда или оба — price за месяц."
+        "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor, area, has_tenant, media, "
+        "description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. "
+        "sale_price / rent_price — всегда в ответе (null, если вид сделки не предлагается). "
+        f"Параметр sale_type: price — как раньше ({settings.RE_OBJECTS_SALE_TYPE_SALE} — продажа, иначе аренда). "
+        "404 — ProblemDetail."
     ),
 )
 async def premise_detail(

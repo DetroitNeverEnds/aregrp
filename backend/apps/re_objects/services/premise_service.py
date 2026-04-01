@@ -6,7 +6,7 @@
 - get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
-- get_premise_by_uuid(...): в JSON поле price — аренда за месяц или полная стоимость продажи в зависимости от sale_type/флагов.
+- get_premise_by_uuid(...): price — legacy; sale_price / rent_price — по флагам available_for_sale / available_for_rent.
 - get_premises_for_floor(building_uuid, floor_number) — данные этажа (building_uuid, floor_number, schema_svg, premises).
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
@@ -407,6 +407,16 @@ def _premise_price_for_api(p: Premise, sale_type: Optional[str]) -> Optional[Dec
     return p.price_per_month
 
 
+def _premise_sale_price_for_api(p: Premise) -> Optional[Decimal]:
+    """Полная стоимость продажи, если помещение предлагается к продаже."""
+    return p.full_sell_price if p.available_for_sale else None
+
+
+def _premise_rent_price_for_api(p: Premise) -> Optional[Decimal]:
+    """Аренда за месяц, если помещение в аренде."""
+    return p.price_per_month if p.available_for_rent else None
+
+
 def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseListOut:
     """Маппинг Premise -> PremiseListOut; price — full_sell_price или price_per_month по типу запроса."""
     return PremiseListOut(
@@ -414,6 +424,8 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
         building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
         price=_premise_price_for_api(p, sale_type),
+        sale_price=_premise_sale_price_for_api(p),
+        rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
@@ -429,6 +441,8 @@ def premise_to_detail_out(p: Premise, sale_type: Optional[str] = None) -> Premis
         building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
         price=_premise_price_for_api(p, sale_type),
+        sale_price=_premise_sale_price_for_api(p),
+        rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
@@ -467,7 +481,7 @@ async def get_premise_by_uuid(
     Возвращает помещение по UUID в виде PremiseDetailOut или None.
 
     Только помещения со статусом AVAILABLE. Использует aget() и prefetch images.
-    sale_type=sale: price — full_sell_price или null.
+    sale_price / rent_price не зависят от sale_type; price — прежняя семантика.
     """
     try:
         p = await Premise.objects.select_related(
