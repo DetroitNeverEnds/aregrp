@@ -1,16 +1,23 @@
 """
 Роутер для настроек сайта.
 """
-from ninja import Router
 from asgiref.sync import sync_to_async
+from ninja import Router
 
 from api.schemas import ProblemDetail
-from .models import MainSettings, ContactsSettings
-from .schemas import MainSettingsOut, ContactsSettingsOut, CoordinatesOut
-from .errors import create_site_settings_error, SiteSettingsErrorCodes
 
+from .errors import SiteSettingsErrorCodes, create_site_settings_error
+from .models import ContactsSettings, MainSettings
+from .schemas import ContactsSettingsOut, CoordinatesOut, MainSettingsOut
 
 site_settings_router = Router()
+
+
+def _file_field_url(field_file) -> str | None:
+    """URL медиафайла так, как его отдаёт storage (как у медиа в API объектов)."""
+    if not field_file or not getattr(field_file, "name", None):
+        return None
+    return field_file.url
 
 
 @site_settings_router.get(
@@ -19,7 +26,7 @@ site_settings_router = Router()
     summary="Получить основные настройки сайта",
     description=(
         "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, "
-        "telegram_link), описание, название организации (org_name), ИНН, кейсы (cases)."
+        "telegram_link), описание, название организации (org_name), ИНН, кейсы (cases — URL PDF из storage или null)."
     ),
 )
 async def get_main_settings(request):
@@ -30,25 +37,28 @@ async def get_main_settings(request):
     - Контактная информация: phone, display_phone, email, max_link, telegram_link
     - Описание и название организации: description, org_name
     - ИНН: inn
-    - Кейсы: cases (JSON-массив)
+    - Кейсы: cases — ссылка на PDF из DEFAULT_FILE_STORAGE (часто относительная /media/… или полный URL в S3)
 
     Эндпоинт публичный, аутентификация не требуется.
     При отсутствии настроек в БД возвращает 404.
     """
     try:
         settings = await sync_to_async(MainSettings.load)()
-        
-        return 200, MainSettingsOut(
-            phone=settings.phone,
-            display_phone=settings.display_phone or settings.phone,
-            email=settings.email,
-            max_link=settings.max_link or None,
-            telegram_link=settings.telegram_link or None,
-            description=settings.description or None,
-            org_name=settings.org_name or None,
-            inn=settings.inn or None,
-            cases=settings.cases if isinstance(settings.cases, list) else [],
-        )
+
+        def build_out():
+            return MainSettingsOut(
+                phone=settings.phone,
+                display_phone=settings.display_phone or settings.phone,
+                email=settings.email,
+                max_link=settings.max_link or None,
+                telegram_link=settings.telegram_link or None,
+                description=settings.description or None,
+                org_name=settings.org_name or None,
+                inn=settings.inn or None,
+                cases=_file_field_url(settings.cases_pdf),
+            )
+
+        return 200, await sync_to_async(build_out)()
         
     except Exception as e:
         return 404, create_site_settings_error(

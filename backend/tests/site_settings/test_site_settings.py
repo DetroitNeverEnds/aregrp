@@ -3,10 +3,8 @@
 """
 import pytest
 from asgiref.sync import sync_to_async
-from ninja.testing import TestAsyncClient
 
-from api.router import api
-from apps.site_settings.models import MainSettings, ContactsSettings
+from apps.site_settings.models import ContactsSettings, MainSettings
 
 
 def _create_main_settings():
@@ -66,7 +64,7 @@ class TestMainInfo:
         assert data["inn"] == "7707083893"
         assert data["max_link"] == "https://max.ru/u/79990001122"
         assert data["telegram_link"] == "https://t.me/test"
-        assert data["cases"] == []
+        assert data["cases"] is None
 
     @pytest.fixture
     async def main_settings_fallback(self, db):

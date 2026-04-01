@@ -2,6 +2,21 @@
 {
     const $ = django.jQuery;
 
+    function getBuildingPk(forwardFieldId) {
+        const byId = document.getElementById(forwardFieldId);
+        if (byId && byId.value) {
+            return byId.value;
+        }
+        const $b = $(`#${forwardFieldId}`);
+        if ($b.length) {
+            const v = $b.val();
+            if (v) {
+                return v;
+            }
+        }
+        return null;
+    }
+
     function forwardBuildingAjaxData(element, forwardFieldId) {
         return (params) => {
             const data = {
@@ -11,9 +26,9 @@
                 model_name: element.dataset.modelName,
                 field_name: element.dataset.fieldName,
             };
-            const buildingEl = document.getElementById(forwardFieldId);
-            if (buildingEl && buildingEl.value) {
-                data.building = buildingEl.value;
+            const bid = getBuildingPk(forwardFieldId);
+            if (bid) {
+                data.building = bid;
             }
             return data;
         };
@@ -48,8 +63,12 @@
             buildingSel.on('change', function () {
                 const $floor = $('#id_floor');
                 if ($floor.length && $floor.data('select2')) {
+                    $floor.select2('destroy');
+                }
+                if ($floor.length) {
                     $floor.val(null).trigger('change');
                 }
+                initFloorAutocompleteForward();
             });
         }
     });
