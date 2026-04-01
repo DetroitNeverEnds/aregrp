@@ -28,11 +28,9 @@ build/
 # В production данные хранятся в /var/lib/aregrp-data/postgres_data
 postgres_data/
 
-# Static files (collected by collectstatic)
-# Локальная папка static (для разработки)
+# Static files (collectstatic → backend/static/, не игнорировать app/static в приложениях)
 # В production данные хранятся в /var/lib/aregrp-data/static
-static/
-!static/.gitkeep
+backend/static/
 
 # Media files
 # Локальная папка media (для разработки)

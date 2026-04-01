@@ -8,10 +8,9 @@
 postgres_data/
 ../postgres_data/
 
-# Django static files (собираются через collectstatic)
-static/
-!static/.gitkeep
-../static/
+# Только каталог collectstatic (не игнорировать apps/*/static/ с исходниками)
+/static/
+!/static/.gitkeep
 
 # Python cache
 __pycache__/
