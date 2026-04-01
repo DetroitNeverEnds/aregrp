@@ -6,7 +6,6 @@ from decimal import Decimal
 
 from django.db import models
 from django.core.exceptions import ValidationError
-from smart_selects.db_fields import ChainedForeignKey
 from django.core.validators import FileExtensionValidator
 from django.conf import settings
 
@@ -257,18 +256,13 @@ class Premise(models.Model):
         verbose_name="Здание",
         help_text="Здание, в котором находится помещение"
     )
-    # Этаж внутри здания (опционально; список этажей фильтруется по выбранному зданию — django-smart-selects)
-    floor = ChainedForeignKey(
+    # Этаж внутри здания (опционально; в админке список фильтруется по зданию)
+    floor = models.ForeignKey(
         Floor,
-        chained_field='building',
-        chained_model_field='building',
         on_delete=models.SET_NULL,
         related_name='premises',
         null=True,
         blank=True,
-        show_all=False,
-        auto_choose=True,
-        sort=True,
         verbose_name="Этаж",
         help_text="Этаж, на котором находится помещение (должен относиться к выбранному зданию)"
     )

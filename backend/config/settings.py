@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'smart_selects',
 
     'apps.accounts',
     'apps.site_settings',

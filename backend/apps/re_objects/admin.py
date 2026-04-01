@@ -131,8 +131,28 @@ class PremiseAdmin(admin.ModelAdmin):
         'description', 'building__address'
     )
     ordering = ('city', 'building', 'floor__number', 'number')
-    autocomplete_fields = ['city', 'building']  # floor — ChainedForeignKey, виджет от django-smart-selects
+    autocomplete_fields = ['city', 'building']
     readonly_fields = ('created_at', 'updated_at', 'human_price')
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'floor':
+            match = getattr(request, 'resolver_match', None)
+            object_id = match.kwargs.get('object_id') if match else None
+            if object_id:
+                building_id = (
+                    Premise.objects.filter(pk=object_id)
+                    .values_list('building_id', flat=True)
+                    .first()
+                )
+                if building_id:
+                    kwargs['queryset'] = Floor.objects.filter(building_id=building_id).order_by('number')
+                else:
+                    kwargs['queryset'] = Floor.objects.none()
+            else:
+                kwargs['queryset'] = Floor.objects.select_related('building').order_by(
+                    'building__name', 'number'
+                )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
     inlines = [PremiseImageInline]
 
     fieldsets = (
