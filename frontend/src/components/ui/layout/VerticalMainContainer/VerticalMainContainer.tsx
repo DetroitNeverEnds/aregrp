@@ -1,20 +1,15 @@
-import type { PropsWithChildren } from 'react';
 import styles from './VerticalMainContainer.module.scss';
 import classNames from 'classnames';
 import Container from '@/components/ui/layout/Container';
-import { Flex } from '../../common/Flex';
+import { Flex, type FlexProps } from '../../common/Flex';
 
-type VerticalMainContainerProps = { className?: string } & PropsWithChildren;
+type VerticalMainContainerProps = FlexProps;
 
-export const VerticalMainContainer = (props: VerticalMainContainerProps) => {
+export const VerticalMainContainer = ({ className, ...props }: VerticalMainContainerProps) => {
     return (
-        <div className={styles.wrapper}>
+        <div className={classNames(styles.wrapper, className)}>
             <Flex gap={24} className={styles.content}>
-                <Container
-                    gap="main"
-                    className={classNames(styles.container, props.className)}
-                    fullWidth
-                >
+                <Container {...props} className={styles.container} fullWidth gap="main">
                     {props.children}
                 </Container>
             </Flex>

@@ -5,22 +5,25 @@ import { Column, TwoColumnsContainer } from '../TwoColumnsContainer';
 import { FeedbackForm } from '../../forms/FeedbackForm';
 
 import styles from './FeedbackFormRow.module.scss';
+import { forwardRef } from 'react';
 
-export const FeedbackFormRow = () => {
+export type FeedbackFormRowProps = object;
+
+export const FeedbackFormRow = forwardRef<HTMLDivElement, FeedbackFormRowProps>((_, ref) => {
     const { t } = useTranslation();
 
     return (
-        <TwoColumnsContainer>
+        <TwoColumnsContainer ref={ref}>
             <Column>
                 <Flex className={styles.formColumnContent} gap={80}>
                     <Flex gap={20} align="start">
                         <Text color="gray-50">{t('pages.contacts.planView')}</Text>
-                        <Flex align="start">
-                            <Text variant="h2">{t('pages.contacts.fillForm')}</Text>
+                        <Text variant="h2">
+                            {t('pages.contacts.fillForm')}{' '}
                             <Text variant="h2" color="gray-50">
                                 {t('pages.contacts.forDetails')}
                             </Text>
-                        </Flex>
+                        </Text>
                     </Flex>
                     <FeedbackForm />
                 </Flex>
@@ -28,4 +31,4 @@ export const FeedbackFormRow = () => {
             <Column className={styles.imgColumn} />
         </TwoColumnsContainer>
     );
-};
+});

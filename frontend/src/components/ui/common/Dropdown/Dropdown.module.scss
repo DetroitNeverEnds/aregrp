@@ -1,5 +1,8 @@
 .dropdown-container {
     position: relative;
+    min-width: 0;
+    // overflow: hidden;
+    max-width: 100%;
     &--full-width {
         width: 100%;
     }
@@ -10,6 +13,9 @@
     border-radius: 40px;
     background: $gray-0;
     transition: border-color 0.2s ease;
+    min-width: 0;
+    // overflow: hidden;
+    max-width: 100%;
 
     .dropdown-container--disabled & {
         cursor: not-allowed;

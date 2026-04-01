@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex } from '../../components/ui/common/Flex';
 import { useLayoutSettings } from '../../hooks/useLayoutSettings';
@@ -20,13 +21,10 @@ import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContain
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { BenifitsWorking } from '@/components/ui/cards/Benefits';
 import { Page } from '@/components/ui/layout/Page/Page';
-import _ from 'lodash';
 import Config from '@/config';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
-
-type Data = {
-    coordinates: [number, number][];
-};
+import { BuildingMapMarker } from './components/BuildingMapMarker/BuildingMapMarker';
+import { setActiveBuildingMarkerUuid } from '@/lib/buildingMapMarkerActiveStore';
 
 const layoutSettings: LayoutSettings = {
     header: {
@@ -42,10 +40,6 @@ export const Root = () => {
 
     useLayoutSettings(layoutSettings);
 
-    const data: Data = {
-        coordinates: [[44.650540230512846, 42.65871198485353]],
-    };
-
     // const buildingsData = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
     const premises = usePremises({ page_size: Config.pageSizeMain }).data?.data;
     const {
@@ -54,7 +48,25 @@ export const Root = () => {
         hasNextPage,
         isFetchingNextPage,
     } = useBuildingsCatalogueInfinite({ page_size: Config.pageSizeMain });
-    const buildings = buildingsData?.pages.flatMap(page => page?.data?.items ?? []);
+    const buildings = useMemo(
+        () => buildingsData?.pages.flatMap(page => page?.data?.items ?? []) ?? [],
+        [buildingsData],
+    );
+    const mapsMarkers = useMemo(
+        () =>
+            buildings.map(item => ({
+                key: item.uuid,
+                coordinates: item.geo_point,
+                content: <BuildingMapMarker item={item} />,
+            })),
+        [buildings],
+    );
+
+    useEffect(() => {
+        return () => {
+            setActiveBuildingMarkerUuid(undefined);
+        };
+    }, []);
 
     return (
         <Page>
@@ -77,8 +89,11 @@ export const Root = () => {
                             </Text>
                         </Flex>
                     </Flex>
-                    <YandexMap markerCoordinates={data.coordinates[0]} className={styles.map} />
-
+                    <YandexMap
+                        markers={mapsMarkers}
+                        className={styles.map}
+                        onMapClick={() => setActiveBuildingMarkerUuid(undefined)}
+                    />
                     <CardContainer
                         loadMore={hasNextPage ? () => fetchNextPage() : undefined}
                         loadMoreLoading={isFetchingNextPage}
@@ -134,7 +149,7 @@ export const Root = () => {
                     </Flex>
                     <CardContainer>
                         {premises?.items.map(item => (
-                            <OfficeCard key={item.uuid} item={item} />
+                            <OfficeCard key={item.uuid} item={item} type="any" />
                         ))}
                     </CardContainer>
                     <Button variant="outlined" to={getLinkToCatalogue({ sale_type: 'sale' })}>
