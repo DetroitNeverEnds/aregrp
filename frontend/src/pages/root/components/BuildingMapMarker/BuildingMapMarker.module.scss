@@ -24,8 +24,8 @@
         box-shadow:
             0 0 16px rgba(30, 32, 35, 0.1),
             0 4px 8px rgba(30, 32, 35, 0.05);
-        
-            &__image{
+
+        &__image {
             width: 100%;
             height: 150px;
             object-fit: cover;
@@ -35,7 +35,7 @@
             background-color: $gray-10;
         }
     }
-    
+
     &__arrow {
         width: 12px;
         height: 10px;

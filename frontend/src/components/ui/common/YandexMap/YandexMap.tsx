@@ -94,7 +94,6 @@ export const YandexMap = ({
         [bounds],
     );
 
-    // const listener = useMemo(() => new YMapListener({ onClick: onMapClick }), [onMapClick]);
     return (
         <div className={classNames(styles.wrapper, className)}>
             <YMap
@@ -105,11 +104,7 @@ export const YandexMap = ({
             >
                 <YMapDefaultSchemeLayer customization={YaMapsCustomization} />
                 <YMapDefaultFeaturesLayer />
-                <YMapListener
-                    layer="any"
-                    // onClick={onMapClick}
-                    onClick={e => e === undefined && onMapClick?.()}
-                />
+                <YMapListener layer="any" onClick={e => e?.type !== 'marker' && onMapClick?.()} />
                 {markers.map((marker, index) => {
                     const zIndex =
                         marker.key != null && marker.key === activeMarkerKey
