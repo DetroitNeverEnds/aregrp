@@ -34,6 +34,9 @@ CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default='http:
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', cast=bool, default=False)
 CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', cast=Csv(), default='')
 
+# Yandex Geocoder API (management command geocode_buildings)
+YANDEX_GEOCODER_API_KEY = config('YANDEX_GEOCODER_API_KEY', default='')
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,12 +47,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
-    'smart_selects',
 
     'apps.accounts',
     'apps.site_settings',
     'apps.feedback',
     'apps.re_objects',
+    'apps.bookings',
 ]
 
 MIDDLEWARE = [

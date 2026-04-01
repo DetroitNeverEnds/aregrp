@@ -9,6 +9,7 @@ from apps.accounts.routers.profile import profile_router
 from apps.re_objects.dev_routers import dev_router
 from apps.re_objects.routers import premises_router, buildings_router, floors_router
 from apps.site_settings.routers import site_settings_router
+from apps.bookings.routers import bookings_router
 
 # Создаем главный API объект
 api = NinjaAPI(
@@ -20,6 +21,7 @@ api = NinjaAPI(
 # Подключаем роутеры из приложений
 api.add_router("/auth", auth_router, tags=["Authentication"])
 api.add_router("/profile", profile_router, tags=["Profile"])
+api.add_router("/bookings", bookings_router)
 api.add_router("/site-settings", site_settings_router, tags=["Site Settings"])
 api.add_router("/premises", premises_router)
 api.add_router("/buildings", buildings_router)

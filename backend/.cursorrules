@@ -1,16 +1,3 @@
----
-description: Работа только с backend — не трогать frontend
-globs: backend/**/*
-alwaysApply: false
----
-
-# Backend only
-
-При работе с проектом aregrp:
-
-- **НИКОГДА не трогай frontend** — не редактировать файлы в `frontend/`, `*.tsx`, `*.ts`
-- **Только BACKEND** — изменения вносить только в `backend/` (Python, Django, Ninja API)
-
 # StopList / Django Template Project Rules
 
 ## Dependency Management
