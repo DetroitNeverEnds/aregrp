@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex } from '../../components/ui/common/Flex';
 import { useLayoutSettings } from '../../hooks/useLayoutSettings';
@@ -61,6 +61,12 @@ export const Root = () => {
             })),
         [buildings],
     );
+
+    useEffect(() => {
+        return () => {
+            setActiveBuildingMarkerUuid(undefined);
+        };
+    }, []);
 
     return (
         <Page>
