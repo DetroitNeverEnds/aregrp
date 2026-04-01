@@ -9,6 +9,7 @@ alwaysApply: false
 При работе с проектом aregrp:
 
 - **НИКОГДА не трогай frontend** — не редактировать файлы в `frontend/`, `*.tsx`, `*.ts`
+- **ВСЕГДА генерируй миграции Django только через manage.py. Не пишем миграции сами никогда
 - **Только BACKEND** — изменения вносить только в `backend/` (Python, Django, Ninja API)
 
 # StopList / Django Template Project Rules
