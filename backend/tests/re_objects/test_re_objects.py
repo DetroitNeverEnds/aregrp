@@ -150,7 +150,8 @@ class TestPremisesList:
             assert "building_uuid" in item
             UUID(item["building_uuid"])
             assert "name" in item
-            assert "price" in item
+            assert "sale_price" in item
+            assert "rent_price" in item
             assert "address" in item
             assert "area" in item
             assert "has_tenant" in item
@@ -177,8 +178,8 @@ class TestPremisesList:
         assert data["page"] == 1
         assert data["page_size"] == 5
 
-    async def test_premises_list_sale_price_is_full_sell(self, client, city):
-        """При sale_type=sale поле price совпадает с full_sell_price."""
+    async def test_premises_list_sale_and_rent_prices_always_present(self, client, city):
+        """В каталоге всегда sale_price и rent_price из модели, независимо от sale_type."""
 
         @sync_to_async
         def _create():
@@ -209,8 +210,16 @@ class TestPremisesList:
         assert response.status_code == 200
         data = response.json()
         item = next(i for i in data["items"] if i["uuid"] == str(premise.uuid))
-        assert Decimal(str(item["price"])) == premise.full_sell_price
-        assert Decimal(str(item["price"])) == Decimal("10000000.00")
+        assert item["sale_price"] == 10_000_000
+        assert isinstance(item["sale_price"], int)
+        assert item["rent_price"] == 0
+        assert isinstance(item["rent_price"], int)
+
+        response_all = await client.get("/premises")
+        assert response_all.status_code == 200
+        item_all = next(i for i in response_all.json()["items"] if i["uuid"] == str(premise.uuid))
+        assert item_all["sale_price"] == 10_000_000
+        assert item_all["rent_price"] == 0
 
 
 @pytest.mark.django_db
@@ -228,14 +237,15 @@ class TestPremiseDetail:
         assert "building_uuid" in data
         UUID(data["building_uuid"])
         assert "name" in data
-        assert "price" in data
+        assert "sale_price" in data
+        assert "rent_price" in data
         assert "address" in data
         assert "area" in data
         assert "description" in data
         assert "media" in data
 
-    async def test_premise_detail_sale_type_uses_full_sell_price(self, client, city):
-        """sale_type=sale: price равен full_sell_price."""
+    async def test_premise_detail_sale_and_rent_prices(self, client, city):
+        """Деталь: sale_price и rent_price из модели, без зависимости от query."""
 
         @sync_to_async
         def _create():
@@ -260,11 +270,14 @@ class TestPremiseDetail:
             )
 
         premise = await _create()
-        response = await client.get(f"/premises/{premise.uuid}?sale_type=sale")
+        response = await client.get(f"/premises/{premise.uuid}")
 
         assert response.status_code == 200
         data = response.json()
-        assert Decimal(str(data["price"])) == premise.full_sell_price
+        assert data["sale_price"] == 10_000_000
+        assert isinstance(data["sale_price"], int)
+        assert data["rent_price"] == 0
+        assert isinstance(data["rent_price"], int)
 
     async def test_premise_detail_not_found(self, client):
         """404 для несуществующего UUID."""

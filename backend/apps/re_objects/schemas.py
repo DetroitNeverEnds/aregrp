@@ -2,7 +2,7 @@
 Схемы API для объектов недвижимости (помещения).
 
 Используются в GET /premises (список с фильтрами и пагинацией) и GET /premises/{uuid} (деталь).
-Поля ответа: uuid, название, стоимость, адрес, этаж, площадь, has_tenant, media (фото/видео).
+Поля ответа: uuid, название, sale_price, rent_price, адрес, этаж, площадь, has_tenant, media (фото/видео).
 """
 from decimal import Decimal
 from typing import Literal, Optional
@@ -27,12 +27,13 @@ class BuildingMediaItemOut(BaseMediaItemOut):
 
 
 class PremiseListOut(Schema):
-    """Помещение в списке. price: при продаже — полная стоимость продажи (или null), при аренде — за месяц."""
+    """Помещение в списке. Цены — целые рубли; sale_price может быть null."""
 
     uuid: str  # Публичный идентификатор (UUID)
     building_uuid: str  # UUID здания, к которому относится помещение
     name: str
-    price: Optional[Decimal] = None
+    sale_price: Optional[int] = None
+    rent_price: int
     address: str
     floor: Optional[int] = None
     area: Decimal
@@ -44,7 +45,7 @@ class PremiseDetailOut(PremiseListOut):
     """Помещение: полная информация для страницы объекта (все поля списка + описание и доп. параметры)."""
 
     description: Optional[str] = None
-    price_per_sqm: Optional[Decimal] = None
+    price_per_sqm: Optional[int] = None
     ceiling_height: Optional[Decimal] = None
     has_windows: bool = True
     has_parking: bool = False
@@ -77,20 +78,20 @@ class BuildingGeoPointOut(Schema):
 
 
 class BuildingListOut(Schema):
-    """Здание в списке: uuid, title, address, description, geo_point, min_sale_price, min_rent_price, media."""
+    """Здание в списке: uuid, title, address, description, geo_point, min_* — минимальные цены в целых рублях, media."""
 
     uuid: str
     title: str
     address: str
     description: str
     geo_point: Optional[BuildingGeoPointOut] = None
-    min_sale_price: Optional[float] = None
-    min_rent_price: Optional[float] = None
+    min_sale_price: Optional[int] = None
+    min_rent_price: Optional[int] = None
     media: list[BaseMediaItemOut]
 
 
 class BuildingDetailOut(Schema):
-    """Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media."""
+    """Здание (деталь); min_sale_price, min_rent_price — целые рубли."""
 
     uuid: str
     title: str
@@ -99,8 +100,8 @@ class BuildingDetailOut(Schema):
     geo_point: Optional[BuildingGeoPointOut] = None
     total_floors: Optional[int] = None
     year_built: Optional[int] = None
-    min_sale_price: Optional[float] = None
-    min_rent_price: Optional[float] = None
+    min_sale_price: Optional[int] = None
+    min_rent_price: Optional[int] = None
     media_categories: list[str]
     media: list[BuildingMediaItemOut]
 

@@ -1,8 +1,8 @@
 """
 Модели для обратной связи (feedback).
 """
-from django.db import models
 from django.core.validators import EmailValidator
+from django.db import models
 
 
 class Feedback(models.Model):
@@ -24,23 +24,29 @@ class Feedback(models.Model):
     email = models.EmailField(
         max_length=100,
         verbose_name="Email",
-        help_text="Email адрес для связи",
-        validators=[EmailValidator()]
+        help_text="Email (не используется в заявке с сайта, зарезервировано)",
+        validators=[EmailValidator()],
+        blank=True,
+        default='',
     )
     phone = models.CharField(
         max_length=20,
         verbose_name="Телефон",
         help_text="Номер телефона",
-        blank=True
+        blank=True,
     )
     subject = models.CharField(
-        max_length=200,
+        max_length=255,
         verbose_name="Тема",
-        help_text="Тема обращения"
+        help_text="Источник заявки: страница, кампания, UTM и т.п.",
+        blank=True,
+        default='',
     )
     message = models.TextField(
         verbose_name="Сообщение",
-        help_text="Текст сообщения"
+        help_text="Текст сообщения (необязательно)",
+        blank=True,
+        default='',
     )
     status = models.CharField(
         max_length=20,
@@ -65,5 +71,5 @@ class Feedback(models.Model):
         db_table = 'feedback'
 
     def __str__(self):
-        return f"{self.subject} - {self.name} ({self.created_at.strftime('%d.%m.%Y %H:%M')})"
-
+        head = self.subject or self.phone or self.name
+        return f"{head} — {self.name} ({self.created_at.strftime('%d.%m.%Y %H:%M')})"

@@ -2,6 +2,7 @@
 Админка для моделей обратной связи.
 """
 from django.contrib import admin
+
 from .models import Feedback
 
 
@@ -10,17 +11,18 @@ class FeedbackAdmin(admin.ModelAdmin):
     """
     Админка для обратной связи.
     """
-    list_display = ('subject', 'name', 'email', 'phone', 'status', 'created_at')
+    list_display = ('subject', 'name', 'phone', 'email', 'status', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('name', 'email', 'subject', 'message')
     readonly_fields = ('created_at', 'updated_at')
-    
+
     fieldsets = (
-        ('Информация о пользователе', {
-            'fields': ('name', 'email', 'phone')
+        ('Заявка', {
+            'fields': ('subject', 'name', 'phone', 'message')
         }),
-        ('Сообщение', {
-            'fields': ('subject', 'message')
+        ('Служебное', {
+            'fields': ('email',),
+            'classes': ('collapse',),
         }),
         ('Статус', {
             'fields': ('status',)
@@ -30,8 +32,7 @@ class FeedbackAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    
+
     def get_readonly_fields(self, request, obj=None):
         """Делаем даты только для чтения"""
         return self.readonly_fields
-

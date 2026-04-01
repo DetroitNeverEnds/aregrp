@@ -573,6 +573,59 @@
         ]
       }
     },
+    "/api/v1/feedback/": {
+      "post": {
+        "operationId": "apps_feedback_routers_post_feedback",
+        "summary": "Отправить обращение",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackOut"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Создаёт заявку обратной связи (без аутентификации).",
+        "tags": [
+          "Feedback"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackCreateIn"
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
     "/api/v1/site-settings/main-info": {
       "get": {
         "operationId": "apps_site_settings_routers_get_main_settings",
@@ -940,24 +993,6 @@
               "type": "string"
             },
             "required": true
-          },
-          {
-            "in": "query",
-            "name": "sale_type",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "sale — price как полная стоимость продажи. rent — price как аренда за месяц.",
-              "title": "Sale Type"
-            },
-            "required": false,
-            "description": "sale — price как полная стоимость продажи. rent — price как аренда за месяц."
           }
         ],
         "responses": {
@@ -982,7 +1017,7 @@
             }
           }
         },
-        "description": "Помещение по UUID: uuid, name, price, address, floor, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail. Параметр sale_type=sale: price — полная стоимость продажи или null. Без параметра: только продажа — полная продажа; аренда или оба — price за месяц.",
+        "description": "Помещение по UUID: uuid, name, sale_price, rent_price (целые ₽), address, floor, area, has_tenant, media, description, price_per_sqm (целые ₽/м²), ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail.",
         "tags": [
           "Premises"
         ]
@@ -1990,6 +2025,91 @@
         "title": "BookingCreateIn",
         "type": "object"
       },
+      "FeedbackOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "phone",
+          "subject",
+          "message",
+          "status",
+          "created_at"
+        ],
+        "title": "FeedbackOut",
+        "type": "object"
+      },
+      "FeedbackCreateIn": {
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "phone": {
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Phone",
+            "type": "string"
+          },
+          "subject": {
+            "description": "Тема / источник заявки (страница, кампания, UTM и т.п.)",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Subject",
+            "type": "string"
+          },
+          "message": {
+            "default": "",
+            "maxLength": 10000,
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "subject"
+        ],
+        "title": "FeedbackCreateIn",
+        "type": "object"
+      },
       "MainSettingsOut": {
         "description": "Схема для возврата основных настроек сайта.",
         "properties": {
@@ -2191,7 +2311,7 @@
         "type": "object"
       },
       "PremiseListOut": {
-        "description": "Помещение в списке. price: при продаже — полная стоимость продажи (или null), при аренде — за месяц.",
+        "description": "Помещение в списке. Цены — целые рубли; sale_price может быть null.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -2205,17 +2325,20 @@
             "title": "Name",
             "type": "string"
           },
-          "price": {
+          "sale_price": {
             "anyOf": [
               {
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                "type": "string"
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Price"
+            "title": "Sale Price"
+          },
+          "rent_price": {
+            "title": "Rent Price",
+            "type": "integer"
           },
           "address": {
             "title": "Address",
@@ -2253,6 +2376,7 @@
           "uuid",
           "building_uuid",
           "name",
+          "rent_price",
           "address",
           "area",
           "has_tenant",
@@ -2313,17 +2437,20 @@
             "title": "Name",
             "type": "string"
           },
-          "price": {
+          "sale_price": {
             "anyOf": [
               {
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                "type": "string"
+                "type": "integer"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Price"
+            "title": "Sale Price"
+          },
+          "rent_price": {
+            "title": "Rent Price",
+            "type": "integer"
           },
           "address": {
             "title": "Address",
@@ -2370,8 +2497,7 @@
           "price_per_sqm": {
             "anyOf": [
               {
-                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                "type": "string"
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -2411,6 +2537,7 @@
           "uuid",
           "building_uuid",
           "name",
+          "rent_price",
           "address",
           "area",
           "has_tenant",
@@ -2439,7 +2566,7 @@
         "type": "object"
       },
       "BuildingListOut": {
-        "description": "Здание в списке: uuid, title, address, description, geo_point, min_sale_price, min_rent_price, media.",
+        "description": "Здание в списке: uuid, title, address, description, geo_point, min_* — минимальные цены в целых рублях, media.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -2470,7 +2597,7 @@
           "min_sale_price": {
             "anyOf": [
               {
-                "type": "number"
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -2481,7 +2608,7 @@
           "min_rent_price": {
             "anyOf": [
               {
-                "type": "number"
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -2545,7 +2672,7 @@
         "type": "object"
       },
       "BuildingDetailOut": {
-        "description": "Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+        "description": "Здание (деталь); min_sale_price, min_rent_price — целые рубли.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -2598,7 +2725,7 @@
           "min_sale_price": {
             "anyOf": [
               {
-                "type": "number"
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -2609,7 +2736,7 @@
           "min_rent_price": {
             "anyOf": [
               {
-                "type": "number"
+                "type": "integer"
               },
               {
                 "type": "null"

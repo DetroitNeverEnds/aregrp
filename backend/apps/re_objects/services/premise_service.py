@@ -6,14 +6,14 @@
 - get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
-- get_premise_by_uuid(...): в JSON поле price — аренда за месяц или полная стоимость продажи в зависимости от sale_type/флагов.
+- get_premise_by_uuid(...): sale_price, rent_price, price_per_sqm — целые рубли (из Decimal модели).
 - get_premises_for_floor(building_uuid, floor_number) — данные этажа (building_uuid, floor_number, schema_svg, premises).
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
 - публичные функции — async, обращаются к БД через async ORM (aget, acount, async for);
 - построение queryset и маппинг в DTO — синхронные хелперы, без I/O.
 """
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Optional
 from uuid import UUID
 
@@ -42,6 +42,17 @@ from ..schemas import (
 
 def _decimal_coord_to_float(value) -> Optional[float]:
     return float(value) if value is not None else None
+
+
+def _rub_int(value: Decimal) -> int:
+    """Стоимость в рублях для API: целое число (округление до рубля)."""
+    return int(value.quantize(Decimal('1'), rounding=ROUND_HALF_UP))
+
+
+def _rub_int_opt(value: Optional[Decimal]) -> Optional[int]:
+    if value is None:
+        return None
+    return _rub_int(value)
 
 
 def _building_geo_point_out(b: Building) -> Optional[BuildingGeoPointOut]:
@@ -255,8 +266,8 @@ def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
 
 def building_to_list_out(b: Building) -> BuildingListOut:
     """Маппинг Building -> BuildingListOut (uuid, title, address, description, min_sale_price, min_rent_price, media)."""
-    min_rent_val = float(b.min_rent) if b.min_rent is not None else None
-    min_sale_val = float(b.min_sale) if b.min_sale is not None else None
+    min_rent_val = _rub_int_opt(b.min_rent)
+    min_sale_val = _rub_int_opt(b.min_sale)
     return BuildingListOut(
         uuid=str(b.uuid),
         title=b.name,
@@ -365,8 +376,8 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
         return None
 
     media_categories, media = _build_building_detail_media(b)
-    min_rent_val = float(b.min_rent) if b.min_rent is not None else None
-    min_sale_val = float(b.min_sale) if b.min_sale is not None else None
+    min_rent_val = _rub_int_opt(b.min_rent)
+    min_sale_val = _rub_int_opt(b.min_sale)
 
     return BuildingDetailOut(
         uuid=str(b.uuid),
@@ -392,28 +403,14 @@ def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
     ]
 
 
-def _api_price_is_full_sell(p: Premise, sale_type: Optional[str]) -> bool:
-    """True — в ответе API поле price = полная стоимость продажи; иначе цена аренды за месяц."""
-    if sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
-        return True
-    if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
-        return False
-    return bool(p.available_for_sale and not p.available_for_rent)
-
-
-def _premise_price_for_api(p: Premise, sale_type: Optional[str]) -> Optional[Decimal]:
-    if _api_price_is_full_sell(p, sale_type):
-        return p.full_sell_price
-    return p.price_per_month
-
-
-def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseListOut:
-    """Маппинг Premise -> PremiseListOut; price — full_sell_price или price_per_month по типу запроса."""
+def premise_to_list_out(p: Premise) -> PremiseListOut:
+    """Маппинг Premise -> PremiseListOut; sale_price и rent_price — целые рубли."""
     return PremiseListOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
-        price=_premise_price_for_api(p, sale_type),
+        sale_price=_rub_int_opt(p.full_sell_price),
+        rent_price=_rub_int(p.price_per_month),
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
@@ -422,20 +419,21 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
     )
 
 
-def premise_to_detail_out(p: Premise, sale_type: Optional[str] = None) -> PremiseDetailOut:
-    """Маппинг Premise -> PremiseDetailOut; price — полная продажа или аренда по типу запроса."""
+def premise_to_detail_out(p: Premise) -> PremiseDetailOut:
+    """Маппинг Premise -> PremiseDetailOut; цены в целых рублях."""
     return PremiseDetailOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
         name=p.number or p.building.name or "",
-        price=_premise_price_for_api(p, sale_type),
+        sale_price=_rub_int_opt(p.full_sell_price),
+        rent_price=_rub_int(p.price_per_month),
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
         has_tenant=(p.status != Premise.Status.AVAILABLE),
         media=_build_premise_media(p),
         description=p.description or None,
-        price_per_sqm=p.price_per_sqm,
+        price_per_sqm=_rub_int_opt(p.price_per_sqm),
         ceiling_height=p.ceiling_height,
         has_windows=p.has_windows,
         has_parking=p.has_parking,
@@ -454,20 +452,16 @@ async def get_premise_list(params: PremiseFilterParams) -> PremiseListResponse:
         qs,
         page=params.page,
         page_size=params.page_size,
-        to_out=lambda p: premise_to_list_out(p, params.sale_type),
+        to_out=premise_to_list_out,
     )
     return PremiseListResponse(**result)
 
 
-async def get_premise_by_uuid(
-    premise_uuid: UUID,
-    sale_type: Optional[str] = None,
-) -> Optional[PremiseDetailOut]:
+async def get_premise_by_uuid(premise_uuid: UUID) -> Optional[PremiseDetailOut]:
     """
     Возвращает помещение по UUID в виде PremiseDetailOut или None.
 
     Только помещения со статусом AVAILABLE. Использует aget() и prefetch images.
-    sale_type=sale: price — full_sell_price или null.
     """
     try:
         p = await Premise.objects.select_related(
@@ -478,7 +472,7 @@ async def get_premise_by_uuid(
         )
     except Premise.DoesNotExist:
         return None
-    return premise_to_detail_out(p, sale_type)
+    return premise_to_detail_out(p)
 
 
 def _format_price(value: Decimal) -> str:

@@ -118,7 +118,8 @@ premises:
       items:
         uuid: string
         name: string
-        price: number
+        sale_price: integer   # optional (null если не продаётся)
+        rent_price: integer
         address: string
         floor: number      # optional
         area: number
@@ -134,7 +135,8 @@ premises:
     response:
       uuid: string
       name: string
-      price: number
+      sale_price: integer   # optional
+      rent_price: integer
       address: string
       floor: number
       area: number
