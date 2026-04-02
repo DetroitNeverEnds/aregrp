@@ -60,8 +60,8 @@ services:
             - ./nginx/logs:/var/log/nginx
             - /var/lib/aregrp-data/static:/var/lib/aregrp-data/static:ro
             - /var/lib/aregrp-data/media:/var/lib/aregrp-data/media:ro
-            - letsencrypt:/etc/letsencrypt:ro
-            - certbot_www:/var/www/certbot
+            - /var/lib/aregrp-data/letsencrypt:/etc/letsencrypt:ro
+            - /var/lib/aregrp-data/certbot-www:/var/www/certbot:ro
         depends_on:
             - frontend
             - backend
@@ -80,3 +80,9 @@ networks:
 volumes:
     nginx-cache:
         driver: local
+
+
+volumes:
+    nginx-cache:
+        driver: local
+
