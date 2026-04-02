@@ -80,9 +80,3 @@ networks:
 volumes:
     nginx-cache:
         driver: local
-
-
-volumes:
-    nginx-cache:
-        driver: local
-
