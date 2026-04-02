@@ -23,13 +23,14 @@ class Feedback(models.Model):
         max_length=100,
         verbose_name="Email",
         help_text="Email адрес для связи",
-        validators=[EmailValidator()]
+        validators=[EmailValidator()],
+        blank=True,
+        default=''
     )
     phone = models.CharField(
         max_length=20,
         verbose_name="Телефон",
-        help_text="Номер телефона",
-        blank=True
+        help_text="Номер телефона"
     )
     subject = models.CharField(
         max_length=200,
@@ -38,7 +39,9 @@ class Feedback(models.Model):
     )
     message = models.TextField(
         verbose_name="Сообщение",
-        help_text="Текст сообщения"
+        help_text="Текст сообщения",
+        blank=True,
+        default=''
     )
     status = models.CharField(
         max_length=20,

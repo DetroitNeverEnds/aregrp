@@ -31,7 +31,7 @@ class TestFeedbackCreate:
         count = await sync_to_async(Feedback.objects.filter(id=data['id']).count)()
         assert count == 1
 
-    async def test_create_feedback_phone_optional(self, api_client):
+    async def test_create_feedback_phone_required(self, api_client):
         response = await api_client.post(
             '/feedback/',
             json={
@@ -41,17 +41,17 @@ class TestFeedbackCreate:
                 'message': 'Сообщение',
             },
         )
-        assert response.status_code == 201
-        assert response.json()['phone'] == ''
+        assert response.status_code == 422
 
-    async def test_create_feedback_validation_empty_message(self, api_client):
+    async def test_create_feedback_email_and_message_optional(self, api_client):
         response = await api_client.post(
             '/feedback/',
             json={
                 'name': 'Мария',
-                'email': 'maria@example.com',
+                'phone': '+79995554433',
                 'subject': 'Тема',
-                'message': '',
             },
         )
-        assert response.status_code == 422
+        assert response.status_code == 201
+        assert response.json()['email'] == ''
+        assert response.json()['message'] == ''

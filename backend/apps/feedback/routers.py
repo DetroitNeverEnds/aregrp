@@ -31,7 +31,7 @@ def _validation_error_detail(exc: ValidationError) -> str:
     response={201: FeedbackOut, 400: ProblemDetail, 500: ProblemDetail},
     summary='Отправить обратную связь',
     description=(
-        'Публичная отправка формы: имя, email, телефон (необязательно), тема, сообщение. '
+        'Публичная отправка формы: имя, телефон, тема. Email и сообщение — необязательные. '
         'В БД создаётся запись со статусом «Новое».'
     ),
 )
@@ -39,10 +39,10 @@ async def create_feedback(request, data: FeedbackCreateIn):
     def _save():
         obj = Feedback(
             name=data.name.strip(),
-            email=data.email.strip(),
-            phone=(data.phone or '').strip()[:20],
+            email=(data.email or '').strip(),
+            phone=data.phone.strip()[:20],
             subject=data.subject.strip(),
-            message=data.message.strip(),
+            message=(data.message or '').strip(),
         )
         obj.full_clean()
         obj.save()
