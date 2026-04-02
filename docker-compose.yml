@@ -60,6 +60,8 @@ services:
             - ./nginx/logs:/var/log/nginx
             - /var/lib/aregrp-data/static:/var/lib/aregrp-data/static:ro
             - /var/lib/aregrp-data/media:/var/lib/aregrp-data/media:ro
+            - letsencrypt:/etc/letsencrypt:ro
+            - certbot_www:/var/www/certbot
         depends_on:
             - frontend
             - backend
