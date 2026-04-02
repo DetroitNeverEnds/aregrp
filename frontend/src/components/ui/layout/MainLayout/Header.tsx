@@ -81,7 +81,7 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                             {t('header.contacts')}
                         </Link>
                         <Link
-                            to="/cases"
+                            to={siteInfo?.cases || ''}
                             ellipsis
                             trailingIcon="download-rounded"
                             theme={linkTheme}
