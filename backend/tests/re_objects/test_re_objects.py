@@ -151,6 +151,8 @@ class TestPremisesList:
             UUID(item["building_uuid"])
             assert "name" in item
             assert "price" in item
+            assert "sale_price" in item
+            assert "rent_price" in item
             assert "address" in item
             assert "area" in item
             assert "has_tenant" in item
@@ -194,8 +196,8 @@ class TestPremisesList:
                 city=city,
                 floor=floor,
                 area=Decimal("50"),
-                price_per_month=Decimal("0"),
-                price_per_sqm=Decimal("200000"),
+                price_per_month=0,
+                price_per_sqm=200_000,
                 status=Premise.Status.AVAILABLE,
                 available_for_rent=False,
                 available_for_sale=True,
@@ -209,8 +211,10 @@ class TestPremisesList:
         assert response.status_code == 200
         data = response.json()
         item = next(i for i in data["items"] if i["uuid"] == str(premise.uuid))
-        assert Decimal(str(item["price"])) == premise.full_sell_price
-        assert Decimal(str(item["price"])) == Decimal("10000000.00")
+        assert item["price"] == premise.full_sell_price
+        assert item["price"] == 10_000_000
+        assert item["sale_price"] == premise.full_sell_price
+        assert item["rent_price"] is None
 
 
 @pytest.mark.django_db
@@ -229,6 +233,10 @@ class TestPremiseDetail:
         UUID(data["building_uuid"])
         assert "name" in data
         assert "price" in data
+        assert "sale_price" in data
+        assert "rent_price" in data
+        assert data["rent_price"] is not None
+        assert data["sale_price"] is None
         assert "address" in data
         assert "area" in data
         assert "description" in data
@@ -251,8 +259,8 @@ class TestPremiseDetail:
                 city=city,
                 floor=floor,
                 area=Decimal("40"),
-                price_per_month=Decimal("0"),
-                price_per_sqm=Decimal("250000"),
+                price_per_month=0,
+                price_per_sqm=250_000,
                 status=Premise.Status.AVAILABLE,
                 available_for_rent=False,
                 available_for_sale=True,
@@ -264,7 +272,9 @@ class TestPremiseDetail:
 
         assert response.status_code == 200
         data = response.json()
-        assert Decimal(str(data["price"])) == premise.full_sell_price
+        assert data["price"] == premise.full_sell_price
+        assert data["sale_price"] == premise.full_sell_price
+        assert data["rent_price"] is None
 
     async def test_premise_detail_not_found(self, client):
         """404 для несуществующего UUID."""

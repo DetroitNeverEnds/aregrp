@@ -3,6 +3,7 @@
 Подключает все роутеры из приложений.
 """
 from ninja import NinjaAPI
+from ninja.renderers import JSONRenderer
 
 from apps.accounts.routers.auth import auth_router
 from apps.accounts.routers.profile import profile_router
@@ -11,11 +12,19 @@ from apps.re_objects.routers import premises_router, buildings_router, floors_ro
 from apps.site_settings.routers import site_settings_router
 from apps.bookings.routers import bookings_router
 
+
+class UTF8JSONRenderer(JSONRenderer):
+    """Кириллица и прочий Unicode в теле JSON без \\uXXXX (читаемый UTF-8)."""
+
+    json_dumps_params = {'ensure_ascii': False}
+
+
 # Создаем главный API объект
 api = NinjaAPI(
-    title="API",
-    version="1.0.0",
-    description="Main API for the project"
+    title='API',
+    version='1.0.0',
+    description='Main API for the project',
+    renderer=UTF8JSONRenderer(),
 )
 
 # Подключаем роутеры из приложений

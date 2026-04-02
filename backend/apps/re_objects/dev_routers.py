@@ -215,9 +215,9 @@ def create_premise_in_building(
     request,
     building_uuid: UUID,
     area: Decimal = Form(..., description="Площадь, м²"),
-    price_per_month: Decimal = Form(..., description="Цена аренды в месяц, ₽"),
-    price_per_sqm: Optional[Decimal] = Form(
-        None, description="Цена продажи за м², ₽ (обязательно, если доступно для продажи)",
+    price_per_month: Optional[int] = Form(None, description="Цена аренды в месяц, ₽ целые (необязательно)"),
+    price_per_sqm: Optional[int] = Form(
+        None, description="Цена продажи за м², ₽ целые (обязательно, если доступно для продажи)",
     ),
     number: str = Form("", description="Номер помещения"),
     description: str = Form("", description="Описание"),
@@ -277,6 +277,6 @@ def create_premise_in_building(
         "building_uuid": str(building.uuid),
         "floor": floor_number,
         "area": float(premise.area),
-        "price_per_month": float(premise.price_per_month),
+        "price_per_month": premise.price_per_month,
         "images_count": len(img_files),
     }

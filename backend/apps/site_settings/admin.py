@@ -2,7 +2,8 @@
 Админка для моделей настроек сайта.
 """
 from django.contrib import admin
-from .models import MainSettings, ContactsSettings
+
+from .models import ContactsSettings, MainSettings
 
 
 @admin.register(MainSettings)
@@ -20,8 +21,8 @@ class MainSettingsAdmin(admin.ModelAdmin):
             'fields': ('description', 'org_name', 'inn')
         }),
         ('Кейсы', {
-            'fields': ('cases',),
-            'description': 'Массив объектов в формате JSON (сохраняется в API в поле cases).',
+            'fields': ('cases_pdf',),
+            'description': 'Один PDF-файл; в API /main-info в поле cases — URL из storage (как у медиа в API объектов).',
         }),
     )
     

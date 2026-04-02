@@ -28,11 +28,15 @@ build/
 # В production данные хранятся в /var/lib/aregrp-data/postgres_data
 postgres_data/
 
-# Static files (collected by collectstatic)
-# Локальная папка static (для разработки)
-# В production данные хранятся в /var/lib/aregrp-data/static
-static/
-!static/.gitkeep
+# Собранная статика Django (collectstatic) — в git не кладём, на сервере collectstatic → STATIC_ROOT.
+# Свои файлы из приложений — backend/apps/<app>/static/... — в git кладём (это не этот каталог).
+# В production файлы с диска: /var/lib/aregrp-data/static
+backend/static/
+# Иногда collectstatic создают ./static/ в корне репозитория — тоже не в git (не трогает backend/apps/.../static/).
+/static/
+
+# Уже попало в коммиты? Убрать из индекса, файлы на диске оставить:
+#   git rm -r --cached static/ backend/static/ 2>/dev/null; git status
 
 # Media files
 # Локальная папка media (для разработки)

@@ -2,8 +2,11 @@
 Модели для настроек сайта с паттерном Singleton.
 Каждая модель может иметь только один экземпляр в базе данных.
 """
-from django.db import models
+import uuid
+
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
+from django.db import models
 
 
 class SingletonModel(models.Model):
@@ -42,6 +45,11 @@ class SingletonModel(models.Model):
         """
         if self.pk != 1 and self.__class__.objects.exists():
             raise ValidationError("Может существовать только один экземпляр этой модели.")
+
+
+def main_settings_cases_pdf_upload_path(_instance, filename):
+    """Путь загрузки PDF с кейсами (singleton — один файл, уникальное имя при замене)."""
+    return f"site_settings/cases/{uuid.uuid4().hex}.pdf"
 
 
 class MainSettings(SingletonModel):
@@ -95,11 +103,13 @@ class MainSettings(SingletonModel):
         help_text="ИНН для отображения",
         blank=True
     )
-    cases = models.JSONField(
-        default=list,
+    cases_pdf = models.FileField(
+        upload_to=main_settings_cases_pdf_upload_path,
+        verbose_name="Кейсы (PDF)",
+        help_text="PDF-файл с кейсами для раздела «Кейсы»",
         blank=True,
-        verbose_name="Кейсы",
-        help_text='JSON-массив элементов для раздела «Кейсы» (например, [{"title": "...", "body": "..."}])',
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
     )
 
     class Meta:

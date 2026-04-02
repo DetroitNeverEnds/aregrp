@@ -1,10 +1,7 @@
 """
 Схемы для API настроек сайта.
 """
-from typing import Any
-
 from ninja import Schema
-from pydantic import Field
 
 
 class MainSettingsOut(Schema):
@@ -17,7 +14,7 @@ class MainSettingsOut(Schema):
     description: str | None = None
     org_name: str | None = None
     inn: str | None = None
-    cases: list[Any] = Field(default_factory=list)
+    cases: str | None = None
 
 
 
