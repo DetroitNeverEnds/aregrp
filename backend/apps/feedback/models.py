@@ -10,10 +10,8 @@ class Feedback(models.Model):
     Модель обратной связи от пользователей.
     """
     STATUS_CHOICES = [
-        ('new', 'Новая'),
-        ('in_progress', 'В обработке'),
-        ('resolved', 'Решена'),
-        ('closed', 'Закрыта'),
+        ('new', 'Новое'),
+        ('processed', 'Обработано'),
     ]
 
     name = models.CharField(
