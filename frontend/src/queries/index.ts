@@ -13,3 +13,5 @@ export {
     useFloor,
 } from './premises';
 export { useUser } from './profile';
+
+export { useMyBookings } from './bookings';

@@ -31,7 +31,10 @@ export type ApiErrorCode =
     | 'FEEDBACK_VALIDATION_ERROR'
     | 'SITE_SETTINGS_NOT_FOUND'
     | 'SITE_SETTINGS_ERROR'
-    | 'RE_OBJECTS_NOT_FOUND';
+    | 'RE_OBJECTS_NOT_FOUND'
+    | 'BOOKINGS_PREMISE_UNAVAILABLE'
+    | 'BOOKINGS_ACTIVE_BOOKING_EXISTS'
+    | 'BOOKINGS_INVALID_DEAL_TYPE';
 
 /**
  * Ошибка API по RFC 7807 (Problem Details for HTTP APIs) из OpenAPI (api.json).

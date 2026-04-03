@@ -9,7 +9,7 @@ import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContai
 import { ErrorLoading } from '@/components/ui/layout/ErrorLoading/ErrorLoading';
 import { useBuildingDetail } from '@/queries';
 
-import { BuildingDetailBoundaryContent } from './BuildingPage.components';
+import { BuildingContent } from './BuildingPage.components';
 
 type Params = { buildingUuid: string };
 
@@ -19,17 +19,17 @@ export const BuildingPage = () => {
 
     const buildingDetailQ = useBuildingDetail(buildingUuid || '');
 
-    if (!buildingUuid) {
-        return (
-            <Page>
-                <VerticalMainContainer>
+    return (
+        <Page>
+            <VerticalMainContainer>
+                {buildingUuid ? (
+                    <QueryBoundary query={buildingDetailQ} Component={BuildingContent} />
+                ) : (
                     <ErrorLoading message={t('errors.somethingWrong')} />
-                    <Benefits variant="sale" />
-                    <FeedbackFormRow />
-                </VerticalMainContainer>
-            </Page>
-        );
-    }
-
-    return <QueryBoundary query={buildingDetailQ} Component={BuildingDetailBoundaryContent} />;
+                )}
+                <Benefits variant="sale" />
+                <FeedbackFormRow />
+            </VerticalMainContainer>
+        </Page>
+    );
 };

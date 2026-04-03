@@ -41,7 +41,7 @@ export const Root = () => {
     useLayoutSettings(layoutSettings);
 
     // const buildingsData = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
-    const premises = usePremises({ page_size: Config.pageSizeMain }).data?.data;
+    const premises = usePremises({ sale_type: 'sale', page_size: Config.pageSizeMain }).data?.data;
     const {
         data: buildingsData,
         fetchNextPage,

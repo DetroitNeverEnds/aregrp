@@ -125,7 +125,7 @@ describe('Catalogue', () => {
                             name: 'Офис 1',
                             address: 'ул. Тестовая 1',
                             area: '50',
-                            price: '1000000',
+                            price: 1_000_000,
                             floor: 1,
                             has_tenant: false,
                             media: [],
