@@ -335,48 +335,6 @@
         ]
       }
     },
-    "/api/v1/profile/bookings": {
-      "get": {
-        "operationId": "apps_accounts_routers_profile_list_my_bookings",
-        "summary": "Мои брони",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/BookingOut"
-                  },
-                  "title": "Response",
-                  "type": "array"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          }
-        },
-        "description": "Список броней текущего пользователя (все записи, новые первые).",
-        "tags": [
-          "Profile"
-        ],
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ]
-      }
-    },
     "/api/v1/profile/profile": {
       "put": {
         "operationId": "apps_accounts_routers_profile_update_profile",
@@ -495,137 +453,6 @@
         ]
       }
     },
-    "/api/v1/bookings/": {
-      "post": {
-        "operationId": "apps_bookings_routers_post_booking",
-        "summary": "Создать бронь",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BookingOut"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          }
-        },
-        "description": "Бронь помещения: AVAILABLE, соответствие deal_type флагам аренды/продажи, не более одной активной брони на помещение. Срок — 3 суток.",
-        "tags": [
-          "Bookings"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BookingCreateIn"
-              }
-            }
-          },
-          "required": true
-        },
-        "security": [
-          {
-            "JWTAuth": []
-          }
-        ]
-      }
-    },
-    "/api/v1/feedback/": {
-      "post": {
-        "operationId": "apps_feedback_routers_create_feedback",
-        "summary": "Отправить обратную связь",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FeedbackOut"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetail"
-                }
-              }
-            }
-          }
-        },
-        "description": "Публичная отправка формы: имя, телефон, тема. Email и сообщение — необязательные. В БД создаётся запись со статусом «Новое».",
-        "tags": [
-          "Feedback"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FeedbackCreateIn"
-              }
-            }
-          },
-          "required": true
-        }
-      }
-    },
     "/api/v1/site-settings/main-info": {
       "get": {
         "operationId": "apps_site_settings_routers_get_main_settings",
@@ -653,7 +480,7 @@
             }
           }
         },
-        "description": "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, telegram_link), описание, название организации (org_name), ИНН, кейсы (cases — URL PDF из storage или null).",
+        "description": "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, telegram_link), описание, название организации (org_name), ИНН.",
         "tags": [
           "Site Settings"
         ]
@@ -839,17 +666,21 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "integer"
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "Минимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
+              "description": "Минимальная цена, ₽/мес",
               "title": "Min Price"
             },
             "required": false,
-            "description": "Минимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц."
+            "description": "Минимальная цена, ₽/мес"
           },
           {
             "in": "query",
@@ -857,17 +688,21 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "integer"
+                  "type": "number"
+                },
+                {
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                  "type": "string"
                 },
                 {
                   "type": "null"
                 }
               ],
-              "description": "Максимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
+              "description": "Максимальная цена, ₽/мес",
               "title": "Max Price"
             },
             "required": false,
-            "description": "Максимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц."
+            "description": "Максимальная цена, ₽/мес"
           },
           {
             "in": "query",
@@ -985,24 +820,6 @@
               "type": "string"
             },
             "required": true
-          },
-          {
-            "in": "query",
-            "name": "sale_type",
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "sale — price как полная стоимость продажи. rent — price как аренда за месяц.",
-              "title": "Sale Type"
-            },
-            "required": false,
-            "description": "sale — price как полная стоимость продажи. rent — price как аренда за месяц."
           }
         ],
         "responses": {
@@ -1027,7 +844,7 @@
             }
           }
         },
-        "description": "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. sale_price / rent_price — всегда в ответе (null, если вид сделки не предлагается). Параметр sale_type: price — как раньше (sale — продажа, иначе аренда). 404 — ProblemDetail.",
+        "description": "Помещение по UUID: uuid, name, price, address, floor, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. 404 — ProblemDetail.",
         "tags": [
           "Premises"
         ]
@@ -1468,26 +1285,15 @@
                   "price_per_month": {
                     "anyOf": [
                       {
-                        "type": "integer"
+                        "type": "number"
                       },
                       {
-                        "type": "null"
+                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                        "type": "string"
                       }
                     ],
-                    "description": "Цена аренды в месяц, ₽ целые (необязательно)",
+                    "description": "Цена аренды в месяц, ₽",
                     "title": "Price Per Month"
-                  },
-                  "price_per_sqm": {
-                    "anyOf": [
-                      {
-                        "type": "integer"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "description": "Цена продажи за м², ₽ целые (обязательно, если доступно для продажи)",
-                    "title": "Price Per Sqm"
                   },
                   "number": {
                     "default": "",
@@ -1553,7 +1359,8 @@
                   }
                 },
                 "required": [
-                  "area"
+                  "area",
+                  "price_per_month"
                 ]
               }
             }
@@ -1700,10 +1507,7 @@
           "FEEDBACK_VALIDATION_ERROR",
           "SITE_SETTINGS_NOT_FOUND",
           "SITE_SETTINGS_ERROR",
-          "RE_OBJECTS_NOT_FOUND",
-          "BOOKINGS_PREMISE_UNAVAILABLE",
-          "BOOKINGS_ACTIVE_BOOKING_EXISTS",
-          "BOOKINGS_INVALID_DEAL_TYPE"
+          "RE_OBJECTS_NOT_FOUND"
         ],
         "title": "ErrorCode",
         "type": "string"
@@ -1876,56 +1680,6 @@
         "title": "PasswordResetConfirmIn",
         "type": "object"
       },
-      "BookingOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "integer"
-          },
-          "premise_uuid": {
-            "title": "Premise Uuid",
-            "type": "string"
-          },
-          "premise_name": {
-            "title": "Premise Name",
-            "type": "string"
-          },
-          "building_name": {
-            "title": "Building Name",
-            "type": "string"
-          },
-          "building_address": {
-            "title": "Building Address",
-            "type": "string"
-          },
-          "deal_type": {
-            "title": "Deal Type",
-            "type": "string"
-          },
-          "expires_at": {
-            "format": "date-time",
-            "title": "Expires At",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "premise_uuid",
-          "premise_name",
-          "building_name",
-          "building_address",
-          "deal_type",
-          "expires_at",
-          "created_at"
-        ],
-        "title": "BookingOut",
-        "type": "object"
-      },
       "UpdateProfileIn": {
         "properties": {
           "full_name": {
@@ -2010,114 +1764,6 @@
         "title": "UpdatePasswordIn",
         "type": "object"
       },
-      "BookingCreateIn": {
-        "properties": {
-          "premise_uuid": {
-            "format": "uuid",
-            "title": "Premise Uuid",
-            "type": "string"
-          },
-          "deal_type": {
-            "title": "Deal Type",
-            "type": "string"
-          }
-        },
-        "required": [
-          "premise_uuid",
-          "deal_type"
-        ],
-        "title": "BookingCreateIn",
-        "type": "object"
-      },
-      "FeedbackOut": {
-        "properties": {
-          "id": {
-            "title": "Id",
-            "type": "integer"
-          },
-          "name": {
-            "title": "Name",
-            "type": "string"
-          },
-          "email": {
-            "title": "Email",
-            "type": "string"
-          },
-          "phone": {
-            "title": "Phone",
-            "type": "string"
-          },
-          "subject": {
-            "title": "Subject",
-            "type": "string"
-          },
-          "message": {
-            "title": "Message",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "created_at": {
-            "format": "date-time",
-            "title": "Created At",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "email",
-          "phone",
-          "subject",
-          "message",
-          "status",
-          "created_at"
-        ],
-        "title": "FeedbackOut",
-        "type": "object"
-      },
-      "FeedbackCreateIn": {
-        "properties": {
-          "name": {
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Name",
-            "type": "string"
-          },
-          "email": {
-            "default": "",
-            "maxLength": 100,
-            "title": "Email",
-            "type": "string"
-          },
-          "phone": {
-            "maxLength": 20,
-            "minLength": 1,
-            "title": "Phone",
-            "type": "string"
-          },
-          "subject": {
-            "maxLength": 200,
-            "minLength": 1,
-            "title": "Subject",
-            "type": "string"
-          },
-          "message": {
-            "default": "",
-            "title": "Message",
-            "type": "string"
-          }
-        },
-        "required": [
-          "name",
-          "phone",
-          "subject"
-        ],
-        "title": "FeedbackCreateIn",
-        "type": "object"
-      },
       "MainSettingsOut": {
         "description": "Схема для возврата основных настроек сайта.",
         "properties": {
@@ -2187,17 +1833,6 @@
               }
             ],
             "title": "Inn"
-          },
-          "cases": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cases"
           }
         },
         "required": [
@@ -2325,7 +1960,7 @@
         "type": "object"
       },
       "PremiseListOut": {
-        "description": "Помещение в списке.\n\nprice — устаревшее поле для обратной совместимости (как раньше: от sale_type/флагов).\nsale_price — полная стоимость продажи, если помещение в продаже; иначе null.\nrent_price — аренда за месяц, если в аренде; иначе null.",
+        "description": "Помещение в списке (карточка в выдаче).",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -2340,37 +1975,9 @@
             "type": "string"
           },
           "price": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Price"
-          },
-          "sale_price": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sale Price"
-          },
-          "rent_price": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rent Price"
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Price",
+            "type": "string"
           },
           "address": {
             "title": "Address",
@@ -2408,6 +2015,7 @@
           "uuid",
           "building_uuid",
           "name",
+          "price",
           "address",
           "area",
           "has_tenant",
@@ -2469,37 +2077,9 @@
             "type": "string"
           },
           "price": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Price"
-          },
-          "sale_price": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sale Price"
-          },
-          "rent_price": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rent Price"
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Price",
+            "type": "string"
           },
           "address": {
             "title": "Address",
@@ -2546,7 +2126,8 @@
           "price_per_sqm": {
             "anyOf": [
               {
-                "type": "integer"
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+                "type": "string"
               },
               {
                 "type": "null"
@@ -2586,6 +2167,7 @@
           "uuid",
           "building_uuid",
           "name",
+          "price",
           "address",
           "area",
           "has_tenant",
@@ -2594,27 +2176,8 @@
         "title": "PremiseDetailOut",
         "type": "object"
       },
-      "BuildingGeoPointOut": {
-        "description": "Точка на карте (WGS-84): lat — широта, lon — долгота.",
-        "properties": {
-          "lat": {
-            "title": "Lat",
-            "type": "number"
-          },
-          "lon": {
-            "title": "Lon",
-            "type": "number"
-          }
-        },
-        "required": [
-          "lat",
-          "lon"
-        ],
-        "title": "BuildingGeoPointOut",
-        "type": "object"
-      },
       "BuildingListOut": {
-        "description": "Здание в списке: uuid, title, address, description, geo_point, min_sale_price, min_rent_price, media.",
+        "description": "Здание в списке: uuid, title, address, description, min_sale_price, min_rent_price, media.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -2632,20 +2195,10 @@
             "title": "Description",
             "type": "string"
           },
-          "geo_point": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/BuildingGeoPointOut"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "min_sale_price": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"
@@ -2656,7 +2209,7 @@
           "min_rent_price": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"
@@ -2720,7 +2273,7 @@
         "type": "object"
       },
       "BuildingDetailOut": {
-        "description": "Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+        "description": "Здание (деталь): uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -2737,16 +2290,6 @@
           "description": {
             "title": "Description",
             "type": "string"
-          },
-          "geo_point": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/BuildingGeoPointOut"
-              },
-              {
-                "type": "null"
-              }
-            ]
           },
           "total_floors": {
             "anyOf": [
@@ -2773,7 +2316,7 @@
           "min_sale_price": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"
@@ -2784,7 +2327,7 @@
           "min_rent_price": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "number"
               },
               {
                 "type": "null"

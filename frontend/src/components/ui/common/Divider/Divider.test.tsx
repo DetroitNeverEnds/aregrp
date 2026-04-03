@@ -12,13 +12,13 @@ describe('Divider', () => {
     it('применяет горизонтальную ориентацию по умолчанию', () => {
         const { container } = render(<Divider />);
         const divider = container.firstChild as HTMLElement;
-        expect(divider).toHaveClass(styles['divider--horizontal']);
+        expect(divider).toHaveClass(styles.divider__horizontal);
     });
 
     it('применяет вертикальную ориентацию', () => {
         const { container } = render(<Divider orientation="vertical" />);
         const divider = container.firstChild as HTMLElement;
-        expect(divider).toHaveClass(styles['divider--vertical']);
+        expect(divider).toHaveClass(styles.divider__vertical);
     });
 
     it('применяет дополнительный className', () => {
