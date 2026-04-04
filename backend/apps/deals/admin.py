@@ -12,7 +12,7 @@ class DealAdmin(admin.ModelAdmin):
         'deal_type',
         'rent_expires_at',
         'contract_type',
-        'contract_expires_at',
+        'contract_signed_on',
         'commission_amount',
         'created_at',
     )

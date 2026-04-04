@@ -27,7 +27,7 @@ def _deal_to_row(deal: Deal, *, include_commission: bool) -> ProfilePremiseRowOu
             if deal.deal_type == Deal.DealType.SALE and deal.contract_type
             else None
         ),
-        contract_expires_at=deal.contract_expires_at if deal.deal_type == Deal.DealType.SALE else None,
+        contract_signed_on=deal.contract_signed_on if deal.deal_type == Deal.DealType.SALE else None,
     )
     return row
 
