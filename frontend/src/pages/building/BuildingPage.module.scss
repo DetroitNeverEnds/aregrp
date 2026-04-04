@@ -52,6 +52,64 @@
         height: 400px;
         width: 100%;
     }
+
+    /* FlatButton задаёт line-height: 0; для подписи как у Link нужна высота строки */
+    &__generateLink:hover {
+        color: $primary-700;
+    }
+}
+
+.generateLinkModal {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    &__header {
+        display: flex;
+        height: 60px;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 20px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 0 40px 60px;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    &__block {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+    }
+
+    &__details {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    &__fields {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    &__titleBlock {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        width: 100%;
+    }
 }
 
 .gallery {

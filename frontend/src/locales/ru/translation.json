@@ -217,6 +217,15 @@
             "infrastructure": "Инфраструктура бизнес-центра",
             "officeCatalogue": "Каталог офисов",
             "downloadPresentation": "Скачать презентацию",
+            "generateLink": "Сгенерировать ссылку",
+            "generateLinkModal": {
+                "objectLabel": "Объект:",
+                "spamHint": "Нет письма? Проверьте папку «Спам»",
+                "sectionTitle": "Создание ссылки",
+                "clientNamePlaceholder": "Имя клиента",
+                "phonePlaceholder": "Телефон",
+                "closeAria": "Закрыть"
+            },
             "legend": {
                 "free": "Свободные помещения",
                 "occupied": "Недоступно для продажи",

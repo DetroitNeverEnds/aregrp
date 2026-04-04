@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useState } from 'react';
+import classNames from 'classnames';
 import _ from 'lodash';
 
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
@@ -7,7 +8,11 @@ import { fetchFloorSvgMock } from '@/components/ui/building/FloorSchema/mocks';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Button } from '@/components/ui/common/Button';
 import { Card } from '@/components/ui/common/Card/Card';
+import { FlatButton } from '@/components/ui/common/FlatButton';
 import { Flex } from '@/components/ui/common/Flex';
+import { Icon } from '@/components/ui/common/Icon';
+import { Modal } from '@/components/ui/common/Modal';
+import { TextInput } from '@/components/ui/common/input/TextInput';
 import { Gallery, type GalleryMedia } from '@/components/ui/common/Gallery/Gallery';
 import { Loader } from '@/components/ui/common/Loader';
 import Text from '@/components/ui/common/Text';
@@ -21,7 +26,9 @@ import { useLayoutSettings } from '@/hooks/useLayoutSettings';
 import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedSearchParams';
 import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';
 import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
+import { useUser } from '@/queries/profile';
 import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListItem } from '@/api';
+import MedicalCrossIcon from './medical-cross.svg?react';
 
 import styles from './BuildingPage.module.scss';
 
@@ -64,6 +71,19 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
     const premise = props.data;
 
     const { t } = useTranslation();
+    const user = useUser().data?.data;
+    const isAgent = user?.user_type === 'agent';
+
+    const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
+    const [clientName, setClientName] = useState('');
+    const [phone, setPhone] = useState('');
+    const generateLinkTitleId = useId();
+
+    const closeGenerateLinkModal = useCallback(() => {
+        setGenerateLinkOpen(false);
+        setClientName('');
+        setPhone('');
+    }, []);
 
     const primaryPrice = useMemo(
         () => premise.rent_price ?? premise.sale_price ?? premise.price,
@@ -71,57 +91,163 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
     );
 
     return (
-        <Card withShadow gap={12} className={styles.officeCard} align="start">
-            <Gallery premise={premise} fit="contain" className={styles.premiseDetails__gallery} />
-            <Card background="gray" gap={40} align="start" fullWidth>
-                <Flex gap={6} align="start">
-                    <Text variant="24-med">{premise.name}</Text>
-                    {premise.sale_price && (
-                        <Text variant="24-med" color="primary-700">
-                            {formatRubles(primaryPrice)}
-                        </Text>
-                    )}
-                    {premise.rent_price && (
-                        <Text variant="20-med" color="primary-700">
-                            {premise.rent_price && 'или '}
-                            {formatRubles(primaryPrice)} / месяц
-                        </Text>
-                    )}
-                </Flex>
-                <Flex gap={8} align="start">
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.address')}: {premise.address}
-                    </Text>
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.area')}: {premise.area}
-                    </Text>
+        <>
+            <Card withShadow gap={12} className={styles.officeCard} align="start">
+                <Gallery
+                    premise={premise}
+                    fit="contain"
+                    className={styles.premiseDetails__gallery}
+                />
+                <Card background="gray" gap={40} align="start" fullWidth>
+                    <Flex
+                        direction="row"
+                        justify="between"
+                        align="start"
+                        wrap="wrap"
+                        fullWidth
+                        gap={12}
+                    >
+                        <Flex gap={6} align="start">
+                            <Text variant="24-med">{premise.name}</Text>
+                            {premise.sale_price && (
+                                <Text variant="24-med" color="primary-700">
+                                    {formatRubles(primaryPrice)}
+                                </Text>
+                            )}
+                            {premise.rent_price && (
+                                <Text variant="20-med" color="primary-700">
+                                    {premise.rent_price && 'или '}
+                                    {formatRubles(primaryPrice)} / месяц
+                                </Text>
+                            )}
+                        </Flex>
 
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.floor')}: {premise.floor}
-                    </Text>
+                        {isAgent && (
+                            <FlatButton
+                                type="button"
+                                className={classNames(styles.premiseDetails__generateLink)}
+                                onClick={() => setGenerateLinkOpen(true)}
+                            >
+                                <MedicalCrossIcon />
+                                <Text variant="12-med">{t('pages.building.generateLink')}</Text>
+                            </FlatButton>
+                        )}
+                    </Flex>
+                    <Flex gap={8} align="start">
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.address')}: {premise.address}
+                        </Text>
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.area')}: {premise.area}
+                        </Text>
 
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.tenant')}:{' '}
-                        {premise.has_tenant
-                            ? t(`components.OfficeCard.hasTennant`)
-                            : t(`components.OfficeCard.noTennant`)}
-                    </Text>
-                </Flex>
-            </Card>
-            <Flex direction="row" gap={6} align="stretch" fullWidth>
-                <Column>
-                    <Button variant="primary" width="max">
-                        {t('pages.building.reserve')}
-                    </Button>
-                </Column>
-                {/* TODO: Add details button */}
-                {/* <Column>
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.floor')}: {premise.floor}
+                        </Text>
+
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.tenant')}:{' '}
+                            {premise.has_tenant
+                                ? t(`components.OfficeCard.hasTennant`)
+                                : t(`components.OfficeCard.noTennant`)}
+                        </Text>
+                    </Flex>
+                </Card>
+                <Flex direction="row" gap={6} align="stretch" fullWidth>
+                    <Column>
+                        <Button variant="primary" width="max">
+                            {t('pages.building.reserve')}
+                        </Button>
+                    </Column>
+                    {/* TODO: Add details button */}
+                    {/* <Column>
                     <Button variant="outlined" width="max">
                         {t('pages.building.details')}
                     </Button>
                 </Column> */}
-            </Flex>
-        </Card>
+                </Flex>
+            </Card>
+            <Modal
+                open={generateLinkOpen}
+                onClose={closeGenerateLinkModal}
+                aria-labelledby={generateLinkTitleId}
+            >
+                <div className={styles.generateLinkModal}>
+                    <div className={styles.generateLinkModal__header}>
+                        <FlatButton
+                            type="button"
+                            aria-label={t('pages.building.generateLinkModal.closeAria')}
+                            onClick={closeGenerateLinkModal}
+                        >
+                            <Icon name="x-close" size={32} aria-hidden />
+                        </FlatButton>
+                    </div>
+                    <div className={styles.generateLinkModal__body}>
+                        <div className={styles.generateLinkModal__block}>
+                            <div
+                                className={styles.generateLinkModal__titleBlock}
+                                id={generateLinkTitleId}
+                            >
+                                <Text variant="h3" color="gray-100">
+                                    {t('pages.building.generateLinkModal.objectLabel')}
+                                </Text>
+                                <Text variant="h3" color="gray-100">
+                                    {premise.name}
+                                </Text>
+                            </div>
+                            <div className={styles.generateLinkModal__details}>
+                                <Text variant="14-reg" style={{ color: '#333333' }}>
+                                    {t('pages.building.area')}: {premise.area}
+                                </Text>
+                                <Text variant="14-reg" style={{ color: '#333333' }}>
+                                    {t('pages.building.floor')}: {premise.floor ?? '—'}
+                                </Text>
+                                <Text variant="14-reg" style={{ color: '#333333' }}>
+                                    {t('pages.building.tenant')}:{' '}
+                                    {premise.has_tenant
+                                        ? t('components.OfficeCard.hasTennant')
+                                        : t('components.OfficeCard.noTennant')}
+                                </Text>
+                                <Text variant="14-reg" style={{ color: '#333333' }}>
+                                    {premise.rent_price
+                                        ? `${t('common.price')}: ${formatRubles(primaryPrice)} / месяц`
+                                        : `${t('common.price')}: ${formatRubles(primaryPrice)}`}
+                                </Text>
+                            </div>
+                            <Text variant="14-med" color="gray-50">
+                                {t('pages.building.generateLinkModal.spamHint')}
+                            </Text>
+                            <Text variant="24-med" color="gray-100">
+                                {t('pages.building.generateLinkModal.sectionTitle')}
+                            </Text>
+                            <div className={styles.generateLinkModal__fields}>
+                                <TextInput
+                                    size="lg"
+                                    width="max"
+                                    placeholder={t(
+                                        'pages.building.generateLinkModal.clientNamePlaceholder',
+                                    )}
+                                    value={clientName}
+                                    onChange={setClientName}
+                                />
+                                <TextInput
+                                    size="lg"
+                                    width="max"
+                                    placeholder={t(
+                                        'pages.building.generateLinkModal.phonePlaceholder',
+                                    )}
+                                    value={phone}
+                                    onChange={setPhone}
+                                />
+                            </div>
+                        </div>
+                        <Button variant="primary" theme="light" size="lg" width="max" type="button">
+                            {t('pages.building.generateLink')}
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+        </>
     );
 };
 

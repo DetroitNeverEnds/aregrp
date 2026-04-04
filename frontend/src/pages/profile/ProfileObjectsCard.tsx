@@ -69,7 +69,7 @@ export const ProfileObjectsCard = () => {
                 id: 'expiresAt',
                 header: t('pages.profile.booking.columnExpiresAt'),
                 thClassName: styles.thGray,
-                render: row => formatExpiresAt(row.expires_at),
+                render: ({ row }) => formatExpiresAt(row.expires_at),
             },
             {
                 id: 'action',
