@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'apps.feedback',
     'apps.re_objects',
     'apps.bookings',
+    'apps.deals',
 ]
 
 MIDDLEWARE = [

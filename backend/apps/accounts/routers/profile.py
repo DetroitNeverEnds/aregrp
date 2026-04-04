@@ -1,19 +1,20 @@
-from ninja import Router
 from asgiref.sync import sync_to_async
-from django.core.exceptions import ValidationError
+from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from ninja import Query, Router
 
 from api.schemas import ProblemDetail
-from ..errors import create_accounts_error, AccountsErrorCodes
-
-from ..schemas.profile import (
-    UserOut, UpdateProfileIn, UpdatePasswordIn
-)
-from ..services.auth_service import jwt_auth
-from ..services.utils import get_user_data
 from apps.bookings.schemas import BookingOut
 from apps.bookings.services import list_bookings_for_user
+from apps.deals.errors import DealsErrorCodes, create_deals_error
+from apps.deals.schemas import ProfilePremisesListResponse
+from apps.deals.services import list_deals_for_profile_page
 
+from ..errors import AccountsErrorCodes, create_accounts_error
+from ..schemas.profile import UpdatePasswordIn, UpdateProfileIn, UserOut
+from ..services.auth_service import jwt_auth
+from ..services.utils import get_user_data
 
 profile_router = Router()
 
@@ -23,7 +24,10 @@ profile_router = Router()
     response={200: UserOut, 401: ProblemDetail},
     auth=jwt_auth,
     summary="Получить данные текущего пользователя",
-    description="Возвращает информацию о текущем авторизованном пользователе. Требует Bearer JWT в заголовке Authorization.",
+    description=(
+        "Возвращает информацию о текущем авторизованном пользователе. "
+        "Требует Bearer JWT в заголовке Authorization."
+    ),
 )
 async def get_user(request):
     """
@@ -64,6 +68,48 @@ async def get_user(request):
 async def list_my_bookings(request):
     items = await sync_to_async(list_bookings_for_user, thread_sensitive=True)(request.auth)
     return 200, items
+
+
+@profile_router.get(
+    '/premises',
+    response={200: ProfilePremisesListResponse, 400: ProblemDetail, 401: ProblemDetail},
+    auth=jwt_auth,
+    summary='Объекты в личном кабинете',
+    description=(
+        'Список сделок пользователя (аренда или продажа). Параметр query: '
+        f'{settings.RE_OBJECTS_SALE_TYPE_RENT} или {settings.RE_OBJECTS_SALE_TYPE_SALE}. '
+        'Пагинация: page, page_size (как у /premises). '
+        'Ответ: items, total, page, page_size, total_pages. '
+        'Комиссия в строках только для user_type=agent.'
+    ),
+)
+async def list_profile_premises(
+    request,
+    deal_query: str = Query(
+        ...,
+        alias='query',
+        description='Тип сделки: rent (аренда) или sale (продажа).',
+    ),
+    page: int = Query(1, ge=1, description='Номер страницы'),
+    page_size: int = Query(20, ge=1, le=100, description='Размер страницы'),
+):
+    rent = settings.RE_OBJECTS_SALE_TYPE_RENT
+    sale = settings.RE_OBJECTS_SALE_TYPE_SALE
+    if deal_query not in (rent, sale):
+        return 400, create_deals_error(
+            status=400,
+            code=DealsErrorCodes.INVALID_DEAL_TYPE,
+            title='Invalid query',
+            detail=f"query must be '{rent}' or '{sale}'",
+            instance='/api/v1/profile/premises',
+        )
+    result = await list_deals_for_profile_page(
+        request.auth,
+        deal_query,
+        page=page,
+        page_size=page_size,
+    )
+    return 200, ProfilePremisesListResponse(**result)
 
 
 @profile_router.put(

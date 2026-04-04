@@ -1,12 +1,15 @@
 """
 Smoke тесты для эндпоинтов профиля.
 """
-import pytest
-from ninja.testing import TestAsyncClient
+from datetime import timedelta
 
+import pytest
 from asgiref.sync import sync_to_async
-from api.router import api
+from django.utils import timezone
+
 from apps.accounts.models import CustomUser
+from apps.deals.models import Deal
+from apps.re_objects.models import Premise
 
 
 @pytest.mark.django_db
@@ -170,3 +173,156 @@ class TestProfileEndpoints:
             },
         )
         assert response.status_code == 401
+
+    async def test_profile_premises_unauthorized(self, api_client):
+        """Список объектов ЛК без JWT — 401."""
+        api_client.headers = {}
+        api_client.cookies = {}
+        response = await api_client.get('/profile/premises', query_params={'query': 'rent'})
+        assert response.status_code == 401
+
+    async def test_profile_premises_invalid_query(self, api_client, test_user):
+        """Неверный query — 400 DEALS_INVALID_DEAL_TYPE."""
+        client = await self.get_authenticated_client(api_client, test_user.email, 'TestPassword123!')
+        response = await client.get('/profile/premises', query_params={'query': 'lease'})
+        assert response.status_code == 400
+        assert response.json()['code'] == 'DEALS_INVALID_DEAL_TYPE'
+
+    async def test_profile_premises_rent_empty(self, api_client, test_user):
+        """Нет сделок — пустой items и поля пагинации."""
+        client = await self.get_authenticated_client(api_client, test_user.email, 'TestPassword123!')
+        response = await client.get('/profile/premises', query_params={'query': 'rent'})
+        assert response.status_code == 200
+        assert response.json() == {
+            'items': [],
+            'total': 0,
+            'page': 1,
+            'page_size': 20,
+            'total_pages': 0,
+        }
+
+    async def test_profile_premises_rent_individual(self, api_client, test_user, building_with_premise):
+        """Сделка аренды: строка без комиссии у физлица."""
+        _, premise = building_with_premise
+        expires = timezone.now() + timedelta(days=30)
+
+        def create_deal():
+            return Deal.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=expires,
+                commission_amount=99_000,
+            )
+
+        await sync_to_async(create_deal)()
+        client = await self.get_authenticated_client(api_client, test_user.email, 'TestPassword123!')
+        response = await client.get('/profile/premises', query_params={'query': 'rent'})
+        assert response.status_code == 200
+        payload = response.json()
+        assert payload['total'] == 1
+        assert payload['page'] == 1
+        assert payload['page_size'] == 20
+        assert payload['total_pages'] == 1
+        assert len(payload['items']) == 1
+        row = payload['items'][0]
+        assert row['premise']['uuid'] == str(premise.uuid)
+        assert row['premise']['name'] == '101'
+        assert row['building']['name'] == 'БЦ Тестовый'
+        assert row['commission'] is None
+        assert row['rent_expires_at'] is not None
+        assert row['contract_type'] is None
+        assert row['contract_expires_at'] is None
+
+    async def test_profile_premises_rent_agent_commission(self, api_client, test_agent_user, building_with_premise):
+        """У агента в ответе есть commission."""
+        _, premise = building_with_premise
+        expires = timezone.now() + timedelta(days=7)
+
+        def create_deal():
+            return Deal.objects.create(
+                user_id=test_agent_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=expires,
+                commission_amount=20_000,
+            )
+
+        await sync_to_async(create_deal)()
+        client = await self.get_authenticated_client(api_client, test_agent_user.email, 'TestPassword123!')
+        response = await client.get('/profile/premises', query_params={'query': 'rent'})
+        assert response.status_code == 200
+        row = response.json()['items'][0]
+        assert row['commission'] == 20_000
+
+    async def test_profile_premises_sale_contract(self, api_client, test_user, building_with_premise):
+        """Продажа: тип договора — человекочитаемая подпись."""
+        _, premise = building_with_premise
+        end = timezone.now() + timedelta(days=365)
+
+        def create_deal():
+            return Deal.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.SALE,
+                contract_type=Deal.ContractType.PDKP,
+                contract_expires_at=end,
+            )
+
+        await sync_to_async(create_deal)()
+        client = await self.get_authenticated_client(api_client, test_user.email, 'TestPassword123!')
+        response = await client.get('/profile/premises', query_params={'query': 'sale'})
+        assert response.status_code == 200
+        row = response.json()['items'][0]
+        assert row['contract_type'] == 'ПДКП'
+        assert row['rent_expires_at'] is None
+        assert row['contract_expires_at'] is not None
+
+    async def test_profile_premises_pagination(self, api_client, test_user, building_with_premise):
+        """Вторая страница при page_size=1 — вторая из двух сделок (разные помещения)."""
+        _, premise = building_with_premise
+        expires = timezone.now() + timedelta(days=30)
+
+        def create_two():
+            p2 = Premise.objects.create(
+                building=premise.building,
+                city=premise.city,
+                floor=premise.floor,
+                area=40,
+                price_per_month=50_000,
+                status=Premise.Status.AVAILABLE,
+                available_for_rent=True,
+                number='102',
+            )
+            Deal.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=expires,
+            )
+            Deal.objects.create(
+                user_id=test_user.id,
+                premise=p2,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=expires,
+            )
+
+        await sync_to_async(create_two)()
+        client = await self.get_authenticated_client(api_client, test_user.email, 'TestPassword123!')
+        r1 = await client.get(
+            '/profile/premises',
+            query_params={'query': 'rent', 'page': 1, 'page_size': 1},
+        )
+        r2 = await client.get(
+            '/profile/premises',
+            query_params={'query': 'rent', 'page': 2, 'page_size': 1},
+        )
+        assert r1.status_code == 200 and r2.status_code == 200
+        j1, j2 = r1.json(), r2.json()
+        assert j1['total'] == 2
+        assert j1['total_pages'] == 2
+        assert j1['page'] == 1
+        assert j2['page'] == 2
+        assert len(j1['items']) == 1
+        assert len(j2['items']) == 1
+        assert j1['items'][0]['premise']['uuid'] != j2['items'][0]['premise']['uuid']
