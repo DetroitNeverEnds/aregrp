@@ -195,6 +195,7 @@ describe('Button', () => {
         it.each([
             ['lg', 'button--lg'],
             ['md', 'button--md'],
+            ['tiny', 'button--tiny'],
         ])('применяет класс для размера %s', (size, expectedClass) => {
             const { container } = render(
                 <Button variant="primary" size={size as ButtonSize}>

@@ -4,61 +4,72 @@ import { Card } from '@/components/ui/common/Card/Card';
 import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text';
 import { Tabs } from '@/components/ui/common/Tabs';
-import { DataTable, type TableColumn, type TableSortDirection } from '@/components/ui/common/Table';
-import type { ProfileBookingDealType, ProfileBookingRow } from './profileObjectsMock';
-import { PROFILE_BOOKING_MOCK_ROWS } from './profileObjectsMock';
-
+import { DataTable, type TableColumn } from '@/components/ui/common/Table';
 import profileStyles from './Profile.module.scss';
 import styles from './ProfileObjectsCard.module.scss';
 import { Button } from '@/components/ui/common/Button';
+import { useMyBookings } from '@/queries';
+import type { BookingOut } from '@/api';
+
+type ProfileBookingDealType = 'rent' | 'sale';
+
+function tabFromDealType(dealType: string): ProfileBookingDealType {
+    const v = dealType.toLowerCase();
+    if (v === 'sale' || v.includes('sale') || v === 'buy') {
+        return 'sale';
+    }
+    return 'rent';
+}
+
+function formatExpiresAt(iso: string): string {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) {
+        return '—';
+    }
+    return d.toLocaleDateString('ru-RU');
+}
 
 export const ProfileObjectsCard = () => {
     const { t } = useTranslation();
     const [dealType, setDealType] = useState<ProfileBookingDealType>('rent');
-    const [sortDirection, setSortDirection] = useState<TableSortDirection>(null);
 
-    const rowsForTab = useMemo(
-        () => PROFILE_BOOKING_MOCK_ROWS.filter(row => row.dealType === dealType),
-        [dealType],
-    );
+    const { data: queryResult, isPending, isFetching } = useMyBookings();
 
-    const sortedRows = useMemo(() => {
-        const rows = [...rowsForTab];
-        if (sortDirection === null) {
-            return rows;
+    const apiError = queryResult?.error;
+    const bookings = queryResult?.data;
+
+    const rowsForTab = useMemo(() => {
+        if (!bookings) {
+            return [];
         }
-        rows.sort((a, b) => {
-            const cmp = a.expiresAtSort - b.expiresAtSort;
-            return sortDirection === 'asc' ? cmp : -cmp;
-        });
-        return rows;
-    }, [rowsForTab, sortDirection]);
+        return bookings.filter(b => tabFromDealType(b.deal_type) === dealType);
+    }, [bookings, dealType]);
 
-    const columns = useMemo((): TableColumn<ProfileBookingRow>[] => {
+    const columns = useMemo((): TableColumn<BookingOut>[] => {
         return [
             {
                 id: 'office',
                 header: t('pages.profile.booking.columnOffice'),
-                accessorKey: 'office',
+                accessorKey: 'premise_name',
                 thClassName: styles.thGray,
             },
             {
                 id: 'object',
                 header: t('pages.profile.booking.columnObject'),
-                accessorKey: 'object',
+                accessorKey: 'building_name',
                 thClassName: styles.thGray,
             },
             {
-                id: 'commission',
-                header: t('pages.profile.booking.columnCommission'),
-                accessorKey: 'commission',
+                id: 'address',
+                header: t('pages.profile.booking.columnAddress'),
+                accessorKey: 'building_address',
                 thClassName: styles.thGray,
             },
             {
                 id: 'expiresAt',
                 header: t('pages.profile.booking.columnExpiresAt'),
-                accessorKey: 'expiresAt',
                 thClassName: styles.thGray,
+                render: row => formatExpiresAt(row.expires_at),
             },
             {
                 id: 'action',
@@ -67,13 +78,15 @@ export const ProfileObjectsCard = () => {
                 cellAlign: 'left',
                 thClassName: styles.thGray,
                 render: () => (
-                    <Button size="md" variant="outlined" width="max">
+                    <Button size="tiny" variant="outlined" width="auto">
                         {t('pages.profile.booking.viewAction')}
                     </Button>
                 ),
             },
         ];
     }, [t]);
+
+    const isLoading = isPending || isFetching;
 
     return (
         <Card
@@ -90,7 +103,6 @@ export const ProfileObjectsCard = () => {
                     value={dealType}
                     onChange={v => {
                         setDealType(v as ProfileBookingDealType);
-                        setSortDirection(null);
                     }}
                     tabs={[
                         { value: 'rent', label: t('pages.profile.booking.tabRent') },
@@ -98,18 +110,25 @@ export const ProfileObjectsCard = () => {
                     ]}
                 />
 
-                <DataTable
-                    width="max"
-                    data={sortedRows}
-                    columns={columns}
-                    size="xl"
-                    getRowId={row => row.id}
-                    emptyContent={
-                        <Text variant="12-reg" color="gray-50">
-                            {t('pages.profile.booking.empty')}
-                        </Text>
-                    }
-                />
+                {apiError ? (
+                    <Text variant="12-reg" color="error-default">
+                        {t(`errors.${apiError.code}`, t('errors.somethingWrong'))}
+                    </Text>
+                ) : (
+                    <DataTable
+                        width="max"
+                        data={rowsForTab}
+                        columns={columns}
+                        size="xl"
+                        getRowId={row => String(row.id)}
+                        isLoading={isLoading}
+                        emptyContent={
+                            <Text variant="12-reg" color="gray-50">
+                                {t('pages.profile.booking.empty')}
+                            </Text>
+                        }
+                    />
+                )}
             </Flex>
         </Card>
     );

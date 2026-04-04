@@ -159,9 +159,11 @@ export const Profile = () => {
 
     useEffect(() => {
         if (userQ.data && !userQ.data.data) {
+            console.log(userQ);
+
             navigate(`/auth/login?redirect=${encodeURIComponent('/profile')}`, { replace: true });
         }
-    }, [navigate, userQ.data]);
+    }, [navigate, userQ, userQ.data]);
 
     return (
         <Page>

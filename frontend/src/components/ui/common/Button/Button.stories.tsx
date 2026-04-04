@@ -25,7 +25,7 @@ const meta = {
         },
         size: {
             control: 'select',
-            options: ['lg', 'md'],
+            options: ['lg', 'md', 'tiny'],
             description: 'Размер кнопки',
         },
         width: {
@@ -74,7 +74,7 @@ export const Primary: Story = {
     },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {(['lg', 'md'] as ButtonSize[]).map(size => (
+            {(['lg', 'md', 'tiny'] as ButtonSize[]).map(size => (
                 <div key={size} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <Button variant="primary" size={size} icon="sample">
                         Button
@@ -94,7 +94,7 @@ export const Outlined: Story = {
     },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {(['lg', 'md'] as ButtonSize[]).map(size => (
+            {(['lg', 'md', 'tiny'] as ButtonSize[]).map(size => (
                 <div key={size} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <Button variant="outlined" size={size} icon="sample">
                         Button
@@ -114,7 +114,7 @@ export const Secondary: Story = {
     },
     render: () => (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {(['lg', 'md'] as ButtonSize[]).map(size => (
+            {(['lg', 'md', 'tiny'] as ButtonSize[]).map(size => (
                 <div key={size} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <Button variant="secondary" size={size} icon="sample">
                         Button

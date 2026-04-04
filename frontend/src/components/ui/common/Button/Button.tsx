@@ -7,7 +7,7 @@ import { type ColorVariant } from '@/components/ui/common/types/colors';
 
 export type ButtonVariant = 'primary' | 'outlined' | 'secondary' | 'flat';
 export type ButtonTheme = 'light' | 'dark';
-export type ButtonSize = 'lg' | 'md';
+export type ButtonSize = 'lg' | 'md' | 'tiny';
 export type ButtonWidth = 'auto' | 'max';
 
 interface BaseButtonProps {
@@ -63,12 +63,14 @@ export const Button: React.FC<ButtonProps> = props => {
     const tooltipTitle = typeof children === 'string' ? children : undefined;
 
     // Общий контент для кнопки и ссылки
+    const iconSize = size === 'tiny' ? 16 : 24;
+
     const content = (
         <>
             {icon && (
                 <Icon
                     name={icon}
-                    size={24}
+                    size={iconSize}
                     aria-hidden={!onlyIcon}
                     className={styles.button__icon}
                     color={iconColor}

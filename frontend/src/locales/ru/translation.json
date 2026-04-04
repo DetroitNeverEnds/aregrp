@@ -349,7 +349,7 @@
                 "tabSale": "Продажа",
                 "columnOffice": "Офис",
                 "columnObject": "Объект",
-                "columnCommission": "Комиссия",
+                "columnAddress": "Адрес",
                 "columnExpiresAt": "Истечение срока",
                 "columnAction": "Действие",
                 "viewAction": "Посмотреть",
