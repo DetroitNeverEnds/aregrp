@@ -267,6 +267,7 @@ class TestProfileEndpoints:
                 deal_type=Deal.DealType.SALE,
                 contract_type=Deal.ContractType.PDKP,
                 contract_signed_on=end,
+                commission_amount=50_000,
             )
 
         await sync_to_async(create_deal)()
@@ -299,12 +300,14 @@ class TestProfileEndpoints:
                 premise=premise,
                 deal_type=Deal.DealType.RENT,
                 rent_expires_at=expires,
+                commission_amount=10_000,
             )
             Deal.objects.create(
                 user_id=test_user.id,
                 premise=p2,
                 deal_type=Deal.DealType.RENT,
                 rent_expires_at=expires,
+                commission_amount=10_000,
             )
 
         await sync_to_async(create_two)()

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.re_objects.models import Premise
@@ -53,10 +54,8 @@ class Deal(models.Model):
         help_text='Для сделок типа «продажа», только дата',
     )
     commission_amount = models.PositiveBigIntegerField(
-        null=True,
-        blank=True,
         verbose_name='Комиссия, ₽',
-        help_text='Учитывается в ЛК для агентов',
+        help_text='Обязательно. В ЛК отображается только для агентов.',
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создано')
 
@@ -65,6 +64,22 @@ class Deal(models.Model):
         verbose_name_plural = 'Сделки'
         ordering = ['-created_at']
         db_table = 'deals_deal'
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        if self.commission_amount is None:
+            errors['commission_amount'] = 'Укажите комиссию.'
+        if self.deal_type == self.DealType.RENT and not self.rent_expires_at:
+            errors['rent_expires_at'] = 'Для аренды укажите дату окончания срока.'
+        if self.deal_type == self.DealType.SALE and not self.contract_type:
+            errors['contract_type'] = 'Для продажи укажите тип договора.'
+        if errors:
+            raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Deal {self.pk} user={self.user_id} premise={self.premise_id} {self.deal_type}'
