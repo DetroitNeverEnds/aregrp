@@ -32,11 +32,11 @@ class Deal(models.Model):
         choices=DealType.choices,
         verbose_name='Тип сделки',
     )
-    rent_expires_at = models.DateTimeField(
+    rent_expires_at = models.DateField(
         null=True,
         blank=True,
         verbose_name='Окончание срока аренды',
-        help_text='Для сделок типа «аренда»',
+        help_text='Для сделок типа «аренда» (только дата)',
     )
     contract_type = models.CharField(
         max_length=10,
@@ -46,10 +46,11 @@ class Deal(models.Model):
         verbose_name='Тип договора',
         help_text='Для сделок типа «продажа» (ПДКП / ДКП)',
     )
-    contract_expires_at = models.DateTimeField(
+    contract_signed_on = models.DateField(
         null=True,
         blank=True,
-        verbose_name='Окончание договора (продажа)',
+        verbose_name='Дата заключения договора',
+        help_text='Для сделок типа «продажа», только дата',
     )
     commission_amount = models.PositiveBigIntegerField(
         null=True,

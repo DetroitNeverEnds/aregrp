@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from ninja import Schema
 
@@ -19,9 +19,9 @@ class ProfilePremiseRowOut(Schema):
     premise: PremiseBriefOut
     building: BuildingBriefOut
     commission: int | None = None
-    rent_expires_at: datetime | None = None
+    rent_expires_at: date | None = None
     contract_type: str | None = None
-    contract_expires_at: datetime | None = None
+    contract_signed_on: date | None = None
 
 
 class ProfilePremisesListResponse(Schema):

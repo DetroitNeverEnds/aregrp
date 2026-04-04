@@ -204,7 +204,7 @@ class TestProfileEndpoints:
     async def test_profile_premises_rent_individual(self, api_client, test_user, building_with_premise):
         """Сделка аренды: строка без комиссии у физлица."""
         _, premise = building_with_premise
-        expires = timezone.now() + timedelta(days=30)
+        expires = timezone.now().date() + timedelta(days=30)
 
         def create_deal():
             return Deal.objects.create(
@@ -232,12 +232,12 @@ class TestProfileEndpoints:
         assert row['commission'] is None
         assert row['rent_expires_at'] is not None
         assert row['contract_type'] is None
-        assert row['contract_expires_at'] is None
+        assert row['contract_signed_on'] is None
 
     async def test_profile_premises_rent_agent_commission(self, api_client, test_agent_user, building_with_premise):
         """У агента в ответе есть commission."""
         _, premise = building_with_premise
-        expires = timezone.now() + timedelta(days=7)
+        expires = timezone.now().date() + timedelta(days=7)
 
         def create_deal():
             return Deal.objects.create(
@@ -258,7 +258,7 @@ class TestProfileEndpoints:
     async def test_profile_premises_sale_contract(self, api_client, test_user, building_with_premise):
         """Продажа: тип договора — человекочитаемая подпись."""
         _, premise = building_with_premise
-        end = timezone.now() + timedelta(days=365)
+        end = timezone.now().date() + timedelta(days=365)
 
         def create_deal():
             return Deal.objects.create(
@@ -266,7 +266,7 @@ class TestProfileEndpoints:
                 premise=premise,
                 deal_type=Deal.DealType.SALE,
                 contract_type=Deal.ContractType.PDKP,
-                contract_expires_at=end,
+                contract_signed_on=end,
             )
 
         await sync_to_async(create_deal)()
@@ -276,12 +276,12 @@ class TestProfileEndpoints:
         row = response.json()['items'][0]
         assert row['contract_type'] == 'ПДКП'
         assert row['rent_expires_at'] is None
-        assert row['contract_expires_at'] is not None
+        assert row['contract_signed_on'] is not None
 
     async def test_profile_premises_pagination(self, api_client, test_user, building_with_premise):
         """Вторая страница при page_size=1 — вторая из двух сделок (разные помещения)."""
         _, premise = building_with_premise
-        expires = timezone.now() + timedelta(days=30)
+        expires = timezone.now().date() + timedelta(days=30)
 
         def create_two():
             p2 = Premise.objects.create(
