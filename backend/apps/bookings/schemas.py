@@ -13,6 +13,7 @@ class BookingOut(Schema):
     id: int
     premise_uuid: str
     premise_name: str
+    building_uuid: str
     building_name: str
     building_address: str
     deal_type: str

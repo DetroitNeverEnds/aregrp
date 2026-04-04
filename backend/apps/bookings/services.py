@@ -20,6 +20,7 @@ def _booking_to_out(b: Booking) -> BookingOut:
         id=b.id,
         premise_uuid=str(p.uuid),
         premise_name=p.number or building.name or "",
+        building_uuid=str(building.uuid),
         building_name=building.name or "",
         building_address=building.address or "",
         deal_type=b.deal_type,

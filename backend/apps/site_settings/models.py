@@ -52,6 +52,11 @@ def main_settings_cases_pdf_upload_path(_instance, filename):
     return f"site_settings/cases/{uuid.uuid4().hex}.pdf"
 
 
+def investor_settings_pdf_upload_path(_instance, filename):
+    """Путь загрузки PDF для раздела «Инвесторам»."""
+    return f"site_settings/investors/{uuid.uuid4().hex}.pdf"
+
+
 class MainSettings(SingletonModel):
     """
     Основные настройки сайта.
@@ -166,3 +171,43 @@ class ContactsSettings(SingletonModel):
 
     def __str__(self):
         return "Настройки контактов (реквизиты)"
+
+
+class InvestorSettings(SingletonModel):
+    """
+    Документы для раздела «Инвесторам».
+    Три PDF, загружаемые в админке; API отдаёт URL из storage.
+    """
+
+    document_1 = models.FileField(
+        upload_to=investor_settings_pdf_upload_path,
+        verbose_name="Документ 1 (PDF)",
+        help_text="Первый PDF для страницы инвесторов",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+    )
+    document_2 = models.FileField(
+        upload_to=investor_settings_pdf_upload_path,
+        verbose_name="Документ 2 (PDF)",
+        help_text="Второй PDF для страницы инвесторов",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+    )
+    document_3 = models.FileField(
+        upload_to=investor_settings_pdf_upload_path,
+        verbose_name="Документ 3 (PDF)",
+        help_text="Третий PDF для страницы инвесторов",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+    )
+
+    class Meta:
+        verbose_name = "Настройки для инвесторов"
+        verbose_name_plural = "Настройки для инвесторов"
+        db_table = "investor_settings"
+
+    def __str__(self):
+        return "Настройки для инвесторов (PDF)"
