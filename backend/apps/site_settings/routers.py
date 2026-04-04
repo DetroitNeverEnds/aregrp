@@ -7,8 +7,8 @@ from ninja import Router
 from api.schemas import ProblemDetail
 
 from .errors import SiteSettingsErrorCodes, create_site_settings_error
-from .models import ContactsSettings, MainSettings
-from .schemas import ContactsSettingsOut, CoordinatesOut, MainSettingsOut
+from .models import ContactsSettings, InvestorSettings, MainSettings
+from .schemas import ContactsSettingsOut, CoordinatesOut, InvestorSettingsOut, MainSettingsOut
 
 site_settings_router = Router()
 
@@ -109,4 +109,40 @@ async def get_contacts_settings(request):
             title="Settings not found",
             detail=f"Contacts settings not found. Create contacts settings in admin panel. Error: {str(e)}",
             instance="/api/v1/site-settings/contacts",
+        )
+
+
+@site_settings_router.get(
+    "/investors",
+    response={200: InvestorSettingsOut, 404: ProblemDetail},
+    summary="Документы для инвесторов (PDF)",
+    description=(
+        "Возвращает до трёх ссылок на PDF, загруженных в админке "
+        "(Настройки для инвесторов): document_1, document_2, document_3."
+    ),
+)
+async def get_investor_settings(request):
+    """
+    Публичный эндпоинт: URL файлов из DEFAULT_FILE_STORAGE (как у cases в /main-info).
+    """
+    try:
+        settings = await sync_to_async(InvestorSettings.load)()
+
+        def build_out():
+            return InvestorSettingsOut(
+                document_1=_file_field_url(settings.document_1),
+                document_2=_file_field_url(settings.document_2),
+                document_3=_file_field_url(settings.document_3),
+            )
+
+        return 200, await sync_to_async(build_out)()
+    except Exception as e:
+        return 404, create_site_settings_error(
+            status=404,
+            code=SiteSettingsErrorCodes.NOT_FOUND,
+            title="Investor settings not found",
+            detail=(
+                f"Investor settings not found. Create them in admin panel. Error: {str(e)}"
+            ),
+            instance="/api/v1/site-settings/investors",
         )

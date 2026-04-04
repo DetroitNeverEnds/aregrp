@@ -2,6 +2,7 @@
 Админка для моделей обратной связи.
 """
 from django.contrib import admin
+
 from .models import Feedback
 
 
@@ -10,10 +11,11 @@ class FeedbackAdmin(admin.ModelAdmin):
     """
     Админка для обратной связи.
     """
-    list_display = ('subject', 'name', 'email', 'phone', 'status', 'created_at')
+    list_display = ('id', 'created_at', 'subject', 'name', 'email', 'phone', 'status')
     list_filter = ('status', 'created_at')
     search_fields = ('name', 'email', 'subject', 'message')
     readonly_fields = ('created_at', 'updated_at')
+    date_hierarchy = 'created_at'
     
     fieldsets = (
         ('Информация о пользователе', {

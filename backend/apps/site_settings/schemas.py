@@ -30,3 +30,11 @@ class ContactsSettingsOut(Schema):
     legal_address: str | None = None
     coordinates: CoordinatesOut | None = None
     sales_center_address: str | None = None
+
+
+class InvestorSettingsOut(Schema):
+    """PDF-документы для раздела «Инвесторам» (URL из storage)."""
+
+    document_1: str | None = None
+    document_2: str | None = None
+    document_3: str | None = None
