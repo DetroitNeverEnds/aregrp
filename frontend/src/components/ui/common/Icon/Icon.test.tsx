@@ -68,10 +68,8 @@ describe('Icon', () => {
 
     describe('SVG атрибуты', () => {
         it('передает дополнительные SVG пропсы', () => {
-            const { container } = render(
-                <Icon name="check" data-testid="custom-icon" aria-label="Check icon" />,
-            );
-            const icon = container.querySelector('[class*="icon"]');
+            const { container } = render(<Icon name="check" data-testid="custom-icon" />);
+            const icon = container.querySelector('[data-testid="custom-icon"]');
             expect(icon).toBeInTheDocument();
         });
     });

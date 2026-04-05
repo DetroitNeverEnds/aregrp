@@ -71,7 +71,6 @@ export const Button: React.FC<ButtonProps> = props => {
                 <Icon
                     name={icon}
                     size={iconSize}
-                    aria-hidden={!onlyIcon}
                     className={styles.button__icon}
                     color={iconColor}
                 />

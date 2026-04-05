@@ -84,9 +84,9 @@ describe('Catalogue', () => {
             error: null,
         } as ReturnType<typeof queries.usePremises>);
 
-        render(<Catalogue />, { wrapper: createWrapper() });
+        const { container } = render(<Catalogue />, { wrapper: createWrapper() });
 
-        expect(screen.getByLabelText('Загрузка')).toBeInTheDocument();
+        expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
     it('показывает сообщение об ошибке при ошибке API', () => {

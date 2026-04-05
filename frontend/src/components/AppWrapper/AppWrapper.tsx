@@ -38,7 +38,7 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
         <Suspense
             fallback={
                 <div className={styles.appWrapper__fallback}>
-                    <Loader variant="overlay" spinnerSize="lg" aria-label="Загрузка приложения" />
+                    <Loader variant="overlay" spinnerSize="lg" />
                 </div>
             }
         >

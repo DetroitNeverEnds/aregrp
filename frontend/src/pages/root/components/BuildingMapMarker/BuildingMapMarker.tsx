@@ -138,7 +138,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                             </Link>
                         )}
                     </Flex>
-                    <div className={styles.tooltip__arrow} aria-hidden />
+                    <div className={styles.tooltip__arrow} />
                 </div>
             )}
         </div>

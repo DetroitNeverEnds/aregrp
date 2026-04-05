@@ -17,13 +17,11 @@ export type TabsProps = {
 
 export function Tabs({ value: currentValue, onChange, tabs }: TabsProps) {
     return (
-        <Flex direction="row" align="baseline" gap={0} role="tablist">
+        <Flex direction="row" align="baseline" gap={0}>
             {tabs.map(tab => (
                 <button
                     key={tab.value}
                     type="button"
-                    role="tab"
-                    aria-selected={tab.value === currentValue}
                     className={classNames(styles.tab, {
                         [styles['tab--selected']]: tab.value === currentValue,
                     })}

@@ -33,8 +33,6 @@ export interface FlexProps {
     style?: React.CSSProperties;
     /** Обработчик клика */
     onClick?: React.MouseEventHandler<HTMLDivElement>;
-    /** Роль элемента */
-    role?: string;
 }
 
 export const Flex = forwardRef<HTMLDivElement, FlexProps>(

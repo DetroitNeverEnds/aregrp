@@ -153,7 +153,7 @@ describe('Checkbox', () => {
     });
 
     describe('accessibility', () => {
-        it('имеет role checkbox', () => {
+        it('рендерит нативный чекбокс', () => {
             render(<Checkbox size="md" />);
             expect(screen.getByRole('checkbox')).toBeInTheDocument();
         });

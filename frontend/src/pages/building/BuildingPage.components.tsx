@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import _ from 'lodash';
 
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
-import { fetchFloorSvgMock } from '@/components/ui/building/FloorSchema/mocks';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Button } from '@/components/ui/common/Button';
 import { Card } from '@/components/ui/common/Card/Card';
@@ -74,11 +73,6 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
 
-    const primaryPrice = useMemo(
-        () => premise.rent_price ?? premise.sale_price ?? premise.price,
-        [premise],
-    );
-
     return (
         <>
             <Card withShadow gap={12} className={styles.officeCard} align="start">
@@ -100,13 +94,13 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
                             <Text variant="24-med">{premise.name}</Text>
                             {premise.sale_price && (
                                 <Text variant="24-med" color="primary-700">
-                                    {formatRubles(primaryPrice)}
+                                    {formatRubles(premise.sale_price)}
                                 </Text>
                             )}
                             {premise.rent_price && (
                                 <Text variant="20-med" color="primary-700">
-                                    {premise.rent_price && 'или '}
-                                    {formatRubles(primaryPrice)} / месяц
+                                    {premise.sale_price && 'или '}
+                                    {formatRubles(premise.rent_price)} / месяц
                                 </Text>
                             )}
                         </Flex>
@@ -194,7 +188,7 @@ const FloorSchemaContent = (props: FloorSchemaContentProps) => {
 
     return (
         <FloorSchema
-            svg={fetchFloorSvgMock()}
+            svg={props.data.schema_svg || ''}
             rooms={floorData.premises ?? []}
             selectedPremiseId={selectedPremise}
             onRoomSelect={onPremiseSelect}

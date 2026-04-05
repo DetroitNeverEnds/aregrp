@@ -11,16 +11,9 @@ export interface SpinnerProps {
     className?: string;
     /** Цвет спиннера (CSS color) */
     color?: string;
-    /** Описание для accessibility */
-    'aria-label'?: string;
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({
-    size = 'md',
-    className = '',
-    color,
-    'aria-label': ariaLabel = 'Загрузка',
-}) => {
+export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className = '', color }) => {
     const spinnerClassNames = classNames(styles.spinner, styles[`spinner--${size}`], className);
 
     return (
@@ -29,8 +22,6 @@ export const Spinner: React.FC<SpinnerProps> = ({
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            role="status"
-            aria-label={ariaLabel}
             style={color ? { color } : undefined}
         >
             <path

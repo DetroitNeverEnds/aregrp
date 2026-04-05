@@ -42,7 +42,7 @@ export function DataTable<T>({
     const defaultHeaderSize = headerSizeForTableSize(size);
 
     return (
-        <Flex align="start" gap={16} aria-busy={isLoading || undefined} fullWidth={width === 'max'}>
+        <Flex align="start" gap={16} fullWidth={width === 'max'}>
             <Table
                 striped={striped}
                 hoverableRows={hoverableRows}

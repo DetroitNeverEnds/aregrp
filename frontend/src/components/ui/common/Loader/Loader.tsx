@@ -32,7 +32,7 @@ export const Loader: React.FC<LoaderProps> = ({
     const style = variant === 'block' && height ? { height: `${height}px` } : undefined;
 
     return (
-        <div className={loaderClassNames} role="status" style={style}>
+        <div className={loaderClassNames} style={style}>
             <div className={styles.loader__content}>
                 <Spinner size={spinnerSize} color={spinnerColor} />
                 {text && <Text>{text}</Text>}

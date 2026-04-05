@@ -60,14 +60,11 @@ export const Pagination: React.FC<PaginationProps> = ({
                 disabled={currentPage === 1}
                 icon="chevron-left"
                 onlyIcon
-                aria-label="Предыдущая страница"
             />
 
             <Button
                 variant={currentPage === 1 ? 'primary' : 'flat'}
                 onClick={() => handlePageClick(1)}
-                aria-label="Страница 1"
-                aria-current={currentPage === 1 ? 'page' : undefined}
             >
                 1
             </Button>
@@ -77,8 +74,6 @@ export const Pagination: React.FC<PaginationProps> = ({
                     key={page}
                     variant={currentPage === page ? 'primary' : 'flat'}
                     onClick={() => handlePageClick(page)}
-                    aria-label={`Страница ${page}`}
-                    aria-current={currentPage === page ? 'page' : undefined}
                 >
                     {page}
                 </Button>
@@ -88,8 +83,6 @@ export const Pagination: React.FC<PaginationProps> = ({
                 <Button
                     variant={currentPage === totalPages ? 'primary' : 'flat'}
                     onClick={() => handlePageClick(totalPages)}
-                    aria-label={`Страница ${totalPages}`}
-                    aria-current={currentPage === totalPages ? 'page' : undefined}
                 >
                     {totalPages}
                 </Button>
@@ -101,7 +94,6 @@ export const Pagination: React.FC<PaginationProps> = ({
                 disabled={currentPage === totalPages}
                 icon="chevron-right"
                 onlyIcon
-                aria-label="Следующая страница"
             />
         </Flex>
     );

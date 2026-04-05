@@ -81,7 +81,6 @@ export const Agents = () => {
                 align="center"
                 justify="between"
                 className={styles.hero}
-                aria-labelledby="agents-hero-title"
             >
                 <Flex direction="column" align="start" gap={70} className={styles.hero__info}>
                     <Flex direction="column" align="start" gap={40} fullWidth>
@@ -162,12 +161,7 @@ export const Agents = () => {
                     <div className={styles.benefits}>
                         {benefits.map(({ icon, text }, index) => (
                             <Flex key={index} align="start" gap={20}>
-                                <Icon
-                                    name={icon || 'sample'}
-                                    size={32}
-                                    color="primary-700"
-                                    aria-hidden
-                                />
+                                <Icon name={icon || 'sample'} size={32} color="primary-700" />
                                 <Text variant="20-reg">{text}</Text>
                             </Flex>
                         ))}

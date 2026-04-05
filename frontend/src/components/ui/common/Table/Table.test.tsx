@@ -91,9 +91,11 @@ describe('DataTable', () => {
             },
         ];
 
-        render(<DataTable data={rows} columns={columns} />);
+        const { container } = render(<DataTable data={rows} columns={columns} />);
 
-        await user.click(screen.getByRole('button', { name: 'Сортировка' }));
+        const sortBtn = container.querySelector('th button[type="button"]');
+        expect(sortBtn).toBeTruthy();
+        await user.click(sortBtn!);
 
         expect(onSort).toHaveBeenCalledTimes(1);
     });
@@ -107,7 +109,7 @@ describe('DataTable', () => {
             <DataTable data={rows} columns={columns} isLoading getRowId={r => r.id} />,
         );
 
-        expect(container.querySelector('[aria-busy="true"]')).toBeInTheDocument();
+        expect(container.querySelector('tbody svg')).toBeInTheDocument();
         expect(screen.queryByText('First')).not.toBeInTheDocument();
         expect(screen.queryByText('Second')).not.toBeInTheDocument();
     });

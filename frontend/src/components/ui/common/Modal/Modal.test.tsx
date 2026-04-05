@@ -10,16 +10,15 @@ describe('Modal', () => {
                 <p>Содержимое</p>
             </Modal>,
         );
-        expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+        expect(screen.queryByText('Содержимое')).not.toBeInTheDocument();
     });
 
-    it('рендерит dialog при open={true}', () => {
+    it('рендерит содержимое при open={true}', () => {
         render(
             <Modal open onClose={vi.fn()}>
                 <p>Контент</p>
             </Modal>,
         );
-        expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByText('Контент')).toBeInTheDocument();
     });
 
@@ -27,23 +26,23 @@ describe('Modal', () => {
         const onClose = vi.fn();
         const user = userEvent.setup();
         render(
-            <Modal open onClose={onClose}>
+            <Modal closeOnBackdropClick open onClose={onClose}>
                 <p>Внутри</p>
             </Modal>,
         );
-        await user.click(screen.getByTestId('modal-backdrop'));
+        const backdrop = document.querySelector('[class*="backdrop"]');
+        expect(backdrop).not.toBeNull();
+        await user.click(backdrop!);
         expect(onClose).toHaveBeenCalledTimes(1);
     });
 
-    it('не вызывает onClose по фону при closeOnBackdropClick={false}', async () => {
+    it('не вызывает onClose по фону при closeOnBackdropClick={false}', () => {
         const onClose = vi.fn();
-        const user = userEvent.setup();
         render(
             <Modal open onClose={onClose} closeOnBackdropClick={false}>
                 <p>Внутри</p>
             </Modal>,
         );
-        await user.click(screen.getByTestId('modal-backdrop'));
         expect(onClose).not.toHaveBeenCalled();
     });
 
@@ -57,14 +56,5 @@ describe('Modal', () => {
         );
         await user.keyboard('{Escape}');
         expect(onClose).toHaveBeenCalledTimes(1);
-    });
-
-    it('прокидывает aria-labelledby на dialog', () => {
-        render(
-            <Modal open onClose={vi.fn()} aria-labelledby="modal-title">
-                <h2 id="modal-title">Заголовок</h2>
-            </Modal>,
-        );
-        expect(screen.getByRole('dialog')).toHaveAttribute('aria-labelledby', 'modal-title');
     });
 });

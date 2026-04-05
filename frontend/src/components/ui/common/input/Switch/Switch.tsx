@@ -62,7 +62,6 @@ export const Switch = React.forwardRef<HTMLDivElement, SwitchProps>(
                 direction="row"
                 gap={4}
                 className={containerClassNames}
-                role="radiogroup"
                 fullWidth={fullWidth}
                 ref={ref}
             >
@@ -81,7 +80,6 @@ export const Switch = React.forwardRef<HTMLDivElement, SwitchProps>(
                             className={buttonClassNames}
                             onClick={() => handleChange(option.value)}
                             disabled={disabled}
-                            role="radio"
                         >
                             <Text
                                 ellipsis

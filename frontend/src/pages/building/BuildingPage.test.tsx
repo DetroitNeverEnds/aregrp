@@ -91,11 +91,11 @@ describe('BuildingPage', () => {
             error: null,
         } as ReturnType<typeof queries.useBuildingDetail>);
 
-        render(<BuildingPage />, {
+        const { container } = render(<BuildingPage />, {
             wrapper: createWrapper(['/building/test-uuid']),
         });
 
-        expect(screen.getByLabelText('Загрузка')).toBeInTheDocument();
+        expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
     it('показывает ErrorLoading при отсутствии buildingUuid', () => {

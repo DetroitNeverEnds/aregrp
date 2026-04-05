@@ -139,7 +139,7 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                             onClick={() => logoutMutation.mutate()}
                             disabled={logoutMutation.isPending}
                         >
-                            <Icon name="exit" size={14} aria-hidden />
+                            <Icon name="exit" size={14} />
                             <Text variant="12-med" color="gray-100">
                                 {t('pages.profile.logout')}
                             </Text>

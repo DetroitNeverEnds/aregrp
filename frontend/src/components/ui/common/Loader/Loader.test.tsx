@@ -8,7 +8,6 @@ describe('Loader', () => {
         const { container } = render(<Loader />);
         const loader = container.querySelector(`.${styles.loader}`);
         expect(loader).toBeInTheDocument();
-        expect(loader).toHaveAttribute('role', 'status');
     });
 
     it('по умолчанию использует вариант block', () => {

@@ -52,20 +52,17 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
                 room.is_occupied
                     ? styles['floorSchema__room--occupied']
                     : isSelected
-                      ? styles['floorSchema__room--selected']
-                      : styles['floorSchema__room--free'],
+                        ? styles['floorSchema__room--selected']
+                        : styles['floorSchema__room--free'],
             );
 
             if (room.is_occupied) {
-                group.setAttribute('aria-disabled', 'true');
                 group.removeAttribute('tabindex');
                 group.removeAttribute('role');
 
                 return;
             }
 
-            group.setAttribute('aria-disabled', 'false');
-            group.setAttribute('role', 'button');
             group.setAttribute('tabindex', '0');
 
             const numberTspan = group.querySelector<SVGTSpanElement>('text#number_area tspan');

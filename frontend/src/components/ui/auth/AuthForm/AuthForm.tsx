@@ -101,9 +101,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             </Flex>
 
             {/* Лоадер при отправке */}
-            {isSubmitting && (
-                <Loader variant="overlay" spinnerSize="lg" aria-label="Отправка формы" />
-            )}
+            {isSubmitting && <Loader variant="overlay" spinnerSize="lg" />}
         </div>
     );
 };

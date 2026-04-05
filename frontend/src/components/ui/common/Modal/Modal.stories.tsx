@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { Modal } from './Modal';
 import { Button } from '../Button';
 import { Flex } from '../Flex';
@@ -24,7 +24,6 @@ export const FigmaGenerateLinkDemo: Story = {
         const [open, setOpen] = useState(false);
         const [clientName, setClientName] = useState('');
         const [phone, setPhone] = useState('');
-        const titleId = useId();
         const onClose = () => setOpen(false);
 
         return (
@@ -32,16 +31,8 @@ export const FigmaGenerateLinkDemo: Story = {
                 <Button variant="primary" onClick={() => setOpen(true)}>
                     Открыть модальное окно
                 </Button>
-                <Modal
-                    open={open}
-                    onClose={onClose}
-                    direction="column"
-                    gap={20}
-                    align="start"
-                    aria-labelledby={titleId}
-                    closeButtonAriaLabel="Закрыть"
-                >
-                    <div id={titleId}>
+                <Modal open={open} onClose={onClose} direction="column" gap={20} align="start">
+                    <div>
                         <Flex direction="column" gap={0} fullWidth align="start">
                             <Text variant="h3" color="gray-100">
                                 Объект:
@@ -104,7 +95,7 @@ export const Minimal: Story = {
                 <Button variant="primary" onClick={() => setOpen(true)}>
                     Открыть
                 </Button>
-                <Modal open={open} onClose={() => setOpen(false)} closeButtonAriaLabel="Закрыть">
+                <Modal open={open} onClose={() => setOpen(false)}>
                     <Flex direction="column" gap={16} style={{ padding: 40 }}>
                         <Text variant="16-reg">Произвольное содержимое</Text>
                         <Button variant="primary" onClick={() => setOpen(false)}>
