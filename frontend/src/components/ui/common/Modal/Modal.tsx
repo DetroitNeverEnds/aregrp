@@ -2,19 +2,16 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import styles from './Modal.module.scss';
+import { Flex, type FlexProps } from '../Flex';
+import Icon from '../Icon';
+import FlatButton from '../FlatButton';
 
-export interface ModalProps {
-    /** Открыто ли окно */
+export interface ModalProps extends FlexProps {
     open: boolean;
-    /** Закрытие (Escape, клик по фону при `closeOnBackdropClick`) */
     onClose: () => void;
     children: React.ReactNode;
-    /** Закрывать по клику на затемнённый фон */
     closeOnBackdropClick?: boolean;
-    /** Блокировать прокрутку `body` пока открыто */
     lockBodyScroll?: boolean;
-    /** Доп. класс панели (белая карточка) */
-    className?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -23,7 +20,7 @@ export const Modal: React.FC<ModalProps> = ({
     children,
     closeOnBackdropClick = true,
     lockBodyScroll = true,
-    className = '',
+    ...flexProps
 }) => {
     useEffect(() => {
         if (!open) {
@@ -53,24 +50,24 @@ export const Modal: React.FC<ModalProps> = ({
         return null;
     }
 
-    const handleBackdropClick = () => {
-        if (closeOnBackdropClick) {
-            onClose();
-        }
-    };
-
     return createPortal(
-        <div className={styles.root}>
-            <div
-                className={styles.backdrop}
-                aria-hidden
-                data-testid="modal-backdrop"
-                onClick={handleBackdropClick}
-            />
-            <div className={classNames(styles.panel, className)} role="dialog" aria-modal="true">
-                {children}
-            </div>
-        </div>,
+        <Flex justify="center" align="center" className={styles.root}>
+            <div className={styles.backdrop} onClick={closeOnBackdropClick ? onClose : undefined} />
+            <Flex className={styles.panel}>
+                <Flex direction="row" justify="end" fullWidth className={styles.header}>
+                    <FlatButton onClick={onClose}>
+                        <Icon name="x-close" size={32} />
+                    </FlatButton>
+                </Flex>
+                <Flex
+                    {...flexProps}
+                    fullWidth
+                    className={classNames(styles.content, flexProps.className)}
+                >
+                    {children}
+                </Flex>
+            </Flex>
+        </Flex>,
         document.body,
     );
 };

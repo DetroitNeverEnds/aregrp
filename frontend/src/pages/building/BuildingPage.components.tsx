@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useId, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
@@ -10,9 +10,6 @@ import { Button } from '@/components/ui/common/Button';
 import { Card } from '@/components/ui/common/Card/Card';
 import { FlatButton } from '@/components/ui/common/FlatButton';
 import { Flex } from '@/components/ui/common/Flex';
-import { Icon } from '@/components/ui/common/Icon';
-import { Modal } from '@/components/ui/common/Modal';
-import { TextInput } from '@/components/ui/common/input/TextInput';
 import { Gallery, type GalleryMedia } from '@/components/ui/common/Gallery/Gallery';
 import { Loader } from '@/components/ui/common/Loader';
 import Text from '@/components/ui/common/Text';
@@ -29,6 +26,7 @@ import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
 import { useUser } from '@/queries/profile';
 import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListItem } from '@/api';
 import MedicalCrossIcon from './medical-cross.svg?react';
+import { GenerateLinkModal } from './GenerateLinkModal';
 
 import styles from './BuildingPage.module.scss';
 
@@ -75,15 +73,6 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
-    const [clientName, setClientName] = useState('');
-    const [phone, setPhone] = useState('');
-    const generateLinkTitleId = useId();
-
-    const closeGenerateLinkModal = useCallback(() => {
-        setGenerateLinkOpen(false);
-        setClientName('');
-        setPhone('');
-    }, []);
 
     const primaryPrice = useMemo(
         () => premise.rent_price ?? premise.sale_price ?? premise.price,
@@ -167,86 +156,12 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
                 </Column> */}
                 </Flex>
             </Card>
-            <Modal
+
+            <GenerateLinkModal
                 open={generateLinkOpen}
-                onClose={closeGenerateLinkModal}
-                aria-labelledby={generateLinkTitleId}
-            >
-                <div className={styles.generateLinkModal}>
-                    <div className={styles.generateLinkModal__header}>
-                        <FlatButton
-                            type="button"
-                            aria-label={t('pages.building.generateLinkModal.closeAria')}
-                            onClick={closeGenerateLinkModal}
-                        >
-                            <Icon name="x-close" size={32} aria-hidden />
-                        </FlatButton>
-                    </div>
-                    <div className={styles.generateLinkModal__body}>
-                        <div className={styles.generateLinkModal__block}>
-                            <div
-                                className={styles.generateLinkModal__titleBlock}
-                                id={generateLinkTitleId}
-                            >
-                                <Text variant="h3" color="gray-100">
-                                    {t('pages.building.generateLinkModal.objectLabel')}
-                                </Text>
-                                <Text variant="h3" color="gray-100">
-                                    {premise.name}
-                                </Text>
-                            </div>
-                            <div className={styles.generateLinkModal__details}>
-                                <Text variant="14-reg" style={{ color: '#333333' }}>
-                                    {t('pages.building.area')}: {premise.area}
-                                </Text>
-                                <Text variant="14-reg" style={{ color: '#333333' }}>
-                                    {t('pages.building.floor')}: {premise.floor ?? '—'}
-                                </Text>
-                                <Text variant="14-reg" style={{ color: '#333333' }}>
-                                    {t('pages.building.tenant')}:{' '}
-                                    {premise.has_tenant
-                                        ? t('components.OfficeCard.hasTennant')
-                                        : t('components.OfficeCard.noTennant')}
-                                </Text>
-                                <Text variant="14-reg" style={{ color: '#333333' }}>
-                                    {premise.rent_price
-                                        ? `${t('common.price')}: ${formatRubles(primaryPrice)} / месяц`
-                                        : `${t('common.price')}: ${formatRubles(primaryPrice)}`}
-                                </Text>
-                            </div>
-                            <Text variant="14-med" color="gray-50">
-                                {t('pages.building.generateLinkModal.spamHint')}
-                            </Text>
-                            <Text variant="24-med" color="gray-100">
-                                {t('pages.building.generateLinkModal.sectionTitle')}
-                            </Text>
-                            <div className={styles.generateLinkModal__fields}>
-                                <TextInput
-                                    size="lg"
-                                    width="max"
-                                    placeholder={t(
-                                        'pages.building.generateLinkModal.clientNamePlaceholder',
-                                    )}
-                                    value={clientName}
-                                    onChange={setClientName}
-                                />
-                                <TextInput
-                                    size="lg"
-                                    width="max"
-                                    placeholder={t(
-                                        'pages.building.generateLinkModal.phonePlaceholder',
-                                    )}
-                                    value={phone}
-                                    onChange={setPhone}
-                                />
-                            </div>
-                        </div>
-                        <Button variant="primary" theme="light" size="lg" width="max" type="button">
-                            {t('pages.building.generateLink')}
-                        </Button>
-                    </div>
-                </div>
-            </Modal>
+                onClose={() => setGenerateLinkOpen(false)}
+                premise={premise}
+            />
         </>
     );
 };

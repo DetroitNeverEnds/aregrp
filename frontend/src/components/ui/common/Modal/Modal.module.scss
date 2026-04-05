@@ -2,9 +2,6 @@
     position: fixed;
     inset: 0;
     z-index: 1100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -14,6 +11,14 @@
     inset: 0;
     background: $gray-opacity-100-70;
     cursor: pointer;
+}
+
+.header {
+    padding: 15px 20px 0;
+}
+
+.content {
+    padding: 0 40px 40px;
 }
 
 .panel {

@@ -214,6 +214,7 @@
             "address": "Адрес",
             "area": "Площадь",
             "tenant": "Арендатор",
+            "price": "Цена",
             "infrastructure": "Инфраструктура бизнес-центра",
             "officeCatalogue": "Каталог офисов",
             "downloadPresentation": "Скачать презентацию",
@@ -224,7 +225,13 @@
                 "sectionTitle": "Создание ссылки",
                 "clientNamePlaceholder": "Имя клиента",
                 "phonePlaceholder": "Телефон",
-                "closeAria": "Закрыть"
+                "closeAria": "Закрыть",
+                "validation": {
+                    "clientNameRequired": "Укажите имя клиента",
+                    "clientNameMin": "Минимум 2 символа",
+                    "phoneRequired": "Укажите телефон",
+                    "phoneMin": "Минимум 5 символов"
+                }
             },
             "legend": {
                 "free": "Свободные помещения",
