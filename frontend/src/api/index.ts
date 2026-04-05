@@ -26,5 +26,13 @@ export * from './handlers/bookings';
 export * from './handlers/feedback';
 
 // Profile handlers (экспортируем только функции, типы уже экспортированы из auth)
-export { getUser, updateProfile, changePassword } from './handlers/profile';
-export type { UpdateProfileData, ChangePasswordData } from './handlers/profile';
+export { getUser, getProfilePremises, updateProfile, changePassword } from './handlers/profile';
+export type {
+    UpdateProfileData,
+    ChangePasswordData,
+    ProfilePremisesQueryParams,
+    ProfilePremisesListResponse,
+    ProfilePremiseRowOut,
+    PremiseBriefOut,
+    BuildingBriefOut,
+} from './handlers/profile';

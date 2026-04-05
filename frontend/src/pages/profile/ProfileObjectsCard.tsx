@@ -5,24 +5,32 @@ import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text';
 import { Tabs } from '@/components/ui/common/Tabs';
 import { DataTable, type TableColumn } from '@/components/ui/common/Table';
-import profileStyles from './Profile.module.scss';
-import styles from './ProfileObjectsCard.module.scss';
 import { Button } from '@/components/ui/common/Button';
-import { useMyBookings } from '@/queries';
-import type { BookingOut } from '@/api';
+import profileStyles from './Profile.module.scss';
+import styles from './ProfileBookingsCard.module.scss';
+import { useProfilePremises, useUser } from '@/queries';
+import type { ProfilePremiseRowOut } from '@/api';
+import type { ProfileBookingDealType } from './profileObjectsMock';
 
-type ProfileBookingDealType = 'rent' | 'sale';
+type ObjectsDealType = ProfileBookingDealType;
 
-function tabFromDealType(dealType: string): ProfileBookingDealType {
-    const v = dealType.toLowerCase();
-    if (v === 'sale' || v.includes('sale') || v === 'buy') {
-        return 'sale';
+function formatCommissionRub(value: number | null | undefined): string {
+    if (value === null || value === undefined) {
+        return '—';
     }
-    return 'rent';
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(value);
 }
 
-function formatExpiresAt(iso: string): string {
-    const d = new Date(iso);
+function formatDate(value: string | null | undefined): string {
+    if (!value) {
+        return '—';
+    }
+    const d = new Date(value);
     if (Number.isNaN(d.getTime())) {
         return '—';
     }
@@ -31,60 +39,86 @@ function formatExpiresAt(iso: string): string {
 
 export const ProfileObjectsCard = () => {
     const { t } = useTranslation();
-    const [dealType, setDealType] = useState<ProfileBookingDealType>('rent');
+    const [dealType, setDealType] = useState<ObjectsDealType>('rent');
 
-    const { data: queryResult, isPending, isFetching } = useMyBookings();
+    const userResult = useUser().data;
+
+    const {
+        data: queryResult,
+        isPending,
+        isFetching,
+    } = useProfilePremises({
+        query: dealType,
+    });
 
     const apiError = queryResult?.error;
-    const bookings = queryResult?.data;
+    const list = queryResult?.data;
+    const rows = list?.items ?? [];
 
-    const rowsForTab = useMemo(() => {
-        if (!bookings) {
-            return [];
+    const columns = useMemo((): TableColumn<ProfilePremiseRowOut>[] => {
+        const office: TableColumn<ProfilePremiseRowOut> = {
+            id: 'office',
+            header: t('pages.profile.booking.columnOffice'),
+            accessorKey: 'premise',
+            thClassName: styles.thGray,
+            render: ({ row }) => row.premise.name,
+        };
+        const objectCol: TableColumn<ProfilePremiseRowOut> = {
+            id: 'object',
+            header: t('pages.profile.booking.columnObject'),
+            accessorKey: 'building',
+            thClassName: styles.thGray,
+            render: ({ row }) => row.building.name,
+        };
+        const commission: TableColumn<ProfilePremiseRowOut> = {
+            id: 'commission',
+            header: t('pages.profile.objects.columnCommission'),
+            thClassName: styles.thGray,
+            render: ({ row }) => formatCommissionRub(row.commission),
+        };
+        const contractType: TableColumn<ProfilePremiseRowOut> = {
+            id: 'contractType',
+            header: t('pages.profile.objects.columnContractType'),
+            thClassName: styles.thGray,
+            render: ({ row }) => row.contract_type?.trim() || '—',
+        };
+        const expires: TableColumn<ProfilePremiseRowOut> = {
+            id: 'expires',
+            header: t('pages.profile.objects.columnExpiresAt'),
+            thClassName: styles.thGray,
+            render: ({ row }) =>
+                formatDate(row.rent_expires_at ?? row.contract_signed_on ?? undefined),
+        };
+        const action: TableColumn<ProfilePremiseRowOut> = {
+            id: 'action',
+            header: t('pages.profile.booking.columnAction'),
+            headerAlign: 'left',
+            cellAlign: 'left',
+            thClassName: styles.thGray,
+            render: ({ row }) => (
+                <Button
+                    size="tiny"
+                    variant="outlined"
+                    width="auto"
+                    to={`/building/${row.building.uuid}?${new URLSearchParams({
+                        selectedPremise: row.premise.uuid,
+                    })}`}
+                >
+                    {t('pages.profile.booking.viewAction')}
+                </Button>
+            ),
+        };
+
+        const middle = userResult?.data?.user_type === 'agent' ? [commission] : [];
+
+        if (dealType === 'rent') {
+            return [office, objectCol, ...middle, contractType, action];
         }
-        return bookings.filter(b => tabFromDealType(b.deal_type) === dealType);
-    }, [bookings, dealType]);
-
-    const columns = useMemo((): TableColumn<BookingOut>[] => {
-        return [
-            {
-                id: 'office',
-                header: t('pages.profile.booking.columnOffice'),
-                accessorKey: 'premise_name',
-                thClassName: styles.thGray,
-            },
-            {
-                id: 'object',
-                header: t('pages.profile.booking.columnObject'),
-                accessorKey: 'building_name',
-                thClassName: styles.thGray,
-            },
-            {
-                id: 'address',
-                header: t('pages.profile.booking.columnAddress'),
-                accessorKey: 'building_address',
-                thClassName: styles.thGray,
-            },
-            {
-                id: 'expiresAt',
-                header: t('pages.profile.booking.columnExpiresAt'),
-                thClassName: styles.thGray,
-                render: ({ row }) => formatExpiresAt(row.expires_at),
-            },
-            {
-                id: 'action',
-                header: t('pages.profile.booking.columnAction'),
-                headerAlign: 'left',
-                cellAlign: 'left',
-                thClassName: styles.thGray,
-                render: () => (
-                    <Button size="tiny" variant="outlined" width="auto">
-                        {t('pages.profile.booking.viewAction')}
-                    </Button>
-                ),
-            },
-        ];
-    }, [t]);
+        if (dealType === 'sale') {
+            return [office, objectCol, ...middle, expires, action];
+        }
+        return [];
+    }, [dealType, userResult?.data?.user_type, t]);
 
     const isLoading = isPending || isFetching;
 
@@ -96,13 +130,13 @@ export const ProfileObjectsCard = () => {
             className={profileStyles.mainPanel}
             align="start"
         >
-            <Text variant="24-med">{t('pages.profile.booking.title')}</Text>
+            <Text variant="24-med">{t('pages.profile.objects.title')}</Text>
 
             <Flex direction="column" gap={20} fullWidth align="start" className={styles.panel}>
                 <Tabs
                     value={dealType}
                     onChange={v => {
-                        setDealType(v as ProfileBookingDealType);
+                        setDealType(v as ObjectsDealType);
                     }}
                     tabs={[
                         { value: 'rent', label: t('pages.profile.booking.tabRent') },
@@ -117,14 +151,14 @@ export const ProfileObjectsCard = () => {
                 ) : (
                     <DataTable
                         width="max"
-                        data={rowsForTab}
+                        data={rows}
                         columns={columns}
                         size="xl"
-                        getRowId={row => String(row.id)}
+                        getRowId={row => `${row.premise.uuid}-${row.building.uuid}`}
                         isLoading={isLoading}
                         emptyContent={
                             <Text variant="12-reg" color="gray-50">
-                                {t('pages.profile.booking.empty')}
+                                {t('pages.profile.objects.empty')}
                             </Text>
                         }
                     />

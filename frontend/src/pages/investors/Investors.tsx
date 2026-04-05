@@ -27,6 +27,7 @@ import styles from './Investors.module.scss';
 import { Column, TwoColumnsContainer } from '@/components/ui/layout/TwoColumnsContainer';
 import { Divider } from '@/components/ui/common/Divider';
 import { Collapse } from './Collapse';
+import { useInvestorSettings } from '@/queries';
 
 type StrategyKey = 'active' | 'passive' | 'individual';
 
@@ -55,6 +56,7 @@ export const Investors = () => {
         [t],
     );
 
+    const investorsData = useInvestorSettings().data?.data;
     const { data: buildingsData } = useBuildingsCatalogueInfinite({
         page_size: Config.pageSizeMain,
     });
@@ -85,10 +87,10 @@ export const Investors = () => {
         });
     }, []);
 
-    const strategies: { key: StrategyKey }[] = [
-        { key: 'active' },
-        { key: 'passive' },
-        { key: 'individual' },
+    const strategies: { key: StrategyKey; link: string }[] = [
+        { key: 'active', link: investorsData?.document_1 || '' },
+        { key: 'passive', link: investorsData?.document_2 || '' },
+        { key: 'individual', link: investorsData?.document_3 || '' },
     ];
 
     const faqItems = useMemo(
@@ -138,7 +140,7 @@ export const Investors = () => {
                         <Text variant="h2">{t('pages.investors.strategies.title')}</Text>
                     </Flex>
                     <TwoColumnsContainer>
-                        {strategies.map(({ key }) => (
+                        {strategies.map(({ key, link }) => (
                             <Column>
                                 <Card
                                     key={key}
@@ -165,7 +167,7 @@ export const Investors = () => {
                                                 {t(`pages.investors.strategies.${key}.title`)}
                                             </Text>
                                             <Link
-                                                to="/cases"
+                                                to={link}
                                                 size="sm"
                                                 theme="black"
                                                 trailingIcon="download-rounded"

@@ -155,11 +155,16 @@
         "ACCOUNTS_TOKEN_EXPIRED": "Срок действия токена истёк",
         "ACCOUNTS_UNAUTHORIZED": "Необходима авторизация",
         "ACCOUNTS_USER_NOT_FOUND": "Пользователь не найден",
+        "BOOKINGS_ACTIVE_BOOKING_EXISTS": "У вас уже есть активная бронь на это помещение",
+        "BOOKINGS_INVALID_DEAL_TYPE": "Недопустимый тип сделки для бронирования",
+        "BOOKINGS_PREMISE_UNAVAILABLE": "Помещение недоступно для бронирования",
+        "DEALS_INVALID_DEAL_TYPE": "Недопустимый тип сделки",
         "FEEDBACK_CREATION_ERROR": "Ошибка при создании обращения",
         "FEEDBACK_DELETE_ERROR": "Ошибка при удалении обращения",
         "FEEDBACK_NOT_FOUND": "Обращение не найдено",
         "FEEDBACK_UPDATE_ERROR": "Ошибка при обновлении обращения",
         "FEEDBACK_VALIDATION_ERROR": "Ошибка валидации обращения",
+        "RE_OBJECTS_NOT_FOUND": "Объект не найден",
         "SITE_SETTINGS_ERROR": "Ошибка настроек сайта",
         "SITE_SETTINGS_NOT_FOUND": "Настройки сайта не найдены",
         "REQUEST_ERROR": "Не удалось выполнить запрос.",
@@ -366,9 +371,21 @@
                 "columnOffice": "Офис",
                 "columnObject": "Объект",
                 "columnAddress": "Адрес",
+                "columnDealType": "Тип сделки",
                 "columnExpiresAt": "Истечение срока",
                 "columnAction": "Действие",
+                
                 "viewAction": "Посмотреть",
+                "empty": "Нет данных",
+
+                "dealTypeSale": "Продажа",
+                "dealTypeRent": "Аренда"
+            },
+            "objects": {
+                "title": "Объекты",
+                "columnCommission": "Комиссия",
+                "columnContractType": "Тип договора",
+                "columnExpiresAt": "Истечение срока",
                 "empty": "Нет данных"
             }
         }

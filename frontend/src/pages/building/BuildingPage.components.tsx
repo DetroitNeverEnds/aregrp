@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
 
@@ -274,6 +274,19 @@ export const BuildingContent = (props: BuildingContentProps) => {
 
     const floorQ = useFloor(buildingInfo.uuid, currentFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
+
+    useEffect(() => {
+        if (selectedPremiseQ.data?.data && selectedPremiseQ.data?.data.floor !== currentFloor) {
+            setSearchParams(
+                toSearchParams({
+                    ...params,
+                    floor: selectedPremiseQ.data?.data.floor ?? 0,
+                    selectedPremise: undefined,
+                }),
+            );
+        }
+        return;
+    }, [selectedPremiseQ.data?.data, currentFloor, setSearchParams, params]);
 
     const onFloorSelect = useCallback(
         (floor: number) => {

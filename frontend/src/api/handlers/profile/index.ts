@@ -1,10 +1,24 @@
 import { api } from '../../base/api';
-import type { UserData, UpdateProfileData, ChangePasswordData, Message } from './types';
+import type {
+    UserData,
+    UpdateProfileData,
+    ChangePasswordData,
+    Message,
+    ProfilePremisesQueryParams,
+    ProfilePremisesListResponse,
+} from './types';
 
 /**
  * Получить данные текущего пользователя
  */
 export const getUser = api.get<void, UserData>('/profile/user');
+
+/**
+ * Объекты в личном кабинете (аренда или продажа)
+ */
+export const getProfilePremises = api.get<ProfilePremisesQueryParams, ProfilePremisesListResponse>(
+    '/profile/premises',
+);
 
 /**
  * Обновить профиль пользователя

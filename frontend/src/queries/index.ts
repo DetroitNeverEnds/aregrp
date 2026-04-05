@@ -1,4 +1,5 @@
 export { useSiteContacts } from './contacts';
+export { useInvestorSettings } from './investors';
 export { useSiteInfo } from './siteInfo';
 export {
     useBuildings,
@@ -12,6 +13,4 @@ export {
     useFloorPremises,
     useFloor,
 } from './premises';
-export { useUser } from './profile';
-
-export { useMyBookings } from './bookings';
+export { useUser, useMyBookings, useProfilePremises } from './profile';

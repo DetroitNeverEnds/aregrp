@@ -20,6 +20,7 @@ import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundar
 import type { UserData } from '@/api';
 import { ProfileMainInfoCard } from './ProfileMainInfoCard';
 import { ProfileObjectsCard } from './ProfileObjectsCard';
+import { ProfileBoookingsCard } from './ProfileBookingsCard';
 
 type MenuItems = {
     label: string;
@@ -147,7 +148,8 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                 </Flex>
 
                 {currentItem === 'profile' && <ProfileMainInfoCard user={user} />}
-                {currentItem === 'booking' && <ProfileObjectsCard />}
+                {currentItem === 'objects' && <ProfileObjectsCard />}
+                {currentItem === 'booking' && <ProfileBoookingsCard />}
             </Flex>
         </VerticalMainContainer>
     );

@@ -8,6 +8,7 @@ export interface BookingOut {
     premise_name: string;
     building_name: string;
     building_address: string;
+    building_uuid: string;
     deal_type: string;
     expires_at: string;
     created_at: string;
