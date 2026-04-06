@@ -502,6 +502,13 @@ def _format_area(value: Decimal) -> str:
     return f"{value} м²"
 
 
+def _format_floor_label_price(value: Optional[int]) -> str:
+    """Формат цены для схемы этажа: 100000 -> '100 000 ₽'."""
+    if value is None:
+        return "—"
+    return f"{int(value):,}".replace(",", " ") + " ₽"
+
+
 async def get_premises_for_floor(
     building_uuid: UUID,
     floor_number: int,
@@ -529,9 +536,9 @@ async def get_premises_for_floor(
     items: list[FloorPremiseOut] = []
     async for p in Premise.objects.filter(floor=floor).order_by("number", "id"):
         if p.available_for_sale and not p.available_for_rent:
-            label_price = p.full_sell_price
+            label_price = _format_floor_label_price(p.full_sell_price)
         else:
-            label_price = p.price_per_month
+            label_price = _format_floor_label_price(p.price_per_month)
         items.append(
             FloorPremiseOut(
                 uuid=str(p.uuid),
