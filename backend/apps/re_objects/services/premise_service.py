@@ -495,22 +495,6 @@ async def get_premise_by_uuid(
     return premise_to_detail_out(p, sale_type)
 
 
-def _format_price(value: Optional[int]) -> str:
-    """Форматирует цену: 100000 -> '100 000 ₽/мес'."""
-    if value is None:
-        return "—"
-    s = f"{int(value):,}".replace(",", " ")
-    return f"{s} ₽/мес"
-
-
-def _format_sale_total_label(value: Optional[int]) -> str:
-    """Полная стоимость продажи для подписи на схеме этажа."""
-    if value is None:
-        return "—"
-    s = f"{int(value):,}".replace(",", " ")
-    return f"{s} ₽"
-
-
 def _format_area(value: Decimal) -> str:
     """Форматирует площадь: 50 -> '50 м²'."""
     if value is None:
@@ -545,9 +529,9 @@ async def get_premises_for_floor(
     items: list[FloorPremiseOut] = []
     async for p in Premise.objects.filter(floor=floor).order_by("number", "id"):
         if p.available_for_sale and not p.available_for_rent:
-            label_price = _format_sale_total_label(p.full_sell_price)
+            label_price = p.full_sell_price
         else:
-            label_price = _format_price(p.price_per_month)
+            label_price = p.price_per_month
         items.append(
             FloorPremiseOut(
                 uuid=str(p.uuid),

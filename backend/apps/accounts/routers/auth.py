@@ -610,7 +610,7 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
     ```
     
     **Коды ошибок:**
-    - `400`: Ошибка отправки email или внутренняя ошибка
+    - `400`: Ошибка отправки email (SMTP) или непредвиденная ошибка при обработке запроса
     """
     try:
         # Ищем пользователя по email асинхронно

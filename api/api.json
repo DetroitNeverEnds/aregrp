@@ -377,6 +377,93 @@
         ]
       }
     },
+    "/api/v1/profile/premises": {
+      "get": {
+        "operationId": "apps_accounts_routers_profile_list_profile_premises",
+        "summary": "Объекты в личном кабинете",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "schema": {
+              "description": "Тип сделки: rent (аренда) или sale (продажа).",
+              "title": "Query",
+              "type": "string"
+            },
+            "required": true,
+            "description": "Тип сделки: rent (аренда) или sale (продажа)."
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "default": 1,
+              "description": "Номер страницы",
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Номер страницы"
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": {
+              "default": 20,
+              "description": "Размер страницы",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Размер страницы"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfilePremisesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        },
+        "description": "Список сделок пользователя (аренда или продажа). Параметр query: rent или sale. Пагинация: page, page_size (как у /premises). Ответ: items, total, page, page_size, total_pages. Комиссия в строках только для user_type=agent.",
+        "tags": [
+          "Profile"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/profile/profile": {
       "put": {
         "operationId": "apps_accounts_routers_profile_update_profile",
@@ -1736,7 +1823,8 @@
           "RE_OBJECTS_NOT_FOUND",
           "BOOKINGS_PREMISE_UNAVAILABLE",
           "BOOKINGS_ACTIVE_BOOKING_EXISTS",
-          "BOOKINGS_INVALID_DEAL_TYPE"
+          "BOOKINGS_INVALID_DEAL_TYPE",
+          "DEALS_INVALID_DEAL_TYPE"
         ],
         "title": "ErrorCode",
         "type": "string"
@@ -1962,6 +2050,142 @@
           "created_at"
         ],
         "title": "BookingOut",
+        "type": "object"
+      },
+      "BuildingBriefOut": {
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ],
+        "title": "BuildingBriefOut",
+        "type": "object"
+      },
+      "PremiseBriefOut": {
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "name"
+        ],
+        "title": "PremiseBriefOut",
+        "type": "object"
+      },
+      "ProfilePremiseRowOut": {
+        "description": "Строка таблицы «Объекты» в ЛК; поля зависят от query=rent|sale и типа пользователя.",
+        "properties": {
+          "premise": {
+            "$ref": "#/components/schemas/PremiseBriefOut"
+          },
+          "building": {
+            "$ref": "#/components/schemas/BuildingBriefOut"
+          },
+          "commission": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commission"
+          },
+          "rent_expires_at": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rent Expires At"
+          },
+          "contract_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contract Type"
+          },
+          "contract_signed_on": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contract Signed On"
+          }
+        },
+        "required": [
+          "premise",
+          "building"
+        ],
+        "title": "ProfilePremiseRowOut",
+        "type": "object"
+      },
+      "ProfilePremisesListResponse": {
+        "description": "Как у списков re_objects: items, total, page, page_size, total_pages.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ProfilePremiseRowOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "ProfilePremisesListResponse",
         "type": "object"
       },
       "UpdateProfileIn": {

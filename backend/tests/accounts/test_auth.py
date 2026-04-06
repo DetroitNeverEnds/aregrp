@@ -490,6 +490,19 @@ class TestPasswordReset:
         assert "account" in data["message"].lower() or "email" in data["message"].lower()
         mock_send_email.assert_called_once()
 
+    @patch("apps.accounts.routers.auth.send_password_reset_email", new_callable=AsyncMock, return_value=False)
+    async def test_password_reset_email_send_failure_returns_400(self, mock_send_email, client, test_user):
+        """Сбой SMTP/отправки — 400; таймаут SMTP задаётся EMAIL_TIMEOUT (не висеть бесконечно)."""
+        response = await client.post(
+            "/auth/password-reset",
+            json={"email": test_user.email},
+        )
+
+        assert response.status_code == 400
+        data = response.json()
+        assert data.get("code") == "ACCOUNTS_PASSWORD_RESET_ERROR"
+        mock_send_email.assert_called_once()
+
     async def test_password_reset_nonexistent_email_returns_200(self, client):
         """Для несуществующего email возвращается 200 (без раскрытия факта)."""
         response = await client.post(
