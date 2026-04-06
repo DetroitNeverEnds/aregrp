@@ -52,8 +52,8 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
                 room.is_occupied
                     ? styles['floorSchema__room--occupied']
                     : isSelected
-                        ? styles['floorSchema__room--selected']
-                        : styles['floorSchema__room--free'],
+                      ? styles['floorSchema__room--selected']
+                      : styles['floorSchema__room--free'],
             );
 
             if (room.is_occupied) {
