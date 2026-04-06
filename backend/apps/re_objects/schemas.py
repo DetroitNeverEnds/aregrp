@@ -128,7 +128,7 @@ class FloorPremiseOut(Schema):
     uuid: str
     name: str  # номер помещения (Premise.number или название)
     label_area: str  # площадь, например "50 м²"
-    label_price: str  # стоимость, например "100 000 ₽/мес"
+    label_price: Optional[int] = None  # стоимость: число из БД или null
     is_occupied: bool  # True — занято, False — свободно
 
 
