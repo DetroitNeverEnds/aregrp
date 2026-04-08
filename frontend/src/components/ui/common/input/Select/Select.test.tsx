@@ -22,7 +22,7 @@ describe('Select', () => {
         fireEvent.click(trigger);
 
         await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
+            expect(screen.getByTestId('dropdown-panel')).toBeInTheDocument();
         });
     });
 
@@ -38,14 +38,14 @@ describe('Select', () => {
         fireEvent.click(trigger);
 
         await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
+            expect(screen.getByTestId('dropdown-panel')).toBeInTheDocument();
         });
 
         const outsideButton = screen.getByText('Outside');
         fireEvent.mouseDown(outsideButton);
 
         await waitFor(() => {
-            expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+            expect(screen.queryByTestId('dropdown-panel')).not.toBeInTheDocument();
         });
     });
 
@@ -57,7 +57,7 @@ describe('Select', () => {
         fireEvent.click(trigger);
 
         await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
+            expect(screen.getByTestId('dropdown-panel')).toBeInTheDocument();
         });
 
         const option = screen.getByText('Опция 1');
@@ -80,7 +80,7 @@ describe('Select', () => {
         // Даем время на обработку клика
         await waitFor(
             () => {
-                expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+                expect(screen.queryByTestId('dropdown-panel')).not.toBeInTheDocument();
             },
             { timeout: 100 },
         );
@@ -125,7 +125,7 @@ describe('Select', () => {
         fireEvent.click(trigger);
 
         await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
+            expect(screen.getByTestId('dropdown-panel')).toBeInTheDocument();
             // Проверяем наличие SVG иконки
             const svg = container.querySelector('svg');
             expect(svg).toBeInTheDocument();
@@ -155,7 +155,7 @@ describe('Select', () => {
         fireEvent.click(screen.getByText('Выберите значение'));
 
         await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
+            expect(screen.getByTestId('dropdown-panel')).toBeInTheDocument();
         });
 
         const search = screen.getByPlaceholderText('Найти...');
@@ -171,7 +171,7 @@ describe('Select', () => {
         fireEvent.click(screen.getByText('Выберите значение'));
 
         await waitFor(() => {
-            expect(screen.getByRole('listbox')).toBeInTheDocument();
+            expect(screen.getByTestId('dropdown-panel')).toBeInTheDocument();
         });
 
         const search = screen.getByPlaceholderText('Поиск...');
@@ -189,7 +189,7 @@ describe('Select', () => {
             fireEvent.click(trigger);
 
             await waitFor(() => {
-                expect(screen.getByRole('listbox')).toBeInTheDocument();
+                expect(screen.getByTestId('dropdown-panel')).toBeInTheDocument();
             });
 
             const option = screen.getByText('Опция 1');

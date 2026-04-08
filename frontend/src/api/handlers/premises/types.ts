@@ -6,13 +6,14 @@ import type { BaseMediaItem } from '@/api/handlers/types';
 
 export type SaleType = 'rent' | 'sale';
 
-/**
- * Помещение в списке
- */
+/** Помещение в списке (OpenAPI: PremiseListOut) */
 export interface PremiseListItem {
     uuid: string;
     name: string;
-    price: string;
+    /** совместимость; при наличии см. sale_price / rent_price */
+    price: number | null;
+    sale_price?: number | null;
+    rent_price?: number | null;
     address: string;
     floor?: number | null;
     area: string;
@@ -26,7 +27,7 @@ export interface PremiseListItem {
  */
 export interface PremiseDetail extends PremiseListItem {
     description?: string | null;
-    price_per_sqm?: string | null;
+    price_per_sqm?: number | null;
     ceiling_height?: string | null;
     has_windows?: boolean;
     has_parking?: boolean;

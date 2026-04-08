@@ -123,7 +123,7 @@ export function Dropdown({
             </Flex>
 
             {isOpened && (
-                <div ref={dropdownRef} className={dropdownClassNames} role="listbox">
+                <div ref={dropdownRef} className={dropdownClassNames} data-testid="dropdown-panel">
                     {children}
                 </div>
             )}

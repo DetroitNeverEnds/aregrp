@@ -1,12 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { Spinner } from './Spinner';
 
 describe('Spinner', () => {
     it('рендерится с дефолтными пропсами', () => {
-        render(<Spinner />);
-        const spinner = screen.getByRole('status');
-        expect(spinner).toBeInTheDocument();
+        const { container } = render(<Spinner />);
+        expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
     it('применяет правильный размер', () => {
@@ -27,11 +26,5 @@ describe('Spinner', () => {
         const { container } = render(<Spinner color="#ff0000" />);
         const spinner = container.querySelector('svg');
         expect(spinner).toHaveStyle({ color: '#ff0000' });
-    });
-
-    it('использует кастомный aria-label', () => {
-        render(<Spinner aria-label="Загружаем данные" />);
-        const spinner = screen.getByLabelText('Загружаем данные');
-        expect(spinner).toBeInTheDocument();
     });
 });

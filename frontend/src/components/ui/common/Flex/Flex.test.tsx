@@ -120,13 +120,13 @@ describe('Flex', () => {
 
     it('применяет дополнительные HTML атрибуты', () => {
         render(
-            <Flex data-testid="flex" id="test-id" aria-label="test-label">
+            <Flex data-testid="flex" id="test-id" data-custom="extra">
                 Content
             </Flex>,
         );
         const flex = screen.getByTestId('flex');
         expect(flex).toHaveAttribute('id', 'test-id');
-        expect(flex).toHaveAttribute('aria-label', 'test-label');
+        expect(flex).toHaveAttribute('data-custom', 'extra');
     });
 
     it('объединяет style пропсы', () => {

@@ -22,7 +22,7 @@ export const ProfileMainInfoCard = ({ user }: { user: UserData }) => {
                 {!isEditing && (
                     <FlatButton type="button" onClick={() => setIsEditing(true)}>
                         <Flex direction="row" gap={8} align="center">
-                            <Icon name="edit" size={14} aria-hidden />
+                            <Icon name="edit" size={14} />
                             <Text variant="12-med" color="gray-70">
                                 {t('pages.profile.edit')}
                             </Text>

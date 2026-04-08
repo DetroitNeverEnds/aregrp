@@ -1,31 +1,31 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import classNames from 'classnames';
 import _ from 'lodash';
 
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
-import { fetchFloorSvgMock } from '@/components/ui/building/FloorSchema/mocks';
-import { Benefits } from '@/components/ui/cards/Benefits/Benefits';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Button } from '@/components/ui/common/Button';
 import { Card } from '@/components/ui/common/Card/Card';
+import { FlatButton } from '@/components/ui/common/FlatButton';
 import { Flex } from '@/components/ui/common/Flex';
 import { Gallery, type GalleryMedia } from '@/components/ui/common/Gallery/Gallery';
 import { Loader } from '@/components/ui/common/Loader';
 import Text from '@/components/ui/common/Text';
 import { CardContainer } from '@/components/ui/layout/CardsContainer';
 import Container from '@/components/ui/layout/Container';
-import { FeedbackFormRow } from '@/components/ui/layout/FeedbackFormRow';
 import type { LayoutSettings } from '@/components/ui/layout/MainLayout/Layout';
-import { Page } from '@/components/ui/layout/Page/Page';
 import { InfiniteQueryBoundary } from '@/components/ui/layout/QueryBoundary/InfiniteQueryBoundary';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 import { Column } from '@/components/ui/layout/TwoColumnsContainer';
-import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { useLayoutSettings } from '@/hooks/useLayoutSettings';
 import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedSearchParams';
 import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';
 import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
+import { useUser } from '@/queries/profile';
 import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListItem } from '@/api';
+import MedicalCrossIcon from './medical-cross.svg?react';
+import { GenerateLinkModal } from './GenerateLinkModal';
 
 import styles from './BuildingPage.module.scss';
 
@@ -52,55 +52,111 @@ type PremiseDetailsCardProps = {
     data: PremiseDetail;
 };
 
+const formatRubles = (value: number | null | undefined) => {
+    if (value === null || value === undefined) {
+        return '—';
+    }
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(value);
+};
+
 const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
     const premise = props.data;
 
     const { t } = useTranslation();
+    const user = useUser().data?.data;
+    const isAgent = user?.user_type === 'agent';
+
+    const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
 
     return (
-        <Card withShadow gap={12} className={styles.officeCard} align="start">
-            <Gallery premise={premise} fit="contain" className={styles.premiseDetails__gallery} />
-            <Card background="gray" gap={40} align="start" fullWidth>
-                <Flex gap={6} align="start">
-                    <Text variant="24-med">{premise.name}</Text>
-                    <Text variant="24-med" color="primary-800">
-                        {premise.price} ₽
-                    </Text>
-                </Flex>
-                <Flex gap={8} align="start">
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.address')}: {premise.address}
-                    </Text>
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.area')}: {premise.area}
-                    </Text>
+        <>
+            <Card withShadow gap={12} className={styles.officeCard} align="start">
+                <Gallery
+                    premise={premise}
+                    fit="contain"
+                    className={styles.premiseDetails__gallery}
+                />
+                <Card background="gray" gap={40} align="start" fullWidth>
+                    <Flex
+                        direction="row"
+                        justify="between"
+                        align="start"
+                        wrap="wrap"
+                        fullWidth
+                        gap={12}
+                    >
+                        <Flex gap={6} align="start">
+                            <Text variant="24-med">{premise.name}</Text>
+                            {premise.sale_price && (
+                                <Text variant="24-med" color="primary-700">
+                                    {formatRubles(premise.sale_price)}
+                                </Text>
+                            )}
+                            {premise.rent_price && (
+                                <Text variant="20-med" color="primary-700">
+                                    {premise.sale_price && 'или '}
+                                    {formatRubles(premise.rent_price)} / месяц
+                                </Text>
+                            )}
+                        </Flex>
 
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.floor')}: {premise.floor}
-                    </Text>
+                        {isAgent && (
+                            <FlatButton
+                                type="button"
+                                className={classNames(styles.premiseDetails__generateLink)}
+                                onClick={() => setGenerateLinkOpen(true)}
+                            >
+                                <MedicalCrossIcon />
+                                <Text variant="12-med">{t('pages.building.generateLink')}</Text>
+                            </FlatButton>
+                        )}
+                    </Flex>
+                    <Flex gap={8} align="start">
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.address')}: {premise.address}
+                        </Text>
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.area')}: {premise.area}
+                        </Text>
 
-                    <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.tenant')}:{' '}
-                        {premise.has_tenant
-                            ? t(`components.OfficeCard.hasTennant`)
-                            : t(`components.OfficeCard.noTennant`)}
-                    </Text>
-                </Flex>
-            </Card>
-            <Flex direction="row" gap={6} align="stretch" fullWidth>
-                <Column>
-                    <Button variant="primary" width="max">
-                        {t('pages.building.reserve')}
-                    </Button>
-                </Column>
-                {/* TODO: Add details button */}
-                {/* <Column>
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.floor')}: {premise.floor}
+                        </Text>
+
+                        <Text variant="14-reg" color="gray-70">
+                            {t('pages.building.tenant')}:{' '}
+                            {premise.has_tenant
+                                ? t(`components.OfficeCard.hasTennant`)
+                                : t(`components.OfficeCard.noTennant`)}
+                        </Text>
+                    </Flex>
+                </Card>
+                <Flex direction="row" gap={6} align="stretch" fullWidth>
+                    <Column>
+                        <Button variant="primary" width="max">
+                            {t('pages.building.reserve')}
+                        </Button>
+                    </Column>
+                    {/* TODO: Add details button */}
+                    {/* <Column>
                     <Button variant="outlined" width="max">
                         {t('pages.building.details')}
                     </Button>
                 </Column> */}
-            </Flex>
-        </Card>
+                </Flex>
+            </Card>
+
+            <GenerateLinkModal
+                open={generateLinkOpen}
+                onClose={() => setGenerateLinkOpen(false)}
+                premise={premise}
+            />
+        </>
     );
 };
 
@@ -132,7 +188,7 @@ const FloorSchemaContent = (props: FloorSchemaContentProps) => {
 
     return (
         <FloorSchema
-            svg={fetchFloorSvgMock()}
+            svg={props.data.schema_svg || ''}
             rooms={floorData.premises ?? []}
             selectedPremiseId={selectedPremise}
             onRoomSelect={onPremiseSelect}
@@ -140,30 +196,12 @@ const FloorSchemaContent = (props: FloorSchemaContentProps) => {
     );
 };
 
-type OtherPremisesCardsProps = {
-    items: PremiseListItem[];
-    loadMore?: () => void;
-    loadMoreLoading?: boolean;
-};
-
-const OtherPremisesCards = (props: OtherPremisesCardsProps) => {
-    const { items, loadMore, loadMoreLoading } = props;
-
-    return (
-        <CardContainer loadMore={loadMore} loadMoreLoading={loadMoreLoading}>
-            {items.map(premiseData => (
-                <OfficeCard key={premiseData.uuid} item={premiseData} type="any" />
-            ))}
-        </CardContainer>
-    );
-};
-
 type BuildingContentProps = {
-    buildingInfo: BuildingInfo;
+    data: BuildingInfo;
 };
 
 export const BuildingContent = (props: BuildingContentProps) => {
-    const { buildingInfo } = props;
+    const { data: buildingInfo } = props;
 
     const { t } = useTranslation();
 
@@ -230,6 +268,19 @@ export const BuildingContent = (props: BuildingContentProps) => {
 
     const floorQ = useFloor(buildingInfo.uuid, currentFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
+
+    useEffect(() => {
+        if (selectedPremiseQ.data?.data && selectedPremiseQ.data?.data.floor !== currentFloor) {
+            setSearchParams(
+                toSearchParams({
+                    ...params,
+                    floor: selectedPremiseQ.data?.data.floor ?? 0,
+                    selectedPremise: undefined,
+                }),
+            );
+        }
+        return;
+    }, [selectedPremiseQ.data?.data, currentFloor, setSearchParams, params]);
 
     const onFloorSelect = useCallback(
         (floor: number) => {
@@ -301,6 +352,8 @@ export const BuildingContent = (props: BuildingContentProps) => {
                     </Flex>
                 </Card>
             </Flex>
+
+            {/* Каталог других офисов */}
             <Container>
                 <Flex direction="row" justify="between" align="center" fullWidth>
                     <Text variant="h2">{t('pages.building.officeCatalogue')}</Text>
@@ -322,15 +375,21 @@ export const BuildingContent = (props: BuildingContentProps) => {
                         items.length === 0 ? (
                             <Text color="gray-50">{t('pages.catalogue.noResults')}</Text>
                         ) : (
-                            <OtherPremisesCards
-                                items={items}
-                                loadMore={loadMore}
-                                loadMoreLoading={isFetchingNextPage}
-                            />
+                            <CardContainer loadMore={loadMore} loadMoreLoading={isFetchingNextPage}>
+                                {items.map(premiseData => (
+                                    <OfficeCard
+                                        key={premiseData.uuid}
+                                        item={premiseData}
+                                        type="any"
+                                    />
+                                ))}
+                            </CardContainer>
                         )
                     }
                 </InfiniteQueryBoundary>
             </Container>
+
+            {/* Картинки инфраструктуры */}
             <Container>
                 <Text variant="h2">{t('pages.building.infrastructure')}</Text>
                 <Flex direction="row" gap={12}>
@@ -352,21 +411,5 @@ export const BuildingContent = (props: BuildingContentProps) => {
                 />
             </Container>
         </>
-    );
-};
-
-type BuildingDetailBoundaryContentProps = {
-    data: BuildingInfo;
-};
-
-export const BuildingDetailBoundaryContent = (props: BuildingDetailBoundaryContentProps) => {
-    return (
-        <Page>
-            <VerticalMainContainer>
-                <BuildingContent buildingInfo={props.data} />
-                <Benefits variant="sale" />
-                <FeedbackFormRow />
-            </VerticalMainContainer>
-        </Page>
     );
 };

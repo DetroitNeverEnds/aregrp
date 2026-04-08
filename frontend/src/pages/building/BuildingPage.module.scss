@@ -52,6 +52,11 @@
         height: 400px;
         width: 100%;
     }
+
+    /* FlatButton задаёт line-height: 0; для подписи как у Link нужна высота строки */
+    &__generateLink:hover {
+        color: $primary-700;
+    }
 }
 
 .gallery {

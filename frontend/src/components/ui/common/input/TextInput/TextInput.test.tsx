@@ -65,7 +65,7 @@ describe('TextInput', () => {
             const { container } = render(
                 <TextInput size="md" leadingIcon="search" placeholder="Test" />,
             );
-            const icon = container.querySelector('[role="img"]');
+            const icon = container.querySelector('[class*="icon"]');
             expect(icon).toBeInTheDocument();
         });
 

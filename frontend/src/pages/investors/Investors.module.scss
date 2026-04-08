@@ -1,0 +1,50 @@
+.hero {
+    margin-bottom: 20px;
+    position: relative;
+    padding-top: 85px;
+    padding-bottom: 190px;
+    border-radius: 0 0 $border-radius-xl $border-radius-xl;
+    overflow: hidden;
+    background: $gradient-primary-700-900-lr;
+
+    &__content {
+        z-index: 1;
+
+        &__text {
+            width: 840px;
+        }
+    }
+
+    &__city {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+    }
+
+    &__arrow {
+        width: 600px;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+    }
+}
+
+.strategyCard {
+    flex: 1;
+
+    &__header {
+        height: 56px;
+    }
+}
+
+.faq {
+    width: 100%;
+}
+
+.faqItem {
+    align-items: flex-start;
+}
+
+.map {
+    height: 580px;
+}

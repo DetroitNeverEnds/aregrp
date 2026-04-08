@@ -78,18 +78,9 @@ export const TableHeaderCell = ({
 }: TableHeaderCellProps) => {
     const iconColor = active ? 'primary-700' : 'gray-70';
 
-    const ariaSort: React.AriaAttributes['aria-sort'] = !sortable
-        ? undefined
-        : sortDirection === 'asc'
-          ? 'ascending'
-          : sortDirection === 'desc'
-            ? 'descending'
-            : 'none';
-
     return (
         <th
             scope={scope}
-            aria-sort={ariaSort}
             className={classNames(
                 styles.th,
                 styles[`th--size-${size}`],
@@ -118,14 +109,8 @@ export const TableHeaderCell = ({
                                 onSort?.();
                             }
                         }}
-                        aria-label="Сортировка"
                     >
-                        <Icon
-                            name={sortIconName(sortDirection)}
-                            size={16}
-                            color={iconColor}
-                            aria-hidden
-                        />
+                        <Icon name={sortIconName(sortDirection)} size={16} color={iconColor} />
                     </button>
                 )}
                 <span className={styles.headerLabel}>{children}</span>

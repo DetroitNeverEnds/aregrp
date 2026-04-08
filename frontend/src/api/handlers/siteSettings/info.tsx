@@ -1,5 +1,6 @@
 import { api } from '../../base/api';
 
+/** OpenAPI: MainSettingsOut */
 export type InfoResponse = {
     phone: string;
     display_phone: string;
@@ -9,6 +10,7 @@ export type InfoResponse = {
     description?: string | null;
     inn?: string | null;
     org_name?: string | null;
+    cases?: string | null;
 };
 
 export const siteInfo = api.get<void, InfoResponse>('/site-settings/main-info');

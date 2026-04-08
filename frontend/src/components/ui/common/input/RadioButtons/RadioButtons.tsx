@@ -97,7 +97,7 @@ export const RadioButtons: React.FC<RadioButtonsProps> = ({
 
     return (
         <div className={containerClassNames}>
-            <div className={groupClassNames} role="radiogroup">
+            <div className={groupClassNames}>
                 {options.map(option => {
                     const isChecked = value === option.value;
                     const isDisabled = disabled || option.disabled;
@@ -126,7 +126,6 @@ export const RadioButtons: React.FC<RadioButtonsProps> = ({
                                     onKeyDown={e =>
                                         handleKeyDown(e, option.value, Boolean(isDisabled))
                                     }
-                                    aria-checked={isChecked}
                                 />
                                 <div className={radioClassNames}>
                                     {isChecked && <div className={styles['radio-inner-circle']} />}

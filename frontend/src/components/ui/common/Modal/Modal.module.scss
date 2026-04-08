@@ -1,0 +1,33 @@
+.root {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.backdrop {
+    position: absolute;
+    inset: 0;
+    background: $gray-opacity-100-70;
+    cursor: pointer;
+}
+
+.header {
+    padding: 15px 20px 0;
+}
+
+.content {
+    padding: 0 40px 40px;
+}
+
+.panel {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 560px;
+    background: $gray-0;
+    border-radius: $border-radius-l;
+    box-sizing: border-box;
+    overflow: hidden;
+}

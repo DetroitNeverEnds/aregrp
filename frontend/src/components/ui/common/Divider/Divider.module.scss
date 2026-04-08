@@ -2,12 +2,12 @@
     background-color: $gray-50;
     border: none;
 
-    &--horizontal {
+    &__horizontal {
         width: 100%;
         height: 1px;
     }
 
-    &--vertical {
+    &__vertical {
         width: 1px;
         height: 100%;
     }

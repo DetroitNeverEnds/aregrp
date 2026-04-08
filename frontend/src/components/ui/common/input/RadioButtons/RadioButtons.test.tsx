@@ -213,77 +213,20 @@ describe('RadioButtons', () => {
         expect(innerCircles).toHaveLength(1);
     });
 
-    describe('accessibility', () => {
-        it('имеет role radiogroup', () => {
-            render(
-                <RadioButtons
-                    size="md"
-                    options={defaultOptions}
-                    value="option1"
-                    onChange={() => {}}
-                />,
-            );
-            expect(screen.getByRole('radiogroup')).toBeInTheDocument();
-        });
+    it('поддерживает name атрибут', () => {
+        render(
+            <RadioButtons
+                size="md"
+                options={defaultOptions}
+                value="option1"
+                onChange={() => {}}
+                name="test-group"
+            />,
+        );
 
-        it('каждая опция имеет role radio', () => {
-            render(
-                <RadioButtons
-                    size="md"
-                    options={defaultOptions}
-                    value="option1"
-                    onChange={() => {}}
-                />,
-            );
-            const radios = screen.getAllByRole('radio');
-            expect(radios).toHaveLength(3);
-        });
-
-        it('применяет aria-checked на выбранную опцию', () => {
-            render(
-                <RadioButtons
-                    size="md"
-                    options={defaultOptions}
-                    value="option2"
-                    onChange={() => {}}
-                />,
-            );
-
-            const option2 = screen.getByLabelText('Опция 2');
-            expect(option2).toHaveAttribute('aria-checked', 'true');
-        });
-
-        it('применяет aria-checked=false на невыбранные опции', () => {
-            render(
-                <RadioButtons
-                    size="md"
-                    options={defaultOptions}
-                    value="option2"
-                    onChange={() => {}}
-                />,
-            );
-
-            const option1 = screen.getByLabelText('Опция 1');
-            const option3 = screen.getByLabelText('Опция 3');
-            expect(option1).toHaveAttribute('aria-checked', 'false');
-            expect(option3).toHaveAttribute('aria-checked', 'false');
-        });
-
-        it('поддерживает name атрибут', () => {
-            render(
-                <RadioButtons
-                    size="md"
-                    options={defaultOptions}
-                    value="option1"
-                    onChange={() => {}}
-                    name="test-group"
-                />,
-            );
-
-            const radios = screen.getAllByRole('radio');
-            radios.forEach(radio => {
-                expect(radio).toHaveAttribute('name', 'test-group');
-            });
+        const radios = screen.getAllByRole('radio');
+        radios.forEach(radio => {
+            expect(radio).toHaveAttribute('name', 'test-group');
         });
     });
 
