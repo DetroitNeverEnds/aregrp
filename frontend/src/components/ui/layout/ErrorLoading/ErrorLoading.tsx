@@ -15,7 +15,7 @@ export const ErrorLoading = (props: Props) => {
 
     return (
         <Flex justify="center" fullWidth className={styles.container} direction="column" gap={16}>
-            <Text variant="24-reg" color="error-default">
+            <Text variant="24-reg" color="error-default" align="center">
                 {t('layout.errorLoading')}: {props.message}
             </Text>
             {props.onRetry && (

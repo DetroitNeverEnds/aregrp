@@ -51,14 +51,16 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
         }).format(value);
     };
 
-    const link = useMemo(
-        () =>
-            `/building/${building_uuid}?${new URLSearchParams({
-                selectedPremise: uuid,
-                floor: String(floor),
-            })}`,
-        [building_uuid, floor, uuid],
-    );
+    const link = useMemo(() => {
+        const search: Record<string, string> = {
+            selectedPremise: uuid,
+            floor: String(floor),
+        };
+        if (type === 'sale' || type === 'rent') {
+            search.sale_type = type;
+        }
+        return `/building/${building_uuid}?${new URLSearchParams(search)}`;
+    }, [building_uuid, floor, type, uuid]);
 
     const traits = useMemo(() => {
         return [
@@ -105,7 +107,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                         )}
                     </Flex>
                 </Flex>
-                <Flex gap={20}>
+                <Flex gap={20} fullWidth>
                     <Divider />
 
                     <Flex direction="row" justify="between" align="start" gap={40} fullWidth>

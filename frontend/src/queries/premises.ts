@@ -161,10 +161,16 @@ export function useBuildingDetail(
 export function useFloorPremises(
     buildingUuid: string,
     floorNumber?: number,
+    saleType?: PremiseFilterParams['sale_type'],
 ): UseQueryResult<QueryResult<FloorPremiseOut[]>, Error> {
     return useQuery({
-        queryKey: ['floors', 'premises', buildingUuid, floorNumber],
-        queryFn: () => wrapApiCall(getFloorPremises)(buildingUuid, floorNumber as number),
+        queryKey: ['floors', 'premises', buildingUuid, floorNumber, saleType],
+        queryFn: () =>
+            wrapApiCall(getFloorPremises)(
+                buildingUuid,
+                floorNumber as number,
+                saleType ? { sale_type: saleType } : undefined,
+            ),
         enabled: !!buildingUuid && typeof floorNumber === 'number',
     });
 }
@@ -175,10 +181,16 @@ export function useFloorPremises(
 export function useFloor(
     buildingUuid: string,
     floorNumber?: number,
+    saleType?: PremiseFilterParams['sale_type'],
 ): UseQueryResult<QueryResult<FloorResponseOut>, Error> {
     return useQuery({
-        queryKey: ['floors', 'detail', buildingUuid, floorNumber],
-        queryFn: () => wrapApiCall(getFloor)(buildingUuid, floorNumber as number),
+        queryKey: ['floors', 'detail', buildingUuid, floorNumber, saleType],
+        queryFn: () =>
+            wrapApiCall(getFloor)(
+                buildingUuid,
+                floorNumber as number,
+                // saleType ? { sale_type: saleType } : undefined,
+            ),
         enabled: !!buildingUuid && typeof floorNumber === 'number',
     });
 }

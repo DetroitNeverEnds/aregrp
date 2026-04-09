@@ -53,11 +53,11 @@ export const ObjectsFilter = ({ defaultValues }: ObjectsFilterProps) => {
                             options={[
                                 {
                                     value: 'sale',
-                                    label: t('common.buyment'),
+                                    label: t('common.sale'),
                                 },
                                 {
                                     value: 'rent',
-                                    label: t('common.rentment'),
+                                    label: t('common.rent'),
                                 },
                             ]}
                             value={value}

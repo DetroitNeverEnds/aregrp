@@ -23,28 +23,38 @@ import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedS
 import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';
 import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
 import { useUser } from '@/queries/profile';
-import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListItem } from '@/api';
+import type {
+    BuildingDetailOut,
+    FloorResponseOut,
+    PremiseDetail,
+    PremiseListItem,
+    SaleType,
+} from '@/api';
 import MedicalCrossIcon from './medical-cross.svg?react';
 import { GenerateLinkModal } from './GenerateLinkModal';
 
 import styles from './BuildingPage.module.scss';
+import { SingleSelect } from '@/components/ui/common/input/Select';
 
 type BuildingInfo = BuildingDetailOut;
 
 type BuildingSearchParams = {
     floor: number;
     selectedPremise?: string;
+    sale_type?: 'sale' | 'rent';
 };
 
 const parseBuildingSearchParams: SearchParamsParser<BuildingSearchParams> = raw => ({
     floor: Number(raw.floor) || 1,
     selectedPremise: raw.selectedPremise || undefined,
+    sale_type: raw.sale_type === 'sale' || raw.sale_type === 'rent' ? raw.sale_type : undefined,
 });
 
 const toSearchParams = (params: BuildingSearchParams): Record<string, string> => {
     const result: Record<string, string> = {};
     if (params.floor) result.floor = String(params.floor);
     if (params.selectedPremise) result.selectedPremise = params.selectedPremise;
+    if (params.sale_type) result.sale_type = params.sale_type;
     return result;
 };
 
@@ -75,81 +85,75 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
 
     return (
         <>
-            <Card withShadow gap={12} className={styles.officeCard} align="start">
-                <Gallery
-                    premise={premise}
-                    fit="contain"
-                    className={styles.premiseDetails__gallery}
-                />
-                <Card background="gray" gap={40} align="start" fullWidth>
-                    <Flex
-                        direction="row"
-                        justify="between"
-                        align="start"
-                        wrap="wrap"
-                        fullWidth
-                        gap={12}
-                    >
-                        <Flex gap={6} align="start">
-                            <Text variant="24-med">{premise.name}</Text>
-                            {premise.sale_price && (
-                                <Text variant="24-med" color="primary-700">
-                                    {formatRubles(premise.sale_price)}
-                                </Text>
-                            )}
-                            {premise.rent_price && (
-                                <Text variant="20-med" color="primary-700">
-                                    {premise.sale_price && 'или '}
-                                    {formatRubles(premise.rent_price)} / месяц
-                                </Text>
-                            )}
-                        </Flex>
-
-                        {isAgent && (
-                            <FlatButton
-                                type="button"
-                                className={classNames(styles.premiseDetails__generateLink)}
-                                onClick={() => setGenerateLinkOpen(true)}
-                            >
-                                <MedicalCrossIcon />
-                                <Text variant="12-med">{t('pages.building.generateLink')}</Text>
-                            </FlatButton>
+            <Gallery premise={premise} fit="contain" className={styles.premiseDetails__gallery} />
+            <Card background="gray" gap={40} align="start" fullWidth>
+                <Flex
+                    direction="row"
+                    justify="between"
+                    align="start"
+                    wrap="wrap"
+                    fullWidth
+                    gap={12}
+                >
+                    <Flex gap={6} align="start">
+                        <Text variant="24-med">{premise.name}</Text>
+                        {premise.sale_price && (
+                            <Text variant="24-med" color="primary-700">
+                                {formatRubles(premise.sale_price)}
+                            </Text>
+                        )}
+                        {premise.rent_price && (
+                            <Text variant="20-med" color="primary-700">
+                                {premise.sale_price && 'или '}
+                                {formatRubles(premise.rent_price)} / месяц
+                            </Text>
                         )}
                     </Flex>
-                    <Flex gap={8} align="start">
-                        <Text variant="14-reg" color="gray-70">
-                            {t('pages.building.address')}: {premise.address}
-                        </Text>
-                        <Text variant="14-reg" color="gray-70">
-                            {t('pages.building.area')}: {premise.area}
-                        </Text>
 
-                        <Text variant="14-reg" color="gray-70">
-                            {t('pages.building.floor')}: {premise.floor}
-                        </Text>
+                    {isAgent && (
+                        <FlatButton
+                            type="button"
+                            className={classNames(styles.premiseDetails__generateLink)}
+                            onClick={() => setGenerateLinkOpen(true)}
+                        >
+                            <MedicalCrossIcon />
+                            <Text variant="12-med">{t('pages.building.generateLink')}</Text>
+                        </FlatButton>
+                    )}
+                </Flex>
+                <Flex gap={8} align="start">
+                    <Text variant="14-reg" color="gray-70">
+                        {t('pages.building.address')}: {premise.address}
+                    </Text>
+                    <Text variant="14-reg" color="gray-70">
+                        {t('pages.building.area')}: {premise.area}
+                    </Text>
 
-                        <Text variant="14-reg" color="gray-70">
-                            {t('pages.building.tenant')}:{' '}
-                            {premise.has_tenant
-                                ? t(`components.OfficeCard.hasTennant`)
-                                : t(`components.OfficeCard.noTennant`)}
-                        </Text>
-                    </Flex>
-                </Card>
-                <Flex direction="row" gap={6} align="stretch" fullWidth>
-                    <Column>
-                        <Button variant="primary" width="max">
-                            {t('pages.building.reserve')}
-                        </Button>
-                    </Column>
-                    {/* TODO: Add details button */}
-                    {/* <Column>
+                    <Text variant="14-reg" color="gray-70">
+                        {t('pages.building.floor')}: {premise.floor}
+                    </Text>
+
+                    <Text variant="14-reg" color="gray-70">
+                        {t('pages.building.tenant')}:{' '}
+                        {premise.has_tenant
+                            ? t(`components.OfficeCard.hasTennant`)
+                            : t(`components.OfficeCard.noTennant`)}
+                    </Text>
+                </Flex>
+            </Card>
+            <Flex direction="row" gap={6} align="stretch" fullWidth>
+                <Column>
+                    <Button variant="primary" width="max">
+                        {t('pages.building.reserve')}
+                    </Button>
+                </Column>
+                {/* TODO: Add details button */}
+                {/* <Column>
                     <Button variant="outlined" width="max">
                         {t('pages.building.details')}
                     </Button>
                 </Column> */}
-                </Flex>
-            </Card>
+            </Flex>
 
             <GenerateLinkModal
                 open={generateLinkOpen}
@@ -205,23 +209,42 @@ export const BuildingContent = (props: BuildingContentProps) => {
 
     const { t } = useTranslation();
 
+    const [params, _rawParams, setSearchParams] = useTypedSearchParams(parseBuildingSearchParams);
+    const setSaleType = useCallback(
+        (saleType: SaleType) => {
+            setSearchParams(toSearchParams({ ...params, sale_type: saleType || 'sale' }));
+        },
+        [params, setSearchParams],
+    );
+
+    // На обновление параметров, скроллим наверх
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [params.floor, params.selectedPremise]);
+
     const legend = useMemo(
         () => [
             {
                 title: t('pages.building.legend.free'),
-                style: styles.floorchema__legend__free,
+                style: styles.floorSchema__legend__free,
             },
             {
                 title: t('pages.building.legend.occupied'),
-                style: styles.floorchema__legend__occupied,
+                style: styles.floorSchema__legend__occupied,
             },
             {
                 title: t('pages.building.legend.other'),
-                style: styles.floorchema__legend__other,
+                style: styles.floorSchema__legend__other,
             },
         ],
         [t],
     );
+
+    const buildingPageSearch = useMemo(() => {
+        const q = toSearchParams(params);
+        const s = new URLSearchParams(q).toString();
+        return s ? `?${s}` : '';
+    }, [params]);
 
     const layoutSettings = useMemo<LayoutSettings>(
         () => ({
@@ -229,12 +252,15 @@ export const BuildingContent = (props: BuildingContentProps) => {
                 theme: 'light',
                 breadcrumbs: [
                     { to: '/', label: t('bc.main') },
-                    { to: `/building/${buildingInfo.uuid}`, label: buildingInfo.title },
+                    {
+                        to: `/building/${buildingInfo.uuid}${buildingPageSearch}`,
+                        label: buildingInfo.title,
+                    },
                 ],
             },
             mainContentBackground: 'gray-0',
         }),
-        [buildingInfo.title, buildingInfo.uuid, t],
+        [buildingInfo.title, buildingInfo.uuid, buildingPageSearch, t],
     );
     useLayoutSettings(layoutSettings);
 
@@ -249,9 +275,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
         [buildingInfo.media, currentMediaCategory],
     );
 
-    // Floor, selected premise, and catalog filter (local state, not in URL)
-    const [params, _rawParams, setSearchParams] = useTypedSearchParams(parseBuildingSearchParams);
-    const { floor: currentFloor, selectedPremise } = params;
+    const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloor } = params;
 
     const [catalogFilter, setCatalogFilter] = useState<{
         min_price?: number;
@@ -261,12 +285,16 @@ export const BuildingContent = (props: BuildingContentProps) => {
     }>({});
 
     const otherPremisesParams = useMemo(
-        () => ({ building_uuids: buildingInfo.uuid, ...catalogFilter }),
-        [buildingInfo.uuid, catalogFilter],
+        () => ({
+            building_uuids: buildingInfo.uuid,
+            ...catalogFilter,
+            ...(saleTypeForFloor ? { sale_type: saleTypeForFloor } : {}),
+        }),
+        [buildingInfo.uuid, catalogFilter, saleTypeForFloor],
     );
     const premisesInfiniteQ = usePremisesInfinite(otherPremisesParams);
 
-    const floorQ = useFloor(buildingInfo.uuid, currentFloor);
+    const floorQ = useFloor(buildingInfo.uuid, currentFloor, saleTypeForFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     useEffect(() => {
@@ -309,19 +337,28 @@ export const BuildingContent = (props: BuildingContentProps) => {
                     style={{ width: selectedPremise ? 500 : 0 }}
                 >
                     {selectedPremise && (
-                        <QueryBoundary
-                            query={selectedPremiseQ}
-                            Component={PremiseDetailsCard}
-                            onRetry="default"
-                        />
+                        <Card withShadow gap={12} className={styles.officeCard} align="start">
+                            <QueryBoundary
+                                query={selectedPremiseQ}
+                                Component={PremiseDetailsCard}
+                                onRetry="default"
+                            />
+                        </Card>
                     )}
                 </div>
                 <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
-                    <Flex direction="row" justify="between" align="start">
-                        <Text variant="h2" className={styles.floorchema__header__text}>
+                    <Flex direction="row" justify="between" align="start" fullWidth>
+                        <Text variant="h2" className={styles.floorSchema__header__text}>
                             {buildingInfo?.title}
-                            {/* ({buildingInfo?.address}) */}
                         </Text>
+                        <SingleSelect<SaleType>
+                            options={[
+                                { label: { title: t('common.sale') }, value: 'sale' },
+                                { label: { title: t('common.rent') }, value: 'rent' },
+                            ]}
+                            onChange={val => setSaleType(val || 'sale')}
+                            value={saleTypeForFloor}
+                        />
                     </Flex>
                     <Flex gap={40} fullWidth>
                         <Flex direction="row" gap={20}>
@@ -380,7 +417,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
                                     <OfficeCard
                                         key={premiseData.uuid}
                                         item={premiseData}
-                                        type="any"
+                                        type={saleTypeForFloor || 'any'}
                                     />
                                 ))}
                             </CardContainer>

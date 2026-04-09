@@ -10,12 +10,16 @@ import { ErrorLoading } from '@/components/ui/layout/ErrorLoading/ErrorLoading';
 import { useBuildingDetail } from '@/queries';
 
 import { BuildingContent } from './BuildingPage.components';
+import { useEffect } from 'react';
 
 type Params = { buildingUuid: string };
 
 export const BuildingPage = () => {
     const { t } = useTranslation();
     const { buildingUuid } = useParams<Params>();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [buildingUuid]);
 
     const buildingDetailQ = useBuildingDetail(buildingUuid || '');
 

@@ -102,6 +102,7 @@ export const ProfileObjectsCard = () => {
                     width="auto"
                     to={`/building/${row.building.uuid}?${new URLSearchParams({
                         selectedPremise: row.premise.uuid,
+                        sale_type: dealType,
                     })}`}
                 >
                     {t('pages.profile.booking.viewAction')}
