@@ -79,6 +79,7 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
 
     const { t } = useTranslation();
     const user = useUser().data?.data;
+    const isAuthenticated = user !== undefined;
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
@@ -142,10 +143,15 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
                 </Flex>
             </Card>
             <Flex direction="row" gap={6} align="stretch" fullWidth>
-                <Column>
-                    <Button variant="primary" width="max">
-                        {t('pages.building.reserve')}
+                <Column gap={6} align="center">
+                    <Button variant="primary" width="max" disabled={!isAuthenticated}>
+                        {t('pages.building.book')}
                     </Button>
+                    {!isAuthenticated && (
+                        <Text color="gray-50" variant="12-reg">
+                            {t('pages.building.authToBook')}
+                        </Text>
+                    )}
                 </Column>
                 {/* TODO: Add details button */}
                 {/* <Column>
@@ -275,7 +281,8 @@ export const BuildingContent = (props: BuildingContentProps) => {
         [buildingInfo.media, currentMediaCategory],
     );
 
-    const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloor } = params;
+    const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloorFromParams } = params;
+    const saleTypeForFloor = saleTypeForFloorFromParams || 'sale';
 
     const [catalogFilter, setCatalogFilter] = useState<{
         min_price?: number;

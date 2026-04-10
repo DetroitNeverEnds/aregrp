@@ -45,8 +45,10 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
                                 key={fullSrc}
                                 className={mediaClass}
                                 src={fullSrc}
-                                controls
+                                controls={false}
                                 playsInline
+                                autoPlay
+                                loop
                             />
                         )}
                     </div>
