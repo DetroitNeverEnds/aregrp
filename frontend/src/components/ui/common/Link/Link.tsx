@@ -38,7 +38,7 @@ export const Link: React.FC<LinkProps> = ({
     trailingIcon,
     className = '',
     ellipsis = false,
-    target = '_blank',
+    target,
 }) => {
     // Маппинг размеров на размеры иконок
     const sizeToIconSize: Record<LinkSize, 14 | 16 | 20 | 24> = {
