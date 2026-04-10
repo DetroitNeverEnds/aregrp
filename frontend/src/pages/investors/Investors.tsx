@@ -220,7 +220,7 @@ export const Investors = () => {
                     />
                 </Container>
 
-                <FeedbackFormRow ref={feedbackSectionRef} />
+                <FeedbackFormRow ref={feedbackSectionRef} originKey="investors" />
 
                 <Container gap="regular" fullWidth>
                     <Text variant="h2" color="gray-100">

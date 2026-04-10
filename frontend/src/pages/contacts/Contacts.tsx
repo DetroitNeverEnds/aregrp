@@ -174,7 +174,7 @@ export const Contacts = () => {
             </TwoColumnsContainer>
 
             {/* Форма */}
-            <FeedbackFormRow />
+            <FeedbackFormRow originKey="contacts" />
         </VerticalMainContainer>
     );
 };

@@ -161,7 +161,7 @@ export const Root = () => {
                 <BenifitsWorking variant="working" />
 
                 {/* Feedback form */}
-                <FeedbackFormRow />
+                <FeedbackFormRow originKey="main" />
             </VerticalMainContainer>
         </Page>
     );

@@ -7,28 +7,32 @@ import { FeedbackForm } from '../../forms/FeedbackForm';
 import styles from './FeedbackFormRow.module.scss';
 import { forwardRef } from 'react';
 
-export type FeedbackFormRowProps = object;
+export type FeedbackFormRowProps = {
+    originKey: string;
+};
 
-export const FeedbackFormRow = forwardRef<HTMLDivElement, FeedbackFormRowProps>((_, ref) => {
-    const { t } = useTranslation();
+export const FeedbackFormRow = forwardRef<HTMLDivElement, FeedbackFormRowProps>(
+    ({ originKey }, ref) => {
+        const { t } = useTranslation();
 
-    return (
-        <TwoColumnsContainer ref={ref}>
-            <Column>
-                <Flex className={styles.formColumnContent} gap={80}>
-                    <Flex gap={20} align="start">
-                        <Text color="gray-50">{t('pages.contacts.planView')}</Text>
-                        <Text variant="h2">
-                            {t('pages.contacts.fillForm')}{' '}
-                            <Text variant="h2" color="gray-50">
-                                {t('pages.contacts.forDetails')}
+        return (
+            <TwoColumnsContainer ref={ref}>
+                <Column>
+                    <Flex align="start" className={styles.formColumnContent} gap={80}>
+                        <Flex gap={20} align="start">
+                            <Text color="gray-50">{t('pages.contacts.planView')}</Text>
+                            <Text variant="h2">
+                                {t('pages.contacts.fillForm')}{' '}
+                                <Text variant="h2" color="gray-50">
+                                    {t('pages.contacts.forDetails')}
+                                </Text>
                             </Text>
-                        </Text>
+                        </Flex>
+                        <FeedbackForm originKey={originKey} />
                     </Flex>
-                    <FeedbackForm />
-                </Flex>
-            </Column>
-            <Column className={styles.imgColumn} />
-        </TwoColumnsContainer>
-    );
-});
+                </Column>
+                <Column className={styles.imgColumn} />
+            </TwoColumnsContainer>
+        );
+    },
+);

@@ -25,17 +25,8 @@ export type LinkProps = {
     /** Дополнительный CSS класс */
     className?: string;
     ellipsis?: boolean;
+    target?: '_blank' | '_self' | '_parent' | '_top';
 };
-
-// export type LinkProps =
-//     | (SharedLinkProps & { variant?: 'default' } & Omit<
-//               RouterLinkProps,
-//               'to' | 'children' | 'className'
-//           >)
-//     | (SharedLinkProps & { variant: 'external' } & Omit<
-//               React.AnchorHTMLAttributes<HTMLAnchorElement>,
-//               'href' | 'children' | 'className'
-//           >);
 
 export const Link: React.FC<LinkProps> = ({
     to,
@@ -47,6 +38,7 @@ export const Link: React.FC<LinkProps> = ({
     trailingIcon,
     className = '',
     ellipsis = false,
+    target = '_blank',
 }) => {
     // Маппинг размеров на размеры иконок
     const sizeToIconSize: Record<LinkSize, 14 | 16 | 20 | 24> = {
@@ -79,7 +71,7 @@ export const Link: React.FC<LinkProps> = ({
 
     if (variant === 'external') {
         return (
-            <a href={to} className={linkClassNames}>
+            <a href={to} className={linkClassNames} target={target}>
                 {content}
             </a>
         );
@@ -87,7 +79,7 @@ export const Link: React.FC<LinkProps> = ({
 
     if (variant === 'default') {
         return (
-            <RouterLink to={to} className={linkClassNames}>
+            <RouterLink to={to} className={linkClassNames} target={target}>
                 {content}
             </RouterLink>
         );

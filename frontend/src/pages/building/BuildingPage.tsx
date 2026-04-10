@@ -32,7 +32,7 @@ export const BuildingPage = () => {
                     <ErrorLoading message={t('errors.somethingWrong')} />
                 )}
                 <Benefits variant="sale" />
-                <FeedbackFormRow />
+                <FeedbackFormRow originKey="building" />
             </VerticalMainContainer>
         </Page>
     );
