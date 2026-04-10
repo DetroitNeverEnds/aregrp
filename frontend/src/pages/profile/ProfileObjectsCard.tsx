@@ -113,10 +113,10 @@ export const ProfileObjectsCard = () => {
         const middle = userResult?.data?.user_type === 'agent' ? [commission] : [];
 
         if (dealType === 'rent') {
-            return [office, objectCol, ...middle, contractType, action];
+            return [office, objectCol, ...middle, expires, action];
         }
         if (dealType === 'sale') {
-            return [office, objectCol, ...middle, expires, action];
+            return [office, objectCol, ...middle, contractType, action];
         }
         return [];
     }, [dealType, userResult?.data?.user_type, t]);

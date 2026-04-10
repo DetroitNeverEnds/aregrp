@@ -59,7 +59,7 @@ export function useRegisterMutation(
             });
         },
         async onSuccess(data, variables, onMutateResult, mutationContext) {
-            await queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await queryClient.invalidateQueries({ queryKey: ['profile'] });
             onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
         ...restOptions,
@@ -74,7 +74,7 @@ export function useLoginMutation(
     return useMutation({
         mutationFn: login,
         async onSuccess(data, variables, onMutateResult, mutationContext) {
-            await queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await queryClient.invalidateQueries({ queryKey: ['profile'] });
             onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
         ...restOptions,
@@ -87,7 +87,7 @@ export function useLogoutMutation(
     return useMutation({
         mutationFn: logout,
         async onSuccess(_data, _variables, _onMutateResult, context) {
-            await context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await context.client.invalidateQueries({ queryKey: ['profile'] });
         },
         ...options,
     });
@@ -108,7 +108,7 @@ export function useConfirmPasswordResetMutation(
     return useMutation({
         mutationFn: confirmPasswordReset,
         async onSuccess(_data, _variables, _onMutateResult, context) {
-            await context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await context.client.invalidateQueries({ queryKey: ['profile'] });
         },
         ...options,
     });
