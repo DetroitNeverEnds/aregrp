@@ -80,12 +80,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
         <div className={styles.officeCard}>
             <Gallery premise={item} className={styles.officeCard__gallery} />
 
-            <Flex
-                direction="column"
-                justify="between"
-                gap={20}
-                className={styles.officeCard__content}
-            >
+            <Flex direction="column" gap={20} className={styles.officeCard__content}>
                 <Flex
                     direction="row"
                     justify="between"
@@ -107,28 +102,27 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                         )}
                     </Flex>
                 </Flex>
-                <Flex gap={20} fullWidth>
-                    <Divider />
 
-                    <Flex direction="row" justify="between" align="start" gap={40} fullWidth>
-                        <Flex gap={20} align="start">
-                            {traits.map(trait => (
-                                <Flex key={trait.label} direction="row">
-                                    <Text variant="20-reg">
-                                        {trait.label}: {trait.value}
-                                    </Text>
-                                </Flex>
-                            ))}
-                        </Flex>
-                        <Button
-                            to={link}
-                            size="lg"
-                            variant="primary"
-                            icon="arrow-button"
-                            iconColor="primary-yellow"
-                            onlyIcon
-                        />
+                <Divider />
+
+                <Flex direction="row" align="start" gap={40} fullWidth>
+                    <Flex gap={20} align="start">
+                        {traits.map(trait => (
+                            <Flex key={trait.label} direction="row">
+                                <Text variant="20-reg">
+                                    {trait.label}: {trait.value}
+                                </Text>
+                            </Flex>
+                        ))}
                     </Flex>
+                    <Button
+                        to={link}
+                        size="lg"
+                        variant="primary"
+                        icon="arrow-button"
+                        iconColor="primary-yellow"
+                        onlyIcon
+                    />
                 </Flex>
             </Flex>
         </div>

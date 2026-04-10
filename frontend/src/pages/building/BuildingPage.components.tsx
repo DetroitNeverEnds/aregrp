@@ -441,6 +441,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
                     ))}
                 </Flex>
                 <Gallery
+                    type="full"
                     size="l"
                     media={selectedMedia}
                     className={styles.gallery}

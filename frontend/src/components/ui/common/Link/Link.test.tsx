@@ -20,6 +20,16 @@ describe('Link', () => {
         expect(link).toHaveAttribute('href', '/about');
     });
 
+    it('при variant="external" рендерит обычную ссылку с полным href', () => {
+        renderWithRouter(
+            <Link to="https://example.com/page" variant="external">
+                Внешняя
+            </Link>,
+        );
+        const link = screen.getByText('Внешняя').closest('a');
+        expect(link).toHaveAttribute('href', 'https://example.com/page');
+    });
+
     it('использует size по умолчанию medium', () => {
         renderWithRouter(<Link to="/test">Текст</Link>);
         const link = screen.getByText('Текст').closest('a');

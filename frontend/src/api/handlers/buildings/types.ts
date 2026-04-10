@@ -36,6 +36,7 @@ export type BuildingsCatalogueResponse = {
 export type BuildingMediaItem = {
     type: 'photo' | 'video';
     url: string;
+    full_url?: string;
     category?: string;
     title?: string | null;
 };

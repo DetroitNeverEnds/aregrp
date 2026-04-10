@@ -1,0 +1,48 @@
+.control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+
+    &__left {
+        left: 12px;
+    }
+
+    &__right {
+        right: 12px;
+    }
+
+    &__modal {
+        z-index: 4;
+    }
+}
+
+.slider {
+    position: absolute;
+    z-index: 3;
+
+    &__size-m {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        width: calc(100% - 24px);
+    }
+
+    &__size-l {
+        bottom: 24px;
+        left: 24px;
+        right: 24px;
+        width: calc(100% - 48px);
+    }
+
+    &__item {
+        flex-grow: 1;
+        height: 4px;
+        border-radius: 1000px;
+        background-color: $gray-opacity-20-40;
+
+        &__active {
+            background-color: $gray-opacity-0-80;
+        }
+    }
+}

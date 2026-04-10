@@ -171,6 +171,7 @@ export const Investors = () => {
                                                 size="sm"
                                                 theme="black"
                                                 trailingIcon="download-rounded"
+                                                target="_blank"
                                             >
                                                 {t('pages.investors.strategies.casesLink')}
                                             </Link>
