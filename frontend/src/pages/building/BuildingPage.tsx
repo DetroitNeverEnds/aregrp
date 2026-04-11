@@ -27,7 +27,10 @@ export const BuildingPage = () => {
         <Page>
             <VerticalMainContainer>
                 {buildingUuid ? (
-                    <QueryBoundary query={buildingDetailQ} Component={BuildingContent} />
+                    <QueryBoundary
+                        query={buildingDetailQ}
+                        render={data => <BuildingContent data={data} />}
+                    />
                 ) : (
                     <ErrorLoading message={t('errors.somethingWrong')} />
                 )}

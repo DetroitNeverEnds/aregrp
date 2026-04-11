@@ -60,6 +60,7 @@ const toSearchParams = (params: BuildingSearchParams): Record<string, string> =>
 
 type PremiseDetailsCardProps = {
     data: PremiseDetail;
+    canBook: boolean;
 };
 
 const formatRubles = (value: number | null | undefined) => {
@@ -74,9 +75,7 @@ const formatRubles = (value: number | null | undefined) => {
     }).format(value);
 };
 
-const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
-    const premise = props.data;
-
+const PremiseDetailsCard = ({ data: premise, canBook }: PremiseDetailsCardProps) => {
     const { t } = useTranslation();
     const user = useUser().data?.data;
     const isAuthenticated = user !== undefined;
@@ -143,16 +142,18 @@ const PremiseDetailsCard = (props: PremiseDetailsCardProps) => {
                 </Flex>
             </Card>
             <Flex direction="row" gap={6} align="stretch" fullWidth>
-                <Column gap={6} align="center">
-                    <Button variant="primary" width="max" disabled={!isAuthenticated}>
-                        {t('pages.building.book')}
-                    </Button>
-                    {!isAuthenticated && (
-                        <Text color="gray-50" variant="12-reg">
-                            {t('pages.building.authToBook')}
-                        </Text>
-                    )}
-                </Column>
+                {canBook && (
+                    <Column gap={6} align="center">
+                        <Button variant="primary" width="max" disabled={!isAuthenticated}>
+                            {t('pages.building.book')}
+                        </Button>
+                        {!isAuthenticated && (
+                            <Text color="gray-50" variant="12-reg">
+                                {t('pages.building.authToBook')}
+                            </Text>
+                        )}
+                    </Column>
+                )}
                 {/* TODO: Add details button */}
                 {/* <Column>
                     <Button variant="outlined" width="max">
@@ -210,18 +211,24 @@ type BuildingContentProps = {
     data: BuildingInfo;
 };
 
-export const BuildingContent = (props: BuildingContentProps) => {
-    const { data: buildingInfo } = props;
-
+export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) => {
     const { t } = useTranslation();
 
     const [params, _rawParams, setSearchParams] = useTypedSearchParams(parseBuildingSearchParams);
     const setSaleType = useCallback(
         (saleType: SaleType) => {
-            setSearchParams(toSearchParams({ ...params, sale_type: saleType || 'sale' }));
+            setSearchParams(
+                toSearchParams({
+                    ...params,
+                    selectedPremise: undefined,
+                    sale_type: saleType || 'sale',
+                }),
+            );
         },
         [params, setSearchParams],
     );
+    const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloorFromParams } = params;
+    const saleTypeForFloor = saleTypeForFloorFromParams || 'sale';
 
     // На обновление параметров, скроллим наверх
     useEffect(() => {
@@ -235,15 +242,19 @@ export const BuildingContent = (props: BuildingContentProps) => {
                 style: styles.floorSchema__legend__free,
             },
             {
-                title: t('pages.building.legend.occupied'),
-                style: styles.floorSchema__legend__occupied,
+                title: t(
+                    saleTypeForFloor === 'sale'
+                        ? 'pages.building.legend.unavailable_sale'
+                        : 'pages.building.legend.unavailable_rent',
+                ),
+                style: styles.floorSchema__legend__unavailable,
             },
             {
                 title: t('pages.building.legend.other'),
                 style: styles.floorSchema__legend__other,
             },
         ],
-        [t],
+        [saleTypeForFloor, t],
     );
 
     const buildingPageSearch = useMemo(() => {
@@ -281,9 +292,6 @@ export const BuildingContent = (props: BuildingContentProps) => {
         [buildingInfo.media, currentMediaCategory],
     );
 
-    const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloorFromParams } = params;
-    const saleTypeForFloor = saleTypeForFloorFromParams || 'sale';
-
     const [catalogFilter, setCatalogFilter] = useState<{
         min_price?: number;
         max_price?: number;
@@ -301,7 +309,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
     );
     const premisesInfiniteQ = usePremisesInfinite(otherPremisesParams);
 
-    const floorQ = useFloor(buildingInfo.uuid, currentFloor, saleTypeForFloor);
+    const floorQ = useFloor(buildingInfo.uuid, saleTypeForFloor, currentFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     useEffect(() => {
@@ -347,7 +355,18 @@ export const BuildingContent = (props: BuildingContentProps) => {
                         <Card withShadow gap={12} className={styles.officeCard} align="start">
                             <QueryBoundary
                                 query={selectedPremiseQ}
-                                Component={PremiseDetailsCard}
+                                render={data => (
+                                    <PremiseDetailsCard
+                                        data={data}
+                                        canBook={
+                                            saleTypeForFloor === 'sale' &&
+                                            (floorQ.data?.data?.premises?.find(
+                                                premise => premise.uuid === selectedPremise,
+                                            )?.is_available ??
+                                                false)
+                                        }
+                                    />
+                                )}
                                 onRetry="default"
                             />
                         </Card>
@@ -378,7 +397,7 @@ export const BuildingContent = (props: BuildingContentProps) => {
                         </Flex>
                         <QueryBoundary
                             query={floorQ}
-                            Component={FloorSchemaContent}
+                            render={data => <FloorSchemaContent data={data} />}
                             onRetry="default"
                         />
 

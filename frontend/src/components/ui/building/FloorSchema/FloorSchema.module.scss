@@ -2,7 +2,7 @@
 
 $free-room-color: $primary-700;
 $free-room-color-hover: $primary-800;
-$occupied-room-color: $error-default;
+$unavailable-room-color: $error-default;
 $other-room-color: $primary-200;
 
 .floorSchema {
@@ -60,10 +60,10 @@ $other-room-color: $primary-200;
                 fill: $primary-900;
             }
         }
-        &--occupied {
+        &--unavailable {
             @extend %roomBase;
             cursor: not-allowed;
-            fill: $occupied-room-color;
+            fill: $unavailable-room-color;
         }
     }
 }

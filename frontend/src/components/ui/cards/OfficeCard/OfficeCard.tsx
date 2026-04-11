@@ -105,7 +105,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
 
                 <Divider />
 
-                <Flex direction="row" align="start" gap={40} fullWidth>
+                <Flex direction="row" align="start" justify="between" gap={40} fullWidth>
                     <Flex gap={20} align="start">
                         {traits.map(trait => (
                             <Flex key={trait.label} direction="row">

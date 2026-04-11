@@ -19,6 +19,7 @@ import {
     type BuildingDetailOut,
     type FloorPremiseOut,
     type FloorResponseOut,
+    type SaleType,
 } from '../api';
 import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
 import Config from '@/config';
@@ -180,17 +181,13 @@ export function useFloorPremises(
  */
 export function useFloor(
     buildingUuid: string,
+    saleType: SaleType,
     floorNumber?: number,
-    saleType?: PremiseFilterParams['sale_type'],
 ): UseQueryResult<QueryResult<FloorResponseOut>, Error> {
     return useQuery({
         queryKey: ['floors', 'detail', buildingUuid, floorNumber, saleType],
         queryFn: () =>
-            wrapApiCall(getFloor)(
-                buildingUuid,
-                floorNumber as number,
-                // saleType ? { sale_type: saleType } : undefined,
-            ),
+            wrapApiCall(getFloor)(buildingUuid, floorNumber as number, { sale_type: saleType }),
         enabled: !!buildingUuid && typeof floorNumber === 'number',
     });
 }
