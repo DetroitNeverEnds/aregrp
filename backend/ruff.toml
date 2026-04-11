@@ -12,3 +12,6 @@ select = ["E", "F", "B", "I", "N", "SIM", "UP"]
 [lint.isort]
 combine-as-imports = true
 force-single-line = false
+
+[lint.per-file-ignores]
+"**/migrations/*.py" = ["E501"]

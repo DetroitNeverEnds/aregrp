@@ -1,21 +1,20 @@
-from ninja import Router
-from asgiref.sync import sync_to_async
-from django.core.exceptions import ValidationError
-from django.contrib.auth.password_validation import validate_password
-from django.db import IntegrityError
-from django.conf import settings
-from django.http import JsonResponse
+import logging
+
 import jwt
+from asgiref.sync import sync_to_async
+from django.conf import settings
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.http import JsonResponse
 from jwt import ExpiredSignatureError, InvalidTokenError
+from ninja import Router
 
 from api.schemas import ProblemDetail
-from ..errors import create_accounts_error, AccountsErrorCodes
 
-from ..schemas.auth import (
-    UserRegistrationIn, UserLoginIn, UserOut, AuthOut, 
-    PasswordResetIn, PasswordResetConfirmIn
-)
+from ..errors import AccountsErrorCodes, create_accounts_error
 from ..models import CustomUser
+from ..schemas.auth import AuthOut, PasswordResetConfirmIn, PasswordResetIn, UserLoginIn, UserRegistrationIn
 from ..services.auth_service import (
     generate_jwt_tokens,
     generate_password_reset_token,
@@ -26,6 +25,7 @@ from ..services.auth_service import (
 from ..services.email_service import send_password_reset_email
 from ..services.utils import get_user_data
 
+logger = logging.getLogger(__name__)
 
 auth_router = Router()
 
@@ -610,7 +610,7 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
     ```
     
     **Коды ошибок:**
-    - `400`: Ошибка отправки email или внутренняя ошибка
+    - `400`: Ошибка отправки email (SMTP) или непредвиденная ошибка при обработке запроса
     """
     try:
         # Ищем пользователя по email асинхронно
@@ -640,8 +640,9 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
         return 200, {
             "message": "If an account with this email exists, a password reset link has been sent."
         }
-        
+
     except Exception as e:
+        logger.exception('password_reset: unexpected error')
         return 400, create_accounts_error(
             status=400,
             code=AccountsErrorCodes.PASSWORD_RESET_ERROR,
@@ -740,8 +741,9 @@ async def password_reset_confirm(request, data: PasswordResetConfirmIn):  # pyli
         await user.asave()
         
         return 200, {"message": "Password has been reset successfully"}
-        
+
     except Exception as e:
+        logger.exception('password_reset_confirm: unexpected error')
         return 400, create_accounts_error(
             status=400,
             code=AccountsErrorCodes.PASSWORD_RESET_ERROR,

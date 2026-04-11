@@ -1,9 +1,9 @@
 """
 Общие схемы для API, включая формат ошибок RFC 7807.
 """
-from ninja import Schema
-from typing import Optional
 from enum import Enum
+
+from ninja import Schema
 
 
 class ErrorCode(str, Enum):
@@ -54,6 +54,9 @@ class ErrorCode(str, Enum):
     BOOKINGS_ACTIVE_BOOKING_EXISTS = "BOOKINGS_ACTIVE_BOOKING_EXISTS"
     BOOKINGS_INVALID_DEAL_TYPE = "BOOKINGS_INVALID_DEAL_TYPE"
 
+    # Deals (личный кабинет / сделки)
+    DEALS_INVALID_DEAL_TYPE = "DEALS_INVALID_DEAL_TYPE"
+
 
 class ProblemDetail(Schema):
     """
@@ -65,5 +68,5 @@ class ProblemDetail(Schema):
     status: int  # HTTP статус код
     title: str  # Краткое описание ошибки
     detail: str  # Детальное описание ошибки
-    instance: Optional[str] = None  # URI ресурса, на котором произошла ошибка
+    instance: str | None = None  # URI ресурса, на котором произошла ошибка
     code: ErrorCode  # Внутренний код ошибки для фронтенда (enum)

@@ -20,3 +20,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
+
+# Не отправляем реальные письма при pytest (in-memory outbox)
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'

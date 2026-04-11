@@ -8,7 +8,7 @@
 2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
 4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
-5) GET /api/v1/floors/{building_uuid}/{floor_number} — данные этажа: building_uuid, floor_number, schema_svg, premises.
+5) GET /api/v1/floors/{building_uuid}/{floor_number} — этаж; обязательный query sale_type (rent|sale) для is_available.
 6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ...). Всегда: sale_price, rent_price (по флагам available_for_sale / available_for_rent).
    Поле price — обратная совместимость (зависит от sale_type). 404 — ProblemDetail.
@@ -22,6 +22,7 @@ from uuid import UUID
 
 from django.conf import settings
 from ninja import Query, Router
+from ninja.errors import HttpError
 
 from api.schemas import ProblemDetail
 from .errors import ReObjectsErrorCodes, create_re_objects_error
@@ -48,6 +49,13 @@ from .services import (
 premises_router = Router(tags=["Premises"])
 buildings_router = Router(tags=["Buildings"])
 floors_router = Router(tags=["Floors"])
+
+
+def _validated_floor_sale_type(sale_type: str) -> str:
+    rent, sale = settings.RE_OBJECTS_SALE_TYPE_RENT, settings.RE_OBJECTS_SALE_TYPE_SALE
+    if sale_type not in (rent, sale):
+        raise HttpError(422, f"sale_type must be '{rent}' or '{sale}'")
+    return sale_type
 
 
 # ─── Premises (prefix /premises) ─────────────────────────────────────────────
@@ -121,11 +129,32 @@ async def building_detail(request, building_uuid: UUID):
     "/{building_uuid}/{floor_number}",
     response={200: FloorResponseOut},
     summary="Помещения на этаже",
-    description="Данные этажа: building_uuid, floor_number, schema_svg (текст SVG) и premises [{ uuid, name, label_area, label_price, is_occupied }].",
+    description=(
+        "Данные этажа: building_uuid, floor_number, schema_svg и premises "
+        "[{ uuid, name, label_area, label_price, is_available, is_occupied }]. "
+        f"Обязательный query sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT} или "
+        f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — семантика is_available."
+    ),
 )
-async def floor_premises_list(request, building_uuid: UUID, floor_number: int):
+async def floor_premises_list(
+    request,
+    building_uuid: UUID,
+    floor_number: int,
+    sale_type: str = Query(
+        ...,
+        description=(
+            f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — аренда, "
+            f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — продажа (обязательно)"
+        ),
+    ),
+):
     """Данные этажа с SVG-схемой и списком помещений."""
-    items = await get_premises_for_floor(building_uuid=building_uuid, floor_number=floor_number)
+    st = _validated_floor_sale_type(sale_type)
+    items = await get_premises_for_floor(
+        building_uuid=building_uuid,
+        floor_number=floor_number,
+        sale_type=st,
+    )
     return 200, items
 
 

@@ -125,11 +125,11 @@ class PremiseAdmin(admin.ModelAdmin):
     """Админка для помещений. Помещение привязано к зданию, этаж — из списка этажей этого здания."""
     list_display = (
         'number', 'city', 'building', 'floor_info',
-        'area', 'price_per_month', 'premise_type', 'status',
+        'area', 'price_per_month', 'premise_type',
         'available_for_rent', 'available_for_sale', 'created_at'
     )
     list_filter = (
-        'city', 'city__region', 'building', 'premise_type', 'status',
+        'city', 'city__region', 'building', 'premise_type',
         'available_for_rent', 'available_for_sale',
         'has_windows', 'has_parking', 'is_furnished', 'created_at'
     )
@@ -144,7 +144,7 @@ class PremiseAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Основная информация', {
             'fields': (
-                'city', 'building', 'floor', 'number', 'premise_type', 'status',
+                'city', 'building', 'floor', 'number', 'premise_type',
                 'available_for_rent', 'available_for_sale',
             )
         }),
