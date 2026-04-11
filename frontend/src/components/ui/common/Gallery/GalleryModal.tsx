@@ -42,8 +42,8 @@ export const GalleryModal: React.FC<GalleryModalProps> = ({
                     placement="modal"
                     currentIndex={currentIndex}
                     total={media.length}
-                    onPrev={() => onIndexChange(currentIndex - 1)}
-                    onNext={() => onIndexChange(currentIndex + 1)}
+                    onPrev={() => onIndexChange((currentIndex - 1 + media.length) % media.length)}
+                    onNext={() => onIndexChange((currentIndex + 1) % media.length)}
                     size={size}
                 />
             </Flex>

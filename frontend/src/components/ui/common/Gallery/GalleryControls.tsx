@@ -27,12 +27,13 @@ export const GalleryControls: React.FC<GalleryControlsProps> = ({
 
     return (
         <>
-            {showNav && currentIndex > 0 && (
+            {showNav && (
                 <Button
                     variant="secondary"
                     icon="chevron-left"
                     onlyIcon
                     type="button"
+                    iconColor="gray-100"
                     className={classNames(
                         styles.control,
                         styles.control__left,
@@ -41,12 +42,13 @@ export const GalleryControls: React.FC<GalleryControlsProps> = ({
                     onClick={onPrev}
                 />
             )}
-            {showNav && currentIndex < total - 1 && (
+            {showNav && (
                 <Button
                     variant="secondary"
                     icon="chevron-right"
                     onlyIcon
                     type="button"
+                    iconColor="gray-100"
                     className={classNames(
                         styles.control,
                         styles.control__right,

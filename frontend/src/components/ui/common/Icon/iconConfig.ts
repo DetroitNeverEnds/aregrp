@@ -48,6 +48,7 @@ import XmarkGrayCircle from '@/icons/outlined/xmark-gray-circle.svg?react';
 import Key from '@/icons/filled/key.svg?react';
 import Exit from '@/icons/filled/exit.svg?react';
 import Edit from '@/icons/filled/edit.svg?react';
+import Play from '@/icons/filled/play.svg?react';
 
 // Social Media
 import Ajax from '@/icons/socialMedia/ayax_logo_2.svg?react';
@@ -114,6 +115,7 @@ export const iconMap = {
     key: Key,
     exit: Exit,
     edit: Edit,
+    play: Play,
 
     // social media
     phone: Phone,

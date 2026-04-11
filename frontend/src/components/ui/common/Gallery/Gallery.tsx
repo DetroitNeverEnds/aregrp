@@ -61,8 +61,8 @@ const GalleryBody = ({
             <GalleryControls
                 currentIndex={safeIndex}
                 total={media.length}
-                onPrev={() => setCurrentMediaIndex(i => Math.max(0, i - 1))}
-                onNext={() => setCurrentMediaIndex(i => Math.min(media.length - 1, i + 1))}
+                onPrev={() => setCurrentMediaIndex(i => (i - 1 + media.length) % media.length)}
+                onNext={() => setCurrentMediaIndex(i => (i + 1) % media.length)}
                 size={size}
             />
             {type === 'thumbs' && canOpenFull && (

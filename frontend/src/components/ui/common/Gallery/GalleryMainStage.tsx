@@ -3,6 +3,7 @@ import classNames from 'classnames';
 
 import styles from './GalleryMainStage.module.scss';
 import type { GalleryMedia } from './Gallery.types';
+import { Button } from '../Button';
 
 export type GalleryMainStageProps = {
     item: GalleryMedia;
@@ -33,7 +34,18 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
                     })}
                     onClick={onOpen}
                 >
-                    <img src={item.url} className={mediaClass} />
+                    <img src={item.url} alt="" className={mediaClass} />
+                    {item.type === 'video' && (
+                        <div className={styles.videoPreviewOverlay} aria-hidden>
+                            <Button
+                                variant="secondary"
+                                icon="play"
+                                onlyIcon
+                                iconColor="gray-100"
+                                onClick={onOpen}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
             {variant === 'full' && (
