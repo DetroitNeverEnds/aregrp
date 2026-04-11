@@ -3,8 +3,8 @@
 
 Публичный API:
 - parse_building_uuids(value) — парсит строку 'uuid1,uuid2,...' в список UUID для фильтра зданий.
-- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
-- get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
+- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available по броням, building_query, …).
+- get_buildings_for_filter(sale_type, available) — здания для фильтра; available — только брони, None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
 - get_premise_by_uuid(...): price — legacy; sale_price / rent_price — по флагам available_for_sale / available_for_rent.
 - get_premises_for_floor(building_uuid, floor_number, sale_type) — данные этажа (is_available зависит от sale_type).
@@ -81,7 +81,8 @@ class PremiseFilterParams:
     """
     Параметры фильтрации и пагинации списка помещений.
 
-    sale_type: rent | sale (из settings). available: при None и sale_type задан — как True (каталог).
+    sale_type: rent | sale (из settings). available: при None и sale_type задан — как True (каталог);
+    учитывает только активные брони, не сделки.
     building_query: поиск по адресу/названию здания. building_uuids: фильтр по UUID зданий (чекбоксы).
     min/max price, min/max area. order_by, page, page_size.
     """
@@ -116,7 +117,7 @@ class PremiseFilterParams:
         page_size: int = 20,
     ):
         self.sale_type = sale_type
-        # True — свободные, False — занятые, None — без фильтра по доступности
+        # True/False — по броням (активная бронь = занято для фильтра); None — без фильтра
         self.available = available
         self.building_query = building_query and building_query.strip() or None
         self.building_uuids = list(building_uuids) if building_uuids else None
@@ -133,7 +134,7 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     """
     Строит queryset помещений с фильтрами и сортировкой.
 
-    Фильтры: available (True/False; при sale_type=rent|sale и None — как True), sale_type, building_query,
+    Фильтры: available (только брони; при sale_type=rent|sale и None — как True), sale_type, building_query,
     building_uuids, min_price, max_price, min_area, max_area. Сортировка по order_by.
     Не обращается к БД (lazy), пагинация не применяется.
     Результат передаётся в async-методы (acount, async for).
@@ -146,62 +147,30 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     rent = settings.RE_OBJECTS_SALE_TYPE_RENT
     sale = settings.RE_OBJECTS_SALE_TYPE_SALE
 
-    # Каталог с sale_type: без query available — только реально свободные по сделкам/брони.
+    # Каталог с sale_type: без query available — без активной брони (сделки не учитываем).
     avail = params.available
     if avail is None and params.sale_type in (rent, sale):
         avail = True
 
     if avail is True:
         if params.sale_type == rent:
-            qs = qs.filter(
-                available_for_rent=True,
-                _active_rent_period=False,
-                _active_booking=False,
-            )
+            qs = qs.filter(available_for_rent=True, _active_booking=False)
         elif params.sale_type == sale:
-            qs = qs.filter(
-                available_for_sale=True,
-                _active_booking=False,
-                _has_sale_deal=False,
-            )
+            qs = qs.filter(available_for_sale=True, _active_booking=False)
         else:
             qs = qs.filter(
-                (
-                    Q(available_for_rent=True)
-                    & Q(_active_rent_period=False)
-                    & Q(_active_booking=False)
-                )
-                | (
-                    Q(available_for_sale=True)
-                    & Q(_active_booking=False)
-                    & Q(_has_sale_deal=False)
-                )
+                (Q(available_for_rent=True) & Q(_active_booking=False))
+                | (Q(available_for_sale=True) & Q(_active_booking=False))
             )
     elif avail is False:
         if params.sale_type == rent:
-            qs = qs.filter(
-                Q(available_for_rent=False)
-                | Q(_active_rent_period=True)
-                | Q(_active_booking=True)
-            )
+            qs = qs.filter(Q(available_for_rent=False) | Q(_active_booking=True))
         elif params.sale_type == sale:
-            qs = qs.filter(
-                Q(available_for_sale=False)
-                | Q(_active_booking=True)
-                | Q(_has_sale_deal=True)
-            )
+            qs = qs.filter(Q(available_for_sale=False) | Q(_active_booking=True))
         else:
             qs = qs.exclude(
-                (
-                    Q(available_for_rent=True)
-                    & Q(_active_rent_period=False)
-                    & Q(_active_booking=False)
-                )
-                | (
-                    Q(available_for_sale=True)
-                    & Q(_active_booking=False)
-                    & Q(_has_sale_deal=False)
-                )
+                (Q(available_for_rent=True) & Q(_active_booking=False))
+                | (Q(available_for_sale=True) & Q(_active_booking=False))
             )
 
     if params.sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
@@ -257,7 +226,7 @@ async def get_buildings_for_filter(
     Список зданий для фильтра (чекбоксы «бизнес-центры»).
 
     Возвращает здания, у которых есть хотя бы одно помещение с учётом sale_type и available.
-    available: True/False — по правилам сделок и броней, None — без фильтра по доступности.
+    available: True/False — только по активным броням (не по сделкам), None — без фильтра.
     Ответ: список [{ uuid, name, address }, ...].
     """
     premise_filter = premise_filter_for_buildings_q(sale_type, available)

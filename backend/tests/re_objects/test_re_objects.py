@@ -11,6 +11,7 @@ from asgiref.sync import sync_to_async
 from django.utils import timezone
 from uuid import UUID, uuid4
 
+from apps.bookings.models import Booking
 from apps.deals.models import Deal
 from apps.re_objects.models import Building, BuildingImage, Floor, Premise
 
@@ -223,12 +224,12 @@ class TestPremisesList:
         assert data["page"] == 1
         assert data["page_size"] == 5
 
-    async def test_premises_list_rent_without_available_hides_active_deal(
+    async def test_premises_list_rent_ignores_deal_shows_premise(
         self, client, building_with_premise, test_user,
     ):
-        """Каталог аренды без query available не показывает помещение с текущей сделкой аренды."""
+        """Сделка аренды не скрывает помещение в каталоге; фильтр available смотрит только брони."""
         building, premise = building_with_premise
-        expires = timezone.now().date() + timedelta(days=30)
+        deal_until = timezone.now().date() + timedelta(days=30)
 
         @sync_to_async
         def _deal():
@@ -236,11 +237,35 @@ class TestPremisesList:
                 user_id=test_user.id,
                 premise=premise,
                 deal_type=Deal.DealType.RENT,
-                rent_expires_at=expires,
+                rent_expires_at=deal_until,
                 commission_amount=1,
             )
 
         await _deal()
+        response = await client.get(
+            f"/premises?sale_type=rent&building_uuids={building.uuid}"
+        )
+        assert response.status_code == 200
+        uuids = [i["uuid"] for i in response.json()["items"]]
+        assert str(premise.uuid) in uuids
+
+    async def test_premises_list_rent_hides_active_booking(
+        self, client, building_with_premise, test_user,
+    ):
+        """Активная бронь скрывает помещение в каталоге аренды (implicit available=true)."""
+        building, premise = building_with_premise
+        booking_expires = timezone.now() + timedelta(days=2)
+
+        @sync_to_async
+        def _booking():
+            Booking.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Booking.DealType.RENT,
+                expires_at=booking_expires,
+            )
+
+        await _booking()
         response = await client.get(
             f"/premises?sale_type=rent&building_uuids={building.uuid}"
         )

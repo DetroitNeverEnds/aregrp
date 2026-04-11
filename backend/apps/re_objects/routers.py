@@ -4,8 +4,8 @@
 Краткое описание ручек поиска:
 
 1) GET /api/v1/premises — поиск помещений с фильтрами и пагинацией (sale_type опционально).
-   Ответ: { items: [...], total, page, page_size, total_pages }. Параметры: sale_type, available (необяз.), building, building_uuids, min/max price, min/max area, order_by, page, page_size.
-2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
+   Ответ: { items: [...], total, page, page_size, total_pages }.    Параметры: sale_type, available (только брони), building, building_uuids, цена/площадь, order_by, page, page_size.
+2) GET /api/v1/premises/buildings — список зданий для фильтра; sale_type, available (только брони).
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
 4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
 5) GET /api/v1/floors/{building_uuid}/{floor_number} — этаж; обязательный query sale_type (rent|sale) для is_available.
@@ -65,7 +65,7 @@ def _validated_floor_sale_type(sale_type: str) -> str:
     response={200: list[BuildingOptionOut]},
     summary="Список зданий для фильтра",
     description=(
-        "Здания, у которых есть помещения (с учётом sale_type и available). "
+        "Здания, у которых есть помещения (sale_type; available — только по активным броням, без сделок). "
         "Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры»."
     ),
 )
@@ -77,7 +77,10 @@ async def building_filter_list(
     ),
     available: Optional[bool] = Query(
         None,
-        description="true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра.",
+        description=(
+            "true — без активной брони на помещении; false — с бронью или без флага аренды/продажи. "
+            "Сделки не учитываются. Не передано — без фильтра."
+        ),
     ),
 ):
     """Список зданий для мультиселекта фильтра. Ответ: [{ uuid, name, address }, ...]."""
@@ -171,7 +174,7 @@ async def floor_premises_list(
     description=(
         f"Фильтры: sale_type ({settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}), "
         "available, building, building_uuids, min/max price и площадь, order_by, page, page_size. "
-        "Без available при sale_type=rent|sale возвращаются только свободные по сделкам и брони."
+        "Без available при sale_type=rent|sale — без активной брони (сделки не учитываются)."
     ),
 )
 async def premise_list(
@@ -183,8 +186,8 @@ async def premise_list(
     available: Optional[bool] = Query(
         None,
         description=(
-            "true — только свободные по сделкам/брони, false — только занятые. "
-            "Не передано при sale_type=rent|sale — то же, что true (каталог без сданных/забронированных)."
+            "true — без активной брони; false — с бронью или выключенный флаг аренды/продажи. "
+            "Сделки не учитываются. Не передано при sale_type=rent|sale — то же, что true."
         ),
     ),
     building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
