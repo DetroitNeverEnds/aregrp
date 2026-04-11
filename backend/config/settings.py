@@ -240,3 +240,7 @@ LOGGING = {
 # --- re_objects: значения параметров фильтра API помещений ---
 RE_OBJECTS_SALE_TYPE_RENT = "rent"
 RE_OBJECTS_SALE_TYPE_SALE = "sale"
+
+# --- bookings: список «Мои брони» в профиле ---
+# True — только актуальные (expires_at > now); False — все брони пользователя.
+BOOKINGS_LIST_ONLY_ACTIVE = config('BOOKINGS_LIST_ONLY_ACTIVE', cast=bool, default=True)

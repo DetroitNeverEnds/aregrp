@@ -12,7 +12,7 @@ from django.utils import timezone
 from uuid import UUID, uuid4
 
 from apps.deals.models import Deal
-from apps.re_objects.models import Building, Floor, Premise
+from apps.re_objects.models import Building, BuildingImage, Floor, Premise
 
 
 @pytest.fixture
@@ -120,6 +120,47 @@ class TestBuildingDetail:
         assert "media" in data
         assert isinstance(data["media_categories"], list)
         assert isinstance(data["media"], list)
+
+    async def test_building_detail_media_url_equals_full_url(self, client, city):
+        """Деталь здания: в media поля url и full_url совпадают (оба как full_url в списке)."""
+        from io import BytesIO
+
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from PIL import Image
+
+        buf = BytesIO()
+        Image.new('RGB', (480, 320), color=(90, 90, 90)).save(buf, format='PNG')
+        buf.seek(0)
+        upload = SimpleUploadedFile('facade.png', buf.read(), content_type='image/png')
+
+        @sync_to_async
+        def setup():
+            b = Building.objects.create(
+                name='БЦ UrlFull',
+                address='ул. Url, 1',
+                city=city,
+                description='',
+            )
+            fl = Floor.objects.create(building=b, number=1)
+            Premise.objects.create(
+                building=b,
+                city=city,
+                floor=fl,
+                area=55,
+                price_per_month=5000,
+                available_for_rent=True,
+                number='U1',
+            )
+            BuildingImage.objects.create(building=b, original=upload, order=1, is_primary=True)
+            return b
+
+        building = await setup()
+        response = await client.get(f"/buildings/{building.uuid}")
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data['media']) >= 1
+        m0 = data['media'][0]
+        assert m0['url'] == m0['full_url']
 
     async def test_building_detail_not_found(self, client):
         """404 для несуществующего UUID."""

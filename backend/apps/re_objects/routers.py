@@ -107,7 +107,11 @@ async def building_list(
     "/{building_uuid}",
     response={200: BuildingDetailOut, 404: ProblemDetail},
     summary="Здание по UUID",
-    description="Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+    description=(
+        "Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, "
+        "min_rent_price, media_categories, media. В media для детали здания поля url и full_url "
+        "совпадают и равны «полному» URL (detail WebP для фото, оригинал для видео)."
+    ),
 )
 async def building_detail(request, building_uuid: UUID):
     """Здание по UUID. 404 — ProblemDetail."""
