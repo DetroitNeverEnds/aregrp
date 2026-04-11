@@ -1276,19 +1276,12 @@
             "in": "query",
             "name": "sale_type",
             "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "rent — аренда, sale — продажа (влияет на is_available)",
-              "title": "Sale Type"
+              "description": "rent — аренда, sale — продажа (обязательно)",
+              "title": "Sale Type",
+              "type": "string"
             },
-            "required": false,
-            "description": "rent — аренда, sale — продажа (влияет на is_available)"
+            "required": true,
+            "description": "rent — аренда, sale — продажа (обязательно)"
           }
         ],
         "responses": {
@@ -1303,7 +1296,7 @@
             }
           }
         },
-        "description": "Данные этажа: building_uuid, floor_number, schema_svg и premises [{ uuid, name, label_area, label_price, is_available, is_occupied }]. Параметр sale_type (rent|sale) задаёт семантику is_available; по умолчанию — аренда.",
+        "description": "Данные этажа: building_uuid, floor_number, schema_svg и premises [{ uuid, name, label_area, label_price, is_available, is_occupied }]. Обязательный query sale_type: rent или sale — семантика is_available.",
         "tags": [
           "Floors"
         ]

@@ -292,7 +292,9 @@ class TestFloorPremises:
         """Успешный ответ — объект этажа с premises."""
         building, premise = building_with_premise
         floor_number = premise.floor.number if premise.floor else 1
-        response = await client.get(f"/floors/{building.uuid}/{floor_number}")
+        response = await client.get(
+            f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -316,7 +318,9 @@ class TestFloorPremises:
     async def test_floor_premises_nonexistent_floor(self, client, building_with_premise):
         """Пустой premises-список для несуществующего этажа."""
         building, _ = building_with_premise
-        response = await client.get(f"/floors/{building.uuid}/999")
+        response = await client.get(
+            f"/floors/{building.uuid}/999?sale_type=rent"
+        )
 
         assert response.status_code == 200
         data = response.json()

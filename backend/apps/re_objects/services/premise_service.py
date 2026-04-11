@@ -558,8 +558,7 @@ def _floor_premise_availability_rows(
     if not premises:
         return []
     rent = settings.RE_OBJECTS_SALE_TYPE_RENT
-    sale = settings.RE_OBJECTS_SALE_TYPE_SALE
-    st = sale_type if sale_type in (rent, sale) else rent
+    st = sale_type
 
     pids = [p.pk for p in premises]
     today = timezone.now().date()
@@ -613,12 +612,12 @@ def _floor_premise_availability_rows(
 async def get_premises_for_floor(
     building_uuid: UUID,
     floor_number: int,
-    sale_type: Optional[str] = None,
+    sale_type: str,
 ) -> FloorResponseOut:
     """
     Список помещений на этаже здания.
 
-    sale_type: rent|sale — влияет на поле is_available (is_occupied всегда по сделкам аренды).
+    sale_type: rent|sale (обязателен в API) — is_available; is_occupied — по сделкам аренды.
     """
     try:
         floor = await Floor.objects.select_related("building").aget(
@@ -637,7 +636,7 @@ async def get_premises_for_floor(
         p
         async for p in Premise.objects.filter(floor=floor).order_by("number", "id")
     ]
-    rows = await _floor_premise_availability_rows(premises, sale_type or '')
+    rows = await _floor_premise_availability_rows(premises, sale_type)
 
     items: list[FloorPremiseOut] = []
     for p, is_avail, is_occ in rows:
