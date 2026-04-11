@@ -58,9 +58,12 @@ services:
             - "443:443"
         volumes:
             - ./nginx/logs:/var/log/nginx
+            # Те же пути в контейнере, что в nginx/includes/backend-location.conf (alias /static/, /media/).
             - /var/lib/aregrp-data/static:/var/lib/aregrp-data/static:ro
             - /var/lib/aregrp-data/media:/var/lib/aregrp-data/media:ro
-            - /var/lib/aregrp-data/letsencrypt:/etc/letsencrypt:ro
+            # Весь /etc/letsencrypt: в live/ лежат symlink → archive/; отдельно только .pem монтировать нельзя.
+            - /etc/letsencrypt:/etc/letsencrypt:ro
+            # Webroot для certbot renew --webroot -w ... (на хосте должен совпадать с -w при выпуске).
             - /var/lib/aregrp-data/certbot-www:/var/www/certbot:ro
         depends_on:
             - frontend
