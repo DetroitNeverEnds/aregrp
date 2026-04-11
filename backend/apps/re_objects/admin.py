@@ -37,7 +37,7 @@ class PremiseImageInline(admin.TabularInline):
         if obj.card:
             parts.append(
                 format_html(
-                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: cover;" />',
+                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: contain; background: #f0f0f0;" />',
                     obj.card.url,
                 )
             )
@@ -97,7 +97,7 @@ class BuildingImageInline(admin.TabularInline):
         if obj.card:
             parts.append(
                 format_html(
-                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: cover;" />',
+                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: contain; background: #f0f0f0;" />',
                     obj.card.url,
                 )
             )
@@ -135,7 +135,7 @@ class BuildingVideoInline(admin.TabularInline):
         if obj.card:
             parts.append(
                 format_html(
-                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: cover;" />',
+                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: contain; background: #f0f0f0;" />',
                     obj.card.url,
                 )
             )

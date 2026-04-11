@@ -16,7 +16,8 @@ def test_process_raster_bytes_card_and_detail_dimensions():
     card_cf, detail_cf = process_raster_bytes(buf.getvalue())
     card_im = Image.open(BytesIO(card_cf.read()))
     detail_im = Image.open(BytesIO(detail_cf.read()))
-    assert card_im.size == CARD_SIZE
+    assert card_im.width <= CARD_SIZE[0] and card_im.height <= CARD_SIZE[1]
+    assert card_im.width == CARD_SIZE[0] or card_im.height == CARD_SIZE[1]
     assert detail_im.width <= 1920 and detail_im.height <= 1080
 
 
@@ -46,7 +47,8 @@ def test_premise_image_save_writes_card_and_detail(city):
     assert img.original
     assert img.card and img.detail
     card_im = Image.open(img.card.open('rb'))
-    assert card_im.size == CARD_SIZE
+    assert card_im.width <= CARD_SIZE[0] and card_im.height <= CARD_SIZE[1]
+    assert card_im.width == CARD_SIZE[0] or card_im.height == CARD_SIZE[1]
 
 
 @pytest.mark.django_db

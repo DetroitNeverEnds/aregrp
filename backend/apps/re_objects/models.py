@@ -385,6 +385,9 @@ class Premise(models.Model):
         if self.available_for_sale:
             if self.price_per_sqm is None or self.price_per_sqm <= 0:
                 errors['price_per_sqm'] = 'Укажите цену продажи за м² больше 0.'
+        if self.available_for_rent:
+            if self.price_per_month is None or self.price_per_month <= 0:
+                errors['price_per_month'] = 'Укажите цену аренды за месяц больше 0.'
         if errors:
             raise ValidationError(errors)
 
@@ -509,7 +512,7 @@ class PremiseImage(MediaFilesMixin, models.Model):
     card = models.ImageField(
         upload_to=premise_image_upload_path,
         verbose_name="Превью карточки",
-        help_text="WebP 560×300, генерируется из оригинала",
+        help_text="WebP, вписано в 560×300 без обрезки (пропорции сохраняются)",
         storage=None,
         blank=True,
         null=True,
@@ -630,7 +633,7 @@ class BuildingImage(MediaFilesMixin, models.Model):
     card = models.ImageField(
         upload_to=building_image_upload_path,
         verbose_name="Превью карточки",
-        help_text="WebP 560×300",
+        help_text="WebP, вписано в 560×300 без обрезки",
         storage=None,
         blank=True,
         null=True,
@@ -758,7 +761,7 @@ class BuildingVideo(MediaFilesMixin, models.Model):
     card = models.ImageField(
         upload_to=building_video_card_upload_path,
         verbose_name="Превью карточки",
-        help_text="WebP 560×300 с первого кадра (ffmpeg)",
+        help_text="WebP с первого кадра (ffmpeg), вписано в 560×300 без обрезки",
         storage=None,
         blank=True,
         null=True,
