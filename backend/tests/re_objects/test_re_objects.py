@@ -3,12 +3,15 @@ Smoke-тесты для API помещений и зданий (re_objects).
 
 Проверяют, что все ручки отвечают 200 (или 404 где ожидаемо) и возвращают ожидаемую структуру.
 """
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 from asgiref.sync import sync_to_async
+from django.utils import timezone
 from uuid import UUID, uuid4
 
+from apps.deals.models import Deal
 from apps.re_objects.models import Building, Floor, Premise
 
 
@@ -178,6 +181,31 @@ class TestPremisesList:
         data = response.json()
         assert data["page"] == 1
         assert data["page_size"] == 5
+
+    async def test_premises_list_rent_without_available_hides_active_deal(
+        self, client, building_with_premise, test_user,
+    ):
+        """Каталог аренды без query available не показывает помещение с текущей сделкой аренды."""
+        building, premise = building_with_premise
+        expires = timezone.now().date() + timedelta(days=30)
+
+        @sync_to_async
+        def _deal():
+            Deal.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=expires,
+                commission_amount=1,
+            )
+
+        await _deal()
+        response = await client.get(
+            f"/premises?sale_type=rent&building_uuids={building.uuid}"
+        )
+        assert response.status_code == 200
+        uuids = [i["uuid"] for i in response.json()["items"]]
+        assert str(premise.uuid) not in uuids
 
     async def test_premises_list_sale_price_is_full_sell(self, client, city):
         """При sale_type=sale поле price совпадает с full_sell_price."""

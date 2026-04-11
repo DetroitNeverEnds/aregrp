@@ -81,7 +81,7 @@ class PremiseFilterParams:
     """
     Параметры фильтрации и пагинации списка помещений.
 
-    sale_type: rent | sale (из settings). available: True — свободные, False — занятые, None — без фильтра.
+    sale_type: rent | sale (из settings). available: при None и sale_type задан — как True (каталог).
     building_query: поиск по адресу/названию здания. building_uuids: фильтр по UUID зданий (чекбоксы).
     min/max price, min/max area. order_by, page, page_size.
     """
@@ -133,7 +133,7 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     """
     Строит queryset помещений с фильтрами и сортировкой.
 
-    Фильтры: available (True — свободные, False — занятые, None — без фильтра), sale_type, building_query,
+    Фильтры: available (True/False; при sale_type=rent|sale и None — как True), sale_type, building_query,
     building_uuids, min_price, max_price, min_area, max_area. Сортировка по order_by.
     Не обращается к БД (lazy), пагинация не применяется.
     Результат передаётся в async-методы (acount, async for).
@@ -146,7 +146,12 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     rent = settings.RE_OBJECTS_SALE_TYPE_RENT
     sale = settings.RE_OBJECTS_SALE_TYPE_SALE
 
-    if params.available is True:
+    # Каталог с sale_type: без query available — только реально свободные по сделкам/брони.
+    avail = params.available
+    if avail is None and params.sale_type in (rent, sale):
+        avail = True
+
+    if avail is True:
         if params.sale_type == rent:
             qs = qs.filter(
                 available_for_rent=True,
@@ -172,7 +177,7 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
                     & Q(_has_sale_deal=False)
                 )
             )
-    elif params.available is False:
+    elif avail is False:
         if params.sale_type == rent:
             qs = qs.filter(
                 Q(available_for_rent=False)
@@ -264,18 +269,39 @@ async def get_buildings_for_filter(
     ]
 
 
+def _photo_api_urls(img) -> tuple[Optional[str], Optional[str]]:
+    """url = card (или оригинал), full_url = detail (или оригинал) — fallback до бэкфилла."""
+    if img.card and img.detail:
+        return img.card.url, img.detail.url
+    if img.original:
+        u = img.original.url
+        return u, u
+    return None, None
+
+
+def _video_api_urls(vid) -> tuple[Optional[str], Optional[str]]:
+    if vid.file and vid.card:
+        return vid.card.url, vid.file.url
+    if vid.file:
+        u = vid.file.url
+        return u, u
+    return None, None
+
+
 def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
     """Собирает медиа здания: один плоский список images + videos, сортировка по order."""
-    items: list[tuple[int, int, str, str]] = []
+    items: list[tuple[int, int, str, str, str]] = []
     for img in building.images.all():
-        if img.file:
-            items.append((img.order, img.pk, "photo", img.file.url))
+        url, full_url = _photo_api_urls(img)
+        if url and full_url:
+            items.append((img.order, img.pk, "photo", url, full_url))
     for vid in building.videos.all():
-        if vid.file:
-            items.append((vid.order, vid.pk, "video", vid.file.url))
+        url, full_url = _video_api_urls(vid)
+        if url and full_url:
+            items.append((vid.order, vid.pk, "video", url, full_url))
     items.sort(key=lambda x: (x[0], x[1]))
     return [
-        BaseMediaItemOut(type=t, url=url) for _, _, t, url in items
+        BaseMediaItemOut(type=t, url=u, full_url=fu) for _, _, t, u, fu in items
     ]
 
 
@@ -341,25 +367,27 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
     Возвращает (media_categories, media). Один плоский список images + videos, сортировка по order.
     """
     categories: set[str] = set()
-    items: list[tuple[int, int, str, str, str, Optional[str]]] = []
+    items: list[tuple[int, int, str, str, str, str, Optional[str]]] = []
 
     for img in building.images.all():
-        if img.file:
+        url, full_url = _photo_api_urls(img)
+        if url and full_url:
             cat = img.category.strip() if img.category else ""
             if cat:
                 categories.add(cat)
-            items.append((img.order, img.pk, "photo", img.file.url, cat, img.title or None))
+            items.append((img.order, img.pk, "photo", url, full_url, cat, img.title or None))
     for vid in building.videos.all():
-        if vid.file:
+        url, full_url = _video_api_urls(vid)
+        if url and full_url:
             cat = vid.category.strip() if vid.category else ""
             if cat:
                 categories.add(cat)
-            items.append((vid.order, vid.pk, "video", vid.file.url, cat, vid.title or None))
+            items.append((vid.order, vid.pk, "video", url, full_url, cat, vid.title or None))
 
     items.sort(key=lambda x: (x[0], x[1]))
     media = [
-        BuildingMediaItemOut(type=t, url=url, category=cat, title=title)
-        for _, _, t, url, cat, title in items
+        BuildingMediaItemOut(type=t, url=u, full_url=fu, category=cat, title=title)
+        for _, _, t, u, fu, cat, title in items
     ]
     return (sorted(categories), media)
 
@@ -410,12 +438,13 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
 
 
 def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
-    """Собирает медиа помещения: плоский список с type, url. Видео помещений в модели пока нет."""
-    return [
-        BaseMediaItemOut(type="photo", url=img.file.url)
-        for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk))
-        if img.file
-    ]
+    """Собирает медиа помещения: плоский список с type, url, full_url. Видео помещений в модели пока нет."""
+    out: list[BaseMediaItemOut] = []
+    for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk)):
+        url, full_url = _photo_api_urls(img)
+        if url and full_url:
+            out.append(BaseMediaItemOut(type="photo", url=url, full_url=full_url))
+    return out
 
 
 def _api_price_is_full_sell(p: Premise, sale_type: Optional[str]) -> bool:

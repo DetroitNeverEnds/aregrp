@@ -911,11 +911,11 @@
                   "type": "null"
                 }
               ],
-              "description": "true — свободные, false — занятые. Не передано — без фильтра по доступности.",
+              "description": "true — только свободные по сделкам/брони, false — только занятые. Не передано при sale_type=rent|sale — то же, что true (каталог без сданных/забронированных).",
               "title": "Available"
             },
             "required": false,
-            "description": "true — свободные, false — занятые. Не передано — без фильтра по доступности."
+            "description": "true — только свободные по сделкам/брони, false — только занятые. Не передано при sale_type=rent|sale — то же, что true (каталог без сданных/забронированных)."
           },
           {
             "in": "query",
@@ -1085,7 +1085,7 @@
             }
           }
         },
-        "description": "Фильтры: sale_type (rent|sale), available (true/false — свободно/занято), building (поиск по тексту), building_uuids (UUID зданий через запятую), min_price, max_price, min_area, max_area. Сортировка: order_by. Пагинация: page, page_size.",
+        "description": "Фильтры: sale_type (rent|sale), available, building, building_uuids, min/max price и площадь, order_by, page, page_size. Без available при sale_type=rent|sale возвращаются только свободные по сделкам и брони.",
         "tags": [
           "Premises"
         ]
@@ -2615,7 +2615,7 @@
         "type": "object"
       },
       "BaseMediaItemOut": {
-        "description": "Базовая схема медиа: type, url.",
+        "description": "Базовая схема медиа: type, url (превью карточки), full_url (деталь / оригинал видео).",
         "properties": {
           "type": {
             "enum": [
@@ -2628,11 +2628,16 @@
           "url": {
             "title": "Url",
             "type": "string"
+          },
+          "full_url": {
+            "title": "Full Url",
+            "type": "string"
           }
         },
         "required": [
           "type",
-          "url"
+          "url",
+          "full_url"
         ],
         "title": "BaseMediaItemOut",
         "type": "object"
@@ -3146,6 +3151,10 @@
             "title": "Url",
             "type": "string"
           },
+          "full_url": {
+            "title": "Full Url",
+            "type": "string"
+          },
           "category": {
             "default": "",
             "title": "Category",
@@ -3165,7 +3174,8 @@
         },
         "required": [
           "type",
-          "url"
+          "url",
+          "full_url"
         ],
         "title": "BuildingMediaItemOut",
         "type": "object"

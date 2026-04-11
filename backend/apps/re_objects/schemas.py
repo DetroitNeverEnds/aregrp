@@ -13,10 +13,11 @@ from ninja import Schema
 
 
 class BaseMediaItemOut(Schema):
-    """Базовая схема медиа: type, url."""
+    """Базовая схема медиа: type, url (превью карточки), full_url (деталь / оригинал видео)."""
 
     type: Literal["photo", "video"]
     url: str
+    full_url: str
 
 
 class BuildingMediaItemOut(BaseMediaItemOut):

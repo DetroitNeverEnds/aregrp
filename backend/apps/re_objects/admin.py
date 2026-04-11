@@ -3,6 +3,7 @@
 """
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from .models import (
     Building,
@@ -21,20 +22,40 @@ class PremiseImageInline(admin.TabularInline):
     """Inline для изображений помещений."""
     model = PremiseImage
     extra = 1
-    fields = ('file', 'title', 'order', 'is_primary', 'file_preview')
-    readonly_fields = ('file_preview',)
+    fields = (
+        'original', 'card', 'detail', 'title', 'order', 'is_primary', 'file_preview',
+    )
+    readonly_fields = ('card', 'detail', 'file_preview')
     verbose_name = 'Изображение'
     verbose_name_plural = 'Изображения'
-    
+
     def file_preview(self, obj):
-        """Предпросмотр изображения."""
-        if obj.pk and obj.file:
-            return format_html(
-                '<img src="{}" style="max-width: 100px; max-height: 100px; border-radius: 4px; object-fit: cover;" />',
-                obj.file.url
+        """Превью card и ссылки на original/detail."""
+        if not obj.pk:
+            return '-'
+        parts = []
+        if obj.card:
+            parts.append(
+                format_html(
+                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: cover;" />',
+                    obj.card.url,
+                )
             )
-        return '-'
-    file_preview.short_description = 'Предпросмотр'
+        if obj.original:
+            parts.append(
+                format_html('<a href="{}" target="_blank">оригинал</a>', obj.original.url)
+            )
+        if obj.detail:
+            parts.append(
+                format_html('<a href="{}" target="_blank">detail</a>', obj.detail.url)
+            )
+        if not parts:
+            return '-'
+        if len(parts) == 1:
+            return parts[0]
+        return mark_safe('&nbsp;'.join(str(p) for p in parts))
+
+    file_preview.short_description = 'Превью / ссылки'
 
 
 @admin.register(Region)
@@ -61,40 +82,78 @@ class BuildingImageInline(admin.TabularInline):
     """Inline для изображений зданий."""
     model = BuildingImage
     extra = 1
-    fields = ('file', 'title', 'category', 'order', 'is_primary', 'file_preview')
-    readonly_fields = ('file_preview',)
+    fields = (
+        'original', 'card', 'detail', 'title', 'category', 'order', 'is_primary', 'file_preview',
+    )
+    readonly_fields = ('card', 'detail', 'file_preview')
     verbose_name = 'Изображение'
     verbose_name_plural = 'Изображения'
-    
+
     def file_preview(self, obj):
-        """Предпросмотр изображения."""
-        if obj.pk and obj.file:
-            return format_html(
-                '<img src="{}" style="max-width: 100px; max-height: 100px; border-radius: 4px; object-fit: cover;" />',
-                obj.file.url
+        """Превью card и ссылки на original/detail."""
+        if not obj.pk:
+            return '-'
+        parts = []
+        if obj.card:
+            parts.append(
+                format_html(
+                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: cover;" />',
+                    obj.card.url,
+                )
             )
-        return '-'
-    file_preview.short_description = 'Предпросмотр'
+        if obj.original:
+            parts.append(
+                format_html('<a href="{}" target="_blank">оригинал</a>', obj.original.url)
+            )
+        if obj.detail:
+            parts.append(
+                format_html('<a href="{}" target="_blank">detail</a>', obj.detail.url)
+            )
+        if not parts:
+            return '-'
+        if len(parts) == 1:
+            return parts[0]
+        return mark_safe('&nbsp;'.join(str(p) for p in parts))
+
+    file_preview.short_description = 'Превью / ссылки'
 
 
 class BuildingVideoInline(admin.TabularInline):
     """Inline для видео зданий."""
     model = BuildingVideo
     extra = 1
-    fields = ('file', 'title', 'category', 'order', 'file_preview')
-    readonly_fields = ('file_preview',)
+    fields = ('file', 'card', 'title', 'category', 'order', 'file_preview')
+    readonly_fields = ('card', 'file_preview')
     verbose_name = 'Видео'
     verbose_name_plural = 'Видео'
-    
+
     def file_preview(self, obj):
-        """Предпросмотр видео."""
-        if obj.pk and obj.file:
-            return format_html(
-                '<a href="{}" target="_blank" style="display: inline-block; padding: 4px 8px; background: #007cba; color: white; text-decoration: none; border-radius: 3px;">📹 Видео</a>',
-                obj.file.url
+        """Превью кадра и ссылка на ролик."""
+        if not obj.pk:
+            return '-'
+        parts = []
+        if obj.card:
+            parts.append(
+                format_html(
+                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: cover;" />',
+                    obj.card.url,
+                )
             )
-        return '-'
-    file_preview.short_description = 'Предпросмотр'
+        if obj.file:
+            parts.append(
+                format_html(
+                    '<a href="{}" target="_blank" style="display: inline-block; padding: 4px 8px; '
+                    'background: #007cba; color: white; text-decoration: none; border-radius: 3px;">видео</a>',
+                    obj.file.url,
+                )
+            )
+        if not parts:
+            return '-'
+        if len(parts) == 1:
+            return parts[0]
+        return mark_safe('&nbsp;'.join(str(p) for p in parts))
+
+    file_preview.short_description = 'Превью / ссылка'
 
 
 @admin.register(Building)
