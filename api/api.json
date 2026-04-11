@@ -1271,6 +1271,24 @@
               "type": "integer"
             },
             "required": true
+          },
+          {
+            "in": "query",
+            "name": "sale_type",
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "rent — аренда, sale — продажа (влияет на is_available)",
+              "title": "Sale Type"
+            },
+            "required": false,
+            "description": "rent — аренда, sale — продажа (влияет на is_available)"
           }
         ],
         "responses": {
@@ -1285,7 +1303,7 @@
             }
           }
         },
-        "description": "Данные этажа: building_uuid, floor_number, schema_svg (текст SVG) и premises [{ uuid, name, label_area, label_price, is_occupied }].",
+        "description": "Данные этажа: building_uuid, floor_number, schema_svg и premises [{ uuid, name, label_area, label_price, is_available, is_occupied }]. Параметр sale_type (rent|sale) задаёт семантику is_available; по умолчанию — аренда.",
         "tags": [
           "Floors"
         ]
@@ -3160,7 +3178,7 @@
         "type": "object"
       },
       "FloorPremiseOut": {
-        "description": "Помещение на этаже: номер/название, площадь, стоимость, занятость.",
+        "description": "Помещение на этаже: номер/название, площадь, стоимость, доступность и занятость по аренде.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -3178,6 +3196,10 @@
             "title": "Label Price",
             "type": "string"
           },
+          "is_available": {
+            "title": "Is Available",
+            "type": "boolean"
+          },
           "is_occupied": {
             "title": "Is Occupied",
             "type": "boolean"
@@ -3188,6 +3210,7 @@
           "name",
           "label_area",
           "label_price",
+          "is_available",
           "is_occupied"
         ],
         "title": "FloorPremiseOut",

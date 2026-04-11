@@ -291,7 +291,6 @@ class TestProfileEndpoints:
                 floor=premise.floor,
                 area=40,
                 price_per_month=50_000,
-                status=Premise.Status.AVAILABLE,
                 available_for_rent=True,
                 number='102',
             )

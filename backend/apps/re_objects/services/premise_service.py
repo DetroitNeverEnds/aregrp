@@ -7,7 +7,7 @@
 - get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
 - get_premise_by_uuid(...): price — legacy; sale_price / rent_price — по флагам available_for_sale / available_for_rent.
-- get_premises_for_floor(building_uuid, floor_number) — данные этажа (building_uuid, floor_number, schema_svg, premises).
+- get_premises_for_floor(building_uuid, floor_number, sale_type) — данные этажа (is_available зависит от sale_type).
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
 - публичные функции — async, обращаются к БД через async ORM (aget, acount, async for);
@@ -20,9 +20,14 @@ from uuid import UUID
 from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.db.models import Min, Q, Subquery
+from django.utils import timezone
 
 from core.pagination import get_paginated_list
 
+from apps.bookings.models import Booking
+from apps.deals.models import Deal
+
+from ..availability import annotate_premise_availability, premise_filter_for_buildings_q
 from ..models import Building, Floor, Premise
 from ..schemas import (
     BaseMediaItemOut,
@@ -136,17 +141,62 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     qs = Premise.objects.select_related("building", "city", "floor").prefetch_related(
         "images"
     )
-    # available: True — свободные, False — занятые, None — без фильтра по статусу
-    if params.available is not None:
-        if params.available:
-            qs = qs.filter(status=Premise.Status.AVAILABLE)
+    qs = annotate_premise_availability(qs)
+
+    rent = settings.RE_OBJECTS_SALE_TYPE_RENT
+    sale = settings.RE_OBJECTS_SALE_TYPE_SALE
+
+    if params.available is True:
+        if params.sale_type == rent:
+            qs = qs.filter(
+                available_for_rent=True,
+                _active_rent_period=False,
+                _active_booking=False,
+            )
+        elif params.sale_type == sale:
+            qs = qs.filter(
+                available_for_sale=True,
+                _active_booking=False,
+                _has_sale_deal=False,
+            )
         else:
             qs = qs.filter(
-                status__in=[
-                    Premise.Status.RESERVED,
-                    Premise.Status.RENTED,
-                    Premise.Status.UNAVAILABLE,
-                ]
+                (
+                    Q(available_for_rent=True)
+                    & Q(_active_rent_period=False)
+                    & Q(_active_booking=False)
+                )
+                | (
+                    Q(available_for_sale=True)
+                    & Q(_active_booking=False)
+                    & Q(_has_sale_deal=False)
+                )
+            )
+    elif params.available is False:
+        if params.sale_type == rent:
+            qs = qs.filter(
+                Q(available_for_rent=False)
+                | Q(_active_rent_period=True)
+                | Q(_active_booking=True)
+            )
+        elif params.sale_type == sale:
+            qs = qs.filter(
+                Q(available_for_sale=False)
+                | Q(_active_booking=True)
+                | Q(_has_sale_deal=True)
+            )
+        else:
+            qs = qs.exclude(
+                (
+                    Q(available_for_rent=True)
+                    & Q(_active_rent_period=False)
+                    & Q(_active_booking=False)
+                )
+                | (
+                    Q(available_for_sale=True)
+                    & Q(_active_booking=False)
+                    & Q(_has_sale_deal=False)
+                )
             )
 
     if params.sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
@@ -194,30 +244,6 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     return qs
 
 
-def _premise_filter_for_buildings(
-    sale_type: Optional[str],
-    available: Optional[bool],
-) -> Q:
-    """Фильтр помещений по sale_type и available. available: True/False — фильтр по статусу, None — без фильтра."""
-    q = Q()
-    if available is not None:
-        if available:
-            q &= Q(status=Premise.Status.AVAILABLE)
-        else:
-            q &= Q(
-                status__in=[
-                    Premise.Status.RESERVED,
-                    Premise.Status.RENTED,
-                    Premise.Status.UNAVAILABLE,
-                ]
-            )
-    if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
-        q &= Q(available_for_rent=True)
-    elif sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
-        q &= Q(available_for_sale=True)
-    return q
-
-
 async def get_buildings_for_filter(
     sale_type: Optional[str] = None,
     available: Optional[bool] = None,
@@ -226,10 +252,10 @@ async def get_buildings_for_filter(
     Список зданий для фильтра (чекбоксы «бизнес-центры»).
 
     Возвращает здания, у которых есть хотя бы одно помещение с учётом sale_type и available.
-    available: True/False — фильтр по статусу, None — без фильтра (любые помещения).
+    available: True/False — по правилам сделок и броней, None — без фильтра по доступности.
     Ответ: список [{ uuid, name, address }, ...].
     """
-    premise_filter = _premise_filter_for_buildings(sale_type, available)
+    premise_filter = premise_filter_for_buildings_q(sale_type, available)
     subq = Premise.objects.filter(premise_filter).values("building_id").distinct()
     qs = Building.objects.filter(id__in=Subquery(subq)).order_by("name")
     return [
@@ -429,13 +455,23 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
-        has_tenant=(p.status != Premise.Status.AVAILABLE),
+        has_tenant=bool(getattr(p, '_any_rent_deal', False)),
         media=_build_premise_media(p),
     )
 
 
-def premise_to_detail_out(p: Premise, sale_type: Optional[str] = None) -> PremiseDetailOut:
+def premise_to_detail_out(
+    p: Premise,
+    sale_type: Optional[str] = None,
+    *,
+    has_rent_deal: Optional[bool] = None,
+) -> PremiseDetailOut:
     """Маппинг Premise -> PremiseDetailOut; price — полная продажа или аренда по типу запроса."""
+    tenant = (
+        bool(has_rent_deal)
+        if has_rent_deal is not None
+        else bool(getattr(p, '_any_rent_deal', False))
+    )
     return PremiseDetailOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
@@ -446,7 +482,7 @@ def premise_to_detail_out(p: Premise, sale_type: Optional[str] = None) -> Premis
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
-        has_tenant=(p.status != Premise.Status.AVAILABLE),
+        has_tenant=tenant,
         media=_build_premise_media(p),
         description=p.description or None,
         price_per_sqm=p.price_per_sqm,
@@ -480,19 +516,20 @@ async def get_premise_by_uuid(
     """
     Возвращает помещение по UUID в виде PremiseDetailOut или None.
 
-    Только помещения со статусом AVAILABLE. Использует aget() и prefetch images.
-    sale_price / rent_price не зависят от sale_type; price — прежняя семантика.
+    Использует aget() и prefetch images.
+    has_tenant — наличие сделок аренды по помещению.
     """
     try:
         p = await Premise.objects.select_related(
             "building", "city", "floor"
-        ).prefetch_related("images").aget(
-            uuid=premise_uuid,
-            status=Premise.Status.AVAILABLE,
-        )
+        ).prefetch_related("images").aget(uuid=premise_uuid)
     except Premise.DoesNotExist:
         return None
-    return premise_to_detail_out(p, sale_type)
+    has_rent = await Deal.objects.filter(
+        premise_id=p.pk,
+        deal_type=Deal.DealType.RENT,
+    ).aexists()
+    return premise_to_detail_out(p, sale_type, has_rent_deal=has_rent)
 
 
 def _format_area(value: Decimal) -> str:
@@ -509,16 +546,79 @@ def _format_floor_label_price(value: Optional[int]) -> str:
     return f"{int(value):,}".replace(",", " ") + " ₽"
 
 
+@sync_to_async
+def _floor_premise_availability_rows(
+    premises: list[Premise],
+    sale_type: str,
+) -> list[tuple[Premise, bool, bool]]:
+    """
+    Для списка помещений этажа: (premise, is_available, is_occupied).
+    is_occupied — есть сделка аренды; is_available — по sale_type (rent/sale).
+    """
+    if not premises:
+        return []
+    rent = settings.RE_OBJECTS_SALE_TYPE_RENT
+    sale = settings.RE_OBJECTS_SALE_TYPE_SALE
+    st = sale_type if sale_type in (rent, sale) else rent
+
+    pids = [p.pk for p in premises]
+    today = timezone.now().date()
+    now = timezone.now()
+
+    any_rent = set(
+        Deal.objects.filter(
+            premise_id__in=pids,
+            deal_type=Deal.DealType.RENT,
+        ).values_list('premise_id', flat=True)
+    )
+    active_rent = set(
+        Deal.objects.filter(
+            premise_id__in=pids,
+            deal_type=Deal.DealType.RENT,
+            rent_expires_at__gte=today,
+        ).values_list('premise_id', flat=True)
+    )
+    sale_deals = set(
+        Deal.objects.filter(
+            premise_id__in=pids,
+            deal_type=Deal.DealType.SALE,
+        ).values_list('premise_id', flat=True)
+    )
+    booked = set(
+        Booking.objects.filter(
+            premise_id__in=pids,
+            expires_at__gt=now,
+        ).values_list('premise_id', flat=True)
+    )
+
+    out: list[tuple[Premise, bool, bool]] = []
+    for p in premises:
+        is_occ = p.pk in any_rent
+        if st == rent:
+            is_avail = bool(
+                p.available_for_rent
+                and p.pk not in active_rent
+                and p.pk not in booked
+            )
+        else:
+            is_avail = bool(
+                p.available_for_sale
+                and p.pk not in booked
+                and p.pk not in sale_deals
+            )
+        out.append((p, is_avail, is_occ))
+    return out
+
+
 async def get_premises_for_floor(
     building_uuid: UUID,
     floor_number: int,
+    sale_type: Optional[str] = None,
 ) -> FloorResponseOut:
     """
     Список помещений на этаже здания.
 
-    building_uuid: UUID здания.
-    floor_number: номер этажа.
-    Возвращает объект с UUID здания, номером этажа, SVG-схемой и списком помещений.
+    sale_type: rent|sale — влияет на поле is_available (is_occupied всегда по сделкам аренды).
     """
     try:
         floor = await Floor.objects.select_related("building").aget(
@@ -533,8 +633,14 @@ async def get_premises_for_floor(
             premises=[],
         )
 
+    premises = [
+        p
+        async for p in Premise.objects.filter(floor=floor).order_by("number", "id")
+    ]
+    rows = await _floor_premise_availability_rows(premises, sale_type or '')
+
     items: list[FloorPremiseOut] = []
-    async for p in Premise.objects.filter(floor=floor).order_by("number", "id"):
+    for p, is_avail, is_occ in rows:
         if p.available_for_sale and not p.available_for_rent:
             label_price = _format_floor_label_price(p.full_sell_price)
         else:
@@ -545,7 +651,8 @@ async def get_premises_for_floor(
                 name=p.number or "Помещение",
                 label_area=_format_area(p.area),
                 label_price=label_price,
-                is_occupied=(p.status != Premise.Status.AVAILABLE),
+                is_available=is_avail,
+                is_occupied=is_occ,
             )
         )
     schema_svg = await _read_floor_schema_svg(floor)

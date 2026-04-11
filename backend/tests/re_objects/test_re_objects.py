@@ -198,7 +198,6 @@ class TestPremisesList:
                 area=Decimal("50"),
                 price_per_month=0,
                 price_per_sqm=200_000,
-                status=Premise.Status.AVAILABLE,
                 available_for_rent=False,
                 available_for_sale=True,
                 number="S1",
@@ -261,7 +260,6 @@ class TestPremiseDetail:
                 area=Decimal("40"),
                 price_per_month=0,
                 price_per_sqm=250_000,
-                status=Premise.Status.AVAILABLE,
                 available_for_rent=False,
                 available_for_sale=True,
                 number="D1",
@@ -310,7 +308,9 @@ class TestFloorPremises:
             assert "name" in item
             assert "label_area" in item
             assert "label_price" in item
+            assert "is_available" in item
             assert "is_occupied" in item
+            assert isinstance(item["is_available"], bool)
             assert isinstance(item["is_occupied"], bool)
 
     async def test_floor_premises_nonexistent_floor(self, client, building_with_premise):

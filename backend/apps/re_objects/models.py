@@ -235,13 +235,6 @@ class Premise(models.Model):
     - Тип помещения
     и т.д.
     """
-    class Status(models.TextChoices):
-        """Статусы доступности помещения."""
-        AVAILABLE = 'available', 'Доступно'
-        RESERVED = 'reserved', 'Зарезервировано'
-        RENTED = 'rented', 'Сдано'
-        UNAVAILABLE = 'unavailable', 'Недоступно'
-
     class PremiseType(models.TextChoices):
         """Типы помещений."""
         OFFICE = 'office', 'Офис'
@@ -316,13 +309,6 @@ class Premise(models.Model):
         verbose_name="Тип помещения",
         help_text="Тип помещения (офис, торговое и т.д.)"
     )
-    status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.AVAILABLE,
-        verbose_name="Статус",
-        help_text="Статус доступности помещения"
-    )
     available_for_rent = models.BooleanField(
         default=True,
         verbose_name="Доступно для аренды",
@@ -380,7 +366,6 @@ class Premise(models.Model):
         verbose_name_plural = "Помещения"
         ordering = ['city', 'building', 'floor', 'number']
         indexes = [
-            models.Index(fields=['city', 'status']),
             models.Index(fields=['city', 'premise_type']),
             models.Index(fields=['building']),
             models.Index(fields=['area']),

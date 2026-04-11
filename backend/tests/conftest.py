@@ -62,7 +62,6 @@ def _create_building_with_premise(city):
         floor=floor,
         area=50,
         price_per_month=100000,
-        status=Premise.Status.AVAILABLE,
         available_for_rent=True,
         available_for_sale=False,
         number='101',

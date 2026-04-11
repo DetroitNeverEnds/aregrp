@@ -123,13 +123,14 @@ class BuildingListResponse(Schema):
 
 
 class FloorPremiseOut(Schema):
-    """Помещение на этаже: номер/название, площадь, стоимость, занятость."""
+    """Помещение на этаже: номер/название, площадь, стоимость, доступность и занятость по аренде."""
 
     uuid: str
     name: str  # номер помещения (Premise.number или название)
     label_area: str  # площадь, например "50 м²"
     label_price: str  # стоимость, например "100 000 ₽"
-    is_occupied: bool  # True — занято, False — свободно
+    is_available: bool  # по sale_type запроса: свободно для аренды или для продажи
+    is_occupied: bool  # True — есть сделки типа «аренда» (для rent и sale одинаково)
 
 
 class FloorResponseOut(Schema):

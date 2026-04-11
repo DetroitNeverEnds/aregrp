@@ -8,7 +8,7 @@
 2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
 4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
-5) GET /api/v1/floors/{building_uuid}/{floor_number} — данные этажа: building_uuid, floor_number, schema_svg, premises.
+5) GET /api/v1/floors/{building_uuid}/{floor_number} — данные этажа: schema_svg, premises (is_available по sale_type, is_occupied по сделкам аренды).
 6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ...). Всегда: sale_price, rent_price (по флагам available_for_sale / available_for_rent).
    Поле price — обратная совместимость (зависит от sale_type). 404 — ProblemDetail.
@@ -121,11 +121,28 @@ async def building_detail(request, building_uuid: UUID):
     "/{building_uuid}/{floor_number}",
     response={200: FloorResponseOut},
     summary="Помещения на этаже",
-    description="Данные этажа: building_uuid, floor_number, schema_svg (текст SVG) и premises [{ uuid, name, label_area, label_price, is_occupied }].",
+    description=(
+        "Данные этажа: building_uuid, floor_number, schema_svg и premises "
+        "[{ uuid, name, label_area, label_price, is_available, is_occupied }]. "
+        f"Параметр sale_type ({settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}) "
+        "задаёт семантику is_available; по умолчанию — аренда."
+    ),
 )
-async def floor_premises_list(request, building_uuid: UUID, floor_number: int):
+async def floor_premises_list(
+    request,
+    building_uuid: UUID,
+    floor_number: int,
+    sale_type: Optional[str] = Query(
+        None,
+        description=f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — аренда, {settings.RE_OBJECTS_SALE_TYPE_SALE} — продажа (влияет на is_available)",
+    ),
+):
     """Данные этажа с SVG-схемой и списком помещений."""
-    items = await get_premises_for_floor(building_uuid=building_uuid, floor_number=floor_number)
+    items = await get_premises_for_floor(
+        building_uuid=building_uuid,
+        floor_number=floor_number,
+        sale_type=sale_type,
+    )
     return 200, items
 
 
