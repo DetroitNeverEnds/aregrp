@@ -10,12 +10,12 @@
     overflow: hidden;
 }
 
-.floorchema,
 .floorSchema {
     flex-grow: 1;
     flex-shrink: 1;
     min-width: 0;
     transition: width 0.3s ease;
+    overflow: hidden;
 
     &__header {
         &__text {
@@ -36,9 +36,9 @@
             @include square;
             background-color: $free-room-color;
         }
-        &__occupied {
+        &__unavailable {
             @include square;
-            background-color: $occupied-room-color;
+            background-color: $unavailable-room-color;
         }
         &__other {
             @include square;

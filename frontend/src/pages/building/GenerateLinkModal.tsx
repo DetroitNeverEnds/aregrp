@@ -10,6 +10,8 @@ import { TextInput } from '@/components/ui/common/input/TextInput';
 import { Modal } from '@/components/ui/common/Modal';
 import Text from '@/components/ui/common/Text';
 
+import styles from './GenerateLinkModal.module.scss';
+
 export type GenerateLinkFormValues = {
     clientName: string;
     phone: string;
@@ -48,7 +50,7 @@ const GenerateLinkModalContent = ({ premise }: GenerateLinkModalContentProps) =>
     );
 
     return (
-        <Form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={handleSubmit(onSubmit)} className={styles.content}>
             <Flex direction="column" gap={0} fullWidth align="start">
                 <Text variant="h3" color="gray-100">
                     {t('pages.building.generateLinkModal.objectLabel')}

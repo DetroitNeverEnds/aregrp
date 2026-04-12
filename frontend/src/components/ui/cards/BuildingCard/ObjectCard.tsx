@@ -18,9 +18,8 @@ export interface BuildingCardProps {
 export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
     const { getLinkToCatalogue } = useFilterSearchParams();
     const {
-        // title,
+        title,
         description,
-        address,
         uuid,
         min_rent_price: minRentPrice,
         min_sale_price: minSalePrice,
@@ -55,7 +54,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                         color="primary-900"
                         className={styles.buildingCard__name__title}
                     >
-                        {address}
+                        {title}
                     </Text>
                     {(minRentPrice || minSalePrice) && (
                         <Flex gap={4} align="end">

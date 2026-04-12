@@ -6,27 +6,51 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../common/Button';
 import { Text } from '../../common/Text';
+import { useSendFeedbackMutation } from '@/mutations';
+import { Loader } from '../../common/Loader';
+
+import styles from './FeedbackForm.module.scss';
 
 export type FeedbackData = {
-    email: string;
+    name: string;
     phone: string;
 };
 
-export const FeedbackForm = () => {
+export type FeedbackFormProps = {
+    originKey: string;
+};
+
+export const FeedbackForm = ({ originKey }: FeedbackFormProps) => {
     const { t } = useTranslation();
+
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const { control, handleSubmit, reset } = useForm<FeedbackData>({
-        defaultValues: { email: '', phone: '' },
+    const {
+        control,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm<FeedbackData>({
+        defaultValues: { name: '', phone: '' },
     });
-    const submit = useCallback(
-        (data: FeedbackData) => {
-            // Пока форма только логирует данные. Интеграция с API — в следующих итерациях.
-            console.log('Feedback submitted:', data);
+
+    const sendFeedbackM = useSendFeedbackMutation({
+        onSuccess: () => {
             setIsSubmitted(true);
             reset();
         },
-        [reset],
+    });
+
+    const submit = useCallback(
+        (data: FeedbackData) => {
+            sendFeedbackM.mutate({
+                ...data,
+                subject: originKey,
+                message: window.location.href,
+            });
+        },
+        [sendFeedbackM, originKey],
     );
+
     if (isSubmitted) {
         return (
             <Text variant="20-reg" color="primary-800">
@@ -34,25 +58,28 @@ export const FeedbackForm = () => {
             </Text>
         );
     }
+
     return (
-        <Form onSubmit={handleSubmit(submit)}>
+        <Form onSubmit={handleSubmit(submit)} className={styles.form}>
             <Flex gap={40} fullWidth>
                 <Flex gap={16} fullWidth>
                     <Controller
-                        name="email"
+                        name="name"
                         control={control}
+                        rules={{ required: t('forms.errors.fieldRequired') }}
                         render={({ field, fieldState }) => (
                             <TextInput
                                 size="lg"
                                 {...field}
                                 errorMessage={fieldState.error?.message}
-                                placeholder={t('common.email')}
+                                placeholder={t('common.name')}
                             />
                         )}
                     />
                     <Controller
                         name="phone"
                         control={control}
+                        rules={{ required: t('forms.errors.fieldRequired') }}
                         render={({ field, fieldState }) => (
                             <TextInput
                                 size="lg"
@@ -62,11 +89,15 @@ export const FeedbackForm = () => {
                             />
                         )}
                     />
+                    {errors.root?.message && (
+                        <Text color="error-default">{errors.root?.message}</Text>
+                    )}
                 </Flex>
-                <Button size="lg" width="max">
+                <Button size="lg" width="max" type="submit">
                     {t('common.send')}
                 </Button>
             </Flex>
+            {sendFeedbackM.isPending && <Loader variant="overlay" />}
         </Form>
     );
 };

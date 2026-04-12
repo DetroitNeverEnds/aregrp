@@ -12,6 +12,10 @@ export interface ModalProps extends FlexProps {
     children: React.ReactNode;
     closeOnBackdropClick?: boolean;
     lockBodyScroll?: boolean;
+    /** Дополнительный класс для панели (например, увеличить max-width) */
+    panelClassName?: string;
+    /** Дополнительный класс для корневого оверлея (например, отступы у полноэкранной модалки) */
+    rootClassName?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -20,6 +24,8 @@ export const Modal: React.FC<ModalProps> = ({
     children,
     closeOnBackdropClick = true,
     lockBodyScroll = true,
+    panelClassName,
+    rootClassName,
     ...flexProps
 }) => {
     useEffect(() => {
@@ -51,9 +57,9 @@ export const Modal: React.FC<ModalProps> = ({
     }
 
     return createPortal(
-        <Flex justify="center" align="center" className={styles.root}>
+        <Flex justify="center" align="center" className={classNames(styles.root, rootClassName)}>
             <div className={styles.backdrop} onClick={closeOnBackdropClick ? onClose : undefined} />
-            <Flex className={styles.panel}>
+            <Flex className={classNames(styles.panel, panelClassName)}>
                 <Flex direction="row" justify="end" fullWidth className={styles.header}>
                     <FlatButton onClick={onClose}>
                         <Icon name="x-close" size={32} />

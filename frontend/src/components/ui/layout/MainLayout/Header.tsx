@@ -85,6 +85,7 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
                             ellipsis
                             trailingIcon="download-rounded"
                             theme={linkTheme}
+                            target="_blank"
                         >
                             {t('header.cases')}
                         </Link>

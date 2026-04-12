@@ -1,5 +1,5 @@
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ComponentType, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Loader } from '@/components/ui/common/Loader';
@@ -25,11 +25,11 @@ type SharedProps = {
 
 type Props<TData> = SharedProps & {
     query: UseQueryResult<QueryResult<TData>, Error>;
-    Component: ComponentType<{ data: TData }>;
+    render: (data: TData) => ReactNode;
 };
 
 export function QueryBoundary<TData>(props: Props<TData>) {
-    const { query, Component, loadingFallback, errorMessage, customError, onRetry } = props;
+    const { query, render, loadingFallback, errorMessage, customError, onRetry } = props;
 
     const { t } = useTranslation();
 
@@ -63,5 +63,5 @@ export function QueryBoundary<TData>(props: Props<TData>) {
         );
     }
 
-    return <Component data={query.data!.data!} />;
+    return render(query.data!.data!);
 }

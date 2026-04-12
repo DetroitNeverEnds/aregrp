@@ -10,12 +10,16 @@ import { ErrorLoading } from '@/components/ui/layout/ErrorLoading/ErrorLoading';
 import { useBuildingDetail } from '@/queries';
 
 import { BuildingContent } from './BuildingPage.components';
+import { useEffect } from 'react';
 
 type Params = { buildingUuid: string };
 
 export const BuildingPage = () => {
     const { t } = useTranslation();
     const { buildingUuid } = useParams<Params>();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [buildingUuid]);
 
     const buildingDetailQ = useBuildingDetail(buildingUuid || '');
 
@@ -23,12 +27,15 @@ export const BuildingPage = () => {
         <Page>
             <VerticalMainContainer>
                 {buildingUuid ? (
-                    <QueryBoundary query={buildingDetailQ} Component={BuildingContent} />
+                    <QueryBoundary
+                        query={buildingDetailQ}
+                        render={data => <BuildingContent data={data} />}
+                    />
                 ) : (
                     <ErrorLoading message={t('errors.somethingWrong')} />
                 )}
                 <Benefits variant="sale" />
-                <FeedbackFormRow />
+                <FeedbackFormRow originKey="building" />
             </VerticalMainContainer>
         </Page>
     );

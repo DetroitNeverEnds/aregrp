@@ -72,7 +72,10 @@ export const ProfileBoookingsCard = () => {
                         size="tiny"
                         variant="outlined"
                         width="auto"
-                        to={`/building/${row.building_uuid}?selectedPremise=${row.premise_uuid}`}
+                        to={`/building/${row.building_uuid}?${new URLSearchParams({
+                            selectedPremise: row.premise_uuid,
+                            sale_type: row.deal_type === 'sale' ? 'sale' : 'rent',
+                        })}`}
                     >
                         {t('pages.profile.booking.viewAction')}
                     </Button>
