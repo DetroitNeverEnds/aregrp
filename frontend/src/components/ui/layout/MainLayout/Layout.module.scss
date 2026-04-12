@@ -1,12 +1,7 @@
 .root {
     min-height: 100vh;
-    min-width: 100%;
-}
-
-@media (max-width: 1500px) {
-    .root {
-        width: 1500px;
-    }
+    width: 100%;
+    min-width: $min-laptop-width;
 }
 
 .content {

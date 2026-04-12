@@ -1,12 +1,17 @@
 .body {
     width: 100%;
+    min-width: $min-laptop-width;
     min-height: 100vh;
 }
 
 .logo {
-    width: 950px;
+    max-width: 950px;
+    flex-grow: 2;
+    flex-shrink: 1;
+
     background: $gradient-primary-700-900-lr;
     position: relative;
+    padding: 0 8px;
 
     &__lion1 {
         position: absolute;
@@ -25,6 +30,7 @@
     &__wrapperOuter {
         padding: 30px;
         flex-grow: 1;
+        flex-shrink: 1;
     }
     &__wrapperInner {
         height: 100%;
