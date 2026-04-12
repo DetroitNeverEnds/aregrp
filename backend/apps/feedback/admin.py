@@ -31,6 +31,10 @@ class FeedbackAdmin(admin.ModelAdmin):
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
+        ('Источник', {
+            'fields': ('origin_key', 'origin_url'),
+            'classes': ('collapse',)
+        }),
     )
     
     def get_readonly_fields(self, request, obj=None):

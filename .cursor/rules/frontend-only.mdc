@@ -1,14 +1,9 @@
-# Общие правила проекта AREGRP
-
-## Архитектура проекта
-
-- Монорепозиторий с frontend (React + TypeScript) и backend (Django)
-- Frontend использует Vite, React Router, SASS
-- Backend использует Django Ninja для API
+---
+globs: frontend/**/*
+alwaysApply: false
+---
 
 ## Стандарты кодирования
-
-### Frontend
 
 - **Язык**: TypeScript (строгий режим)
 - **Стили**: SASS/SCSS с модульным подходом

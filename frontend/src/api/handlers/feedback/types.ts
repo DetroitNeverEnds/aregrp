@@ -8,6 +8,10 @@ export interface FeedbackCreateIn {
     phone: string;
     subject: string;
     message?: string;
+    origin: {
+        key: string;
+        url: string;
+    };
 }
 
 export interface FeedbackOut {
