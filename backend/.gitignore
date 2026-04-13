@@ -27,7 +27,7 @@ local_settings.py
 .env
 .env.local
 .env.postgres
-.env.*
+# .env.*
 
 # SQLite базы данных
 *.sqlite3
