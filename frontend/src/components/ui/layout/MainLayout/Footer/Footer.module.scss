@@ -11,23 +11,11 @@
     max-width: 100%;
     min-width: 0;
     margin-top: 100px;
-    flex-shrink: 0;
     overflow-x: clip;
 
     @include mobile-only {
-        padding: 48px $main-content-padding-mobile 10px;
+        padding: 48px $main-content-padding-mobile 0;
         margin-top: 48px;
         border-radius: $border-radius-l $border-radius-l 0 0;
-    }
-
-    &__linksLogo {
-        path,
-        circle,
-        rect,
-        line,
-        polyline,
-        polygon {
-            fill: $gray-0;
-        }
     }
 }

@@ -1,18 +1,16 @@
-import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Flex } from '@/components/ui/common/Flex';
 import { Divider } from '@/components/ui/common/Divider';
 import { Text } from '@/components/ui/common/Text';
 import { Link } from '@/components/ui/common/Link';
 import { Icon } from '@/components/ui/common/Icon';
 import LogoPicDarkFooter from '@/icons/logo/logoPicDarkFooter.svg?react';
-import LogoText from '@/icons/logo/logoText.svg?react';
+import LogoText from '@/icons/logo/logoTextDark.svg?react';
 import ALetter from '@/icons/logo/A.svg?react';
 import RLetter from '@/icons/logo/R.svg?react';
 import ELetter from '@/icons/logo/E.svg?react';
-import classNames from 'classnames';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { useSiteInfo } from '@/queries/siteInfo';
-import footerStyles from './Footer.module.scss';
 import styles from './FooterMobile.module.scss';
 import { useFooterLinks } from './useFooterLinks';
 
@@ -22,32 +20,29 @@ export const FooterMobile = () => {
     const footerLinks = useFooterLinks();
 
     return (
-        <div className={classNames(styles.footerMobile, breakpointStyles['mobile-only'])}>
-            <div className={styles.footerMobile__inner}>
-                <div className={styles.footerMobile__ctaBlock}>
+        <div className={breakpointStyles['mobile-only']}>
+            <Flex align="stretch" gap={48} fullWidth>
+                <Flex align="start" gap={24} fullWidth>
                     <Divider />
-                    <div className={styles.footerMobile__ctaRow}>
-                        <span className={styles.footerMobile__ctaText}>
-                            {t('footer.contactUsMobile')
-                                .split('\n')
-                                .map((line, i, arr) => (
-                                    <Fragment key={i}>
-                                        {line}
-                                        {i < arr.length - 1 ? <br /> : null}
-                                    </Fragment>
-                                ))}
-                        </span>
+                    <Flex direction="row" justify="between" align="start" gap={100} fullWidth>
+                        <Text variant="20-med" color="gray-0">
+                            {t('footer.contactUs')}
+                        </Text>
                         <LogoPicDarkFooter className={styles.footerMobile__ctaLogo} />
-                    </div>
-                    <div className={styles.footerMobile__socials}>
-                        <Link to={siteInfo?.telegram_link || ''} className={styles.footerMobile__socialLink}>
-                            <Icon name="telegram" color="primary-yellow" size={32} />
-                        </Link>
-                        <Link to={siteInfo?.max_link || ''} className={styles.footerMobile__socialLink}>
-                            <Icon name="max" color="primary-yellow" size={32} />
-                        </Link>
-                    </div>
-                    <div className={styles.footerMobile__contacts}>
+                    </Flex>
+                    <Flex direction="row" align="center" gap={24}>
+                        <Flex inline align="center" justify="center" style={{ flexShrink: 0 }}>
+                            <Link to={siteInfo?.telegram_link || ''}>
+                                <Icon name="telegram" color="primary-yellow" size={32} />
+                            </Link>
+                        </Flex>
+                        <Flex inline align="center" justify="center" style={{ flexShrink: 0 }}>
+                            <Link to={siteInfo?.max_link || ''}>
+                                <Icon name="max" color="primary-yellow" size={32} />
+                            </Link>
+                        </Flex>
+                    </Flex>
+                    <Flex gap={12} align="start">
                         <Link
                             to={`tel:${siteInfo?.phone}`}
                             theme="light"
@@ -62,14 +57,14 @@ export const FooterMobile = () => {
                         >
                             {siteInfo?.email}
                         </Link>
-                    </div>
-                </div>
+                    </Flex>
+                </Flex>
 
-                <div className={styles.footerMobile__aboutSection}>
+                <Flex align="start" gap={24} fullWidth>
                     <Divider />
-                    <div className={styles.footerMobile__aboutTight}>
-                        <LogoText className={footerStyles.footer__linksLogo} />
-                        <div className={styles.footerMobile__aboutText}>
+                    <Flex align="start" gap={16} fullWidth>
+                        <LogoText />
+                        <Flex align="start" gap={12} fullWidth>
                             <Text variant="14-reg" color="gray-0">
                                 {t('footer.description')}
                             </Text>
@@ -78,45 +73,41 @@ export const FooterMobile = () => {
                                 <br />
                                 {t('footer.inn')}: {siteInfo?.inn || '-'}
                             </Text>
-                        </div>
-                    </div>
-                </div>
+                        </Flex>
+                    </Flex>
+                </Flex>
 
                 {footerLinks.map(({ title, links }, i) => (
-                    <div key={i} className={styles.footerMobile__navColumn}>
+                    <Flex key={i} direction="column" align="start" gap={12} fullWidth>
                         <Divider />
-                        <span className={styles.footerMobile__navColumnTitle}>{title}</span>
+                        <Text variant="14-reg" color="gray-50">
+                            {title}
+                        </Text>
                         {links.map(({ to, label }) => (
-                            <Link
-                                key={to}
-                                to={to}
-                                theme="light"
-                                size="sm"
-                                className={styles.footerMobile__navLink}
-                            >
+                            <Link key={to} to={to} theme="light" size="md">
                                 {label}
                             </Link>
                         ))}
-                    </div>
+                    </Flex>
                 ))}
 
-                <div className={styles.footerMobile__legalRow}>
-                    <div className={styles.footerMobile__legalBlock}>
-                        <Divider />
-                        <span className={styles.footerMobile__copyright}>{t('footer.copyright')}</span>
-                    </div>
-                    <div className={styles.footerMobile__legalBlock}>
-                        <Divider />
-                        <span className={styles.footerMobile__development}>{t('footer.development')}</span>
-                    </div>
-                </div>
+                <Flex align="start" gap={24} fullWidth>
+                    <Divider />
+                    <Text variant="14-med" color="gray-0">
+                        {t('footer.copyright')}
+                    </Text>
+                    <Divider />
+                    <Text variant="14-med" color="gray-0">
+                        {t('footer.development')}
+                    </Text>
+                </Flex>
 
-                <div className={styles.footerMobile__partners}>
-                    <ALetter />
-                    <RLetter />
-                    <ELetter />
-                </div>
-            </div>
+                <Flex direction="row" align="center" justify="between" fullWidth>
+                    <ALetter className={styles.footerMobile__lowerARESvg} />
+                    <RLetter className={styles.footerMobile__lowerARESvg} />
+                    <ELetter className={styles.footerMobile__lowerARESvg} />
+                </Flex>
+            </Flex>
         </div>
     );
 };

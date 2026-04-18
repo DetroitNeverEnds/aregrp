@@ -4,11 +4,10 @@ import { Text } from '@/components/ui/common/Text';
 import { Link } from '@/components/ui/common/Link';
 import { Icon } from '@/components/ui/common/Icon';
 import LogoPicDarkFooter from '@/icons/logo/logoPicDarkFooter.svg?react';
-import LogoText from '@/icons/logo/logoText.svg?react';
+import LogoText from '@/icons/logo/logoTextDark.svg?react';
 import ALetter from '@/icons/logo/A.svg?react';
 import RLetter from '@/icons/logo/R.svg?react';
 import ELetter from '@/icons/logo/E.svg?react';
-import classNames from 'classnames';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { useSiteInfo } from '@/queries/siteInfo';
 import { Column } from '../../TwoColumnsContainer';
@@ -23,16 +22,10 @@ export const FooterDesktop = () => {
     const footerLinks = useFooterLinks();
 
     return (
-        <div className={classNames(styles.footerDesktop, breakpointStyles['desktop-only'])}>
-            <Flex gap={140} fullWidth className={styles.footerDesktop__inner}>
+        <div className={breakpointStyles['desktop-only']}>
+            <Flex gap={140} fullWidth>
                 <Flex gap={100} fullWidth>
-                    <Flex
-                        direction="row"
-                        justify="between"
-                        align="start"
-                        fullWidth
-                        className={styles.footerDesktop__topRow}
-                    >
+                    <Flex direction="row" justify="between" align="start" fullWidth>
                         <Flex align="start" gap={60}>
                             <Flex gap={40} fullWidth align="start">
                                 <Divider />
@@ -42,12 +35,7 @@ export const FooterDesktop = () => {
                             </Flex>
 
                             <Flex align="start" gap={40}>
-                                <Flex
-                                    direction="row"
-                                    gap={50}
-                                    align="start"
-                                    className={styles.footerDesktop__socialLinks}
-                                >
+                                <Flex direction="row" gap={50} align="start">
                                     <Link to={siteInfo?.telegram_link || ''}>
                                         <Icon name="telegram" color="primary-yellow" size={50} />
                                     </Link>
@@ -81,13 +69,7 @@ export const FooterDesktop = () => {
                     </Flex>
 
                     <Flex gap={60} fullWidth>
-                        <Flex
-                            align="start"
-                            direction="row"
-                            gap={24}
-                            fullWidth
-                            className={styles.footerDesktop__columns}
-                        >
+                        <Flex align="start" direction="row" gap={24} fullWidth>
                             <Column align="start" gap={40}>
                                 <Divider />
                                 <Flex align="start" gap={58} fullWidth>
@@ -123,17 +105,17 @@ export const FooterDesktop = () => {
                         </Flex>
 
                         <Flex direction="row" align="start" gap={24} fullWidth>
-                            <Column align="start" gap={20} className={styles.footerDesktop__column}>
+                            <Column align="start" gap={20}>
                                 <Divider />
                                 <Text variant="14-med" color="gray-0">
                                     {t('footer.copyright')}
                                 </Text>
                             </Column>
-                            <Column align="start" gap={20} className={styles.footerDesktop__column}>
+                            <Column align="start" gap={20}>
                                 <Divider />
-                                <Text variant="14-med" color="gray-20">
+                                <Link size="md" theme="light" to="https://aregrp.ru">
                                     {t('footer.development')}
-                                </Text>
+                                </Link>
                             </Column>
                         </Flex>
                     </Flex>

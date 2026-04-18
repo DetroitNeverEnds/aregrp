@@ -1,44 +1,10 @@
 // =============================================================================
-// Footer — desktop (широкий экран)
+// Footer — desktop (только типографика и цвет; сетка — Flex в TSX)
 // =============================================================================
 
 .footerDesktop {
-    display: block;
-
-    &__inner {
-        gap: 140px;
-    }
-
-    &__topRow {
-        @include mobile-only {
-            flex-direction: column !important;
-            align-items: stretch !important;
-            gap: 40px !important;
-        }
-    }
-
-    &__columns {
-        @include mobile-only {
-            flex-direction: column !important;
-            gap: 40px !important;
-        }
-    }
-
-    &__column {
-        flex: 1 1 0;
-        min-width: 0;
-    }
-
-    &__socialLinks {
-        color: $primary-yellow;
-    }
-
     &__contactLink {
         font-size: 42px;
         line-height: 1;
-
-        @include mobile-only {
-            font-size: 28px;
-        }
     }
 }

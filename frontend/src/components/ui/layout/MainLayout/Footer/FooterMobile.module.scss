@@ -1,190 +1,20 @@
 // =============================================================================
-// Footer — mobile (макет Figma node 1058:38865)
+// Footer — mobile (типографика и размеры; сетка — Flex в TSX)
 // =============================================================================
 
 .footerMobile {
-    display: block;
-
-    &__inner {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 48px;
-        width: 100%;
-    }
-
-    &__ctaBlock {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        width: 100%;
-    }
-
-    &__ctaRow {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 24px;
-        width: 100%;
-    }
-
-    &__ctaText {
-        flex: 1 1 0;
-        min-width: 0;
-        font-family: $font-family-base;
-        font-size: 16px;
-        font-weight: $font-weight-medium;
-        line-height: 1.4;
-        color: $gray-0;
-    }
-
     &__ctaLogo {
-        flex-shrink: 0;
         height: 44px;
         width: auto;
-        max-width: 40%;
-
-        :global(svg) {
-            height: 100%;
-            width: auto;
-            display: block;
-        }
-    }
-
-    &__socials {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 24px;
-    }
-
-    &__socialLink {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
-        height: 30px;
         flex-shrink: 0;
-
-        :global(.icon) {
-            width: 30px;
-            height: 30px;
-        }
-    }
-
-    &__contacts {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
     }
 
     &__contactLink {
-        font-family: $font-family-base;
         font-size: 24px;
-        font-weight: $font-weight-regular;
-        line-height: 1.2;
-        color: $gray-opacity-0-80;
-        text-decoration: none;
-
-        &:hover {
-            color: $gray-0;
-        }
     }
 
-    &__aboutSection {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 24px;
-        width: 100%;
-    }
-
-    &__aboutTight {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        width: 100%;
-    }
-
-    &__aboutText {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        width: 100%;
-    }
-
-    &__navColumn {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        width: 100%;
-    }
-
-    &__navColumnTitle {
-        font-family: $font-family-base;
-        font-size: 14px;
-        font-weight: $font-weight-regular;
-        line-height: 1.2;
-        color: $gray-50;
-    }
-
-    &__navLink {
-        font-family: $font-family-base;
-        font-size: 14px;
-        font-weight: $font-weight-medium;
-        line-height: 1;
-        color: $gray-opacity-0-80 !important;
-
-        &:hover {
-            color: $gray-0 !important;
-        }
-    }
-
-    &__legalRow {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 24px;
-        width: 100%;
-    }
-
-    &__legalBlock {
-        display: flex;
-        flex-direction: column;
-        gap: 24px;
-        width: 100%;
-    }
-
-    &__copyright {
-        font-family: $font-family-base;
-        font-size: 14px;
-        font-weight: $font-weight-medium;
-        line-height: 1;
-        color: $gray-0;
-    }
-
-    &__development {
-        font-family: $font-family-base;
-        font-size: 14px;
-        font-weight: $font-weight-medium;
-        line-height: 1.2;
-        color: $gray-opacity-0-80;
-    }
-
-    &__partners {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-
-        :global(svg) {
-            height: 24px;
-            width: auto;
-            display: block;
-        }
+    &__lowerARESvg {
+        height: 24px;
+        width: auto;
     }
 }
