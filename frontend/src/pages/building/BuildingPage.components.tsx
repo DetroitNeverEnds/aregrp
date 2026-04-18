@@ -17,7 +17,7 @@ import Container from '@/components/ui/layout/Container';
 import type { LayoutSettings } from '@/components/ui/layout/MainLayout/Layout';
 import { InfiniteQueryBoundary } from '@/components/ui/layout/QueryBoundary/InfiniteQueryBoundary';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
-import { Column } from '@/components/ui/layout/TwoColumnsContainer';
+import { Column } from '@/components/ui/layout/Column';
 import { useLayoutSettings } from '@/hooks/useLayoutSettings';
 import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedSearchParams';
 import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';

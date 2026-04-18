@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Flex } from '../../common/Flex';
 import Text from '../../common/Text';
-import { Column, TwoColumnsContainer } from '../TwoColumnsContainer';
+import { Column } from '../Column';
+import { TwoColumnsContainer } from '../TwoColumnsContainer';
 import { FeedbackForm } from '../../forms/FeedbackForm';
 
 import styles from './FeedbackFormRow.module.scss';

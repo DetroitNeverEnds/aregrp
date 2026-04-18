@@ -3,7 +3,7 @@ import { Flex } from '@/components/ui/common/Flex';
 import { Icon, type IconName } from '@/components/ui/common/Icon';
 import Text from '@/components/ui/common/Text';
 import { FeatureCard } from '@/components/ui/layout/Container';
-import { Column } from '@/components/ui/layout/TwoColumnsContainer';
+import { Column } from '@/components/ui/layout/Column';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

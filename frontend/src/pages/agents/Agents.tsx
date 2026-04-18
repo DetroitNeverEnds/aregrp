@@ -7,7 +7,8 @@ import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layou
 import { Page } from '../../components/ui/layout/Page/Page';
 import { BreadCrumbs } from '../../components/ui/common/Breadcrumbs/Breadcrumbs';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
-import { Column, TwoColumnsContainer } from '../../components/ui/layout/TwoColumnsContainer';
+import { Column } from '../../components/ui/layout/Column';
+import { TwoColumnsContainer } from '../../components/ui/layout/TwoColumnsContainer';
 import { Divider } from '../../components/ui/common/Divider';
 import { Icon, type IconName } from '../../components/ui/common/Icon';
 import { Button } from '../../components/ui/common/Button';

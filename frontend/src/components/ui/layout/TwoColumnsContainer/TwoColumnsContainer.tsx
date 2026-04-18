@@ -1,6 +1,5 @@
 import { forwardRef, type PropsWithChildren } from 'react';
-import { Flex, type FlexProps } from '../../common/Flex';
-import classNames from 'classnames';
+import { Flex } from '../../common/Flex';
 
 import styles from './TwoColumnsContainer.module.scss';
 
@@ -22,11 +21,3 @@ export const TwoColumnsContainer = forwardRef<HTMLDivElement, TwoColumnsContaine
         );
     },
 );
-
-export const Column = (props: FlexProps) => {
-    return (
-        <Flex align="start" {...props} className={classNames(styles.column, props.className)}>
-            {props.children}
-        </Flex>
-    );
-};

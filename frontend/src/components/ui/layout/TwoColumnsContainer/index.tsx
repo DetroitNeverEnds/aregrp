@@ -1,1 +1,1 @@
-export { TwoColumnsContainer, Column } from './TwoColumnsContainer';
+export { TwoColumnsContainer } from './TwoColumnsContainer';

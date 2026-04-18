@@ -4,7 +4,7 @@ import MinMaxSelect from './MinMaxSelect';
 import { useTranslation } from 'react-i18next';
 import { useBuildings } from '@/queries/premises';
 import { useEffect, useMemo } from 'react';
-import { Column } from '@/components/ui/layout/TwoColumnsContainer';
+import { Column } from '@/components/ui/layout/Column';
 import { Select, type SelectOption } from '@/components/ui/common/input/Select';
 import Form from '@/components/ui/common/Form';
 import { Flex } from '@/components/ui/common/Flex';

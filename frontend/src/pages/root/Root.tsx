@@ -11,7 +11,7 @@ import { BuildingCard } from '../../components/ui/cards/BuildingCard';
 import styles from './Root.module.scss';
 import { Button } from '../../components/ui/common/Button';
 import Container, { FeatureCard } from '../../components/ui/layout/Container';
-import { Column } from '../../components/ui/layout/TwoColumnsContainer';
+import { Column } from '../../components/ui/layout/Column';
 import { Divider } from '../../components/ui/common/Divider';
 import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
 import { useBuildingsCatalogueInfinite, usePremises } from '../../queries/premises';

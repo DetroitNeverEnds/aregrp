@@ -3,7 +3,7 @@ import { Flex } from '../../common/Flex';
 import { Divider } from '../../common/Divider';
 import { Text } from '../../common/Text';
 import styles from './ObjectCard.module.scss';
-import { Column } from '../../layout/TwoColumnsContainer';
+import { Column } from '../../layout/Column';
 import { type BuildingCatalogue } from '@/api';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';

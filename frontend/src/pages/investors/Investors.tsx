@@ -24,7 +24,8 @@ import CityPic from './assets/city.svg?react';
 import ArrowPic from './assets/arrow.svg?react';
 
 import styles from './Investors.module.scss';
-import { Column, TwoColumnsContainer } from '@/components/ui/layout/TwoColumnsContainer';
+import { Column } from '@/components/ui/layout/Column';
+import { TwoColumnsContainer } from '@/components/ui/layout/TwoColumnsContainer';
 import { Divider } from '@/components/ui/common/Divider';
 import { Collapse } from './Collapse';
 import { useInvestorSettings } from '@/queries';
