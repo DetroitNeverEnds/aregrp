@@ -18,6 +18,8 @@ import styles from './Contacts.module.scss';
 import { MapPin } from '../../components/ui/common/MapPin';
 import { Card } from '../../components/ui/common/Card/Card';
 import { Page } from '@/components/ui/layout/Page/Page';
+import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
+import Container from '@/components/ui/layout/Container';
 
 export const Contacts = () => {
     const { t } = useTranslation();
@@ -87,14 +89,14 @@ export const Contacts = () => {
             <VerticalMainContainer className={styles.container}>
                 {/* Контакты и карта */}
                 <Columns>
-                    <Column gap={200} align="stretch">
+                    <Column className={styles.contacts} align="stretch">
                         <Flex align="start">
                             <Text variant="h2">{t('pages.contacts.connectUs')}</Text>
                             <Text variant="h2" color="gray-50">
                                 {t('pages.contacts.anyVariant')}
                             </Text>
                         </Flex>
-                        <Flex gap={40}>
+                        <Flex className={styles.contacts__variants}>
                             {contactsVariants.map((contact, index) => (
                                 <Fragment key={index}>
                                     <Flex gap={12} align="start" fullWidth>
@@ -151,29 +153,53 @@ export const Contacts = () => {
 
                 {/* Реквизиты */}
                 <Columns>
-                    <Column gap={40}>
+                    <Container gap="secondary">
                         <Divider />
                         <Text variant="20-med">{t('pages.contacts.requisite')}</Text>
-                    </Column>
-                    <Column gap={40}>
-                        <Divider />
+                    </Container>
+                    <Container gap="secondary">
+                        <Divider className={breakpointStyles.desktopOnly} />
                         <Flex align="start" fullWidth>
                             <Text variant="h2">{t('pages.contacts.ie')}</Text>
                             <Text variant="h2" color="gray-50">
                                 {siteInfo?.org_name || '-'}
                             </Text>
                         </Flex>
-                        <Flex gap={20} fullWidth>
-                            {legalInfo.map(({ title, value }, i) => (
-                                <Flex key={i} direction="row" fullWidth gap={80} align="baseline">
-                                    <Text color="gray-50" className={styles.legal__keys}>
-                                        {title}
-                                    </Text>
-                                    <Text>{value}</Text>
-                                </Flex>
-                            ))}
-                        </Flex>
-                    </Column>
+
+                        <>
+                            <Flex gap={24} align="start" fullWidth>
+                                {legalInfo.map(({ title, value }, i) => (
+                                    <Fragment key={i}>
+                                        {/* Desktop */}
+                                        <Flex
+                                            key={i}
+                                            direction="row"
+                                            fullWidth
+                                            gap={80}
+                                            align="baseline"
+                                            className={breakpointStyles.desktopOnly}
+                                        >
+                                            <Text color="gray-50" className={styles.legal__keys}>
+                                                {title}
+                                            </Text>
+                                            <Text>{value}</Text>
+                                        </Flex>
+                                        {/* Mobile */}
+                                        <Flex
+                                            align="start"
+                                            gap={12}
+                                            className={breakpointStyles.mobileOnly}
+                                        >
+                                            <Text color="gray-50" className={styles.legal__keys}>
+                                                {title}
+                                            </Text>
+                                            <Text>{value}</Text>
+                                        </Flex>
+                                    </Fragment>
+                                ))}
+                            </Flex>
+                        </>
+                    </Container>
                 </Columns>
 
                 {/* Форма */}

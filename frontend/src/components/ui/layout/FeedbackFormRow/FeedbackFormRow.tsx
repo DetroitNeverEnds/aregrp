@@ -7,6 +7,7 @@ import { FeedbackForm } from '../../forms/FeedbackForm';
 
 import styles from './FeedbackFormRow.module.scss';
 import { forwardRef } from 'react';
+import { Divider } from '../../common/Divider';
 
 export type FeedbackFormRowProps = {
     originKey: string;
@@ -20,6 +21,7 @@ export const FeedbackFormRow = forwardRef<HTMLDivElement, FeedbackFormRowProps>(
             <Columns ref={ref} rowsNum={2}>
                 <Column>
                     <Flex align="start" className={styles.formColumnContent}>
+                        <Divider />
                         <Flex align="start" className={styles.formColumnContent__title}>
                             <Text color="gray-50">{t('pages.contacts.planView')}</Text>
                             <Text variant="h2">
