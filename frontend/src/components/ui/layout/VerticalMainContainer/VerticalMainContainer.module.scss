@@ -2,6 +2,14 @@
     padding: 0 $main-content-padding;
     width: 100%;
     box-sizing: border-box;
+
+    @include mobile-only {
+        padding: 0 $main-content-padding-mobile;
+    }
+
+    @media (min-width: $breakpoint-desktop) and (max-width: ($min-desktop-width - 1px)) {
+        padding: 0 $main-content-padding-tablet;
+    }
 }
 
 .container {

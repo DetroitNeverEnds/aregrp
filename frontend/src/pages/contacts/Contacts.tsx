@@ -16,6 +16,7 @@ import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
 import styles from './Contacts.module.scss';
 import { MapPin } from '../../components/ui/common/MapPin';
 import { Card } from '../../components/ui/common/Card/Card';
+import { Page } from '@/components/ui/layout/Page/Page';
 
 export const Contacts = () => {
     const { t } = useTranslation();
@@ -81,100 +82,102 @@ export const Contacts = () => {
     );
 
     return (
-        <VerticalMainContainer className={styles.container}>
-            {/* Контакты и карта */}
-            <TwoColumnsContainer>
-                <Column gap={200} align="stretch">
-                    <Flex align="start">
-                        <Text variant="h2">{t('pages.contacts.connectUs')}</Text>
-                        <Text variant="h2" color="gray-50">
-                            {t('pages.contacts.anyVariant')}
-                        </Text>
-                    </Flex>
-                    <Flex gap={40}>
-                        {contactsVariants.map((contact, index) => (
-                            <Fragment key={index}>
-                                <Flex gap={12} align="start" fullWidth>
-                                    {contact.link ? (
-                                        <Link to={contact.link}>
-                                            <Text variant="h1">{contact.title}</Text>
-                                        </Link>
-                                    ) : (
-                                        <Text variant="h1" color="gray-100">
-                                            {contact.title}
+        <Page>
+            <VerticalMainContainer className={styles.container}>
+                {/* Контакты и карта */}
+                <TwoColumnsContainer>
+                    <Column gap={200} align="stretch">
+                        <Flex align="start">
+                            <Text variant="h2">{t('pages.contacts.connectUs')}</Text>
+                            <Text variant="h2" color="gray-50">
+                                {t('pages.contacts.anyVariant')}
+                            </Text>
+                        </Flex>
+                        <Flex gap={40}>
+                            {contactsVariants.map((contact, index) => (
+                                <Fragment key={index}>
+                                    <Flex gap={12} align="start" fullWidth>
+                                        {contact.link ? (
+                                            <Link to={contact.link}>
+                                                <Text variant="h1">{contact.title}</Text>
+                                            </Link>
+                                        ) : (
+                                            <Text variant="h1" color="gray-100">
+                                                {contact.title}
+                                            </Text>
+                                        )}
+
+                                        <Text variant="12-reg" color="gray-50">
+                                            {contact.description}
                                         </Text>
-                                    )}
-
-                                    <Text variant="12-reg" color="gray-50">
-                                        {contact.description}
-                                    </Text>
-                                </Flex>
-                                {index !== contactsVariants.length - 1 && <Divider />}
-                            </Fragment>
-                        ))}
-                    </Flex>
-                </Column>
-                <Column className={styles.mapColumn}>
-                    <YandexMap
-                        staticMap
-                        markers={[
-                            {
-                                key: 'sales-office',
-                                coordinates: {
-                                    lat: contacts?.coordinates?.lat || 0,
-                                    lon: contacts?.coordinates?.lng || 0,
+                                    </Flex>
+                                    {index !== contactsVariants.length - 1 && <Divider />}
+                                </Fragment>
+                            ))}
+                        </Flex>
+                    </Column>
+                    <Column className={styles.mapColumn}>
+                        <YandexMap
+                            staticMap
+                            markers={[
+                                {
+                                    key: 'sales-office',
+                                    coordinates: {
+                                        lat: contacts?.coordinates?.lat || 0,
+                                        lon: contacts?.coordinates?.lng || 0,
+                                    },
+                                    content: (
+                                        <MapPin address={contacts?.sales_center_address || '-'}>
+                                            <Card align="start" gap={6} isPin>
+                                                <Text variant="14-med">
+                                                    {t('pages.contacts.salesOffice')}
+                                                </Text>
+                                                <Text variant="12-reg" color="gray-70">
+                                                    {contacts?.sales_center_address || '-'}
+                                                </Text>
+                                                <img
+                                                    src="/img/salesOffice.png"
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Card>
+                                        </MapPin>
+                                    ),
                                 },
-                                content: (
-                                    <MapPin address={contacts?.sales_center_address || '-'}>
-                                        <Card align="start" gap={6} isPin>
-                                            <Text variant="14-med">
-                                                {t('pages.contacts.salesOffice')}
-                                            </Text>
-                                            <Text variant="12-reg" color="gray-70">
-                                                {contacts?.sales_center_address || '-'}
-                                            </Text>
-                                            <img
-                                                src="/img/salesOffice.png"
-                                                style={{ width: '100%' }}
-                                            />
-                                        </Card>
-                                    </MapPin>
-                                ),
-                            },
-                        ]}
-                    ></YandexMap>
-                </Column>
-            </TwoColumnsContainer>
+                            ]}
+                        ></YandexMap>
+                    </Column>
+                </TwoColumnsContainer>
 
-            {/* Реквизиты */}
-            <TwoColumnsContainer>
-                <Column gap={40}>
-                    <Divider />
-                    <Text variant="20-med">{t('pages.contacts.requisite')}</Text>
-                </Column>
-                <Column gap={40}>
-                    <Divider />
-                    <Flex align="start" fullWidth>
-                        <Text variant="h2">{t('pages.contacts.ie')}</Text>
-                        <Text variant="h2" color="gray-50">
-                            {siteInfo?.org_name || '-'}
-                        </Text>
-                    </Flex>
-                    <Flex gap={20} fullWidth>
-                        {legalInfo.map(({ title, value }, i) => (
-                            <Flex key={i} direction="row" fullWidth gap={80} align="baseline">
-                                <Text color="gray-50" className={styles.legal__keys}>
-                                    {title}
-                                </Text>
-                                <Text>{value}</Text>
-                            </Flex>
-                        ))}
-                    </Flex>
-                </Column>
-            </TwoColumnsContainer>
+                {/* Реквизиты */}
+                <TwoColumnsContainer>
+                    <Column gap={40}>
+                        <Divider />
+                        <Text variant="20-med">{t('pages.contacts.requisite')}</Text>
+                    </Column>
+                    <Column gap={40}>
+                        <Divider />
+                        <Flex align="start" fullWidth>
+                            <Text variant="h2">{t('pages.contacts.ie')}</Text>
+                            <Text variant="h2" color="gray-50">
+                                {siteInfo?.org_name || '-'}
+                            </Text>
+                        </Flex>
+                        <Flex gap={20} fullWidth>
+                            {legalInfo.map(({ title, value }, i) => (
+                                <Flex key={i} direction="row" fullWidth gap={80} align="baseline">
+                                    <Text color="gray-50" className={styles.legal__keys}>
+                                        {title}
+                                    </Text>
+                                    <Text>{value}</Text>
+                                </Flex>
+                            ))}
+                        </Flex>
+                    </Column>
+                </TwoColumnsContainer>
 
-            {/* Форма */}
-            <FeedbackFormRow originKey="contacts" />
-        </VerticalMainContainer>
+                {/* Форма */}
+                <FeedbackFormRow originKey="contacts" />
+            </VerticalMainContainer>
+        </Page>
     );
 };

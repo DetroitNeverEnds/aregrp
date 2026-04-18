@@ -1,12 +1,29 @@
 .root {
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
     width: 100%;
-    min-width: $min-laptop-width;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    @include mobile-only {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+
+    @include desktop-only {
+        min-width: $min-desktop-width;
+        max-width: none;
+    }
 }
 
 .content {
-    flex-grow: 1;
+    flex: 1 1 auto;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
 }
 
 .contentGray10 {

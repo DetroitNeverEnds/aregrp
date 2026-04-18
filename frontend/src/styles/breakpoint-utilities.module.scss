@@ -1,0 +1,18 @@
+// =============================================================================
+// Глобальные утилиты видимости по $breakpoint-desktop (см. variables.scss)
+// Использование: className={classNames(styles.block, 'mobile-only')} и т.п.
+// =============================================================================
+
+/** Видно только при max-width: $breakpoint-desktop - 1px */
+.mobile-only {
+    @include desktop-only {
+        display: none !important;
+    }
+}
+
+/** Видно только при min-width: $breakpoint-desktop */
+.desktop-only {
+    @include mobile-only {
+        display: none !important;
+    }
+}

@@ -1,3 +1,10 @@
+.tableScroll {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .dataTablePagination--disabled {
     opacity: 0.6;
     pointer-events: none;

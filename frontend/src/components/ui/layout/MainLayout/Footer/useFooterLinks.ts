@@ -1,0 +1,41 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSiteInfo } from '@/queries/siteInfo';
+
+export const useFooterLinks = () => {
+    const { t } = useTranslation();
+    const siteInfo = useSiteInfo().data?.data;
+
+    return useMemo(
+        () => [
+            {
+                title: t('footer.navigation.title'),
+                links: [
+                    { to: '/', label: t('footer.navigation.main') },
+                    { to: '/sale', label: t('footer.navigation.sale') },
+                    { to: '/rent', label: t('footer.navigation.rent') },
+                    { to: '/investors', label: t('footer.navigation.investors') },
+                    { to: '/agents', label: t('footer.navigation.agents') },
+                    { to: '/contacts', label: t('footer.navigation.contacts') },
+                ],
+            },
+            {
+                title: t('footer.legal.title'),
+                links: [
+                    { to: '/privacy', label: t('footer.legal.privacy') },
+                    { to: '/payment', label: t('footer.legal.payment') },
+                ],
+            },
+            {
+                title: t('footer.contacts.title'),
+                links: [
+                    { to: `tel:${siteInfo?.phone}`, label: siteInfo?.display_phone || '-' },
+                    { to: `mailto:${siteInfo?.email}`, label: siteInfo?.email || '-' },
+                    { to: siteInfo?.telegram_link || '', label: t('footer.contacts.telegram') },
+                    { to: siteInfo?.max_link || '', label: t('footer.contacts.max') },
+                ],
+            },
+        ],
+        [t, siteInfo],
+    );
+};

@@ -1,4 +1,4 @@
-import { Header, type HeaderProps } from './Header';
+import { Header, type HeaderProps } from './Header/Header';
 import styles from './Layout.module.scss';
 import { Footer } from './Footer';
 import { Flex } from '../../common/Flex';
@@ -31,6 +31,7 @@ export const MainLayout = () => {
 
     return (
         <Flex
+            fullWidth
             className={classNames(
                 styles.root,
                 layoutSettings.mainContentBackground === 'gray-10' && styles.contentGray10,

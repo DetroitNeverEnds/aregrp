@@ -26,6 +26,9 @@ export type LinkProps = {
     className?: string;
     ellipsis?: boolean;
     target?: '_blank' | '_self' | '_parent' | '_top';
+    onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+    /** Переопределяет переход по клику (например, navigate из react-router + побочные эффекты) */
+    navigate?: (to: string) => void;
 };
 
 export const Link: React.FC<LinkProps> = ({
@@ -39,6 +42,8 @@ export const Link: React.FC<LinkProps> = ({
     className = '',
     ellipsis = false,
     target,
+    onClick,
+    navigate,
 }) => {
     // Маппинг размеров на размеры иконок
     const sizeToIconSize: Record<LinkSize, 14 | 16 | 20 | 24> = {
@@ -71,15 +76,22 @@ export const Link: React.FC<LinkProps> = ({
 
     if (variant === 'external') {
         return (
-            <a href={to} className={linkClassNames} target={target}>
+            <a href={to} className={linkClassNames} target={target} onClick={onClick}>
                 {content}
             </a>
         );
     }
 
     if (variant === 'default') {
+        const handleClick: React.MouseEventHandler<HTMLAnchorElement> = e => {
+            if (navigate) {
+                e.preventDefault();
+                navigate(to);
+            }
+            onClick?.(e);
+        };
         return (
-            <RouterLink to={to} className={linkClassNames} target={target}>
+            <RouterLink to={to} className={linkClassNames} target={target} onClick={handleClick}>
                 {content}
             </RouterLink>
         );

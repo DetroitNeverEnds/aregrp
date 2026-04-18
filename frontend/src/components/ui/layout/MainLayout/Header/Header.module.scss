@@ -1,0 +1,47 @@
+// =============================================================================
+// Header — оболочка (контейнер страницы)
+// =============================================================================
+
+.container {
+    padding: 20px $main-content-padding;
+    margin-bottom: -1px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+
+    @include mobile-only {
+        padding: 12px $main-content-padding-mobile;
+        overflow-x: clip;
+
+        &--dark {
+            background: $gradient-primary-700-900-lr;
+        }
+
+        &:not(.container--dark) {
+            background: $gray-0;
+            box-shadow: 0 1px 0 0 $gray-20;
+        }
+    }
+
+    &--dark {
+        background: $gradient-primary-700-900-lr;
+    }
+}
+
+// =============================================================================
+// Колонка контента (max-width)
+// =============================================================================
+
+.content {
+    max-width: $max-content-width;
+    flex-grow: 1;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    @include mobile-only {
+        max-width: 100%;
+    }
+}

@@ -1,4 +1,5 @@
 import type { Preview } from '@storybook/react-vite';
+import '@/styles/breakpoint-utilities.scss';
 
 // Подключение шрифта Montserrat для Storybook
 const link = document.createElement('link');
@@ -32,6 +33,22 @@ const preview: Preview = {
             // 'error' - fail CI on a11y violations
             // 'off' - skip a11y checks entirely
             test: 'todo',
+        },
+        viewport: {
+            viewports: {
+                mobile375: {
+                    name: 'Mobile 375',
+                    styles: { width: '375px', height: '667px' },
+                },
+                mobile390: {
+                    name: 'Mobile 390',
+                    styles: { width: '390px', height: '844px' },
+                },
+                tablet768: {
+                    name: 'Tablet 768',
+                    styles: { width: '768px', height: '1024px' },
+                },
+            },
         },
     },
 };

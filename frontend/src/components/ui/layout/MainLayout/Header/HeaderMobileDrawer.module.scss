@@ -1,0 +1,98 @@
+// =============================================================================
+// HeaderMobileDrawer — блок .drawer (вёрстка через Flex в TSX)
+// =============================================================================
+
+.drawer {
+    // --- Оверлей: корень портала + затемнение ---------------------------------
+    &__root {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        background: $gray-opacity-100-70;
+        z-index: 2000;
+    }
+
+    // --- Выезжающая панель ----------------------------------------------------
+    &__sheet {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        max-height: 100vh;
+        max-height: 100dvh;
+        overflow: hidden auto;
+        background: $gray-0;
+        box-sizing: border-box;
+        border-radius: 0 0 $border-radius-l $border-radius-l;
+        z-index: 2001;
+    }
+
+    &__top {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        min-height: 56px;
+        padding: 12px $main-content-padding-mobile;
+        box-sizing: border-box;
+        background: $gray-0;
+        box-shadow: 0 1px 0 0 $gray-20;
+    }
+
+    // --- Контент: навигация, CTA, контакты, соцсети -------------------------
+    &__menu {
+        padding: 24px $main-content-padding-mobile;
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+        border-radius: 0 0 $border-radius-xl $border-radius-xl;
+        box-sizing: border-box;
+        background: $gray-0;
+    }
+
+    &__phone {
+        color: $gray-opacity-100-80 !important;
+        font-size: 16px;
+        line-height: 1.4;
+    }
+
+    &__login {
+        min-height: 46px;
+        border-radius: 40px;
+        background: $gray-10 !important;
+        color: $gray-100 !important;
+        border: none !important;
+    }
+
+    &__profileBtn {
+        min-height: 46px;
+        border-radius: 40px;
+    }
+
+    &__social {
+        padding-top: 8px;
+    }
+
+    &__socialBtn {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        min-height: 46px;
+        padding: 0 !important;
+        border-radius: 28px;
+        box-sizing: border-box;
+    }
+}
