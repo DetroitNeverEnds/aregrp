@@ -26,7 +26,7 @@ export const HeaderMobile = ({ theme, onOpenMenu }: HeaderMobileProps) => {
             justify="between"
             fullWidth
             gap={4}
-            className={breakpointStyles['mobile-only']}
+            className={breakpointStyles.mobileOnly}
         >
             <div className={sharedStyles.mobileBar__spacer} />
             <Flex direction="row" align="center" gap={16} onClick={() => navigate('/')}>

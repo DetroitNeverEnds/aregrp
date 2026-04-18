@@ -25,7 +25,7 @@ import ArrowPic from './assets/arrow.svg?react';
 
 import styles from './Investors.module.scss';
 import { Column } from '@/components/ui/layout/Column';
-import { TwoColumnsContainer } from '@/components/ui/layout/TwoColumnsContainer';
+import { Columns } from '@/components/ui/layout/Columns';
 import { Divider } from '@/components/ui/common/Divider';
 import { Collapse } from './Collapse';
 import { useInvestorSettings } from '@/queries';
@@ -140,7 +140,7 @@ export const Investors = () => {
                     <Flex align="start" fullWidth>
                         <Text variant="h2">{t('pages.investors.strategies.title')}</Text>
                     </Flex>
-                    <TwoColumnsContainer>
+                    <Columns>
                         {strategies.map(({ key, link }) => (
                             <Column>
                                 <Card
@@ -194,7 +194,7 @@ export const Investors = () => {
                                 </Card>
                             </Column>
                         ))}
-                    </TwoColumnsContainer>
+                    </Columns>
                 </Container>
 
                 <BenifitsWorking variant="sale" />

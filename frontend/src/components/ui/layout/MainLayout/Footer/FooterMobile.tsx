@@ -20,7 +20,7 @@ export const FooterMobile = () => {
     const footerLinks = useFooterLinks();
 
     return (
-        <div className={breakpointStyles['mobile-only']}>
+        <div className={breakpointStyles.mobileOnly}>
             <Flex align="stretch" gap={48} fullWidth>
                 <Flex align="start" gap={24} fullWidth>
                     <Divider />

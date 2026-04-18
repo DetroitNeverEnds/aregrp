@@ -6,7 +6,7 @@ import { useLayoutSettings } from '../../hooks/useLayoutSettings';
 import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layout';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
 import { Column } from '../../components/ui/layout/Column';
-import { TwoColumnsContainer } from '../../components/ui/layout/TwoColumnsContainer';
+import { Columns } from '../../components/ui/layout/Columns';
 import { useSiteInfo } from '../../queries/siteInfo';
 import { Link } from '../../components/ui/common/Link';
 import { Divider } from '../../components/ui/common/Divider';
@@ -86,7 +86,7 @@ export const Contacts = () => {
         <Page>
             <VerticalMainContainer className={styles.container}>
                 {/* Контакты и карта */}
-                <TwoColumnsContainer>
+                <Columns>
                     <Column gap={200} align="stretch">
                         <Flex align="start">
                             <Text variant="h2">{t('pages.contacts.connectUs')}</Text>
@@ -147,10 +147,10 @@ export const Contacts = () => {
                             ]}
                         ></YandexMap>
                     </Column>
-                </TwoColumnsContainer>
+                </Columns>
 
                 {/* Реквизиты */}
-                <TwoColumnsContainer>
+                <Columns>
                     <Column gap={40}>
                         <Divider />
                         <Text variant="20-med">{t('pages.contacts.requisite')}</Text>
@@ -174,7 +174,7 @@ export const Contacts = () => {
                             ))}
                         </Flex>
                     </Column>
-                </TwoColumnsContainer>
+                </Columns>
 
                 {/* Форма */}
                 <FeedbackFormRow originKey="contacts" />

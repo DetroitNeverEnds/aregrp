@@ -22,7 +22,7 @@ export const FooterDesktop = () => {
     const footerLinks = useFooterLinks();
 
     return (
-        <div className={breakpointStyles['desktop-only']}>
+        <div className={breakpointStyles.desktopOnly}>
             <Flex gap={140} fullWidth>
                 <Flex gap={100} fullWidth>
                     <Flex direction="row" justify="between" align="start" fullWidth>

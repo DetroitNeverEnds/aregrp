@@ -56,7 +56,7 @@ export const HeaderMobileDrawer = ({ open, onClose }: HeaderMobileDrawerProps) =
     }
 
     return createPortal(
-        <div className={classNames(styles.drawer__root, breakpointStyles['mobile-only'])}>
+        <div className={classNames(styles.drawer__root, breakpointStyles.mobileOnly)}>
             <div className={styles.drawer__backdrop} onClick={onClose} />
             <Flex
                 direction="column"

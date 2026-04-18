@@ -25,13 +25,11 @@ export type TextVariant =
     | '24-med';
 
 export interface TextProps extends React.HTMLAttributes<HTMLSpanElement> {
-    /** Вариант текста (определяет размер и толщину шрифта) */
     variant?: TextVariant;
-    /** Цвет текста */
     color?: ColorVariant;
-    /** Выравнивание текста */
     align?: 'left' | 'center' | 'right' | 'justify';
     ellipsis?: boolean;
+    wrap?: boolean;
 }
 
 export const Text: React.FC<TextProps> = ({
@@ -40,6 +38,7 @@ export const Text: React.FC<TextProps> = ({
     align,
     className = '',
     ellipsis = false,
+    wrap = false,
     ...props
 }) => {
     const textClassNames = classNames(
@@ -48,6 +47,7 @@ export const Text: React.FC<TextProps> = ({
         styles[`text--${variant}`],
         color && styles[`text--color-${color}`],
         align && styles[`text--align-${align}`],
+        wrap && styles[`text--wrap`],
         className,
     );
 

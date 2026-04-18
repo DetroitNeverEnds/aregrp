@@ -41,7 +41,7 @@ export const HeaderDesktop = ({ theme }: HeaderDesktopProps) => {
             align="center"
             fullWidth
             gap={20}
-            className={breakpointStyles['desktop-only']}
+            className={breakpointStyles.desktopOnly}
         >
             <Flex
                 gap={20}

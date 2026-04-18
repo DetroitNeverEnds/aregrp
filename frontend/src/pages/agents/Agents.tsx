@@ -8,7 +8,7 @@ import { Page } from '../../components/ui/layout/Page/Page';
 import { BreadCrumbs } from '../../components/ui/common/Breadcrumbs/Breadcrumbs';
 import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
 import { Column } from '../../components/ui/layout/Column';
-import { TwoColumnsContainer } from '../../components/ui/layout/TwoColumnsContainer';
+import { Columns } from '../../components/ui/layout/Columns';
 import { Divider } from '../../components/ui/common/Divider';
 import { Icon, type IconName } from '../../components/ui/common/Icon';
 import { Button } from '../../components/ui/common/Button';
@@ -137,7 +137,7 @@ export const Agents = () => {
                     <BreadCrumbs breadcrumbs={breadcrumbs} />
                 </div>
                 <Container gap="regular" fullWidth>
-                    <TwoColumnsContainer>
+                    <Columns>
                         <Column direction="column" align="start" gap={40} fullWidth>
                             <Divider />
                             <Flex direction="row" align="baseline" gap={12}>
@@ -158,7 +158,7 @@ export const Agents = () => {
                                 </Text>
                             </Flex>
                         </Column>
-                    </TwoColumnsContainer>
+                    </Columns>
                     <div className={styles.benefits}>
                         {benefits.map(({ icon, text }, index) => (
                             <Flex key={index} align="start" gap={20}>
