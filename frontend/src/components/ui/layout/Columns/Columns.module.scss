@@ -13,6 +13,14 @@
         }
     }
 
+    &__rows-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        
+        @include mobile-only {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+    }
+
     &__rows-4 {
         grid-template-columns: repeat(4, minmax(0, 1fr));
 

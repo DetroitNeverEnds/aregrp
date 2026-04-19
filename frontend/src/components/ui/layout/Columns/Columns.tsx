@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import styles from './Columns.module.scss';
 
 export type ColumnsProps = PropsWithChildren<{
-    rowsNum?: 2 | 4;
+    rowsNum?: 2 | 3 | 4;
     className?: string;
 }>;
 
