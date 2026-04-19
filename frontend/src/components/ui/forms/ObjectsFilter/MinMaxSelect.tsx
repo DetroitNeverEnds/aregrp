@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import styles from './MinMaxSelect.module.scss';
 import Text from '../../common/Text/Text';
 import { Flex } from '../../common/Flex';
@@ -15,26 +15,24 @@ export interface MinMaxSelectProps {
     label: string;
     metric: string;
     defaultValue?: MinMaxState;
+    value?: MinMaxState;
     onChange?: (s: MinMaxState) => void;
     disabled?: boolean;
 }
 
 export function MinMaxSelect({
-    defaultValue,
+    // defaultValue,
     label,
     metric,
+    value,
     onChange = _ => {},
     disabled = false,
 }: MinMaxSelectProps) {
     const { t } = useTranslation();
-
-    const [formState, setFormState] = useState<MinMaxState>(defaultValue || {});
-    useEffect(() => {
-        onChange(formState);
-    }, [formState, onChange]);
+    const { min, max } = value || {};
 
     const triggerContent = useMemo(() => {
-        if (!formState.min && !formState.max) {
+        if (!min && !max) {
             return (
                 <Text color="gray-50" ellipsis>
                     {label}, {metric}
@@ -43,20 +41,20 @@ export function MinMaxSelect({
         }
         return (
             <Text ellipsis>
-                {formState.min && (
+                {min && (
                     <>
-                        {t('common.from')} {formState.min}
+                        {t('common.from')} {min}
                     </>
                 )}{' '}
-                {formState.max && (
+                {max && (
                     <>
-                        {t('common.to')} {formState.max}
+                        {t('common.to')} {max}
                     </>
                 )}
                 {metric}
             </Text>
         );
-    }, [formState.min, formState.max, label, metric, t]);
+    }, [min, max, t, metric, label]);
 
     return (
         <Flex gap={8} className={styles.container} fullWidth>
@@ -74,13 +72,8 @@ export function MinMaxSelect({
                         placeholder={t('common.from')}
                         className={styles.input}
                         width={180}
-                        onChange={val =>
-                            setFormState({
-                                ...formState,
-                                min: val ? Number(val) : undefined,
-                            })
-                        }
-                        value={formState.min?.toString() || ''}
+                        onChange={val => onChange({ min: val ? Number(val) : undefined, max })}
+                        value={min}
                         name="from"
                     />
                     <TextInput
@@ -88,10 +81,8 @@ export function MinMaxSelect({
                         placeholder={t('common.to')}
                         className={styles.input}
                         width={180}
-                        onChange={val =>
-                            setFormState({ ...formState, max: val ? Number(val) : undefined })
-                        }
-                        value={formState.max?.toString() || ''}
+                        onChange={val => onChange({ min, max: val ? Number(val) : undefined })}
+                        value={max}
                         name="to"
                     />
                 </Flex>

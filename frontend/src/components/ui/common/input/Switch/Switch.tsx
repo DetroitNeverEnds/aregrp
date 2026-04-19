@@ -53,6 +53,7 @@ export const Switch = React.forwardRef<HTMLDivElement, SwitchProps>(
             styles['switch-container'],
             {
                 [styles['switch-container--disabled']]: disabled,
+                [styles['switch-container--fullWidth']]: fullWidth,
             },
             className,
         );

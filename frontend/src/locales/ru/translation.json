@@ -125,7 +125,7 @@
     },
     "components": {
         "objectFilter": {
-            "allCenters": "Все бизнес центры",
+            "allCenters": "Все бизнес-центры",
             "searchObjects": "Поиск объектов",
             "nothingFound": "Ничего не найдено",
             "searchCenters": "Поиск бизнес-центров"

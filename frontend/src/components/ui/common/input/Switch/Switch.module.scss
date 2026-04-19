@@ -9,6 +9,17 @@
         opacity: 0.5;
         cursor: not-allowed;
     }
+
+    &--fullWidth {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+
+        .switch-button {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+    }
 }
 
 .switch-button {
