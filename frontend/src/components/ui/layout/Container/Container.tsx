@@ -2,7 +2,7 @@ import { Flex, type FlexProps } from '../../common/Flex';
 import classNames from 'classnames';
 import styles from './Container.module.scss';
 export type GapSize = 'main' | 'regular' | 'secondary';
-type ContainerProps = Omit<FlexProps, 'gap'> & {
+export type ContainerProps = Omit<FlexProps, 'gap'> & {
     gap?: GapSize;
 };
 
