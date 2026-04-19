@@ -25,6 +25,8 @@ import Config from '@/config';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import { BuildingMapMarker } from './components/BuildingMapMarker/BuildingMapMarker';
 import { setActiveBuildingMarkerUuid } from '@/lib/buildingMapMarkerActiveStore';
+import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
+import { Columns } from '@/components/ui/layout/Columns';
 
 const layoutSettings: LayoutSettings = {
     header: {
@@ -75,11 +77,35 @@ export const Root = () => {
                 {/* Map and default buildings */}
                 <ObjectsFilter />
                 <Container justify="center" align="center">
-                    <Flex align="start" gap={20} fullWidth>
-                        <Text variant="18-reg" color="gray-50">
-                            Расположение
-                        </Text>
-                        <Flex direction="row" justify="between" fullWidth gap={60}>
+                    <>
+                        <Flex
+                            align="start"
+                            gap={20}
+                            fullWidth
+                            className={breakpointStyles.desktopOnly}
+                        >
+                            <Text variant="18-reg" color="gray-50">
+                                Расположение
+                            </Text>
+                            <Flex direction="row" justify="between" fullWidth gap={60}>
+                                <Text variant="h2" color="primary-900">
+                                    Наши бизнес-центры
+                                </Text>
+                                <Text variant="20-reg" style={{ maxWidth: '520px' }}>
+                                    У нас широкий выбор офисов для выгодного инвестирования в
+                                    коммерческую недвижимость
+                                </Text>
+                            </Flex>
+                        </Flex>
+                        <Flex
+                            align="start"
+                            gap={12}
+                            fullWidth
+                            className={breakpointStyles.mobileOnly}
+                        >
+                            <Text variant="18-reg" color="gray-50">
+                                Расположение
+                            </Text>
                             <Text variant="h2" color="primary-900">
                                 Наши бизнес-центры
                             </Text>
@@ -88,7 +114,7 @@ export const Root = () => {
                                 коммерческую недвижимость
                             </Text>
                         </Flex>
-                    </Flex>
+                    </>
                     <YandexMap
                         markers={mapsMarkers}
                         className={styles.map}
@@ -106,9 +132,9 @@ export const Root = () => {
 
                 {/* Office Buildings Benefits */}
                 <FeatureCard gap={80}>
-                    <Flex direction="row" align="start" gap={24} fullWidth>
+                    <Columns rowsNum={2}>
                         <Column gap={40}>
-                            <Divider />
+                            <Divider className={breakpointStyles.desktopOnly} />
                             <Text variant="h2">{t('benefits.officeBuildings.title')}</Text>
                         </Column>
                         <Column gap={40}>
@@ -122,7 +148,7 @@ export const Root = () => {
                                 </Text>
                             </Flex>
                         </Column>
-                    </Flex>
+                    </Columns>
                     <Flex direction="row" align="start" gap={100} fullWidth>
                         <Flex align="start">
                             <Text className={styles.benifits__number__title}>12</Text>
@@ -152,9 +178,23 @@ export const Root = () => {
                             <OfficeCard key={item.uuid} item={item} type="any" />
                         ))}
                     </CardContainer>
-                    <Button variant="outlined" to={getLinkToCatalogue({ sale_type: 'sale' })}>
-                        Перейти в каталог
-                    </Button>
+                    <>
+                        <Button
+                            variant="outlined"
+                            to={getLinkToCatalogue({ sale_type: 'sale' })}
+                            className={breakpointStyles.desktopOnly}
+                        >
+                            Перейти в каталог
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            to={getLinkToCatalogue({ sale_type: 'sale' })}
+                            className={breakpointStyles.mobileOnly}
+                            width="max"
+                        >
+                            Перейти в каталог
+                        </Button>
+                    </>
                 </Container>
 
                 {/* Work with us benefits */}

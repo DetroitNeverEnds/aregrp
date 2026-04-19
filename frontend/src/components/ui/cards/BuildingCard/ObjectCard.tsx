@@ -77,13 +77,15 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                 <Divider />
 
                 {/* Описание */}
-                <Text
-                    variant="20-reg"
-                    color="gray-100"
-                    className={styles.buildingCard__description}
-                >
-                    {description}
-                </Text>
+                {description && (
+                    <Text
+                        variant="20-reg"
+                        color="gray-100"
+                        className={styles.buildingCard__description}
+                    >
+                        {description}
+                    </Text>
+                )}
             </Flex>
 
             {/* Кнопки */}

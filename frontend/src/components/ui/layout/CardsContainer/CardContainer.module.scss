@@ -3,4 +3,8 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
     width: 100%;
+
+    @include mobile-only {
+        grid-template-columns: repeat(1, 1fr);
+    }
 }
