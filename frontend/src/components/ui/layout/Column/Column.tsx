@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Flex, type FlexProps } from '../../common/Flex';
+import { Flex, type FlexProps } from '@/components/ui/common/Flex';
 
 import styles from './Column.module.scss';
 

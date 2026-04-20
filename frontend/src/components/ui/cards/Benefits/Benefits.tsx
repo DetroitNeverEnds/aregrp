@@ -6,7 +6,7 @@ import { FeatureCard } from '@/components/ui/layout/Container';
 import { Column } from '@/components/ui/layout/Column';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Columns } from '../../layout/Columns';
+import { Columns } from '@/components/ui/layout/Columns';
 
 import commonStyles from '@/styles/breakpoint-utilities.module.scss';
 

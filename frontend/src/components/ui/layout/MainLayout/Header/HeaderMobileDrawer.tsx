@@ -12,7 +12,7 @@ import LogoPic from '@/icons/logo/logoPic.svg?react';
 import LogoText from '@/icons/logo/logoText.svg?react';
 import styles from './HeaderMobileDrawer.module.scss';
 import sharedStyles from './HeaderShared.module.scss';
-import { useUser } from '../../../../../queries/profile';
+import { useUser } from '@/queries/profile';
 import { useNavLinks } from './useNavLinks';
 import classNames from 'classnames';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 
 import styles from './GalleryMainStage.module.scss';
 import type { GalleryMedia } from './Gallery.types';
-import { Button } from '../Button';
+import { Button } from '@/components/ui/common/Button';
 
 export type GalleryMainStageProps = {
     item: GalleryMedia;

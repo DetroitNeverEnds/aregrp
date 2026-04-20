@@ -1,4 +1,4 @@
-import type { BreadCrumbsDescription } from '../../../common/Breadcrumbs/Breadcrumbs';
+import type { BreadCrumbsDescription } from '@/components/ui/common/Breadcrumbs/Breadcrumbs';
 
 export type HeaderTheme = 'light' | 'dark';
 

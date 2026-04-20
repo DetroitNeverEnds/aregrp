@@ -2,13 +2,13 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthForm } from '../../../components/ui/auth/AuthForm';
-import { TextInput } from '../../../components/ui/common/input/TextInput';
-import { Checkbox } from '../../../components/ui/common/input/Checkbox';
-import { Link } from '../../../components/ui/common/Link';
-import { Text } from '../../../components/ui/common/Text';
-import { Flex } from '../../../components/ui/common/Flex';
-import { useLoginMutation } from '../../../mutations';
+import { AuthForm } from '@/components/ui/auth/AuthForm';
+import { TextInput } from '@/components/ui/common/input/TextInput';
+import { Checkbox } from '@/components/ui/common/input/Checkbox';
+import { Link } from '@/components/ui/common/Link';
+import { Text } from '@/components/ui/common/Text';
+import { Flex } from '@/components/ui/common/Flex';
+import { useLoginMutation } from '@/mutations';
 
 type LoginFormData = {
     email: string;

@@ -10,7 +10,7 @@ import RLetter from '@/icons/logo/R.svg?react';
 import ELetter from '@/icons/logo/E.svg?react';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { useSiteInfo } from '@/queries/siteInfo';
-import { Column } from '../../Column';
+import { Column } from '@/components/ui/layout/Column';
 import { useTranslation } from 'react-i18next';
 import footerStyles from './Footer.module.scss';
 import styles from './FooterDesktop.module.scss';

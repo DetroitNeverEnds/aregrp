@@ -9,7 +9,7 @@ import LogoText from '@/icons/logo/logoText.svg?react';
 import LogoPicDark from '@/icons/logo/logoPicDark.svg?react';
 import LogoTextDark from '@/icons/logo/logoTextDark.svg?react';
 import styles from './HeaderDesktop.module.scss';
-import { useUser } from '../../../../../queries/profile';
+import { useUser } from '@/queries/profile';
 import type { HeaderTheme } from './Header.types';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { useNavLinks } from './useNavLinks';

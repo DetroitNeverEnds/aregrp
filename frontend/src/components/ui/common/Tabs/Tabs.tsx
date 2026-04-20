@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Tabs.module.scss';
-import { Flex } from '../Flex';
-import Text from '../Text';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text';
 
 export type Tab = {
     value: string;

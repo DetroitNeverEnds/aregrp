@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Flex } from '@/components/ui/common/Flex';
 import styles from './Header.module.scss';
 import classNames from 'classnames';
-import { BreadCrumbs } from '../../../common/Breadcrumbs/Breadcrumbs';
+import { BreadCrumbs } from '@/components/ui/common/Breadcrumbs/Breadcrumbs';
 import { HeaderDesktop } from './HeaderDesktop';
 import { HeaderMobile } from './HeaderMobile';
 import { HeaderMobileDrawer } from './HeaderMobileDrawer';

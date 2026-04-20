@@ -16,7 +16,7 @@ import { TextInput } from '@/components/ui/common/input/TextInput';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import type { PremiseFilterParams } from '@/api';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
-import Container from '../../layout/Container';
+import Container from '@/components/ui/layout/Container';
 
 type ObjectsFilterProps = {
     defaultValues?: PremiseFilterParams;

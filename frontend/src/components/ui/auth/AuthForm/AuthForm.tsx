@@ -1,10 +1,10 @@
 import React from 'react';
-import { Flex } from '../../common/Flex';
-import { Form } from '../../common/Form';
-import { Text } from '../../common/Text';
-import { Button } from '../../common/Button';
-import { Divider } from '../../common/Divider';
-import { Loader } from '../../common/Loader';
+import { Flex } from '@/components/ui/common/Flex';
+import { Form } from '@/components/ui/common/Form';
+import { Text } from '@/components/ui/common/Text';
+import { Button } from '@/components/ui/common/Button';
+import { Divider } from '@/components/ui/common/Divider';
+import { Loader } from '@/components/ui/common/Loader';
 import styles from './AuthForm.module.scss';
 
 export interface AuthFormProps {

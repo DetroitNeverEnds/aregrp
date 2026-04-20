@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import styles from './MinMaxSelect.module.scss';
-import Text from '../../common/Text/Text';
-import { Flex } from '../../common/Flex';
-import { Dropdown } from '../../common/Dropdown';
-import { TextInput } from '../../common/input/TextInput';
+import Text from '@/components/ui/common/Text/Text';
+import { Flex } from '@/components/ui/common/Flex';
+import { Dropdown } from '@/components/ui/common/Dropdown';
+import { TextInput } from '@/components/ui/common/input/TextInput';
 import { useTranslation } from 'react-i18next';
 
 export type MinMaxState = {

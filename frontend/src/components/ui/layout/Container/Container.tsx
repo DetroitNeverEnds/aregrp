@@ -1,4 +1,4 @@
-import { Flex, type FlexProps } from '../../common/Flex';
+import { Flex, type FlexProps } from '@/components/ui/common/Flex';
 import classNames from 'classnames';
 import styles from './Container.module.scss';
 export type GapSize = 'main' | 'regular' | 'secondary';

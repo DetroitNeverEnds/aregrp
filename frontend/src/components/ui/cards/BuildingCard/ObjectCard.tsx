@@ -1,9 +1,9 @@
-import { Button } from '../../common/Button';
-import { Flex } from '../../common/Flex';
-import { Divider } from '../../common/Divider';
-import { Text } from '../../common/Text';
+import { Button } from '@/components/ui/common/Button';
+import { Flex } from '@/components/ui/common/Flex';
+import { Divider } from '@/components/ui/common/Divider';
+import { Text } from '@/components/ui/common/Text';
 import styles from './ObjectCard.module.scss';
-import { Column } from '../../layout/Column';
+import { Column } from '@/components/ui/layout/Column';
 import { type BuildingCatalogue } from '@/api';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';

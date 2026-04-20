@@ -1,4 +1,4 @@
-import { initializeApiClient } from '../api';
+import { initializeApiClient } from '@/api';
 
 initializeApiClient({
     baseURL: '/api/v1',

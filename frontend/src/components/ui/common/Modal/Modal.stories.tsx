@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { useState } from 'react';
 import { Modal } from './Modal';
-import { Button } from '../Button';
-import { Flex } from '../Flex';
-import { TextInput } from '../input/TextInput';
-import Text from '../Text/Text';
+import { Button } from '@/components/ui/common/Button';
+import { Flex } from '@/components/ui/common/Flex';
+import { TextInput } from '@/components/ui/common/input/TextInput';
+import Text from '@/components/ui/common/Text/Text';
 
 const meta = {
     title: 'UI/Common/Modal',

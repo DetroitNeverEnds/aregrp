@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
 import { useState } from 'react';
 import { Tabs } from './Tabs';
-import Text from '../Text';
+import Text from '@/components/ui/common/Text';
 // import Text from '@/components/ui/common/Text';
 
 const meta = {

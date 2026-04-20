@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import classNames from 'classnames';
-import { Icon, type IconName } from '../Icon';
+import { Icon, type IconName } from '@/components/ui/common/Icon';
 import styles from './Link.module.scss';
 
 export type LinkSize = 'sm' | 'md' | 'lg';

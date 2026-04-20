@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useSearchParams } from 'react-router-dom';
-import { Link } from '../../../components/ui/common/Link';
-import { Flex } from '../../../components/ui/common/Flex';
+import { Link } from '@/components/ui/common/Link';
+import { Flex } from '@/components/ui/common/Flex';
 
 import TwoRowsLogo from '@/icons/logo/twoRows.svg?react';
 import Lion1Logo from '@/icons/logo/lion1.svg?react';

@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Text.module.scss';
-import type { ColorVariant } from '../types/colors';
+import type { ColorVariant } from '@/components/ui/common/types/colors';
 
 export type TextVariant =
     | 'h1'

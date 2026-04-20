@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { Flex } from '../../common/Flex';
-import Text from '../../common/Text';
-import { Column } from '../Column';
-import { Columns } from '../Columns';
-import { FeedbackForm } from '../../forms/FeedbackForm';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text';
+import { Column } from '@/components/ui/layout/Column';
+import { Columns } from '@/components/ui/layout/Columns';
+import { FeedbackForm } from '@/components/ui/forms/FeedbackForm';
 
 import styles from './FeedbackFormRow.module.scss';
 import { forwardRef } from 'react';
-import { Divider } from '../../common/Divider';
+import { Divider } from '@/components/ui/common/Divider';
 
 export type FeedbackFormRowProps = {
     originKey: string;

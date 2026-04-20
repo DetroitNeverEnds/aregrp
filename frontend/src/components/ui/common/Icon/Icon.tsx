@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import styles from './Icon.module.scss';
 import { iconMap, type IconName } from './iconConfig';
-import type { ColorVariant } from '../types/colors';
+import type { ColorVariant } from '@/components/ui/common/types/colors';
 
 export type IconSize = 14 | 16 | 20 | 24 | 32 | 50;
 

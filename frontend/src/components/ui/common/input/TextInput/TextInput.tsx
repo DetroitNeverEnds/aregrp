@@ -1,9 +1,9 @@
 import React, { useMemo, useCallback, type ReactNode, forwardRef } from 'react';
 import classNames from 'classnames';
 import styles from './TextInput.module.scss';
-import { Icon, type IconName } from '../../Icon';
-import { FlatButton } from '../../FlatButton';
-import Text from '../../Text/Text';
+import { Icon, type IconName } from '@/components/ui/common/Icon';
+import { FlatButton } from '@/components/ui/common/FlatButton';
+import Text from '@/components/ui/common/Text/Text';
 
 export type TextInputSize = 'lg' | 'md';
 export type TextInputWidth = 'auto' | 'max';

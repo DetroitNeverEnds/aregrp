@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import styles from './Switch.module.scss';
-import { Text } from '../../Text';
-import { Flex } from '../../Flex';
+import { Text } from '@/components/ui/common/Text';
+import { Flex } from '@/components/ui/common/Flex';
 
 export interface SwitchOption {
     /** Значение опции */
