@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSiteInfo } from '@/queries/siteInfo';
+import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 
 export const useFooterLinks = () => {
     const { t } = useTranslation();
     const siteInfo = useSiteInfo().data?.data;
+    const { getLinkToCatalogue } = useFilterSearchParams();
 
     return useMemo(
         () => [
@@ -12,8 +14,14 @@ export const useFooterLinks = () => {
                 title: t('footer.navigation.title'),
                 links: [
                     { to: '/', label: t('footer.navigation.main') },
-                    { to: '/sale', label: t('footer.navigation.sale') },
-                    { to: '/rent', label: t('footer.navigation.rent') },
+                    {
+                        to: getLinkToCatalogue({ sale_type: 'sale' }),
+                        label: t('footer.navigation.sale'),
+                    },
+                    {
+                        to: getLinkToCatalogue({ sale_type: 'rent' }),
+                        label: t('footer.navigation.rent'),
+                    },
                     { to: '/investors', label: t('footer.navigation.investors') },
                     { to: '/agents', label: t('footer.navigation.agents') },
                     { to: '/contacts', label: t('footer.navigation.contacts') },
@@ -36,6 +44,14 @@ export const useFooterLinks = () => {
                 ],
             },
         ],
-        [t, siteInfo],
+        [
+            t,
+            getLinkToCatalogue,
+            siteInfo?.phone,
+            siteInfo?.display_phone,
+            siteInfo?.email,
+            siteInfo?.telegram_link,
+            siteInfo?.max_link,
+        ],
     );
 };

@@ -1,5 +1,4 @@
 import type { Preview } from '@storybook/react-vite';
-import '@/styles/breakpoint-utilities.scss';
 
 // Подключение шрифта Montserrat для Storybook
 const link = document.createElement('link');
