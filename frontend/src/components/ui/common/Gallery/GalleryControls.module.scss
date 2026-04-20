@@ -6,10 +6,18 @@
 
     &__left {
         left: 12px;
+
+        @include mobile-only {
+            left: $main-content-padding-mobile;
+        }
     }
 
     &__right {
         right: 12px;
+
+        @include mobile-only {
+            right: $main-content-padding-mobile;
+        }
     }
 
     &__modal {
@@ -26,6 +34,13 @@
         left: 12px;
         right: 12px;
         width: calc(100% - 24px);
+
+        @include mobile-only {
+            bottom: $main-content-padding-mobile;
+            left: $main-content-padding-mobile;
+            right: $main-content-padding-mobile;
+            width: calc(100% - #{$main-content-padding-mobile * 2});
+        }
     }
 
     &__size-l {
@@ -33,6 +48,13 @@
         left: 24px;
         right: 24px;
         width: calc(100% - 48px);
+
+        @include mobile-only {
+            bottom: $main-content-padding-mobile;
+            left: $main-content-padding-mobile;
+            right: $main-content-padding-mobile;
+            width: calc(100% - #{$main-content-padding-mobile * 2});
+        }
     }
 
     &__item {
