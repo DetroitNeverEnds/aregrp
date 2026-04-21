@@ -847,11 +847,11 @@
                   "type": "null"
                 }
               ],
-              "description": "true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра.",
+              "description": "true — без активной брони на помещении; false — с бронью или без флага аренды/продажи. Сделки не учитываются. Не передано — без фильтра.",
               "title": "Available"
             },
             "required": false,
-            "description": "true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра."
+            "description": "true — без активной брони на помещении; false — с бронью или без флага аренды/продажи. Сделки не учитываются. Не передано — без фильтра."
           }
         ],
         "responses": {
@@ -870,7 +870,7 @@
             }
           }
         },
-        "description": "Здания, у которых есть помещения (с учётом sale_type и available). Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры».",
+        "description": "Здания, у которых есть помещения (sale_type; available — только по активным броням, без сделок). Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры».",
         "tags": [
           "Premises"
         ]
@@ -911,11 +911,11 @@
                   "type": "null"
                 }
               ],
-              "description": "true — только свободные по сделкам/брони, false — только занятые. Не передано при sale_type=rent|sale — то же, что true (каталог без сданных/забронированных).",
+              "description": "true — без активной брони; false — с бронью или выключенный флаг аренды/продажи. Сделки не учитываются. Не передано при sale_type=rent|sale — то же, что true.",
               "title": "Available"
             },
             "required": false,
-            "description": "true — только свободные по сделкам/брони, false — только занятые. Не передано при sale_type=rent|sale — то же, что true (каталог без сданных/забронированных)."
+            "description": "true — без активной брони; false — с бронью или выключенный флаг аренды/продажи. Сделки не учитываются. Не передано при sale_type=rent|sale — то же, что true."
           },
           {
             "in": "query",
@@ -1085,7 +1085,7 @@
             }
           }
         },
-        "description": "Фильтры: sale_type (rent|sale), available, building, building_uuids, min/max price и площадь, order_by, page, page_size. Без available при sale_type=rent|sale возвращаются только свободные по сделкам и брони.",
+        "description": "Фильтры: sale_type (rent|sale), available, building, building_uuids, min/max price и площадь, order_by, page, page_size. Без available при sale_type=rent|sale — без активной брони (сделки не учитываются).",
         "tags": [
           "Premises"
         ]

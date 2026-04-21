@@ -1,8 +1,8 @@
 """
 Обработка загруженных изображений и видео: производные WebP для карточки и детального просмотра.
 
-Фото: из оригинала — card (вписать в 560×300 без обрезки) и detail (до 1920×1080, contain).
-Видео: кадр через ffmpeg → тот же принцип для card WebP.
+Фото: из оригинала — card (560×300, cover) и detail (до 1920×1080, contain).
+Видео: кадр через ffmpeg → card WebP.
 """
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ from pathlib import Path
 from django.core.files.base import ContentFile
 from PIL import Image, ImageOps
 
-# Максимальный прямоугольник для превью карточки (contain — целиком вписать, без crop).
+# Размер превью карточки (cover-кроп до точного 560×300).
 CARD_SIZE = (560, 300)
 DETAIL_MAX = (1920, 1080)
 WEBP_QUALITY = 85
@@ -68,7 +68,7 @@ def process_raster_bytes(data: bytes) -> tuple[ContentFile, ContentFile]:
     """
     rgb = _bytes_to_rgb_image(data)
     detail_img = ImageOps.contain(rgb, DETAIL_MAX, method=Image.Resampling.LANCZOS)
-    card_img = ImageOps.contain(rgb, CARD_SIZE, method=Image.Resampling.LANCZOS)
+    card_img = ImageOps.fit(rgb, CARD_SIZE, method=Image.Resampling.LANCZOS)
     card_cf = ContentFile(_image_to_webp_bytes(card_img), name='card.webp')
     detail_cf = ContentFile(_image_to_webp_bytes(detail_img), name='detail.webp')
     return card_cf, detail_cf
@@ -103,7 +103,7 @@ def _video_input_path(field_file) -> tuple[str, bool]:
 
 def video_file_to_card_webp(field_file) -> ContentFile:
     """
-    Первый кадр видео → card.webp (вписать в 560×300 без обрезки).
+    Первый кадр видео → card.webp (560×300 cover).
 
     Args:
         field_file: django FieldFile сохранённого видео.
@@ -139,7 +139,7 @@ def video_file_to_card_webp(field_file) -> ContentFile:
         with open(png_path, 'rb') as f:
             frame_data = f.read()
         rgb = _bytes_to_rgb_image(frame_data)
-        card_img = ImageOps.contain(rgb, CARD_SIZE, method=Image.Resampling.LANCZOS)
+        card_img = ImageOps.fit(rgb, CARD_SIZE, method=Image.Resampling.LANCZOS)
         return ContentFile(_image_to_webp_bytes(card_img), name='card.webp')
     finally:
         if is_temp:
