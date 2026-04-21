@@ -4,8 +4,8 @@
 Краткое описание ручек поиска:
 
 1) GET /api/v1/premises — поиск помещений с фильтрами и пагинацией (sale_type опционально).
-   Ответ: { items: [...], total, page, page_size, total_pages }. Параметры: sale_type, available (необяз.), building, building_uuids, min/max price, min/max area, order_by, page, page_size.
-2) GET /api/v1/premises/buildings — список зданий для фильтра (uuid, name, address); опционально sale_type, available.
+   Ответ: { items: [...], total, page, page_size, total_pages }.    Параметры: sale_type, available (только брони), building, building_uuids, цена/площадь, order_by, page, page_size.
+2) GET /api/v1/premises/buildings — список зданий для фильтра; sale_type, available (только брони).
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
 4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
 5) GET /api/v1/floors/{building_uuid}/{floor_number} — этаж; обязательный query sale_type (rent|sale) для is_available.
@@ -65,7 +65,7 @@ def _validated_floor_sale_type(sale_type: str) -> str:
     response={200: list[BuildingOptionOut]},
     summary="Список зданий для фильтра",
     description=(
-        "Здания, у которых есть помещения (с учётом sale_type и available). "
+        "Здания, у которых есть помещения (sale_type; available — только по активным броням, без сделок). "
         "Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры»."
     ),
 )
@@ -77,7 +77,10 @@ async def building_filter_list(
     ),
     available: Optional[bool] = Query(
         None,
-        description="true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра.",
+        description=(
+            "true — без активной брони на помещении; false — с бронью или без флага аренды/продажи. "
+            "Сделки не учитываются. Не передано — без фильтра."
+        ),
     ),
 ):
     """Список зданий для мультиселекта фильтра. Ответ: [{ uuid, name, address }, ...]."""
@@ -107,7 +110,11 @@ async def building_list(
     "/{building_uuid}",
     response={200: BuildingDetailOut, 404: ProblemDetail},
     summary="Здание по UUID",
-    description="Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+    description=(
+        "Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, "
+        "min_rent_price, media_categories, media. В media для детали здания поля url и full_url "
+        "совпадают и равны «полному» URL (detail WebP для фото, оригинал для видео)."
+    ),
 )
 async def building_detail(request, building_uuid: UUID):
     """Здание по UUID. 404 — ProblemDetail."""
@@ -166,8 +173,8 @@ async def floor_premises_list(
     summary="Список помещений с фильтрами и пагинацией",
     description=(
         f"Фильтры: sale_type ({settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}), "
-        "available (true/false — свободно/занято), building (поиск по тексту), building_uuids (UUID зданий через запятую), "
-        "min_price, max_price, min_area, max_area. Сортировка: order_by. Пагинация: page, page_size."
+        "available, building, building_uuids, min/max price и площадь, order_by, page, page_size. "
+        "Без available при sale_type=rent|sale — без активной брони (сделки не учитываются)."
     ),
 )
 async def premise_list(
@@ -178,7 +185,10 @@ async def premise_list(
     ),
     available: Optional[bool] = Query(
         None,
-        description="true — свободные, false — занятые. Не передано — без фильтра по доступности.",
+        description=(
+            "true — без активной брони; false — с бронью или выключенный флаг аренды/продажи. "
+            "Сделки не учитываются. Не передано при sale_type=rent|sale — то же, что true."
+        ),
     ),
     building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
     building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),

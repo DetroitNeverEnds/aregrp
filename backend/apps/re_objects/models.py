@@ -385,6 +385,9 @@ class Premise(models.Model):
         if self.available_for_sale:
             if self.price_per_sqm is None or self.price_per_sqm <= 0:
                 errors['price_per_sqm'] = 'Укажите цену продажи за м² больше 0.'
+        if self.available_for_rent:
+            if self.price_per_month is None or self.price_per_month <= 0:
+                errors['price_per_month'] = 'Укажите цену аренды за месяц больше 0.'
         if errors:
             raise ValidationError(errors)
 
@@ -427,30 +430,44 @@ class Premise(models.Model):
 
 
 # Функции для генерации путей загрузки медиафайлов
+def _media_slot_subdir(instance) -> str:
+    """Подпапка для original/card/detail одной записи (до первого save — временный токен)."""
+    if instance.pk:
+        return str(instance.pk)
+    key = '_media_slot_subdir_token'
+    token = getattr(instance, key, None)
+    if not token:
+        token = uuid.uuid4().hex[:16]
+        setattr(instance, key, token)
+    return token
+
+
 def premise_image_upload_path(instance, filename):
-    """Генерирует путь для изображений помещений."""
-    return f"premises/{instance.premise.id}/images/{filename}"
+    """Генерирует путь для файлов изображения помещения (original / card / detail)."""
+    return f'premises/{instance.premise_id}/images/{_media_slot_subdir(instance)}/{filename}'
 
 
 def building_image_upload_path(instance, filename):
-    """Генерирует путь для изображений зданий."""
-    return f"buildings/{instance.building.id}/images/{filename}"
+    """Генерирует путь для файлов изображения здания (original / card / detail)."""
+    return f'buildings/{instance.building_id}/images/{_media_slot_subdir(instance)}/{filename}'
 
 
 def building_video_upload_path(instance, filename):
-    """Генерирует путь для видео зданий."""
-    return f"buildings/{instance.building.id}/videos/{filename}"
+    """Оригинальное видео в слоте вместе с card.webp."""
+    return f'buildings/{instance.building_id}/videos/{_media_slot_subdir(instance)}/{filename}'
+
+
+def building_video_card_upload_path(instance, filename):
+    """Превью видео в том же слоте, что и файл ролика."""
+    return f'buildings/{instance.building_id}/videos/{_media_slot_subdir(instance)}/{filename}'
 
 
 class MediaFilesMixin(models.Model):
     """
-    Миксин с общими полями и методами для медиафайлов.
-    
-    Используется для переиспользования кода между моделями PremiseImage,
-    BuildingImage, BuildingVideo.
-    
-    ВАЖНО: Поле file должно быть переопределено в каждой модели с конкретным
-    upload_to и валидаторами.
+    Миксин с общими полями для медиафайлов.
+
+    PremiseImage / BuildingImage: original, card, detail.
+    BuildingVideo: file (оригинал ролика), card.
     """
     title = models.CharField(
         max_length=200,
@@ -465,21 +482,14 @@ class MediaFilesMixin(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         abstract = True
-    
-    @property
-    def file_url(self):
-        """Возвращает URL файла."""
-        if self.file:
-            return self.file.url
-        return None
 
 
 class PremiseImage(MediaFilesMixin, models.Model):
     """
-    Изображение помещения.
+    Изображение помещения: оригинал загрузки + производные card/detail (WebP).
     """
     premise = models.ForeignKey(
         Premise,
@@ -488,23 +498,41 @@ class PremiseImage(MediaFilesMixin, models.Model):
         verbose_name="Помещение",
         help_text="Помещение, к которому относится изображение"
     )
-    file = models.ImageField(
+    original = models.ImageField(
         upload_to=premise_image_upload_path,
-        verbose_name="Изображение",
-        help_text="Изображение помещения",
-        storage=None,  # Используется DEFAULT_FILE_STORAGE из settings
+        verbose_name="Оригинал",
+        help_text="Исходный файл (jpg/png/webp/gif); card и detail генерируются автоматически",
+        storage=None,
         validators=[
             FileExtensionValidator(
                 allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'gif']
             )
-        ]
+        ],
+    )
+    card = models.ImageField(
+        upload_to=premise_image_upload_path,
+        verbose_name="Превью карточки",
+        help_text="WebP, вписано в 560×300 без обрезки (пропорции сохраняются)",
+        storage=None,
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['webp'])],
+    )
+    detail = models.ImageField(
+        upload_to=premise_image_upload_path,
+        verbose_name="Детальное изображение",
+        help_text="WebP до Full HD, генерируется из оригинала",
+        storage=None,
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['webp'])],
     )
     is_primary = models.BooleanField(
         default=False,
         verbose_name="Основное изображение",
         help_text="Использовать как основное изображение помещения"
     )
-    
+
     class Meta:
         verbose_name = "Изображение помещения"
         verbose_name_plural = "Изображения помещений"
@@ -513,31 +541,76 @@ class PremiseImage(MediaFilesMixin, models.Model):
             models.Index(fields=['premise', 'is_primary']),
         ]
         db_table = 're_premise_images'
-    
+
     def __str__(self):
         return f"Изображение для {self.premise} ({self.order})"
-    
+
+    def _derivatives_stale(self) -> bool:
+        if not self.original:
+            return False
+        if not self.card or not self.detail:
+            return True
+        if not self.pk:
+            return True
+        old = PremiseImage.objects.only('original').get(pk=self.pk)
+        if not old.original:
+            return True
+        return old.original.name != self.original.name
+
+    def _maybe_build_image_derivatives(self) -> None:
+        if not self.original or not self._derivatives_stale():
+            return
+        if hasattr(self.original, 'read'):
+            self.original.seek(0)
+            raw = self.original.read()
+            self.original.seek(0)
+        else:
+            with self.original.open('rb') as src:
+                raw = src.read()
+        from .services.media_processing import process_raster_bytes
+
+        try:
+            card_cf, detail_cf = process_raster_bytes(raw)
+        except Exception as exc:
+            raise ValidationError(
+                {'original': f'Не удалось обработать изображение: {exc}'}
+            ) from exc
+        if self.pk:
+            if self.card:
+                self.card.delete(save=False)
+            if self.detail:
+                self.detail.delete(save=False)
+        self.card = card_cf
+        self.detail = detail_cf
+
     def clean(self):
         """Валидация на уровне модели."""
-        # Если помещение еще не сохранено, пропускаем валидацию
         if not self.premise_id:
             return
-        
-        # Если это основное изображение, снимаем флаг с других
+
         if self.is_primary:
             PremiseImage.objects.filter(
                 premise=self.premise,
                 is_primary=True
             ).exclude(pk=self.pk if self.pk else None).update(is_primary=False)
-    
+
     def save(self, *args, **kwargs):
+        update_fields = kwargs.get('update_fields')
+        skip_derivatives = (
+            update_fields is not None
+            and 'original' not in update_fields
+            and self.card
+            and self.detail
+        )
+        if not skip_derivatives:
+            self._maybe_build_image_derivatives()
         self.full_clean()
         super().save(*args, **kwargs)
 
 
 class BuildingImage(MediaFilesMixin, models.Model):
     """
-    Изображение здания.
+    Изображение здания: оригинал + card/detail (WebP).
     """
     building = models.ForeignKey(
         Building,
@@ -546,16 +619,34 @@ class BuildingImage(MediaFilesMixin, models.Model):
         verbose_name="Здание",
         help_text="Здание, к которому относится изображение"
     )
-    file = models.ImageField(
+    original = models.ImageField(
         upload_to=building_image_upload_path,
-        verbose_name="Изображение",
-        help_text="Изображение здания",
-        storage=None,  # Используется DEFAULT_FILE_STORAGE из settings
+        verbose_name="Оригинал",
+        help_text="Исходный файл; card и detail генерируются автоматически",
+        storage=None,
         validators=[
             FileExtensionValidator(
                 allowed_extensions=['jpg', 'jpeg', 'png', 'webp', 'gif']
             )
-        ]
+        ],
+    )
+    card = models.ImageField(
+        upload_to=building_image_upload_path,
+        verbose_name="Превью карточки",
+        help_text="WebP, вписано в 560×300 без обрезки",
+        storage=None,
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['webp'])],
+    )
+    detail = models.ImageField(
+        upload_to=building_image_upload_path,
+        verbose_name="Детальное изображение",
+        help_text="WebP до Full HD",
+        storage=None,
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['webp'])],
     )
     category = models.CharField(
         max_length=100,
@@ -568,7 +659,7 @@ class BuildingImage(MediaFilesMixin, models.Model):
         verbose_name="Основное изображение",
         help_text="Использовать как основное изображение здания"
     )
-    
+
     class Meta:
         verbose_name = "Изображение здания"
         verbose_name_plural = "Изображения зданий"
@@ -578,31 +669,76 @@ class BuildingImage(MediaFilesMixin, models.Model):
             models.Index(fields=['building', 'category']),
         ]
         db_table = 're_building_images'
-    
+
     def __str__(self):
         return f"Изображение для {self.building} ({self.order})"
-    
+
+    def _derivatives_stale(self) -> bool:
+        if not self.original:
+            return False
+        if not self.card or not self.detail:
+            return True
+        if not self.pk:
+            return True
+        old = BuildingImage.objects.only('original').get(pk=self.pk)
+        if not old.original:
+            return True
+        return old.original.name != self.original.name
+
+    def _maybe_build_image_derivatives(self) -> None:
+        if not self.original or not self._derivatives_stale():
+            return
+        if hasattr(self.original, 'read'):
+            self.original.seek(0)
+            raw = self.original.read()
+            self.original.seek(0)
+        else:
+            with self.original.open('rb') as src:
+                raw = src.read()
+        from .services.media_processing import process_raster_bytes
+
+        try:
+            card_cf, detail_cf = process_raster_bytes(raw)
+        except Exception as exc:
+            raise ValidationError(
+                {'original': f'Не удалось обработать изображение: {exc}'}
+            ) from exc
+        if self.pk:
+            if self.card:
+                self.card.delete(save=False)
+            if self.detail:
+                self.detail.delete(save=False)
+        self.card = card_cf
+        self.detail = detail_cf
+
     def clean(self):
         """Валидация на уровне модели."""
-        # Если здание еще не сохранено, пропускаем валидацию
         if not self.building_id:
             return
-        
-        # Если это основное изображение, снимаем флаг с других
+
         if self.is_primary:
             BuildingImage.objects.filter(
                 building=self.building,
                 is_primary=True
             ).exclude(pk=self.pk if self.pk else None).update(is_primary=False)
-    
+
     def save(self, *args, **kwargs):
+        update_fields = kwargs.get('update_fields')
+        skip_derivatives = (
+            update_fields is not None
+            and 'original' not in update_fields
+            and self.card
+            and self.detail
+        )
+        if not skip_derivatives:
+            self._maybe_build_image_derivatives()
         self.full_clean()
         super().save(*args, **kwargs)
 
 
 class BuildingVideo(MediaFilesMixin, models.Model):
     """
-    Видео здания.
+    Видео здания: оригинал ролика + card.webp (первый кадр).
     """
     building = models.ForeignKey(
         Building,
@@ -614,13 +750,22 @@ class BuildingVideo(MediaFilesMixin, models.Model):
     file = models.FileField(
         upload_to=building_video_upload_path,
         verbose_name="Видео",
-        help_text="Видео файл здания",
-        storage=None,  # Используется DEFAULT_FILE_STORAGE из settings
+        help_text="Оригинальный видеофайл",
+        storage=None,
         validators=[
             FileExtensionValidator(
                 allowed_extensions=['mp4', 'mov', 'avi', 'webm']
             )
-        ]
+        ],
+    )
+    card = models.ImageField(
+        upload_to=building_video_card_upload_path,
+        verbose_name="Превью карточки",
+        help_text="WebP с первого кадра (ffmpeg), вписано в 560×300 без обрезки",
+        storage=None,
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['webp'])],
     )
     category = models.CharField(
         max_length=100,
@@ -628,7 +773,7 @@ class BuildingVideo(MediaFilesMixin, models.Model):
         verbose_name="Категория",
         help_text="Категория видео (например, 'тур', 'обзор', 'презентация')"
     )
-    
+
     class Meta:
         verbose_name = "Видео здания"
         verbose_name_plural = "Видео зданий"
@@ -637,16 +782,65 @@ class BuildingVideo(MediaFilesMixin, models.Model):
             models.Index(fields=['building', 'category']),
         ]
         db_table = 're_building_videos'
-    
+
     def __str__(self):
         return f"Видео для {self.building} ({self.order})"
-    
+
     def clean(self):
         """Валидация на уровне модели."""
-        # Если здание еще не сохранено, пропускаем валидацию
         if not self.building_id:
             return
-    
+
+    def _needs_video_card(self, prev_file_name: str | None) -> bool:
+        if not self.file:
+            return False
+        if not self.card:
+            return True
+        if prev_file_name is None:
+            return True
+        return prev_file_name != self.file.name
+
     def save(self, *args, **kwargs):
+        uf = kwargs.get('update_fields')
+        if uf is not None and set(uf) == {'card'}:
+            return super().save(*args, **kwargs)
+
+        update_fields = kwargs.get('update_fields')
+        skip_card = (
+            update_fields is not None
+            and 'file' not in update_fields
+            and self.card
+        )
+
+        prev_file_name = None
+        if self.pk:
+            prev_file_name = (
+                BuildingVideo.objects.filter(pk=self.pk).values_list('file', flat=True).first()
+            )
+
         self.full_clean()
         super().save(*args, **kwargs)
+
+        if skip_card:
+            return
+
+        if not self._needs_video_card(prev_file_name):
+            return
+
+        from .services.media_processing import FFmpegNotFoundError, video_file_to_card_webp
+
+        try:
+            card_cf = video_file_to_card_webp(self.file)
+        except FFmpegNotFoundError as exc:
+            raise ValidationError(
+                {'file': 'Для загрузки видео нужен ffmpeg в PATH сервера.'}
+            ) from exc
+        except Exception as exc:
+            raise ValidationError(
+                {'file': f'Не удалось сделать превью видео: {exc}'}
+            ) from exc
+
+        if self.card:
+            self.card.delete(save=False)
+        self.card = card_cf
+        super().save(update_fields=['card'])

@@ -63,7 +63,11 @@ async def get_user(request):
     response={200: list[BookingOut], 401: ProblemDetail},
     auth=jwt_auth,
     summary="Мои брони",
-    description="Список броней текущего пользователя (все записи, новые первые).",
+    description=(
+        "Список броней текущего пользователя (новые первые). "
+        "При BOOKINGS_LIST_ONLY_ACTIVE=True (по умолчанию) — только неистёкшие; "
+        "при False — все записи (см. настройки Django)."
+    ),
 )
 async def list_my_bookings(request):
     items = await sync_to_async(list_bookings_for_user, thread_sensitive=True)(request.auth)

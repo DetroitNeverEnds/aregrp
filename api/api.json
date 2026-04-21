@@ -366,7 +366,7 @@
             }
           }
         },
-        "description": "Список броней текущего пользователя (все записи, новые первые).",
+        "description": "Список броней текущего пользователя (новые первые). При BOOKINGS_LIST_ONLY_ACTIVE=True (по умолчанию) — только неистёкшие; при False — все записи (см. настройки Django).",
         "tags": [
           "Profile"
         ],
@@ -847,11 +847,11 @@
                   "type": "null"
                 }
               ],
-              "description": "true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра.",
+              "description": "true — без активной брони на помещении; false — с бронью или без флага аренды/продажи. Сделки не учитываются. Не передано — без фильтра.",
               "title": "Available"
             },
             "required": false,
-            "description": "true — только со свободными помещениями, false — только с занятыми. Не передано — без фильтра."
+            "description": "true — без активной брони на помещении; false — с бронью или без флага аренды/продажи. Сделки не учитываются. Не передано — без фильтра."
           }
         ],
         "responses": {
@@ -870,7 +870,7 @@
             }
           }
         },
-        "description": "Здания, у которых есть помещения (с учётом sale_type и available). Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры».",
+        "description": "Здания, у которых есть помещения (sale_type; available — только по активным броням, без сделок). Фронт запрашивает один раз и подставляет в чекбоксы «бизнес-центры».",
         "tags": [
           "Premises"
         ]
@@ -911,11 +911,11 @@
                   "type": "null"
                 }
               ],
-              "description": "true — свободные, false — занятые. Не передано — без фильтра по доступности.",
+              "description": "true — без активной брони; false — с бронью или выключенный флаг аренды/продажи. Сделки не учитываются. Не передано при sale_type=rent|sale — то же, что true.",
               "title": "Available"
             },
             "required": false,
-            "description": "true — свободные, false — занятые. Не передано — без фильтра по доступности."
+            "description": "true — без активной брони; false — с бронью или выключенный флаг аренды/продажи. Сделки не учитываются. Не передано при sale_type=rent|sale — то же, что true."
           },
           {
             "in": "query",
@@ -1085,7 +1085,7 @@
             }
           }
         },
-        "description": "Фильтры: sale_type (rent|sale), available (true/false — свободно/занято), building (поиск по тексту), building_uuids (UUID зданий через запятую), min_price, max_price, min_area, max_area. Сортировка: order_by. Пагинация: page, page_size.",
+        "description": "Фильтры: sale_type (rent|sale), available, building, building_uuids, min/max price и площадь, order_by, page, page_size. Без available при sale_type=rent|sale — без активной брони (сделки не учитываются).",
         "tags": [
           "Premises"
         ]
@@ -1242,7 +1242,7 @@
             }
           }
         },
-        "description": "Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+        "description": "Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media. В media для детали здания поля url и full_url совпадают и равны «полному» URL (detail WebP для фото, оригинал для видео).",
         "tags": [
           "Buildings"
         ]
@@ -2615,7 +2615,7 @@
         "type": "object"
       },
       "BaseMediaItemOut": {
-        "description": "Базовая схема медиа: type, url.",
+        "description": "Базовая схема медиа: type, url (превью карточки), full_url (деталь / оригинал видео).",
         "properties": {
           "type": {
             "enum": [
@@ -2628,11 +2628,16 @@
           "url": {
             "title": "Url",
             "type": "string"
+          },
+          "full_url": {
+            "title": "Full Url",
+            "type": "string"
           }
         },
         "required": [
           "type",
-          "url"
+          "url",
+          "full_url"
         ],
         "title": "BaseMediaItemOut",
         "type": "object"
@@ -3033,7 +3038,7 @@
         "type": "object"
       },
       "BuildingDetailOut": {
-        "description": "Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.",
+        "description": "Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.\n\nВ media для этой ручки url и full_url совпадают (оба — «полный» URL медиа).",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -3146,6 +3151,10 @@
             "title": "Url",
             "type": "string"
           },
+          "full_url": {
+            "title": "Full Url",
+            "type": "string"
+          },
           "category": {
             "default": "",
             "title": "Category",
@@ -3165,7 +3174,8 @@
         },
         "required": [
           "type",
-          "url"
+          "url",
+          "full_url"
         ],
         "title": "BuildingMediaItemOut",
         "type": "object"

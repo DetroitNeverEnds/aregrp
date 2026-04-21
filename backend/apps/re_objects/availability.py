@@ -1,11 +1,13 @@
 """
 Правила доступности помещений без поля status.
 
-Аренда (rent): свободно, если available_for_rent, нет активной брони (expires_at > now), нет сделки аренды с rent_expires_at >= сегодня.
-Продажа (sale): свободно, если available_for_sale, нет активной брони, нет сделки продажи.
-Активная бронь скрывает помещение и в аренде, и в продаже.
+Фильтры каталога (query available, список зданий для фильтра): «свободно» — только без активной брони
+(expires_at > now); сделки аренды/продажи в эти фильтры не входят.
 
-Занятость по схеме этажа (is_occupied): для аренды и продажи одинаково — есть хотя бы одна сделка типа «аренда».
+Аннотации _active_rent_period / _has_sale_deal / _any_rent_deal — для has_tenant, схемы этажа и т.п., не для
+фильтра available.
+
+Занятость по схеме этажа (is_occupied): есть хотя бы одна сделка типа «аренда».
 """
 from __future__ import annotations
 
@@ -82,21 +84,13 @@ def premise_filter_for_buildings_q(
 ) -> Q:
     """
     Q для Premise при выборе зданий в фильтре (по sale_type и available).
-    """
-    active_rent_sq = active_rent_deal_subquery()
-    active_book_sq = active_booking_subquery()
-    sale_deal_sq = sale_deal_subquery()
 
-    rent_free = (
-        Q(available_for_rent=True)
-        & ~Exists(active_rent_sq)
-        & ~Exists(active_book_sq)
-    )
-    sale_free = (
-        Q(available_for_sale=True)
-        & ~Exists(active_book_sq)
-        & ~Exists(sale_deal_sq)
-    )
+    available учитывает только активные брони, не сделки.
+    """
+    active_book_sq = active_booking_subquery()
+
+    rent_free = Q(available_for_rent=True) & ~Exists(active_book_sq)
+    sale_free = Q(available_for_sale=True) & ~Exists(active_book_sq)
 
     q = Q()
     rent = settings.RE_OBJECTS_SALE_TYPE_RENT
