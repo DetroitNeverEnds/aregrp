@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Flex } from '@/components/ui/common/Flex';
 import { Form } from '@/components/ui/common/Form';
 import { Text } from '@/components/ui/common/Text';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/common/Button';
 import { Divider } from '@/components/ui/common/Divider';
 import { Loader } from '@/components/ui/common/Loader';
 import styles from './AuthForm.module.scss';
+import { useIsMobile } from '@/hooks';
 
 export interface AuthFormProps {
     /** Заголовок формы */
@@ -49,14 +51,27 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     errorMessage,
     isSubmitting = false,
 }) => {
+    const compact = useIsMobile();
+
+    const outerGap = compact ? 24 : 20;
+    const mainGap = compact ? 24 : 40;
+    const titleBlockGap = compact ? 16 : 20;
+    const fieldsColumnGap = compact ? 16 : 20;
+    const fieldsInnerGap = compact ? 12 : 10;
+
     return (
-        <div className={styles.formWrapper}>
-            <Flex gap={20} align="start" fullWidth>
+        <div className={classNames(styles.formWrapper, compact && styles.formWrapper_compact)}>
+            <Flex gap={outerGap} align="start" fullWidth>
                 <Form onSubmit={onSubmit}>
-                    <Flex align="start" gap={40}>
+                    <Flex align="start" gap={mainGap}>
                         {/* Заголовок и описание */}
-                        <Flex align="start" gap={20} fullWidth>
-                            <Text variant="h3">{title}</Text>
+                        <Flex align="start" gap={titleBlockGap} fullWidth>
+                            <Text
+                                variant={compact ? 'h5' : 'h3'}
+                                color={compact ? 'gray-100' : undefined}
+                            >
+                                {title}
+                            </Text>
                             {description && (
                                 <Text variant="16-reg" color="gray-50">
                                     {description}
@@ -70,9 +85,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
                         </Flex>
 
                         {/* Содержимое формы */}
-                        <Flex gap={20} fullWidth align="start">
+                        <Flex gap={fieldsColumnGap} fullWidth align="start">
                             {additionalOptionsUpper && additionalOptionsUpper}
-                            <Flex gap={10} fullWidth align="start">
+                            <Flex gap={fieldsInnerGap} fullWidth align="start">
                                 {children}
                             </Flex>
                             {additionalOptionsLower && additionalOptionsLower}
