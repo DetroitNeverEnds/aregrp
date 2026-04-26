@@ -55,7 +55,7 @@ const GenerateLinkModalContent = ({ premise }: GenerateLinkModalContentProps) =>
                 <Text variant="h3" color="gray-100">
                     {t('pages.building.generateLinkModal.objectLabel')}
                 </Text>
-                <Text variant="h3" color="gray-100">
+                <Text variant="h3" color="gray-100" ellipsis>
                     {premise.name}
                 </Text>
             </Flex>

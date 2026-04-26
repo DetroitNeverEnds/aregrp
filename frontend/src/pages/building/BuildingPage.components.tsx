@@ -35,6 +35,8 @@ import { GenerateLinkModal } from './GenerateLinkModal';
 
 import styles from './BuildingPage.module.scss';
 import { SingleSelect } from '@/components/ui/common/input/Select';
+import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
+import { Sheet } from '@/components/ui/common/Sheet';
 
 type BuildingInfo = BuildingDetailOut;
 
@@ -75,7 +77,7 @@ const formatRubles = (value: number | null | undefined) => {
     }).format(value);
 };
 
-const PremiseDetailsCard = ({ data: premise, canBook }: PremiseDetailsCardProps) => {
+const PremiseDetailsCardContent = ({ data: premise, canBook }: PremiseDetailsCardProps) => {
     const { t } = useTranslation();
     const user = useUser().data?.data;
     const isAuthenticated = user !== undefined;
@@ -87,38 +89,40 @@ const PremiseDetailsCard = ({ data: premise, canBook }: PremiseDetailsCardProps)
         <>
             <Gallery premise={premise} fit="contain" className={styles.premiseDetails__gallery} />
             <Card background="gray" gap={40} align="start" fullWidth>
-                <Flex
-                    direction="row"
-                    justify="between"
-                    align="start"
-                    wrap="wrap"
-                    fullWidth
-                    gap={12}
-                >
-                    <Flex gap={6} align="start">
-                        <Text variant="24-med">{premise.name}</Text>
-                        {premise.sale_price && (
-                            <Text variant="24-med" color="primary-700">
-                                {formatRubles(premise.sale_price)}
-                            </Text>
-                        )}
-                        {premise.rent_price && (
-                            <Text variant="20-med" color="primary-700">
-                                {premise.sale_price && 'или '}
-                                {formatRubles(premise.rent_price)} / месяц
-                            </Text>
+                <Flex gap={6} align="start" fullWidth>
+                    <Flex
+                        direction="row"
+                        justify="between"
+                        align="start"
+                        wrap="wrap"
+                        fullWidth
+                        gap={12}
+                    >
+                        <Text variant="24-med" ellipsis>
+                            {premise.name}
+                        </Text>
+
+                        {isAgent && (
+                            <FlatButton
+                                type="button"
+                                className={classNames(styles.premiseDetails__generateLink)}
+                                onClick={() => setGenerateLinkOpen(true)}
+                            >
+                                <MedicalCrossIcon />
+                                <Text variant="12-med">{t('pages.building.generateLink')}</Text>
+                            </FlatButton>
                         )}
                     </Flex>
-
-                    {isAgent && (
-                        <FlatButton
-                            type="button"
-                            className={classNames(styles.premiseDetails__generateLink)}
-                            onClick={() => setGenerateLinkOpen(true)}
-                        >
-                            <MedicalCrossIcon />
-                            <Text variant="12-med">{t('pages.building.generateLink')}</Text>
-                        </FlatButton>
+                    {premise.sale_price && (
+                        <Text variant="24-med" color="primary-700">
+                            {formatRubles(premise.sale_price)}
+                        </Text>
+                    )}
+                    {premise.rent_price && (
+                        <Text variant="20-med" color="primary-700">
+                            {premise.sale_price && 'или '}
+                            {formatRubles(premise.rent_price)} / месяц
+                        </Text>
                     )}
                 </Flex>
                 <Flex gap={8} align="start">
@@ -141,8 +145,8 @@ const PremiseDetailsCard = ({ data: premise, canBook }: PremiseDetailsCardProps)
                     </Text>
                 </Flex>
             </Card>
-            <Flex direction="row" gap={6} align="stretch" fullWidth>
-                {canBook && (
+            {canBook && (
+                <Flex direction="row" gap={6} align="stretch" fullWidth>
                     <Column gap={6} align="center">
                         <Button variant="primary" width="max" disabled={!isAuthenticated}>
                             {t('pages.building.book')}
@@ -153,14 +157,8 @@ const PremiseDetailsCard = ({ data: premise, canBook }: PremiseDetailsCardProps)
                             </Text>
                         )}
                     </Column>
-                )}
-                {/* TODO: Add details button */}
-                {/* <Column>
-                    <Button variant="outlined" width="max">
-                        {t('pages.building.details')}
-                    </Button>
-                </Column> */}
-            </Flex>
+                </Flex>
+            )}
 
             <GenerateLinkModal
                 open={generateLinkOpen}
@@ -347,16 +345,18 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     return (
         <>
             <Flex direction="row" gap={24} fullWidth align="start">
-                <div
-                    className={styles.detailsPanelWrapper}
-                    style={{ width: selectedPremise ? 500 : 0 }}
-                >
-                    {selectedPremise && (
-                        <Card withShadow gap={12} className={styles.officeCard} align="start">
+                {selectedPremise && (
+                    <>
+                        <Card
+                            withShadow
+                            gap={12}
+                            className={classNames(styles.officeCard, breakpointStyles.desktopOnly)}
+                            align="start"
+                        >
                             <QueryBoundary
                                 query={selectedPremiseQ}
                                 render={data => (
-                                    <PremiseDetailsCard
+                                    <PremiseDetailsCardContent
                                         data={data}
                                         canBook={
                                             saleTypeForFloor === 'sale' &&
@@ -370,24 +370,77 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                 onRetry="default"
                             />
                         </Card>
-                    )}
-                </div>
+                        <Sheet
+                            open={true}
+                            onClose={() =>
+                                setSearchParams(
+                                    toSearchParams({ ...params, selectedPremise: undefined }),
+                                )
+                            }
+                            rootClassName={breakpointStyles.mobileOnly}
+                            gap={20}
+                        >
+                            <QueryBoundary
+                                query={selectedPremiseQ}
+                                render={data => (
+                                    <PremiseDetailsCardContent
+                                        data={data}
+                                        canBook={
+                                            saleTypeForFloor === 'sale' &&
+                                            (floorQ.data?.data?.premises?.find(
+                                                premise => premise.uuid === selectedPremise,
+                                            )?.is_available ??
+                                                false)
+                                        }
+                                    />
+                                )}
+                                onRetry="default"
+                            />
+                        </Sheet>
+                    </>
+                )}
                 <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
-                    <Flex direction="row" justify="between" align="start" fullWidth>
-                        <Text variant="h2" className={styles.floorSchema__header__text}>
-                            {buildingInfo?.title}
-                        </Text>
-                        <SingleSelect<SaleType>
-                            options={[
-                                { label: { title: t('common.sale') }, value: 'sale' },
-                                { label: { title: t('common.rent') }, value: 'rent' },
-                            ]}
-                            onChange={val => setSaleType(val || 'sale')}
-                            value={saleTypeForFloor}
-                        />
-                    </Flex>
-                    <Flex gap={40} fullWidth>
-                        <Flex direction="row" gap={20}>
+                    <>
+                        <Flex
+                            direction="row"
+                            justify="between"
+                            align="start"
+                            fullWidth
+                            className={breakpointStyles.desktopOnly}
+                        >
+                            <Text variant="h2" className={styles.floorSchema__header__text}>
+                                {buildingInfo?.title}
+                            </Text>
+                            <SingleSelect<SaleType>
+                                options={[
+                                    { label: { title: t('common.sale') }, value: 'sale' },
+                                    { label: { title: t('common.rent') }, value: 'rent' },
+                                ]}
+                                onChange={val => setSaleType(val || 'sale')}
+                                value={saleTypeForFloor}
+                            />
+                        </Flex>
+                        <Flex
+                            align="start"
+                            gap={12}
+                            fullWidth
+                            className={breakpointStyles.mobileOnly}
+                        >
+                            <SingleSelect<SaleType>
+                                options={[
+                                    { label: { title: t('common.sale') }, value: 'sale' },
+                                    { label: { title: t('common.rent') }, value: 'rent' },
+                                ]}
+                                onChange={val => setSaleType(val || 'sale')}
+                                value={saleTypeForFloor}
+                            />
+                            <Text variant="h2" className={styles.floorSchema__header__text}>
+                                {buildingInfo?.title}
+                            </Text>
+                        </Flex>
+                    </>
+                    <Flex gap={40} fullWidth className={styles.a}>
+                        <Flex direction="row" gap={20} wrap="wrap">
                             {legend.map(({ title, style }) => (
                                 <Flex key={title} direction="row" gap={8}>
                                     <div className={style} />
