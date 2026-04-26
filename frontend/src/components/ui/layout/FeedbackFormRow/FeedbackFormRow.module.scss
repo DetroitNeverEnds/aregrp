@@ -11,7 +11,7 @@
 
     &__title {
         gap: 20px;
-        
+
         @include mobile-only {
             gap: 16px;
         }

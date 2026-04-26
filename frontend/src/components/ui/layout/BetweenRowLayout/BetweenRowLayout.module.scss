@@ -1,7 +1,7 @@
 .root {
     display: flex;
     width: 100%;
-    
+
     @include desktop-only {
         flex-direction: row;
         justify-content: space-between;

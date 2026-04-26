@@ -8,7 +8,6 @@ import { Checkbox } from '@/components/ui/common/input/Checkbox';
 import { Link } from '@/components/ui/common/Link';
 import { Text } from '@/components/ui/common/Text';
 import { Flex } from '@/components/ui/common/Flex';
-import { useIsMobile } from '@/hooks';
 import { useLoginMutation } from '@/mutations';
 
 type LoginFormData = {
@@ -21,7 +20,6 @@ export const Login: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
-    const compact = useIsMobile();
     const { handleSubmit, control, formState, setError } = useForm<LoginFormData>({
         defaultValues: {
             email: '',

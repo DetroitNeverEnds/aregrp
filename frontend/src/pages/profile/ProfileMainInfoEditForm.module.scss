@@ -1,7 +1,7 @@
 .form {
     &__button {
         @include mobile-only {
-            flex: 1
+            flex: 1;
         }
     }
 }

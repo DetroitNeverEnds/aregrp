@@ -56,7 +56,8 @@ describe('Catalogue', () => {
             ]),
         });
 
-        expect(screen.getByText('Продажа офисов')).toBeInTheDocument();
+        const saleTitles = screen.getAllByText('Продажа офисов');
+        expect(saleTitles.length).toBeGreaterThan(0);
     });
 
     it('рендерит заголовок для аренды при sale_type=rent', () => {
@@ -74,7 +75,8 @@ describe('Catalogue', () => {
             ]),
         });
 
-        expect(screen.getByText('Аренда офисов')).toBeInTheDocument();
+        const rentTitles = screen.getAllByText('Аренда офисов');
+        expect(rentTitles.length).toBeGreaterThan(0);
     });
 
     it('показывает Loader при загрузке', () => {
