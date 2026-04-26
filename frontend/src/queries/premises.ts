@@ -20,8 +20,8 @@ import {
     type FloorPremiseOut,
     type FloorResponseOut,
     type SaleType,
-} from '../api';
-import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
+} from '@/api';
+import { wrapApiCall, type QueryResult } from '@/lib/queryHelpers';
 import Config from '@/config';
 
 /**

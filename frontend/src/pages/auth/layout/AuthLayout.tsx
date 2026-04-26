@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useSearchParams } from 'react-router-dom';
-import { Link } from '../../../components/ui/common/Link';
-import { Flex } from '../../../components/ui/common/Flex';
+import { Link } from '@/components/ui/common/Link';
+import { Flex } from '@/components/ui/common/Flex';
 
 import TwoRowsLogo from '@/icons/logo/twoRows.svg?react';
 import Lion1Logo from '@/icons/logo/lion1.svg?react';
@@ -20,14 +20,36 @@ export const AuthLayout: React.FC = () => {
 
     return (
         <Flex className={styles.body} direction="row" align="stretch">
+            <div className={styles.mobileCover}>
+                <Link
+                    className={styles.mobileCover__back}
+                    size="sm"
+                    theme="light"
+                    to={redirectTo}
+                    leadingIcon="arrow-narrow-left"
+                >
+                    {t('auth.common.backToSite')}
+                </Link>
+                <TwoRowsLogo className={styles.mobileCover__brand} />
+                <Lion1Logo className={styles.mobileCover__lion1} />
+                <Lion2Logo className={styles.mobileCover__lion2} />
+            </div>
+
             <Flex align="center" justify="center" className={styles.logo}>
                 <TwoRowsLogo />
                 <Lion1Logo className={styles.logo__lion1} />
                 <Lion2Logo className={styles.logo__lion2} />
             </Flex>
+
             <Flex className={styles.auth__wrapperOuter} align="center">
                 <Flex align="end" className={styles.auth__wrapperInner}>
-                    <Link size="md" theme="black" to={redirectTo} leadingIcon="arrow-narrow-left">
+                    <Link
+                        className={styles.auth__backDesktop}
+                        size="md"
+                        theme="black"
+                        to={redirectTo}
+                        leadingIcon="arrow-narrow-left"
+                    >
                         {t('auth.common.backToSite')}
                     </Link>
                     <Flex justify="center" fullWidth className={styles.auth__content}>

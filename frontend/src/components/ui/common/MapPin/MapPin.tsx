@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
 import MarkerPinIcon from '@/icons/other/marker-pin.svg?react';
 import styles from './MapPin.module.scss';
-import { Flex } from '../Flex';
-import Text from '../Text';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text';
 
 export type MapPinProps = {
     /**

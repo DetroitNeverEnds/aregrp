@@ -6,8 +6,8 @@ import {
     type ChangePasswordData,
     type UserData,
     type Message,
-} from '../api';
-import type { ApiError } from '../api';
+} from '@/api';
+import type { ApiError } from '@/api';
 
 /**
  * Хук для обновления профиля пользователя

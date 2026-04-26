@@ -1,22 +1,22 @@
 import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Flex } from '../../components/ui/common/Flex';
-import { useLayoutSettings } from '../../hooks/useLayoutSettings';
-import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layout';
-import { ObjectsFilter } from '../../components/ui/forms/ObjectsFilter';
-import Text from '../../components/ui/common/Text';
-import { YandexMap } from '../../components/ui/common/YandexMap';
-import { BuildingCard } from '../../components/ui/cards/BuildingCard';
+import { Flex } from '@/components/ui/common/Flex';
+import { useLayoutSettings } from '@/hooks/useLayoutSettings';
+import type { LayoutSettings } from '@/components/ui/layout/MainLayout/Layout';
+import { ObjectsFilter } from '@/components/ui/forms/ObjectsFilter';
+import Text from '@/components/ui/common/Text';
+import { YandexMap } from '@/components/ui/common/YandexMap';
+import { BuildingCard } from '@/components/ui/cards/BuildingCard';
 
 import styles from './Root.module.scss';
-import { Button } from '../../components/ui/common/Button';
-import Container, { FeatureCard } from '../../components/ui/layout/Container';
-import { Column } from '../../components/ui/layout/TwoColumnsContainer';
-import { Divider } from '../../components/ui/common/Divider';
-import { FeedbackFormRow } from '../../components/ui/layout/FeedbackFormRow';
-import { useBuildingsCatalogueInfinite, usePremises } from '../../queries/premises';
+import { Button } from '@/components/ui/common/Button';
+import Container, { FeatureCard } from '@/components/ui/layout/Container';
+import { Column } from '@/components/ui/layout/Column';
+import { Divider } from '@/components/ui/common/Divider';
+import { FeedbackFormRow } from '@/components/ui/layout/FeedbackFormRow';
+import { useBuildingsCatalogueInfinite, usePremises } from '@/queries/premises';
 import { Welcome } from './components/Welcome';
-import { VerticalMainContainer } from '../../components/ui/layout/VerticalMainContainer';
+import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContainer';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { BenifitsWorking } from '@/components/ui/cards/Benefits';
@@ -25,6 +25,8 @@ import Config from '@/config';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import { BuildingMapMarker } from './components/BuildingMapMarker/BuildingMapMarker';
 import { setActiveBuildingMarkerUuid } from '@/lib/buildingMapMarkerActiveStore';
+import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
+import { Columns } from '@/components/ui/layout/Columns';
 
 const layoutSettings: LayoutSettings = {
     header: {
@@ -75,11 +77,35 @@ export const Root = () => {
                 {/* Map and default buildings */}
                 <ObjectsFilter />
                 <Container justify="center" align="center">
-                    <Flex align="start" gap={20} fullWidth>
-                        <Text variant="18-reg" color="gray-50">
-                            Расположение
-                        </Text>
-                        <Flex direction="row" justify="between" fullWidth gap={60}>
+                    <>
+                        <Flex
+                            align="start"
+                            gap={20}
+                            fullWidth
+                            className={breakpointStyles.desktopOnly}
+                        >
+                            <Text variant="18-reg" color="gray-50">
+                                Расположение
+                            </Text>
+                            <Flex direction="row" justify="between" fullWidth gap={60}>
+                                <Text variant="h2" color="primary-900">
+                                    Наши бизнес-центры
+                                </Text>
+                                <Text variant="20-reg" style={{ maxWidth: '520px' }}>
+                                    У нас широкий выбор офисов для выгодного инвестирования в
+                                    коммерческую недвижимость
+                                </Text>
+                            </Flex>
+                        </Flex>
+                        <Flex
+                            align="start"
+                            gap={12}
+                            fullWidth
+                            className={breakpointStyles.mobileOnly}
+                        >
+                            <Text variant="18-reg" color="gray-50">
+                                Расположение
+                            </Text>
                             <Text variant="h2" color="primary-900">
                                 Наши бизнес-центры
                             </Text>
@@ -88,7 +114,7 @@ export const Root = () => {
                                 коммерческую недвижимость
                             </Text>
                         </Flex>
-                    </Flex>
+                    </>
                     <YandexMap
                         markers={mapsMarkers}
                         className={styles.map}
@@ -106,9 +132,9 @@ export const Root = () => {
 
                 {/* Office Buildings Benefits */}
                 <FeatureCard gap={80}>
-                    <Flex direction="row" align="start" gap={24} fullWidth>
+                    <Columns columnssNum={2}>
                         <Column gap={40}>
-                            <Divider />
+                            <Divider className={breakpointStyles.desktopOnly} />
                             <Text variant="h2">{t('benefits.officeBuildings.title')}</Text>
                         </Column>
                         <Column gap={40}>
@@ -122,7 +148,7 @@ export const Root = () => {
                                 </Text>
                             </Flex>
                         </Column>
-                    </Flex>
+                    </Columns>
                     <Flex direction="row" align="start" gap={100} fullWidth>
                         <Flex align="start">
                             <Text className={styles.benifits__number__title}>12</Text>
@@ -152,9 +178,23 @@ export const Root = () => {
                             <OfficeCard key={item.uuid} item={item} type="any" />
                         ))}
                     </CardContainer>
-                    <Button variant="outlined" to={getLinkToCatalogue({ sale_type: 'sale' })}>
-                        Перейти в каталог
-                    </Button>
+                    <>
+                        <Button
+                            variant="outlined"
+                            to={getLinkToCatalogue({ sale_type: 'sale' })}
+                            className={breakpointStyles.desktopOnly}
+                        >
+                            Перейти в каталог
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            to={getLinkToCatalogue({ sale_type: 'sale' })}
+                            className={breakpointStyles.mobileOnly}
+                            width="max"
+                        >
+                            Перейти в каталог
+                        </Button>
+                    </>
                 </Container>
 
                 {/* Work with us benefits */}

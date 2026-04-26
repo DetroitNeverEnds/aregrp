@@ -117,7 +117,8 @@ describe('BuildingPage', () => {
             wrapper: createWrapper(['/building/test-uuid']),
         });
 
-        expect(screen.getByText(/Тестовое здание/)).toBeInTheDocument();
+        const nameEls = screen.getAllByText(/Тестовое здание/);
+        expect(nameEls.length).toBeGreaterThan(0);
     });
 
     it('показывает ErrorLoading при ошибке API', () => {

@@ -80,3 +80,22 @@ $main-content-padding: 120px;
 $max-content-width: 1680px;
 
 $columns-gap: 24px;
+
+// Размеры и брейкпоинты
+$min-desktop-width: 1500px;
+$breakpoint-desktop: 1024px;
+
+$main-content-padding-mobile: 16px;
+$main-content-padding-tablet: 40px;
+
+@mixin mobile-only {
+    @media (max-width: ($breakpoint-desktop - 1px)) {
+        @content;
+    }
+}
+
+@mixin desktop-only {
+    @media (min-width: $breakpoint-desktop) {
+        @content;
+    }
+}

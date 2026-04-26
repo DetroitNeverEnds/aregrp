@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useMemo } from 'react';
-import { Flex } from '../../components/ui/common/Flex';
-import Text from '../../components/ui/common/Text';
-import { useLayoutSettings } from '../../hooks/useLayoutSettings';
-import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layout';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text';
+import { useLayoutSettings } from '@/hooks/useLayoutSettings';
+import type { LayoutSettings } from '@/components/ui/layout/MainLayout/Layout';
 
 export const Cases = () => {
     const { t } = useTranslation();

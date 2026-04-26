@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import styles from './Modal.module.scss';
-import { Flex, type FlexProps } from '../Flex';
-import Icon from '../Icon';
-import FlatButton from '../FlatButton';
+import { Flex, type FlexProps } from '@/components/ui/common/Flex';
+import Icon from '@/components/ui/common/Icon';
+import FlatButton from '@/components/ui/common/FlatButton';
 
 export interface ModalProps extends FlexProps {
     open: boolean;

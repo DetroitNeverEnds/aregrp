@@ -1,0 +1,20 @@
+// =============================================================================
+// Footer — mobile (типографика и размеры; сетка — Flex в TSX)
+// =============================================================================
+
+.footerMobile {
+    &__ctaLogo {
+        height: 44px;
+        width: auto;
+        flex-shrink: 0;
+    }
+
+    &__contactLink {
+        font-size: 24px;
+    }
+
+    &__lowerARESvg {
+        height: 24px;
+        width: auto;
+    }
+}

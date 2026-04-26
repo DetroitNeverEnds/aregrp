@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient, type UseMutationOptions } from '@tanstack/react-query';
-import { createBooking, type BookingCreateIn, type BookingOut } from '../api';
-import type { ApiError } from '../api';
+import { createBooking, type BookingCreateIn, type BookingOut } from '@/api';
+import type { ApiError } from '@/api';
 
 export function useCreateBookingMutation(
     options?: Omit<UseMutationOptions<BookingOut, ApiError, BookingCreateIn>, 'mutationFn'>,

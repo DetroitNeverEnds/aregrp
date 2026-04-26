@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback, useMemo } from 'react';
-import { Flex } from '../../components/ui/common/Flex';
-import Text from '../../components/ui/common/Text';
-import { useLayoutSettings } from '../../hooks/useLayoutSettings';
-import type { LayoutSettings } from '../../components/ui/layout/MainLayout/Layout';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text';
+import { useLayoutSettings } from '@/hooks/useLayoutSettings';
+import type { LayoutSettings } from '@/components/ui/layout/MainLayout/Layout';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { Container } from '@/components/ui/layout/Container';
@@ -17,6 +17,7 @@ import { type SelectOption } from '@/components/ui/common/input/Select';
 import type { OrderBy } from '@/api';
 import { SingleSelect } from '@/components/ui/common/input/Select/Select';
 import Config from '@/config';
+import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 
 const ResultsView = () => {
     const { t } = useTranslation();
@@ -112,14 +113,35 @@ export const Catalogue = () => {
             <Flex justify="center" align="center" fullWidth>
                 <VerticalMainContainer>
                     <Container>
-                        <Flex direction="row" justify="between" fullWidth>
-                            <Text variant="h2">
-                                {filter.sale_type === 'sale'
-                                    ? t('pages.catalogue.title.sale')
-                                    : t('pages.catalogue.title.rent')}
-                            </Text>
-                            <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
-                        </Flex>
+                        <>
+                            <Flex
+                                direction="row"
+                                justify="between"
+                                fullWidth
+                                className={breakpointStyles.desktopOnly}
+                            >
+                                <Text variant="h2">
+                                    {filter.sale_type === 'sale'
+                                        ? t('pages.catalogue.title.sale')
+                                        : t('pages.catalogue.title.rent')}
+                                </Text>
+                                <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
+                            </Flex>
+
+                            <Flex
+                                align="start"
+                                gap={12}
+                                fullWidth
+                                className={breakpointStyles.mobileOnly}
+                            >
+                                <Text variant="h2">
+                                    {filter.sale_type === 'sale'
+                                        ? t('pages.catalogue.title.sale')
+                                        : t('pages.catalogue.title.rent')}
+                                </Text>
+                                <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
+                            </Flex>
+                        </>
                         <Flex align="start" gap={20} fullWidth>
                             <SingleSelect
                                 size="tiny"

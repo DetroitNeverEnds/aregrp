@@ -1,11 +1,13 @@
 .page {
-    margin-top: 60px;
+    @include desktop-only {
+        margin-top: 60px;
+    }
 }
 
 .profileRow {
     gap: 60px;
 
-    @media (max-width: 1024px) {
+    @include mobile-only {
         flex-direction: column !important;
         gap: 24px !important;
     }
@@ -50,7 +52,7 @@
         gap: 8px;
     }
 
-    @media (max-width: 1024px) {
+    @include mobile-only {
         width: 100%;
         max-width: 100%;
     }

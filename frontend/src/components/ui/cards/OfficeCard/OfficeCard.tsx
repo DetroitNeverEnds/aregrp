@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
-import { Button } from '../../common/Button';
-import { Flex } from '../../common/Flex';
-import { Text } from '../../common/Text';
-import { Gallery } from '../../common/Gallery/Gallery';
+import { Button } from '@/components/ui/common/Button';
+import { Flex } from '@/components/ui/common/Flex';
+import { Text } from '@/components/ui/common/Text';
+import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 import styles from './OfficeCard.module.scss';
 import type { PremiseListItem, SaleType } from '@/api';
 import { Divider } from '@/components/ui/common/Divider';

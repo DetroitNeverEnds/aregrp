@@ -6,10 +6,10 @@
     /* Wrapper sets height; avoid height:100% here — it can win the cascade and collapse in flex. */
 
     &__size-m {
-        border-radius: 20px;
+        border-radius: $border-radius-m;
     }
 
     &__size-l {
-        border-radius: 40px;
+        border-radius: $border-radius-l;
     }
 }

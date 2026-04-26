@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import classNames from 'classnames';
 import styles from './Select.module.scss';
-import Text from '../../Text/Text';
-import { Flex } from '../../Flex';
-import { Dropdown } from '../../Dropdown';
-import type { Size } from '../../Dropdown/Dropdown';
-import { Checkbox } from '../Checkbox';
+import Text from '@/components/ui/common/Text/Text';
+import { Flex } from '@/components/ui/common/Flex';
+import { Dropdown } from '@/components/ui/common/Dropdown';
+import type { Size } from '@/components/ui/common/Dropdown/Dropdown';
+import { Checkbox } from '@/components/ui/common/input/Checkbox';
 import _ from 'lodash';
 import FlatButton from '@/components/ui/common/FlatButton';
 import Icon from '@/components/ui/common/Icon';

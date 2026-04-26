@@ -30,6 +30,8 @@ type ButtonAsButton = BaseButtonProps &
 type ButtonAsLink = BaseButtonProps &
     Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseButtonProps> & {
         to: string;
+        /** Переопределяет переход по клику (например, navigate из react-router + побочные эффекты) */
+        navigate?: (to: string) => void;
     };
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
@@ -81,9 +83,22 @@ export const Button: React.FC<ButtonProps> = props => {
 
     // Если указан to, рендерим Link
     if ('to' in props && props.to) {
-        const { to, ...linkProps } = restProps as ButtonAsLink;
+        const { to, navigate: customNavigate, onClick, ...linkProps } = restProps as ButtonAsLink;
+        const handleClick: React.MouseEventHandler<HTMLAnchorElement> = e => {
+            if (customNavigate) {
+                e.preventDefault();
+                customNavigate(to);
+            }
+            onClick?.(e);
+        };
         return (
-            <Link to={to} className={buttonClassNames} title={tooltipTitle} {...linkProps}>
+            <Link
+                to={to}
+                className={buttonClassNames}
+                title={tooltipTitle}
+                {...linkProps}
+                onClick={handleClick}
+            >
                 {content}
             </Link>
         );

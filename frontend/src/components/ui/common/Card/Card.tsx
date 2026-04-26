@@ -1,6 +1,6 @@
 import styles from './Card.module.scss';
 import classNames from 'classnames';
-import { Flex, type FlexProps } from '../Flex';
+import { Flex, type FlexProps } from '@/components/ui/common/Flex';
 
 export interface CardProps extends FlexProps {
     size?: 'l' | 'xl';

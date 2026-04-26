@@ -5,6 +5,7 @@ import { Icon } from '@/components/ui/common/Icon';
 import { Flex } from '@/components/ui/common/Flex';
 import type { TableProps, TableHeaderCellProps, TableCellProps } from './types';
 import { horizontalPlacementFromHeaderAlign, sortIconName } from './types';
+import Text from '../Text';
 
 /** Обёртка над нативным `<table>` с токенами проекта */
 export const Table = ({
@@ -113,7 +114,9 @@ export const TableHeaderCell = ({
                         <Icon name={sortIconName(sortDirection)} size={16} color={iconColor} />
                     </button>
                 )}
-                <span className={styles.headerLabel}>{children}</span>
+                <Text variant="14-reg" color="gray-70" className={styles.headerLabel}>
+                    {children}
+                </Text>
             </Flex>
         </th>
     );

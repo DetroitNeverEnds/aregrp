@@ -1,4 +1,4 @@
-import { api } from '../../base/api';
+import { api } from '@/api/base/api';
 
 export type InvestorSettingsOut = {
     document_1?: string | null;

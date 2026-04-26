@@ -5,7 +5,7 @@ import styles from './GalleryModal.module.scss';
 import type { GalleryMedia } from './Gallery.types';
 import { GalleryMainStage } from './GalleryMainStage';
 import { GalleryControls } from './GalleryControls';
-import { Flex } from '../Flex';
+import { Flex } from '@/components/ui/common/Flex';
 
 export type GalleryModalProps = {
     open: boolean;

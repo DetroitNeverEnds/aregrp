@@ -1,12 +1,81 @@
 .body {
     width: 100%;
     min-height: 100vh;
+
+    @include mobile-only {
+        flex-direction: column;
+        align-items: stretch;
+        min-width: 0;
+    }
+
+    @include desktop-only {
+        min-width: $min-desktop-width;
+    }
+}
+
+.mobileCover {
+    display: none;
+
+    @include mobile-only {
+        display: block;
+        position: relative;
+        flex-shrink: 0;
+        width: 100%;
+        height: 130px;
+        overflow: hidden;
+        background: linear-gradient(252deg, $primary-700 7%, $primary-900 99%);
+    }
+
+    &__back {
+        position: absolute;
+        z-index: 2;
+        top: 12px;
+        left: 16px;
+    }
+
+    &__brand {
+        position: absolute;
+        z-index: 1;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        height: 50px;
+        width: auto;
+    }
+
+    &__lion1 {
+        position: absolute;
+        z-index: 0;
+        top: calc(50% + 0.33px);
+        left: 10px;
+        transform: translateY(-50%);
+        width: 90px;
+        height: auto;
+    }
+
+    &__lion2 {
+        position: absolute;
+        z-index: 0;
+        top: calc(50% - 0.5px);
+        right: 10px;
+        transform: translateY(-50%);
+        width: 90px;
+        height: auto;
+    }
 }
 
 .logo {
-    width: 950px;
+    max-width: 950px;
+    flex-grow: 2;
+    flex-shrink: 1;
+
     background: $gradient-primary-700-900-lr;
     position: relative;
+    padding: 0 8px;
+
+    @include mobile-only {
+        display: none;
+    }
 
     &__lion1 {
         position: absolute;
@@ -25,12 +94,35 @@
     &__wrapperOuter {
         padding: 30px;
         flex-grow: 1;
+        flex-shrink: 1;
+
+        @include mobile-only {
+            padding: 24px 0 32px;
+            align-items: stretch;
+        }
     }
+
     &__wrapperInner {
         height: 100%;
         width: 450px;
+
+        @include mobile-only {
+            width: 100%;
+            align-items: stretch;
+        }
     }
+
     &__content {
         flex-grow: 1;
+
+        @include mobile-only {
+            padding: 0 $main-content-padding-mobile;
+        }
+    }
+
+    &__backDesktop {
+        @include mobile-only {
+            display: none;
+        }
     }
 }

@@ -2,8 +2,8 @@ import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import {
     siteInvestorSettings,
     type InvestorSettingsOut,
-} from '../api/handlers/siteSettings/investors';
-import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
+} from '@/api/handlers/siteSettings/investors';
+import { wrapApiCall, type QueryResult } from '@/lib/queryHelpers';
 
 export const useInvestorSettings = (): UseQueryResult<QueryResult<InvestorSettingsOut>, Error> => {
     return useQuery({

@@ -1,7 +1,7 @@
-import { Header, type HeaderProps } from './Header';
+import { Header, type HeaderProps } from './Header/Header';
 import styles from './Layout.module.scss';
 import { Footer } from './Footer';
-import { Flex } from '../../common/Flex';
+import { Flex } from '@/components/ui/common/Flex';
 import { Outlet } from 'react-router-dom';
 import { useState } from 'react';
 import classNames from 'classnames';
@@ -31,6 +31,7 @@ export const MainLayout = () => {
 
     return (
         <Flex
+            fullWidth
             className={classNames(
                 styles.root,
                 layoutSettings.mainContentBackground === 'gray-10' && styles.contentGray10,

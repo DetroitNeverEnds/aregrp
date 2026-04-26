@@ -1,4 +1,4 @@
-import type { ApiError } from '../api/types';
+import type { ApiError } from '@/api/types';
 
 /**
  * Результат API запроса с обработкой ошибок

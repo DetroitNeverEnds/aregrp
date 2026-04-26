@@ -5,9 +5,9 @@ import {
     type ProfilePremisesListResponse,
     type ProfilePremisesQueryParams,
     type UserData,
-} from '../api';
-import { getProfilePremises, getUser } from '../api/handlers/profile';
-import { wrapApiCall, type QueryResult } from '../lib/queryHelpers';
+} from '@/api';
+import { getProfilePremises, getUser } from '@/api/handlers/profile';
+import { wrapApiCall, type QueryResult } from '@/lib/queryHelpers';
 
 export function useUser(): UseQueryResult<QueryResult<UserData>, Error> {
     return useQuery({

@@ -19,6 +19,10 @@ $font-montserrat: $font-family-base;
         white-space: nowrap;
     }
 
+    &--wrap {
+        white-space: break-spaces;
+    }
+
     // Применяем миксин для цветов
     @include colors.color-variants('color');
 
@@ -45,6 +49,10 @@ $font-montserrat: $font-family-base;
         line-height: 110%;
         letter-spacing: 0;
         font-weight: $font-weight-medium;
+
+        @include mobile-only {
+            font-size: 24px;
+        }
     }
 
     &--h2 {
@@ -52,6 +60,10 @@ $font-montserrat: $font-family-base;
         line-height: 110%;
         letter-spacing: 0;
         font-weight: $font-weight-medium;
+
+        @include mobile-only {
+            font-size: 24px;
+        }
     }
 
     &--h3 {

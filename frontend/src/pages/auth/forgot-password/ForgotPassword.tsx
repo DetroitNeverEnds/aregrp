@@ -1,12 +1,12 @@
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthForm } from '../../../components/ui/auth/AuthForm';
-import { TextInput } from '../../../components/ui/common/input/TextInput';
-import { Link } from '../../../components/ui/common/Link';
-import { Text } from '../../../components/ui/common/Text';
-import { Flex } from '../../../components/ui/common/Flex';
-import { useRequestPasswordResetMutation } from '../../../mutations';
+import { AuthForm } from '@/components/ui/auth/AuthForm';
+import { TextInput } from '@/components/ui/common/input/TextInput';
+import { Link } from '@/components/ui/common/Link';
+import { Text } from '@/components/ui/common/Text';
+import { Flex } from '@/components/ui/common/Flex';
+import { useRequestPasswordResetMutation } from '@/mutations';
 
 type ForgotPasswordFormData = {
     email: string;

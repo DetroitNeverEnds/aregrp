@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { Flex } from '../../common/Flex';
-import Text from '../../common/Text';
-import { Column, TwoColumnsContainer } from '../TwoColumnsContainer';
-import { FeedbackForm } from '../../forms/FeedbackForm';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text';
+import { Column } from '@/components/ui/layout/Column';
+import { Columns } from '@/components/ui/layout/Columns';
+import { FeedbackForm } from '@/components/ui/forms/FeedbackForm';
 
 import styles from './FeedbackFormRow.module.scss';
 import { forwardRef } from 'react';
+import { Divider } from '@/components/ui/common/Divider';
 
 export type FeedbackFormRowProps = {
     originKey: string;
@@ -16,10 +18,11 @@ export const FeedbackFormRow = forwardRef<HTMLDivElement, FeedbackFormRowProps>(
         const { t } = useTranslation();
 
         return (
-            <TwoColumnsContainer ref={ref}>
+            <Columns ref={ref} columnssNum={2}>
                 <Column>
-                    <Flex align="start" className={styles.formColumnContent} gap={80}>
-                        <Flex gap={20} align="start">
+                    <Flex align="start" className={styles.formColumnContent}>
+                        <Divider />
+                        <Flex align="start" className={styles.formColumnContent__title}>
                             <Text color="gray-50">{t('pages.contacts.planView')}</Text>
                             <Text variant="h2">
                                 {t('pages.contacts.fillForm')}{' '}
@@ -32,7 +35,7 @@ export const FeedbackFormRow = forwardRef<HTMLDivElement, FeedbackFormRowProps>(
                     </Flex>
                 </Column>
                 <Column className={styles.imgColumn} />
-            </TwoColumnsContainer>
+            </Columns>
         );
     },
 );

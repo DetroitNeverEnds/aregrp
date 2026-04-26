@@ -1,3 +1,5 @@
 .content {
-    width: 560px;
+    @include desktop-only {
+        width: 560px;
+    }
 }

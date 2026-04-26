@@ -43,87 +43,89 @@ export function DataTable<T>({
 
     return (
         <Flex align="start" gap={16} fullWidth={width === 'max'}>
-            <Table
-                striped={striped}
-                hoverableRows={hoverableRows}
-                width={width}
-                className={className}
-                {...tableProps}
-            >
-                <TableHead>
-                    <TableRow>
-                        {columns.map(column => (
-                            <TableHeaderCell
-                                key={column.id}
-                                size={column.headerSize ?? defaultHeaderSize}
-                                align={column.headerAlign ?? 'left'}
-                                active={headerSortActive(column)}
-                                sortable={!!column.sortable}
-                                onSort={column.sortable}
-                                sortDirection={column.sortDirection}
-                                interactionDisabled={isLoading}
-                                className={column.thClassName}
-                            >
-                                {column.header}
-                            </TableHeaderCell>
-                        ))}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {isLoading ? (
+            <div className={styles.tableScroll}>
+                <Table
+                    striped={striped}
+                    hoverableRows={hoverableRows}
+                    width={width}
+                    className={className}
+                    {...tableProps}
+                >
+                    <TableHead>
                         <TableRow>
-                            <TableCell colSpan={colCount} align="center" size="auto">
-                                <Loader variant="block" height={120} spinnerSize="lg" />
-                            </TableCell>
+                            {columns.map(column => (
+                                <TableHeaderCell
+                                    key={column.id}
+                                    size={column.headerSize ?? defaultHeaderSize}
+                                    align={column.headerAlign ?? 'left'}
+                                    active={headerSortActive(column)}
+                                    sortable={!!column.sortable}
+                                    onSort={column.sortable}
+                                    sortDirection={column.sortDirection}
+                                    interactionDisabled={isLoading}
+                                    className={column.thClassName}
+                                >
+                                    {column.header}
+                                </TableHeaderCell>
+                            ))}
                         </TableRow>
-                    ) : data.length === 0 ? (
-                        <TableRow>
-                            <TableCell colSpan={colCount} align="left" size="auto">
-                                {emptyContent || <Text color="gray-50">Нет данных</Text>}
-                            </TableCell>
-                        </TableRow>
-                    ) : (
-                        data.map((row, rowIndex) => (
-                            <TableRow key={resolveDataTableRowKey(row, rowIndex, getRowId)}>
-                                {columns.map(column => (
-                                    <TableCell
-                                        key={column.id}
-                                        size={size}
-                                        align={column.cellAlign ?? 'left'}
-                                        muted={column.muted}
-                                        className={column.tdClassName}
-                                    >
-                                        {column.render ? (
-                                            column.render({ row, index: rowIndex })
-                                        ) : (
-                                            <Flex
-                                                direction="column"
-                                                align={horizontalPlacementFromCellAlign(
-                                                    column.cellAlign ?? 'left',
-                                                )}
-                                                gap={2}
-                                            >
-                                                <Text variant="12-reg">
-                                                    {column.accessorKey &&
-                                                        (row[
-                                                            column.accessorKey
-                                                        ] as React.ReactNode)}
-                                                </Text>
-                                                <Text variant="10-reg" color="gray-50">
-                                                    {column.supportingAccessorKey &&
-                                                        (row[
-                                                            column.supportingAccessorKey
-                                                        ] as React.ReactNode)}
-                                                </Text>
-                                            </Flex>
-                                        )}
-                                    </TableCell>
-                                ))}
+                    </TableHead>
+                    <TableBody>
+                        {isLoading ? (
+                            <TableRow>
+                                <TableCell colSpan={colCount} align="center" size="auto">
+                                    <Loader variant="block" height={120} spinnerSize="lg" />
+                                </TableCell>
                             </TableRow>
-                        ))
-                    )}
-                </TableBody>
-            </Table>
+                        ) : data.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={colCount} align="left" size="auto">
+                                    {emptyContent || <Text color="gray-50">Нет данных</Text>}
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            data.map((row, rowIndex) => (
+                                <TableRow key={resolveDataTableRowKey(row, rowIndex, getRowId)}>
+                                    {columns.map(column => (
+                                        <TableCell
+                                            key={column.id}
+                                            size={size}
+                                            align={column.cellAlign ?? 'left'}
+                                            muted={column.muted}
+                                            className={column.tdClassName}
+                                        >
+                                            {column.render ? (
+                                                column.render({ row, index: rowIndex })
+                                            ) : (
+                                                <Flex
+                                                    direction="column"
+                                                    align={horizontalPlacementFromCellAlign(
+                                                        column.cellAlign ?? 'left',
+                                                    )}
+                                                    gap={2}
+                                                >
+                                                    <Text variant="14-reg">
+                                                        {column.accessorKey &&
+                                                            (row[
+                                                                column.accessorKey
+                                                            ] as React.ReactNode)}
+                                                    </Text>
+                                                    <Text variant="10-reg" color="gray-50">
+                                                        {column.supportingAccessorKey &&
+                                                            (row[
+                                                                column.supportingAccessorKey
+                                                            ] as React.ReactNode)}
+                                                    </Text>
+                                                </Flex>
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
             {pagination && (
                 <Pagination
                     currentPage={pagination.currentPage}
