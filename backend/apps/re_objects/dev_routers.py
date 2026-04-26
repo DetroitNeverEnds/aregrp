@@ -103,7 +103,7 @@ def create_building_with_floor(
         for i, f in enumerate(img_files, start=1):
             BuildingImage.objects.create(
                 building=building,
-                file=f,
+                original=f,
                 order=i,
                 is_primary=(i == 1),
             )
@@ -189,7 +189,7 @@ def add_building_media(
     for i, f in enumerate(img_files, start=1):
         BuildingImage.objects.create(
             building=building,
-            file=f,
+            original=f,
             order=max_order + i,
             category=cat,
             is_primary=(not has_images and i == 1),
@@ -263,7 +263,7 @@ def create_premise_in_building(
             for i, f in enumerate(img_files, start=1):
                 PremiseImage.objects.create(
                     premise=premise,
-                    file=f,
+                    original=f,
                     order=i,
                     is_primary=(i == 1),
                 )

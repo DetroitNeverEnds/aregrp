@@ -3,8 +3,8 @@
 
 Публичный API:
 - parse_building_uuids(value) — парсит строку 'uuid1,uuid2,...' в список UUID для фильтра зданий.
-- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available, building_query, building_uuids, price/area, order_by).
-- get_buildings_for_filter(sale_type, available) — список зданий для фильтра (uuid, name, address). available: None — без фильтра.
+- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available по броням, building_query, …).
+- get_buildings_for_filter(sale_type, available) — здания для фильтра; available — только брони, None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
 - get_premise_by_uuid(...): price — legacy; sale_price / rent_price — по флагам available_for_sale / available_for_rent.
 - get_premises_for_floor(building_uuid, floor_number, sale_type) — данные этажа (is_available зависит от sale_type).
@@ -81,7 +81,8 @@ class PremiseFilterParams:
     """
     Параметры фильтрации и пагинации списка помещений.
 
-    sale_type: rent | sale (из settings). available: True — свободные, False — занятые, None — без фильтра.
+    sale_type: rent | sale (из settings). available: при None и sale_type задан — как True (каталог);
+    учитывает только активные брони, не сделки.
     building_query: поиск по адресу/названию здания. building_uuids: фильтр по UUID зданий (чекбоксы).
     min/max price, min/max area. order_by, page, page_size.
     """
@@ -116,7 +117,7 @@ class PremiseFilterParams:
         page_size: int = 20,
     ):
         self.sale_type = sale_type
-        # True — свободные, False — занятые, None — без фильтра по доступности
+        # True/False — по броням (активная бронь = занято для фильтра); None — без фильтра
         self.available = available
         self.building_query = building_query and building_query.strip() or None
         self.building_uuids = list(building_uuids) if building_uuids else None
@@ -133,7 +134,7 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     """
     Строит queryset помещений с фильтрами и сортировкой.
 
-    Фильтры: available (True — свободные, False — занятые, None — без фильтра), sale_type, building_query,
+    Фильтры: available (только брони; при sale_type=rent|sale и None — как True), sale_type, building_query,
     building_uuids, min_price, max_price, min_area, max_area. Сортировка по order_by.
     Не обращается к БД (lazy), пагинация не применяется.
     Результат передаётся в async-методы (acount, async for).
@@ -146,57 +147,30 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     rent = settings.RE_OBJECTS_SALE_TYPE_RENT
     sale = settings.RE_OBJECTS_SALE_TYPE_SALE
 
-    if params.available is True:
+    # Каталог с sale_type: без query available — без активной брони (сделки не учитываем).
+    avail = params.available
+    if avail is None and params.sale_type in (rent, sale):
+        avail = True
+
+    if avail is True:
         if params.sale_type == rent:
-            qs = qs.filter(
-                available_for_rent=True,
-                _active_rent_period=False,
-                _active_booking=False,
-            )
+            qs = qs.filter(available_for_rent=True, _active_booking=False)
         elif params.sale_type == sale:
-            qs = qs.filter(
-                available_for_sale=True,
-                _active_booking=False,
-                _has_sale_deal=False,
-            )
+            qs = qs.filter(available_for_sale=True, _active_booking=False)
         else:
             qs = qs.filter(
-                (
-                    Q(available_for_rent=True)
-                    & Q(_active_rent_period=False)
-                    & Q(_active_booking=False)
-                )
-                | (
-                    Q(available_for_sale=True)
-                    & Q(_active_booking=False)
-                    & Q(_has_sale_deal=False)
-                )
+                (Q(available_for_rent=True) & Q(_active_booking=False))
+                | (Q(available_for_sale=True) & Q(_active_booking=False))
             )
-    elif params.available is False:
+    elif avail is False:
         if params.sale_type == rent:
-            qs = qs.filter(
-                Q(available_for_rent=False)
-                | Q(_active_rent_period=True)
-                | Q(_active_booking=True)
-            )
+            qs = qs.filter(Q(available_for_rent=False) | Q(_active_booking=True))
         elif params.sale_type == sale:
-            qs = qs.filter(
-                Q(available_for_sale=False)
-                | Q(_active_booking=True)
-                | Q(_has_sale_deal=True)
-            )
+            qs = qs.filter(Q(available_for_sale=False) | Q(_active_booking=True))
         else:
             qs = qs.exclude(
-                (
-                    Q(available_for_rent=True)
-                    & Q(_active_rent_period=False)
-                    & Q(_active_booking=False)
-                )
-                | (
-                    Q(available_for_sale=True)
-                    & Q(_active_booking=False)
-                    & Q(_has_sale_deal=False)
-                )
+                (Q(available_for_rent=True) & Q(_active_booking=False))
+                | (Q(available_for_sale=True) & Q(_active_booking=False))
             )
 
     if params.sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
@@ -252,7 +226,7 @@ async def get_buildings_for_filter(
     Список зданий для фильтра (чекбоксы «бизнес-центры»).
 
     Возвращает здания, у которых есть хотя бы одно помещение с учётом sale_type и available.
-    available: True/False — по правилам сделок и броней, None — без фильтра по доступности.
+    available: True/False — только по активным броням (не по сделкам), None — без фильтра.
     Ответ: список [{ uuid, name, address }, ...].
     """
     premise_filter = premise_filter_for_buildings_q(sale_type, available)
@@ -264,18 +238,39 @@ async def get_buildings_for_filter(
     ]
 
 
+def _photo_api_urls(img) -> tuple[Optional[str], Optional[str]]:
+    """url = card (или оригинал), full_url = detail (или оригинал) — fallback до бэкфилла."""
+    if img.card and img.detail:
+        return img.card.url, img.detail.url
+    if img.original:
+        u = img.original.url
+        return u, u
+    return None, None
+
+
+def _video_api_urls(vid) -> tuple[Optional[str], Optional[str]]:
+    if vid.file and vid.card:
+        return vid.card.url, vid.file.url
+    if vid.file:
+        u = vid.file.url
+        return u, u
+    return None, None
+
+
 def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
     """Собирает медиа здания: один плоский список images + videos, сортировка по order."""
-    items: list[tuple[int, int, str, str]] = []
+    items: list[tuple[int, int, str, str, str]] = []
     for img in building.images.all():
-        if img.file:
-            items.append((img.order, img.pk, "photo", img.file.url))
+        url, full_url = _photo_api_urls(img)
+        if url and full_url:
+            items.append((img.order, img.pk, "photo", url, full_url))
     for vid in building.videos.all():
-        if vid.file:
-            items.append((vid.order, vid.pk, "video", vid.file.url))
+        url, full_url = _video_api_urls(vid)
+        if url and full_url:
+            items.append((vid.order, vid.pk, "video", url, full_url))
     items.sort(key=lambda x: (x[0], x[1]))
     return [
-        BaseMediaItemOut(type=t, url=url) for _, _, t, url in items
+        BaseMediaItemOut(type=t, url=u, full_url=fu) for _, _, t, u, fu in items
     ]
 
 
@@ -339,27 +334,32 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
     Собирает категории и медиа здания.
 
     Возвращает (media_categories, media). Один плоский список images + videos, сортировка по order.
+
+    Исключение для GET /buildings/{uuid}: в media и url, и full_url равны «полному» URL (как full_url
+    в списке зданий): фото — detail WebP, видео — оригинал ролика.
     """
     categories: set[str] = set()
-    items: list[tuple[int, int, str, str, str, Optional[str]]] = []
+    items: list[tuple[int, int, str, str, str, str, Optional[str]]] = []
 
     for img in building.images.all():
-        if img.file:
+        url, full_url = _photo_api_urls(img)
+        if url and full_url:
             cat = img.category.strip() if img.category else ""
             if cat:
                 categories.add(cat)
-            items.append((img.order, img.pk, "photo", img.file.url, cat, img.title or None))
+            items.append((img.order, img.pk, "photo", url, full_url, cat, img.title or None))
     for vid in building.videos.all():
-        if vid.file:
+        url, full_url = _video_api_urls(vid)
+        if url and full_url:
             cat = vid.category.strip() if vid.category else ""
             if cat:
                 categories.add(cat)
-            items.append((vid.order, vid.pk, "video", vid.file.url, cat, vid.title or None))
+            items.append((vid.order, vid.pk, "video", url, full_url, cat, vid.title or None))
 
     items.sort(key=lambda x: (x[0], x[1]))
     media = [
-        BuildingMediaItemOut(type=t, url=url, category=cat, title=title)
-        for _, _, t, url, cat, title in items
+        BuildingMediaItemOut(type=t, url=fu, full_url=fu, category=cat, title=title)
+        for _, _, t, _, fu, cat, title in items
     ]
     return (sorted(categories), media)
 
@@ -369,6 +369,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
     Здание по UUID: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
     Только здания с помещениями. Использует aget() и prefetch images, videos.
+    В media для детали url и full_url одинаковы (полный URL медиа).
     """
     try:
         b = await (
@@ -410,12 +411,13 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
 
 
 def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
-    """Собирает медиа помещения: плоский список с type, url. Видео помещений в модели пока нет."""
-    return [
-        BaseMediaItemOut(type="photo", url=img.file.url)
-        for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk))
-        if img.file
-    ]
+    """Собирает медиа помещения: плоский список с type, url, full_url. Видео помещений в модели пока нет."""
+    out: list[BaseMediaItemOut] = []
+    for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk)):
+        url, full_url = _photo_api_urls(img)
+        if url and full_url:
+            out.append(BaseMediaItemOut(type="photo", url=url, full_url=full_url))
+    return out
 
 
 def _api_price_is_full_sell(p: Premise, sale_type: Optional[str]) -> bool:

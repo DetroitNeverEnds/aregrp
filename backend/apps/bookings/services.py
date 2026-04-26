@@ -168,4 +168,6 @@ def list_bookings_for_user(user) -> list[BookingOut]:
         .select_related("premise", "premise__building")
         .order_by("-created_at")
     )
+    if settings.BOOKINGS_LIST_ONLY_ACTIVE:
+        qs = qs.filter(expires_at__gt=timezone.now())
     return [_booking_to_out(b) for b in qs]

@@ -5,9 +5,11 @@ from datetime import timedelta
 
 import pytest
 from asgiref.sync import sync_to_async
+from django.test import override_settings
 from django.utils import timezone
 
 from apps.accounts.models import CustomUser
+from apps.bookings.models import Booking
 from apps.deals.models import Deal
 from apps.re_objects.models import Premise
 
@@ -328,3 +330,59 @@ class TestProfileEndpoints:
         assert len(j1['items']) == 1
         assert len(j2['items']) == 1
         assert j1['items'][0]['premise']['uuid'] != j2['items'][0]['premise']['uuid']
+
+    @override_settings(BOOKINGS_LIST_ONLY_ACTIVE=True)
+    async def test_profile_bookings_only_non_expired(self, api_client, test_user, building_with_premise):
+        """По умолчанию в списке только брони с expires_at > now."""
+        _, premise = building_with_premise
+        now = timezone.now()
+
+        def seed():
+            Booking.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Booking.DealType.RENT,
+                expires_at=now - timedelta(hours=1),
+            )
+            Booking.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Booking.DealType.RENT,
+                expires_at=now + timedelta(days=1),
+            )
+
+        await sync_to_async(seed)()
+        client = await self.get_authenticated_client(api_client, test_user.email, 'TestPassword123!')
+        response = await client.get('/profile/bookings')
+        assert response.status_code == 200
+        items = response.json()
+        assert len(items) == 1
+        assert items[0]['expires_at'] is not None
+
+    @override_settings(BOOKINGS_LIST_ONLY_ACTIVE=False)
+    async def test_profile_bookings_includes_expired_when_setting_off(
+        self, api_client, test_user, building_with_premise
+    ):
+        """При BOOKINGS_LIST_ONLY_ACTIVE=False отдаются и истёкшие брони."""
+        _, premise = building_with_premise
+        now = timezone.now()
+
+        def seed():
+            Booking.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Booking.DealType.RENT,
+                expires_at=now - timedelta(hours=1),
+            )
+            Booking.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Booking.DealType.RENT,
+                expires_at=now + timedelta(days=1),
+            )
+
+        await sync_to_async(seed)()
+        client = await self.get_authenticated_client(api_client, test_user.email, 'TestPassword123!')
+        response = await client.get('/profile/bookings')
+        assert response.status_code == 200
+        assert len(response.json()) == 2
