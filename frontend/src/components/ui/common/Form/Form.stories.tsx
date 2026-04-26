@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Form } from './Form';
-import { TextInput } from '../input/TextInput';
-import { Button } from '../Button';
-import { Checkbox } from '../input/Checkbox';
-import { Text } from '../Text';
+import { TextInput } from '@/components/ui/common/input/TextInput';
+import { Button } from '@/components/ui/common/Button';
+import { Checkbox } from '@/components/ui/common/input/Checkbox';
+import { Text } from '@/components/ui/common/Text';
 
 const meta = {
     title: 'UI/Form/Form',

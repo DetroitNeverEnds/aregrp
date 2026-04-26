@@ -24,16 +24,82 @@ import CityPic from './assets/city.svg?react';
 import ArrowPic from './assets/arrow.svg?react';
 
 import styles from './Investors.module.scss';
-import { Column, TwoColumnsContainer } from '@/components/ui/layout/TwoColumnsContainer';
+import stylesBreakpoints from '@/styles/breakpoint-utilities.module.scss';
+
+import { Column } from '@/components/ui/layout/Column';
+import { Columns } from '@/components/ui/layout/Columns';
 import { Divider } from '@/components/ui/common/Divider';
 import { Collapse } from './Collapse';
 import { useInvestorSettings } from '@/queries';
+import classNames from 'classnames';
+
+const Welcome = () => {
+    const { t } = useTranslation();
+    const { getLinkToCatalogue } = useFilterSearchParams();
+
+    return (
+        <>
+            <VerticalMainContainer
+                className={classNames(styles.hero, stylesBreakpoints.desktopOnly)}
+                align="start"
+                fullWidth
+            >
+                <Flex direction="column" align="start" gap={40} className={styles.hero__content}>
+                    <Flex direction="column" align="start" className={styles.hero__content__text}>
+                        <Text variant="h2" color="gray-0" id="investors-hero-title">
+                            {t('pages.investors.hero.title')}
+                        </Text>
+                        <Text variant="h2" color="gray-50">
+                            {t('pages.investors.hero.titleAccent')}
+                        </Text>
+                    </Flex>
+                    <Button
+                        size="lg"
+                        variant="outlined"
+                        theme="dark"
+                        to={getLinkToCatalogue({ sale_type: 'sale' })}
+                    >
+                        {t('pages.investors.hero.cta')}
+                    </Button>
+                </Flex>
+                <CityPic className={styles.hero__city} />
+                <ArrowPic className={styles.hero__arrow} />
+            </VerticalMainContainer>
+            <Flex
+                className={classNames(styles.hero, stylesBreakpoints.mobileOnly)}
+                align="start"
+                fullWidth
+            >
+                <CityPic className={styles.hero__city} />
+                <ArrowPic className={styles.hero__arrow} />
+                <Flex direction="column" gap={304} align="start" className={styles.hero__content}>
+                    <Flex>
+                        <Text variant="h2" color="gray-0" id="investors-hero-title" wrap>
+                            {t('pages.investors.hero.title')}
+                        </Text>
+                        <Text variant="h2" color="gray-50">
+                            {t('pages.investors.hero.titleAccent')}
+                        </Text>
+                    </Flex>
+                    <Button
+                        size="lg"
+                        variant="outlined"
+                        theme="dark"
+                        to={getLinkToCatalogue({ sale_type: 'sale' })}
+                        width="max"
+                    >
+                        {t('pages.investors.hero.cta')}
+                    </Button>
+                </Flex>
+            </Flex>
+        </>
+    );
+};
 
 type StrategyKey = 'active' | 'passive' | 'individual';
 
 export const Investors = () => {
     const { t } = useTranslation();
-    const { getLinkToCatalogue } = useFilterSearchParams();
     const feedbackSectionRef = useRef<HTMLDivElement>(null);
 
     const layoutSettings = useMemo<LayoutSettings>(
@@ -109,28 +175,7 @@ export const Investors = () => {
 
     return (
         <Page>
-            <VerticalMainContainer className={styles.hero} align="start" fullWidth>
-                <Flex direction="column" align="start" gap={40} className={styles.hero__content}>
-                    <Flex direction="column" align="start" className={styles.hero__content__text}>
-                        <Text variant="h2" color="gray-0" id="investors-hero-title">
-                            {t('pages.investors.hero.title')}
-                        </Text>
-                        <Text variant="h2" color="gray-50">
-                            {t('pages.investors.hero.titleAccent')}
-                        </Text>
-                    </Flex>
-                    <Button
-                        size="lg"
-                        variant="outlined"
-                        theme="dark"
-                        to={getLinkToCatalogue({ sale_type: 'sale' })}
-                    >
-                        {t('pages.investors.hero.cta')}
-                    </Button>
-                </Flex>
-                <CityPic className={styles.hero__city} />
-                <ArrowPic className={styles.hero__arrow} />
-            </VerticalMainContainer>
+            <Welcome />
 
             <VerticalMainContainer>
                 <BreadCrumbs breadcrumbs={breadcrumbs} />
@@ -139,7 +184,7 @@ export const Investors = () => {
                     <Flex align="start" fullWidth>
                         <Text variant="h2">{t('pages.investors.strategies.title')}</Text>
                     </Flex>
-                    <TwoColumnsContainer>
+                    <Columns columnssNum={3}>
                         {strategies.map(({ key, link }) => (
                             <Column>
                                 <Card
@@ -149,7 +194,7 @@ export const Investors = () => {
                                     justify="between"
                                     background="gray"
                                     size="xl"
-                                    gap={20}
+                                    gap={24}
                                     fullWidth
                                     className={styles.strategyCard}
                                 >
@@ -168,7 +213,7 @@ export const Investors = () => {
                                             </Text>
                                             <Link
                                                 to={link}
-                                                size="sm"
+                                                size="md"
                                                 theme="black"
                                                 trailingIcon="download-rounded"
                                                 target="_blank"
@@ -193,7 +238,7 @@ export const Investors = () => {
                                 </Card>
                             </Column>
                         ))}
-                    </TwoColumnsContainer>
+                    </Columns>
                 </Container>
 
                 <BenifitsWorking variant="sale" />
@@ -203,7 +248,7 @@ export const Investors = () => {
                         <Text variant="18-reg" color="gray-50">
                             {t('pages.investors.map.label')}
                         </Text>
-                        <Flex direction="row" justify="between" fullWidth gap={60}>
+                        <Flex direction="row" justify="between" fullWidth gap={20} wrap="wrap">
                             <Text variant="h2" color="primary-900">
                                 {t('pages.investors.map.title')}
                             </Text>

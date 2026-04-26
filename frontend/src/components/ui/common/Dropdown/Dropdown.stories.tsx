@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Dropdown } from './Dropdown';
 import { useState } from 'react';
-import { Button } from '../Button';
-import { Flex } from '../Flex';
-import Text from '../Text/Text';
+import { Button } from '@/components/ui/common/Button';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text/Text';
 
 const meta = {
     title: 'UI/Common/Dropdown',

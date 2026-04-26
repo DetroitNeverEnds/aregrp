@@ -3,7 +3,7 @@
  */
 
 // Реэкспорт типов из auth для избежания дублирования
-export type { UserData, Message } from '../auth/types';
+export type { UserData, Message } from '@/api/handlers/auth/types';
 
 /**
  * Данные для обновления профиля

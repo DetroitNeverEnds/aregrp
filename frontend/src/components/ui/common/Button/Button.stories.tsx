@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BrowserRouter } from 'react-router-dom';
 import { Button, type ButtonSize, type ButtonWidth } from './Button';
-import { iconNames } from '../Icon';
+import { iconNames } from '@/components/ui/common/Icon';
 
 const meta = {
     title: 'UI/Common/Button',

@@ -6,6 +6,12 @@
     // border-radius: 20px;
     // padding: 20px;
     width: 400px;
+
+    @include mobile-only {
+        width: min(400px, calc(100vw - 2 * #{$main-content-padding-mobile}));
+        max-width: 100%;
+        box-sizing: border-box;
+    }
 }
 
 .input {

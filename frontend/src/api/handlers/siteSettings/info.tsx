@@ -1,4 +1,4 @@
-import { api } from '../../base/api';
+import { api } from '@/api/base/api';
 
 /** OpenAPI: MainSettingsOut */
 export type InfoResponse = {

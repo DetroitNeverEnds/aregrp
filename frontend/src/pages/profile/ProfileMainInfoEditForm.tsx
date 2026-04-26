@@ -9,7 +9,9 @@ import Form from '@/components/ui/common/Form';
 import type { UserData } from '@/api';
 import { useUpdateProfileMutation } from '@/mutations/profile';
 
-import styles from './Profile.module.scss';
+import stylesShared from './Profile.module.scss';
+import { Columns } from '@/components/ui/layout/Columns';
+import styles from './ProfileMainInfoEditForm.module.scss';
 
 type ProfileEditFormValues = {
     organization_name: string;
@@ -33,7 +35,7 @@ const FieldLabel = ({ label, children }: FieldLabelProps) => (
         gap={6}
         align="start"
         fullWidth
-        className={styles.mainPanel__formField}
+        className={stylesShared.mainPanel__formField}
     >
         <Text variant="12-reg" color="gray-70">
             {label}
@@ -81,14 +83,14 @@ export const ProfileMainInfoEditForm = ({
     const requiredRule = { required: t('auth.errors.fieldRequired') };
 
     return (
-        <Form onSubmit={handleSubmit(onSubmit)} className={styles.mainPanel__form}>
+        <Form onSubmit={handleSubmit(onSubmit)} className={stylesShared.mainPanel__form}>
             <Flex direction="column" gap={24} align="start" fullWidth>
                 {formState.errors.root?.message && (
                     <Text variant="14-reg" color="error-default">
                         {formState.errors.root.message}
                     </Text>
                 )}
-                {user.user_type === 'agent' ? (
+                {user.user_type === 'agent' && (
                     <Flex gap={12} fullWidth>
                         <FieldLabel label={t('pages.profile.orgNameLabel')}>
                             <Controller
@@ -139,8 +141,10 @@ export const ProfileMainInfoEditForm = ({
                             />
                         </FieldLabel>
                     </Flex>
-                ) : (
-                    <Flex direction="row" gap={12} fullWidth align="start">
+                )}
+                {user.user_type === 'individual' && (
+                    <Columns columnssNum={2}>
+                        {/* <Flex direction="row" gap={12} fullWidth align="start"> */}
                         <FieldLabel label={t('pages.profile.fullNameLabel')}>
                             <Controller
                                 control={control}
@@ -173,10 +177,16 @@ export const ProfileMainInfoEditForm = ({
                                 )}
                             />
                         </FieldLabel>
-                    </Flex>
+                        {/* </Flex> */}
+                    </Columns>
                 )}
-                <Flex direction="row" gap={12}>
-                    <Button variant="primary" type="submit" disabled={updateMutation.isPending}>
+                <Flex direction="row" gap={12} fullWidth>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        disabled={updateMutation.isPending}
+                        className={styles.form__button}
+                    >
                         {t('pages.profile.save')}
                     </Button>
                     <Button
@@ -184,6 +194,7 @@ export const ProfileMainInfoEditForm = ({
                         type="button"
                         onClick={onCancel}
                         disabled={updateMutation.isPending}
+                        className={styles.form__button}
                     >
                         {t('pages.profile.cancel')}
                     </Button>

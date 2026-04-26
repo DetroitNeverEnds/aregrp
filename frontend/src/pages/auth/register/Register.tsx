@@ -2,15 +2,15 @@ import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
-import { AuthForm } from '../../../components/ui/auth/AuthForm';
-import { TextInput } from '../../../components/ui/common/input/TextInput';
-import { Checkbox } from '../../../components/ui/common/input/Checkbox';
-import { Link } from '../../../components/ui/common/Link';
-import { Text } from '../../../components/ui/common/Text';
-import { Flex } from '../../../components/ui/common/Flex';
-import RadioButtons from '../../../components/ui/common/input/RadioButtons';
-import { useRegisterMutation } from '../../../mutations';
-import type { RegisterMutationData, UserType } from '../../../mutations/auth';
+import { AuthForm } from '@/components/ui/auth/AuthForm';
+import { TextInput } from '@/components/ui/common/input/TextInput';
+import { Checkbox } from '@/components/ui/common/input/Checkbox';
+import { Link } from '@/components/ui/common/Link';
+import { Text } from '@/components/ui/common/Text';
+import { Flex } from '@/components/ui/common/Flex';
+import RadioButtons from '@/components/ui/common/input/RadioButtons';
+import { useRegisterMutation } from '@/mutations';
+import type { RegisterMutationData, UserType } from '@/mutations/auth';
 
 type RegisterFormData = RegisterMutationData;
 
@@ -117,7 +117,7 @@ export const Register: React.FC = () => {
                             label={
                                 <Text variant="14-reg">
                                     {t('auth.register.policyAgrement.text')}{' '}
-                                    <Link to="/policy" size="md">
+                                    <Link to="/policy" size="md" theme="blue">
                                         {t('auth.register.policyAgrement.link')}
                                     </Link>
                                 </Text>

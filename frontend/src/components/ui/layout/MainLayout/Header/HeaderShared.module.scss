@@ -1,0 +1,23 @@
+// =============================================================================
+// Общие элементы (кнопка меню / закрытия: FlatButton + Icon)
+// =============================================================================
+
+.headerIconBtn {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    padding: 0;
+    border-radius: 40px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobileBar__spacer {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+}

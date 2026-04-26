@@ -5,15 +5,15 @@ import type {
     PasswordResetConfirmData,
     AuthResponse,
     Message,
-} from '../api/handlers/auth/types';
+} from '@/api/handlers/auth/types';
 import {
     register,
     login,
     logout,
     requestPasswordReset,
     confirmPasswordReset,
-} from '../api/handlers/auth';
-import type { ApiError } from '../api';
+} from '@/api/handlers/auth';
+import type { ApiError } from '@/api';
 
 export type UserType = 'individual' | 'agent';
 export type RegisterMutationData = {

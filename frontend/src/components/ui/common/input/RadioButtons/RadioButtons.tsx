@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import styles from './RadioButtons.module.scss';
-import { Text, type TextVariant } from '../../Text';
+import { Text, type TextVariant } from '@/components/ui/common/Text';
 
 export type RadioButtonSize = 'lg' | 'md' | 'sm';
 export type RadioButtonDirection = 'vertical' | 'horizontal';

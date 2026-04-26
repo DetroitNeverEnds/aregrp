@@ -1,4 +1,4 @@
-import { api } from '../../base/api';
+import { api } from '@/api/base/api';
 import type { SaleType } from '@/api/handlers/premises/types';
 import type { FloorPremiseOut, FloorResponseOut } from './types';
 

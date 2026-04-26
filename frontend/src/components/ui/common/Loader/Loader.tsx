@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Loader.module.scss';
-import { Spinner, type SpinnerSize } from '../Spinner';
-import Text from '../Text';
+import { Spinner, type SpinnerSize } from '@/components/ui/common/Spinner';
+import Text from '@/components/ui/common/Text';
 
 export interface LoaderProps {
     /** Вариант отображения */

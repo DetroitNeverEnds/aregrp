@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Icon, type IconSize } from './Icon';
 import { iconNames } from './iconConfig';
-import { Flex } from '../Flex';
-import { Text } from '../Text';
+import { Flex } from '@/components/ui/common/Flex';
+import { Text } from '@/components/ui/common/Text';
 
 const meta = {
     title: 'UI/Common/Icon',

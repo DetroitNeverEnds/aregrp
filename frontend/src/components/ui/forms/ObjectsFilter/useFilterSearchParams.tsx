@@ -26,7 +26,15 @@ export const useFilterSearchParams = (): {
     );
     const gotoFilter = useCallback(
         async (filter: PremiseFilterParams) => {
-            navigate(`/catalogue?filter=${JSON.stringify(filter)}`);
+            const { min_price, max_price, min_area, max_area, ...rest } = filter;
+            const clearedFilter = {
+                ...rest,
+                min_price: min_price || undefined,
+                max_price: max_price || undefined,
+                min_area: min_area || undefined,
+                max_area: max_area || undefined,
+            };
+            navigate(`/catalogue?filter=${JSON.stringify(clearedFilter)}`);
             await queryClient.invalidateQueries({ queryKey: ['premises', filter] });
         },
         [navigate, queryClient],
