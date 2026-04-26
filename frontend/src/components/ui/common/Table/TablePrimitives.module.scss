@@ -63,11 +63,6 @@
 }
 
 .headerLabel {
-    flex: 1 1 auto;
-    min-width: 0;
-    font-size: 12px;
-    line-height: 1.2;
-    color: $gray-70;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

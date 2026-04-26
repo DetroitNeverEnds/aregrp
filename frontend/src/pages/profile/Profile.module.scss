@@ -1,5 +1,7 @@
 .page {
-    margin-top: 60px;
+    @include desktop-only {
+        margin-top: 60px;
+    }
 }
 
 .profileRow {

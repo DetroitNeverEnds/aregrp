@@ -18,7 +18,7 @@ export const FeedbackFormRow = forwardRef<HTMLDivElement, FeedbackFormRowProps>(
         const { t } = useTranslation();
 
         return (
-            <Columns ref={ref} rowsNum={2}>
+            <Columns ref={ref} columnssNum={2}>
                 <Column>
                     <Flex align="start" className={styles.formColumnContent}>
                         <Divider />

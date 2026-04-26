@@ -132,7 +132,7 @@ export const Root = () => {
 
                 {/* Office Buildings Benefits */}
                 <FeatureCard gap={80}>
-                    <Columns rowsNum={2}>
+                    <Columns columnssNum={2}>
                         <Column gap={40}>
                             <Divider className={breakpointStyles.desktopOnly} />
                             <Text variant="h2">{t('benefits.officeBuildings.title')}</Text>

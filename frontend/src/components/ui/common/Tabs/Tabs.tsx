@@ -33,7 +33,7 @@ export function Tabs({ value: currentValue, onChange, tabs }: TabsProps) {
                 >
                     <div className={styles.tab__lable}>
                         <Text
-                            variant="12-med"
+                            variant="14-med"
                             color={tab.value === currentValue ? 'gray-100' : 'gray-70'}
                         >
                             {tab.label}

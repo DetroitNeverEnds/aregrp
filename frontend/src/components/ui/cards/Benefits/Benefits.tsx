@@ -87,7 +87,7 @@ export const Benefits = (props: BenefitsProps) => {
 
     return (
         <FeatureCard gap={80}>
-            <Columns rowsNum={2}>
+            <Columns columnssNum={2}>
                 <Column gap={40} style={{ width: '768px' }}>
                     <Divider className={commonStyles.desktopOnly} />
                     <Text variant="h2" wrap>
@@ -107,7 +107,7 @@ export const Benefits = (props: BenefitsProps) => {
                     </Flex>
                 </Column>
             </Columns>
-            <Columns rowsNum={4}>
+            <Columns columnssNum={4}>
                 {benefit.items.map((benefit, index) => (
                     <Column key={index} gap={20} align="start">
                         <Icon name={benefit.icon} size={32} color="primary-yellow" />

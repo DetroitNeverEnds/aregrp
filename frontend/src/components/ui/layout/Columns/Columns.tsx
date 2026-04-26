@@ -4,16 +4,16 @@ import classNames from 'classnames';
 import styles from './Columns.module.scss';
 
 export type ColumnsProps = PropsWithChildren<{
-    rowsNum?: 2 | 3 | 4;
+    columnssNum?: 2 | 3 | 4;
     className?: string;
 }>;
 
 export const Columns = forwardRef<HTMLDivElement, ColumnsProps>(
-    ({ children, rowsNum = 2, className }, ref) => {
+    ({ children, columnssNum = 2, className }, ref) => {
         return (
             <div
                 ref={ref}
-                className={classNames(styles.root, styles[`root__rows-${rowsNum}`], className)}
+                className={classNames(styles.root, styles[`root__rows-${columnssNum}`], className)}
             >
                 {children}
             </div>

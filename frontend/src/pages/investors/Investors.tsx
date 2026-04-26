@@ -184,7 +184,7 @@ export const Investors = () => {
                     <Flex align="start" fullWidth>
                         <Text variant="h2">{t('pages.investors.strategies.title')}</Text>
                     </Flex>
-                    <Columns rowsNum={3}>
+                    <Columns columnssNum={3}>
                         {strategies.map(({ key, link }) => (
                             <Column>
                                 <Card

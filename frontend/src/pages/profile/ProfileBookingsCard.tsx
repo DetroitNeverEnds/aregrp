@@ -98,7 +98,7 @@ export const ProfileBoookingsCard = () => {
 
             <Flex direction="column" gap={20} fullWidth align="start" className={styles.panel}>
                 {apiError ? (
-                    <Text variant="12-reg" color="error-default">
+                    <Text variant="14-reg" color="error-default">
                         {t(`errors.${apiError.code}`, t('errors.somethingWrong'))}
                     </Text>
                 ) : (
@@ -110,7 +110,7 @@ export const ProfileBoookingsCard = () => {
                         getRowId={row => String(row.id)}
                         isLoading={isLoading}
                         emptyContent={
-                            <Text variant="12-reg" color="gray-50">
+                            <Text variant="14-reg" color="gray-50">
                                 {t('pages.profile.booking.empty')}
                             </Text>
                         }

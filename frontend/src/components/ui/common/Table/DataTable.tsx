@@ -104,7 +104,7 @@ export function DataTable<T>({
                                                     )}
                                                     gap={2}
                                                 >
-                                                    <Text variant="12-reg">
+                                                    <Text variant="14-reg">
                                                         {column.accessorKey &&
                                                             (row[
                                                                 column.accessorKey
