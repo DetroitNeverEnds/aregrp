@@ -67,8 +67,7 @@ export const Sheet: React.FC<SheetProps> = ({
     }
 
     const showHeader = Boolean(title) || showCloseButton;
-    const headerJustify =
-        title && showCloseButton ? 'between' : title ? 'start' : 'end';
+    const headerJustify = title && showCloseButton ? 'between' : title ? 'start' : 'end';
 
     return createPortal(
         <div

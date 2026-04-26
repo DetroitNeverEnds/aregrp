@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import _ from 'lodash';
-
+import Helmet from 'react-helmet';
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Button } from '@/components/ui/common/Button';
@@ -37,6 +37,7 @@ import styles from './BuildingPage.module.scss';
 import { SingleSelect } from '@/components/ui/common/input/Select';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { Sheet } from '@/components/ui/common/Sheet';
+import { BetweenRowLayout } from '@/components/ui/layout/BetweenRowLayout';
 
 type BuildingInfo = BuildingDetailOut;
 
@@ -63,6 +64,7 @@ const toSearchParams = (params: BuildingSearchParams): Record<string, string> =>
 type PremiseDetailsCardProps = {
     data: PremiseDetail;
     canBook: boolean;
+    buildingTitle: string;
 };
 
 const formatRubles = (value: number | null | undefined) => {
@@ -77,7 +79,11 @@ const formatRubles = (value: number | null | undefined) => {
     }).format(value);
 };
 
-const PremiseDetailsCardContent = ({ data: premise, canBook }: PremiseDetailsCardProps) => {
+const PremiseDetailsCardContent = ({
+    data: premise,
+    canBook,
+    buildingTitle,
+}: PremiseDetailsCardProps) => {
     const { t } = useTranslation();
     const user = useUser().data?.data;
     const isAuthenticated = user !== undefined;
@@ -87,6 +93,11 @@ const PremiseDetailsCardContent = ({ data: premise, canBook }: PremiseDetailsCar
 
     return (
         <>
+            <Helmet>
+                <title>
+                    {premise.name} - {buildingTitle}
+                </title>
+            </Helmet>
             <Gallery premise={premise} fit="contain" className={styles.premiseDetails__gallery} />
             <Card background="gray" gap={40} align="start" fullWidth>
                 <Flex gap={6} align="start" fullWidth>
@@ -344,6 +355,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
 
     return (
         <>
+            <Helmet>
+                <title>{buildingInfo.title}</title>
+            </Helmet>
             <Flex direction="row" gap={24} fullWidth align="start">
                 {selectedPremise && (
                     <>
@@ -365,6 +379,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                             )?.is_available ??
                                                 false)
                                         }
+                                        buildingTitle={buildingInfo.title}
                                     />
                                 )}
                                 onRetry="default"
@@ -392,6 +407,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                             )?.is_available ??
                                                 false)
                                         }
+                                        buildingTitle={buildingInfo.title}
                                     />
                                 )}
                                 onRetry="default"
@@ -439,6 +455,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             </Text>
                         </Flex>
                     </>
+
                     <Flex gap={40} fullWidth className={styles.a}>
                         <Flex direction="row" gap={20} wrap="wrap">
                             {legend.map(({ title, style }) => (
@@ -471,10 +488,10 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
 
             {/* Каталог других офисов */}
             <Container>
-                <Flex direction="row" justify="between" align="center" fullWidth>
+                <BetweenRowLayout>
                     <Text variant="h2">{t('pages.building.officeCatalogue')}</Text>
                     <Text variant="20-reg">{t('pages.catalogue.subtitle')}</Text>
-                </Flex>
+                </BetweenRowLayout>
                 <Flex gap={20} fullWidth align="start">
                     <BuildingOfficeFilter
                         key={JSON.stringify(catalogFilter)}
@@ -508,11 +525,16 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
             {/* Картинки инфраструктуры */}
             <Container>
                 <Text variant="h2">{t('pages.building.infrastructure')}</Text>
-                <Flex direction="row" gap={12}>
+                <Flex
+                    direction="row"
+                    gap={12}
+                    fullWidth
+                    className={styles.infrastructure__categories}
+                >
                     {buildingInfo?.media_categories.map((category, index) => (
                         <Button
                             key={category}
-                            variant={category === currentMediaCategory ? 'primary' : 'secondary'}
+                            variant={category === currentMediaCategory ? 'primary' : 'outlined'}
                             onClick={() => setCurrentMediaCategoryIndex(index)}
                         >
                             {category}
@@ -523,7 +545,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                     type="full"
                     size="l"
                     media={selectedMedia}
-                    className={styles.gallery}
+                    className={styles.infrastructure__gallery}
                     key={currentMediaCategory}
                 />
             </Container>
