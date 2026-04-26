@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useGadget } from '@/hooks/useViewportBreakpoint';
 import { Flex } from '@/components/ui/common/Flex';
 import styles from './Header.module.scss';
 import classNames from 'classnames';
@@ -14,6 +15,7 @@ export type { HeaderTheme, HeaderProps } from './Header.types';
 export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
     const location = useLocation();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const gadget = useGadget();
 
     const isDark = theme === 'dark';
 
@@ -25,15 +27,12 @@ export const Header = ({ breadcrumbs, theme = 'light' }: HeaderProps) => {
     }, [location.pathname, location.search]);
 
     useEffect(() => {
-        const mq = window.matchMedia('(min-width: 1024px)');
-        const onChange = () => {
-            if (mq.matches) {
-                setMobileMenuOpen(false);
-            }
-        };
-        mq.addEventListener('change', onChange);
-        return () => mq.removeEventListener('change', onChange);
-    }, []);
+        if (gadget === 'desktop') {
+            // Синхронизация UI с layout: при переходе на десктоп закрываем мобильное меню.
+            // eslint-disable-next-line react-hooks/set-state-in-effect -- намеренно по смене `gadget` из useSyncExternalStore
+            setMobileMenuOpen(false);
+        }
+    }, [gadget]);
 
     const containerClassName = classNames(styles.container, {
         [styles['container--dark']]: isDark,

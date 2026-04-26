@@ -37,7 +37,12 @@ export const BottomSheet: Story = {
                     <Text variant="14-reg" color="gray-70">
                         Контент выезжает снизу, как на мобильных экранах.
                     </Text>
-                    <Button variant="primary" width="max" type="button" onClick={() => setOpen(false)}>
+                    <Button
+                        variant="primary"
+                        width="max"
+                        type="button"
+                        onClick={() => setOpen(false)}
+                    >
                         Готово
                     </Button>
                 </Sheet>

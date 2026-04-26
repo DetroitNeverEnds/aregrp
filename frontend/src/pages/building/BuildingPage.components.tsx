@@ -38,6 +38,7 @@ import { SingleSelect } from '@/components/ui/common/input/Select';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { Sheet } from '@/components/ui/common/Sheet';
 import { BetweenRowLayout } from '@/components/ui/layout/BetweenRowLayout';
+import { useGadget } from '@/hooks';
 
 type BuildingInfo = BuildingDetailOut;
 
@@ -353,6 +354,8 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
         [],
     );
 
+    const gadget = useGadget();
+
     return (
         <>
             <Helmet>
@@ -361,58 +364,61 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
             <Flex direction="row" gap={24} fullWidth align="start">
                 {selectedPremise && (
                     <>
-                        <Card
-                            withShadow
-                            gap={12}
-                            className={classNames(styles.officeCard, breakpointStyles.desktopOnly)}
-                            align="start"
-                        >
-                            <QueryBoundary
-                                query={selectedPremiseQ}
-                                render={data => (
-                                    <PremiseDetailsCardContent
-                                        data={data}
-                                        canBook={
-                                            saleTypeForFloor === 'sale' &&
-                                            (floorQ.data?.data?.premises?.find(
-                                                premise => premise.uuid === selectedPremise,
-                                            )?.is_available ??
-                                                false)
-                                        }
-                                        buildingTitle={buildingInfo.title}
-                                    />
-                                )}
-                                onRetry="default"
-                            />
-                        </Card>
-                        <Sheet
-                            open={true}
-                            onClose={() =>
-                                setSearchParams(
-                                    toSearchParams({ ...params, selectedPremise: undefined }),
-                                )
-                            }
-                            rootClassName={breakpointStyles.mobileOnly}
-                            gap={20}
-                        >
-                            <QueryBoundary
-                                query={selectedPremiseQ}
-                                render={data => (
-                                    <PremiseDetailsCardContent
-                                        data={data}
-                                        canBook={
-                                            saleTypeForFloor === 'sale' &&
-                                            (floorQ.data?.data?.premises?.find(
-                                                premise => premise.uuid === selectedPremise,
-                                            )?.is_available ??
-                                                false)
-                                        }
-                                        buildingTitle={buildingInfo.title}
-                                    />
-                                )}
-                                onRetry="default"
-                            />
-                        </Sheet>
+                        {gadget === 'desktop' && (
+                            <Card
+                                withShadow
+                                gap={12}
+                                className={classNames(styles.officeCard)}
+                                align="start"
+                            >
+                                <QueryBoundary
+                                    query={selectedPremiseQ}
+                                    render={data => (
+                                        <PremiseDetailsCardContent
+                                            data={data}
+                                            canBook={
+                                                saleTypeForFloor === 'sale' &&
+                                                (floorQ.data?.data?.premises?.find(
+                                                    premise => premise.uuid === selectedPremise,
+                                                )?.is_available ??
+                                                    false)
+                                            }
+                                            buildingTitle={buildingInfo.title}
+                                        />
+                                    )}
+                                    onRetry="default"
+                                />
+                            </Card>
+                        )}
+                        {gadget === 'mobile' && (
+                            <Sheet
+                                open={true}
+                                onClose={() =>
+                                    setSearchParams(
+                                        toSearchParams({ ...params, selectedPremise: undefined }),
+                                    )
+                                }
+                                gap={20}
+                            >
+                                <QueryBoundary
+                                    query={selectedPremiseQ}
+                                    render={data => (
+                                        <PremiseDetailsCardContent
+                                            data={data}
+                                            canBook={
+                                                saleTypeForFloor === 'sale' &&
+                                                (floorQ.data?.data?.premises?.find(
+                                                    premise => premise.uuid === selectedPremise,
+                                                )?.is_available ??
+                                                    false)
+                                            }
+                                            buildingTitle={buildingInfo.title}
+                                        />
+                                    )}
+                                    onRetry="default"
+                                />
+                            </Sheet>
+                        )}
                     </>
                 )}
                 <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
