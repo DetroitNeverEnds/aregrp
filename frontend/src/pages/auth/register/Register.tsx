@@ -117,7 +117,7 @@ export const Register: React.FC = () => {
                             label={
                                 <Text variant="14-reg">
                                     {t('auth.register.policyAgrement.text')}{' '}
-                                    <Link to="/policy" size="md">
+                                    <Link to="/policy" size="md" theme="blue">
                                         {t('auth.register.policyAgrement.link')}
                                     </Link>
                                 </Text>
