@@ -23,7 +23,7 @@ class TestPremisePriceValidation:
             price_per_month=None,
             available_for_rent=True,
             available_for_sale=False,
-            number='1',
+            room_number='1',
         )
         with pytest.raises(ValidationError) as exc:
             p.save()
@@ -45,7 +45,7 @@ class TestPremisePriceValidation:
             price_per_month=0,
             available_for_rent=True,
             available_for_sale=False,
-            number='2',
+            room_number='2',
         )
         with pytest.raises(ValidationError) as exc:
             p.save()
@@ -67,7 +67,7 @@ class TestPremisePriceValidation:
             price_per_month=80000,
             available_for_rent=True,
             available_for_sale=False,
-            number='3',
+            room_number='3',
         )
         assert p.pk is not None
         assert p.price_per_month == 80000
@@ -89,7 +89,7 @@ class TestPremisePriceValidation:
             available_for_rent=False,
             available_for_sale=True,
             price_per_sqm=200000,
-            number='4',
+            room_number='4',
         )
         assert p.pk is not None
 
@@ -110,7 +110,7 @@ class TestPremisePriceValidation:
             available_for_rent=False,
             available_for_sale=True,
             price_per_sqm=None,
-            number='5',
+            room_number='5',
         )
         with pytest.raises(ValidationError) as exc:
             p.save()
@@ -133,7 +133,7 @@ class TestPremisePriceValidation:
             available_for_rent=False,
             available_for_sale=True,
             price_per_sqm=150000,
-            number='6',
+            room_number='6',
         )
         assert p.pk is not None
         assert p.full_sell_price is not None

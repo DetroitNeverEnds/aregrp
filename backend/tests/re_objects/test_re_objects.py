@@ -150,7 +150,7 @@ class TestBuildingDetail:
                 area=55,
                 price_per_month=5000,
                 available_for_rent=True,
-                number='U1',
+                room_number='U1',
             )
             BuildingImage.objects.create(building=b, original=upload, order=1, is_primary=True)
             return b
@@ -294,7 +294,7 @@ class TestPremisesList:
                 price_per_sqm=200_000,
                 available_for_rent=False,
                 available_for_sale=True,
-                number="S1",
+                room_number="S1",
             )
             return p
 
@@ -356,7 +356,7 @@ class TestPremiseDetail:
                 price_per_sqm=250_000,
                 available_for_rent=False,
                 available_for_sale=True,
-                number="D1",
+                room_number="D1",
             )
 
         premise = await _create()

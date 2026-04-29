@@ -294,7 +294,8 @@ class TestProfileEndpoints:
                 area=40,
                 price_per_month=50_000,
                 available_for_rent=True,
-                number='102',
+                room_number='102',
+                title='102',
             )
             Deal.objects.create(
                 user_id=test_user.id,

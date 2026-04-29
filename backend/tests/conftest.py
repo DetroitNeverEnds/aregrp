@@ -64,7 +64,8 @@ def _create_building_with_premise(city):
         price_per_month=100000,
         available_for_rent=True,
         available_for_sale=False,
-        number='101',
+        room_number='101',
+        title='101',
     )
     return building, premise
 

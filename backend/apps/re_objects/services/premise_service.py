@@ -45,6 +45,16 @@ from ..schemas import (
 )
 
 
+def _premise_name_for_list_api(p: Premise) -> str:
+    """Имя помещения в списке/карточке: только название (title), не номер этажа; иначе здание."""
+    return p.title or p.building.name or ''
+
+
+def _premise_label_for_floor_schema(p: Premise) -> str:
+    """Подпись на схеме этажа: номер помещения; при отсутствии — название."""
+    return p.room_number or p.title or 'Помещение'
+
+
 def _decimal_coord_to_float(value) -> Optional[float]:
     return float(value) if value is not None else None
 
@@ -214,7 +224,7 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     elif params.order_by == "area_desc":
         qs = qs.order_by("-area", "id")
     else:
-        qs = qs.order_by("city", "building", "floor__number", "number", "id")
+        qs = qs.order_by("city", "building", "floor__number", "room_number", "title", "id")
     return qs
 
 
@@ -450,7 +460,7 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
     return PremiseListOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
-        name=p.number or p.building.name or "",
+        name=_premise_name_for_list_api(p),
         price=_premise_price_for_api(p, sale_type),
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
@@ -477,7 +487,7 @@ def premise_to_detail_out(
     return PremiseDetailOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
-        name=p.number or p.building.name or "",
+        name=_premise_name_for_list_api(p),
         price=_premise_price_for_api(p, sale_type),
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
@@ -636,7 +646,7 @@ async def get_premises_for_floor(
 
     premises = [
         p
-        async for p in Premise.objects.filter(floor=floor).order_by("number", "id")
+        async for p in Premise.objects.filter(floor=floor).order_by("room_number", "title", "id")
     ]
     rows = await _floor_premise_availability_rows(premises, sale_type)
 
@@ -649,7 +659,7 @@ async def get_premises_for_floor(
         items.append(
             FloorPremiseOut(
                 uuid=str(p.uuid),
-                name=p.number or "Помещение",
+                name=_premise_label_for_floor_schema(p),
                 label_area=_format_area(p.area),
                 label_price=label_price,
                 is_available=is_avail,

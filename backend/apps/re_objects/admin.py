@@ -183,7 +183,7 @@ class FloorAdmin(admin.ModelAdmin):
 class PremiseAdmin(admin.ModelAdmin):
     """Админка для помещений. Помещение привязано к зданию, этаж — из списка этажей этого здания."""
     list_display = (
-        'number', 'city', 'building', 'floor_info',
+        'room_number', 'title', 'city', 'building', 'floor_info',
         'area', 'price_per_month', 'premise_type',
         'available_for_rent', 'available_for_sale', 'created_at'
     )
@@ -193,17 +193,17 @@ class PremiseAdmin(admin.ModelAdmin):
         'has_windows', 'has_parking', 'is_furnished', 'created_at'
     )
     search_fields = (
-        'number', 'city__name', 'building__name',
+        'room_number', 'title', 'city__name', 'building__name',
         'description', 'building__address'
     )
-    ordering = ('city', 'building', 'floor__number', 'number')
+    ordering = ('city', 'building', 'floor__number', 'room_number', 'title')
     readonly_fields = ('created_at', 'updated_at', 'full_sell_price')
     inlines = [PremiseImageInline]
 
     fieldsets = (
         ('Основная информация', {
             'fields': (
-                'city', 'building', 'floor', 'number', 'premise_type',
+                'city', 'building', 'floor', 'room_number', 'title', 'premise_type',
                 'available_for_rent', 'available_for_sale',
             )
         }),

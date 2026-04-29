@@ -220,6 +220,7 @@ def create_premise_in_building(
         None, description="Цена продажи за м², ₽ целые (обязательно, если доступно для продажи)",
     ),
     number: str = Form("", description="Номер помещения"),
+    title: str = Form("", description="Название помещения (по желанию)"),
     description: str = Form("", description="Описание"),
     floor_number: int = Form(1, description="Номер этажа (должен существовать в здании)"),
     available_for_rent: bool = Form(True, description="Доступно для аренды"),
@@ -255,7 +256,8 @@ def create_premise_in_building(
                 area=area,
                 price_per_month=price_per_month,
                 price_per_sqm=price_per_sqm,
-                number=number or "",
+                room_number=number or "",
+                title=title or "",
                 description=description or "",
                 available_for_rent=available_for_rent,
                 available_for_sale=available_for_sale,
@@ -273,7 +275,8 @@ def create_premise_in_building(
 
     return 200, {
         "uuid": str(premise.uuid),
-        "number": premise.number,
+        "room_number": premise.room_number,
+        "title": premise.title,
         "building_uuid": str(building.uuid),
         "floor": floor_number,
         "area": float(premise.area),

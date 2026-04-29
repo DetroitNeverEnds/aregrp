@@ -17,6 +17,6 @@ class DealAdmin(admin.ModelAdmin):
         'created_at',
     )
     list_filter = ('deal_type',)
-    search_fields = ('user__email', 'premise__number', 'premise__building__name')
+    search_fields = ('user__email', 'premise__title', 'premise__room_number', 'premise__building__name')
     autocomplete_fields = ('user', 'premise')
     raw_id_fields = ()

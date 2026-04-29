@@ -321,11 +321,17 @@ class Premise(models.Model):
     )
 
     # Описание и детали
-    number = models.CharField(
+    room_number = models.CharField(
         max_length=50,
         verbose_name="Номер помещения",
-        help_text="Номер или название помещения",
-        blank=True
+        help_text="Номер помещения (для схемы этажа и идентификации)",
+        blank=True,
+    )
+    title = models.CharField(
+        max_length=50,
+        verbose_name="Название помещения",
+        help_text="Понятное название помещения (по желанию)",
+        blank=True,
     )
     description = models.TextField(
         verbose_name="Описание",
@@ -364,7 +370,7 @@ class Premise(models.Model):
     class Meta:
         verbose_name = "Помещение"
         verbose_name_plural = "Помещения"
-        ordering = ['city', 'building', 'floor', 'number']
+        ordering = ['city', 'building', 'floor', 'room_number', 'title']
         indexes = [
             models.Index(fields=['city', 'premise_type']),
             models.Index(fields=['building']),
@@ -377,7 +383,7 @@ class Premise(models.Model):
         building_info = f", {self.building.name}" if self.building else (f", {self.floor.building.name}" if self.floor else "")
         floor_info = f", этаж {self.floor.number}" if self.floor else ""
         city_name = self.city.name if self.city else "—"
-        return f"{self.number or 'Помещение'} ({city_name}{building_info}{floor_info})"
+        return f"{self.room_number or self.title or 'Помещение'} ({city_name}{building_info}{floor_info})"
 
     def clean(self):
         super().clean()

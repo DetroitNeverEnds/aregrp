@@ -41,7 +41,7 @@ def test_premise_image_save_writes_card_and_detail(city):
         area=40,
         price_per_month=1000,
         available_for_rent=True,
-        number='M1',
+        room_number='M1',
     )
     img = PremiseImage.objects.create(premise=premise, original=upload, order=1)
     assert img.original
@@ -71,7 +71,7 @@ def test_photo_api_urls_prefers_card_and_detail(city):
         area=30,
         price_per_month=2000,
         available_for_rent=True,
-        number='A1',
+        room_number='A1',
     )
     img = PremiseImage.objects.create(premise=premise, original=upload, order=1)
     u, fu = _photo_api_urls(img)

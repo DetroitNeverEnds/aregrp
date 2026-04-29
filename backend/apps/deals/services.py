@@ -7,8 +7,9 @@ from .schemas import BuildingBriefOut, PremiseBriefOut, ProfilePremiseRowOut
 
 
 def _premise_display_name(premise) -> str:
-    if premise.number:
-        return premise.number
+    title = getattr(premise, 'title', None) or ''
+    if title:
+        return title
     if premise.building and premise.building.name:
         return premise.building.name
     return ''

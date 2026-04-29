@@ -10,6 +10,8 @@ class BookingCreateIn(Schema):
 
 
 class BookingOut(Schema):
+    """Бронь: premise_name — название помещения (title), не номер для схемы этажа."""
+
     id: int
     premise_uuid: str
     premise_name: str
