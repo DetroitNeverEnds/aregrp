@@ -163,6 +163,77 @@ class TestBuildingDetail:
         m0 = data['media'][0]
         assert m0['url'] == m0['full_url']
 
+    async def test_building_primary_image_first_in_api(self, client, city):
+        """Основное фото первое в media при detail и list, даже при order больше других снимков."""
+        from io import BytesIO
+
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from PIL import Image
+
+        def _png(name: str, color: tuple[int, int, int]) -> SimpleUploadedFile:
+            buf = BytesIO()
+            Image.new('RGB', (80, 80), color=color).save(buf, format='PNG')
+            buf.seek(0)
+            return SimpleUploadedFile(name, buf.read(), content_type='image/png')
+
+        @sync_to_async
+        def setup():
+            b = Building.objects.create(
+                name='БЦ PrimaryOrder',
+                address='ул. Primary, 2',
+                city=city,
+                description='',
+            )
+            fl = Floor.objects.create(building=b, number=1)
+            Premise.objects.create(
+                building=b,
+                city=city,
+                floor=fl,
+                area=40,
+                price_per_month=4000,
+                available_for_rent=True,
+                room_number='P1',
+            )
+            BuildingImage.objects.create(
+                building=b,
+                original=_png('first.png', (10, 10, 10)),
+                order=1,
+                is_primary=False,
+            )
+            primary = BuildingImage.objects.create(
+                building=b,
+                original=_png('second.png', (200, 200, 200)),
+                order=2,
+                is_primary=True,
+            )
+            primary.refresh_from_db()
+            return b, primary.pk
+
+        building, primary_pk = await setup()
+
+        @sync_to_async
+        def primary_detail_url():
+            img = BuildingImage.objects.get(pk=primary_pk)
+            return img.detail.url if img.detail else img.original.url
+
+        want_detail = await primary_detail_url()
+
+        response = await client.get(f"/buildings/{building.uuid}")
+        assert response.status_code == 200
+        detail = response.json()
+        assert len(detail['media']) >= 2
+        assert detail['media'][0]['type'] == 'photo'
+        assert detail['media'][0]['url'] == want_detail
+
+        list_response = await client.get('/buildings/')
+        assert list_response.status_code == 200
+        payload = list_response.json()
+        item = next((i for i in payload['items'] if i['uuid'] == str(building.uuid)), None)
+        assert item is not None
+        assert len(item['media']) >= 2
+        assert item['media'][0]['type'] == 'photo'
+        assert item['media'][0]['full_url'] == want_detail
+
     async def test_building_detail_not_found(self, client):
         """404 для несуществующего UUID."""
         fake_uuid = uuid4()

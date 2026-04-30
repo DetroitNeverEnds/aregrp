@@ -268,19 +268,20 @@ def _video_api_urls(vid) -> tuple[Optional[str], Optional[str]]:
 
 
 def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
-    """Собирает медиа здания: один плоский список images + videos, сортировка по order."""
-    items: list[tuple[int, int, str, str, str]] = []
+    """Собирает медиа здания: один плоский список images + videos; основное фото первое, далее по order."""
+    items: list[tuple[int, int, int, str, str, str]] = []
     for img in building.images.all():
         url, full_url = _photo_api_urls(img)
         if url and full_url:
-            items.append((img.order, img.pk, "photo", url, full_url))
+            primary_rank = 0 if img.is_primary else 1
+            items.append((primary_rank, img.order, img.pk, "photo", url, full_url))
     for vid in building.videos.all():
         url, full_url = _video_api_urls(vid)
         if url and full_url:
-            items.append((vid.order, vid.pk, "video", url, full_url))
-    items.sort(key=lambda x: (x[0], x[1]))
+            items.append((1, vid.order, vid.pk, "video", url, full_url))
+    items.sort(key=lambda x: (x[0], x[1], x[2]))
     return [
-        BaseMediaItemOut(type=t, url=u, full_url=fu) for _, _, t, u, fu in items
+        BaseMediaItemOut(type=t, url=u, full_url=fu) for _, _, _, t, u, fu in items
     ]
 
 
@@ -343,13 +344,13 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
     """
     Собирает категории и медиа здания.
 
-    Возвращает (media_categories, media). Один плоский список images + videos, сортировка по order.
+    Возвращает (media_categories, media). Один плоский список images + videos; основное фото первое, далее по order.
 
     Исключение для GET /buildings/{uuid}: в media и url, и full_url равны «полному» URL (как full_url
     в списке зданий): фото — detail WebP, видео — оригинал ролика.
     """
     categories: set[str] = set()
-    items: list[tuple[int, int, str, str, str, str, Optional[str]]] = []
+    items: list[tuple[int, int, int, str, str, str, str, Optional[str]]] = []
 
     for img in building.images.all():
         url, full_url = _photo_api_urls(img)
@@ -357,19 +358,22 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
             cat = img.category.strip() if img.category else ""
             if cat:
                 categories.add(cat)
-            items.append((img.order, img.pk, "photo", url, full_url, cat, img.title or None))
+            primary_rank = 0 if img.is_primary else 1
+            items.append(
+                (primary_rank, img.order, img.pk, "photo", url, full_url, cat, img.title or None)
+            )
     for vid in building.videos.all():
         url, full_url = _video_api_urls(vid)
         if url and full_url:
             cat = vid.category.strip() if vid.category else ""
             if cat:
                 categories.add(cat)
-            items.append((vid.order, vid.pk, "video", url, full_url, cat, vid.title or None))
+            items.append((1, vid.order, vid.pk, "video", url, full_url, cat, vid.title or None))
 
-    items.sort(key=lambda x: (x[0], x[1]))
+    items.sort(key=lambda x: (x[0], x[1], x[2]))
     media = [
         BuildingMediaItemOut(type=t, url=fu, full_url=fu, category=cat, title=title)
-        for _, _, t, _, fu, cat, title in items
+        for _, _, _, t, _, fu, cat, title in items
     ]
     return (sorted(categories), media)
 
@@ -421,9 +425,12 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
 
 
 def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
-    """Собирает медиа помещения: плоский список с type, url, full_url. Видео помещений в модели пока нет."""
+    """Собирает медиа помещения: плоский список с type, url, full_url; основное фото первое. Видео в модели пока нет."""
     out: list[BaseMediaItemOut] = []
-    for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk)):
+    for img in sorted(
+        p.images.all(),
+        key=lambda x: (0 if x.is_primary else 1, x.order, x.pk),
+    ):
         url, full_url = _photo_api_urls(img)
         if url and full_url:
             out.append(BaseMediaItemOut(type="photo", url=url, full_url=full_url))
