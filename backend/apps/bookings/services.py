@@ -20,7 +20,7 @@ def _booking_to_out(b: Booking) -> BookingOut:
     return BookingOut(
         id=b.id,
         premise_uuid=str(p.uuid),
-        premise_name=p.number or building.name or "",
+        premise_name=(p.title or building.name or ""),
         building_uuid=str(building.uuid),
         building_name=building.name or "",
         building_address=building.address or "",
@@ -168,4 +168,6 @@ def list_bookings_for_user(user) -> list[BookingOut]:
         .select_related("premise", "premise__building")
         .order_by("-created_at")
     )
+    if settings.BOOKINGS_LIST_ONLY_ACTIVE:
+        qs = qs.filter(expires_at__gt=timezone.now())
     return [_booking_to_out(b) for b in qs]

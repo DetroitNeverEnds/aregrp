@@ -2,7 +2,7 @@
 Схемы API для объектов недвижимости (помещения).
 
 Используются в GET /premises (список с фильтрами и пагинацией) и GET /premises/{uuid} (деталь).
-Поля ответа: uuid, название, price (legacy), sale_price, rent_price, адрес, этаж, площадь, has_tenant, media.
+Поля ответа: uuid, name (название title, не room_number), price (legacy), sale_price, rent_price, адрес, этаж, площадь, has_tenant, media.
 """
 from decimal import Decimal
 from typing import Literal, Optional
@@ -13,10 +13,11 @@ from ninja import Schema
 
 
 class BaseMediaItemOut(Schema):
-    """Базовая схема медиа: type, url."""
+    """Базовая схема медиа: type, url (превью карточки), full_url (деталь / оригинал видео)."""
 
     type: Literal["photo", "video"]
     url: str
+    full_url: str
 
 
 class BuildingMediaItemOut(BaseMediaItemOut):
@@ -29,6 +30,7 @@ class BuildingMediaItemOut(BaseMediaItemOut):
 class PremiseListOut(Schema):
     """Помещение в списке.
 
+    name — название помещения (Premise.title), не номер для схемы этажа.
     price — устаревшее поле для обратной совместимости (как раньше: от sale_type/флагов).
     sale_price — полная стоимость продажи, если помещение в продаже; иначе null.
     rent_price — аренда за месяц, если в аренде; иначе null.
@@ -97,7 +99,10 @@ class BuildingListOut(Schema):
 
 
 class BuildingDetailOut(Schema):
-    """Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media."""
+    """Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.
+
+    В media для этой ручки url и full_url совпадают (оба — «полный» URL медиа).
+    """
 
     uuid: str
     title: str
@@ -123,10 +128,10 @@ class BuildingListResponse(Schema):
 
 
 class FloorPremiseOut(Schema):
-    """Помещение на этаже: номер/название, площадь, стоимость, доступность и занятость по аренде."""
+    """Помещение на этаже: name — номер для подписи на схеме (room_number), плюс площадь, цена, доступность."""
 
     uuid: str
-    name: str  # номер помещения (Premise.number или название)
+    name: str  # номер помещения (в основном Premise.room_number; иначе title)
     label_area: str  # площадь, например "50 м²"
     label_price: str  # стоимость, например "100 000 ₽"
     is_available: bool  # по sale_type запроса: свободно для аренды или для продажи

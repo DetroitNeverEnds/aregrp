@@ -4,6 +4,8 @@ from ninja import Schema
 
 
 class PremiseBriefOut(Schema):
+    """Кратко о помещении в ЛК: name — название (title), не номер для схемы этажа."""
+
     uuid: str
     name: str
 
