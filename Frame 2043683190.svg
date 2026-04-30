@@ -1,0 +1,282 @@
+<svg width="1407" height="933" viewBox="0 0 1407 933" fill="none"
+    xmlns="http://www.w3.org/2000/svg">
+    <g id="Frame 2043683190">
+        <rect width="1407" height="933" fill="white"/>
+        <g id="frunze">
+            <g id="Vector 1628">
+                <mask id="path-1-inside-1_50_4" fill="white">
+                    <path d="M1074 208H1025.5V428.5H235V721H198V803H235V828.5H335V501.5H1091V228H1074V208Z"/>
+                </mask>
+                <path d="M1074 208H1025.5V428.5H235V721H198V803H235V828.5H335V501.5H1091V228H1074V208Z" fill="#FDD24F" stroke="#FDD24F" stroke-width="2" mask="url(#path-1-inside-1_50_4)"/>
+            </g>
+            <g id="Vector 1627">
+                <mask id="path-2-inside-2_50_4" fill="white">
+                    <path d="M1091 97H1025V202H1091V97Z"/>
+                </mask>
+                <path d="M1091 97H1025V202H1091V97Z" fill="#FDD24F" stroke="#FDD24F" stroke-width="2" mask="url(#path-2-inside-2_50_4)"/>
+            </g>
+            <text id="&#208;&#178;&#209;&#133;&#208;&#190;&#208;&#180;" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                <tspan x="244" y="700.736">&#x432;&#x445;&#x43e;&#x434;</tspan>
+            </text>
+            <text id="&#208;&#178;&#209;&#139;&#209;&#133;&#208;&#190;&#208;&#180;" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                <tspan x="202" y="766.736">&#x432;&#x44b;&#x445;&#x43e;&#x434;</tspan>
+            </text>
+            <g id="1">
+                <g id="room">
+                    <mask id="path-5-inside-3_50_4" fill="white">
+                        <path d="M339 97H168V423H339V97Z"/>
+                    </mask>
+                    <path d="M339 97H168V423H339V97Z" fill="#375A6D" stroke="#375A6D" stroke-width="2" mask="url(#path-5-inside-3_50_4)"/>
+                </g>
+                <path id="label_lock" d="M246.8 257V254C246.8 253.489 246.834 252.989 246.9 252.5M261.2 257V254C261.2 252.172 260.755 250.387 259.923 248.884C259.092 247.38 257.914 246.228 256.545 245.581C255.177 244.935 253.684 244.825 252.265 245.265C250.846 245.706 249.567 246.676 248.6 248.047M252.8 275H249.2C245.806 275 244.108 275 243.055 273.682C242 272.365 242 270.242 242 266C242 261.758 242 259.636 243.055 258.319C244.108 257 245.806 257 249.2 257H258.8C262.194 257 263.892 257 264.945 258.319C266 259.636 266 261.758 266 266C266 270.242 266 272.365 264.945 273.682C263.892 275 262.194 275 258.8 275H257.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_price" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="233" y="265.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <text id="label_area" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="219" y="408.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_name" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="302" y="117.736">100</tspan>
+                </text>
+                <g id="label_busy">
+                    <path id="form" d="M288.34 105.66L295.66 105.66L299.321 112L295.66 118.34L288.34 118.34L284.679 112L288.34 105.66Z" fill="url(#paint0_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="286" y="112.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="2">
+                <g id="room_2">
+                    <mask id="path-12-inside-4_50_4" fill="white">
+                        <path d="M523 97H344V423H523V97Z"/>
+                    </mask>
+                    <path d="M523 97H344V423H523V97Z" fill="#375A6D" stroke="#375A6D" stroke-width="2" mask="url(#path-12-inside-4_50_4)"/>
+                </g>
+                <text id="label_area_2" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="399" y="408.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_2" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="413" y="265.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_2" d="M426.8 257V254C426.8 253.489 426.834 252.989 426.9 252.5M441.2 257V254C441.2 252.172 440.755 250.387 439.923 248.884C439.092 247.38 437.914 246.228 436.545 245.581C435.177 244.935 433.684 244.825 432.265 245.265C430.846 245.706 429.567 246.676 428.6 248.047M432.8 275H429.2C425.806 275 424.108 275 423.055 273.682C422 272.365 422 270.242 422 266C422 261.758 422 259.636 423.055 258.319C424.108 257 425.806 257 429.2 257H438.8C442.194 257 443.892 257 444.945 258.319C446 259.636 446 261.758 446 266C446 270.242 446 272.365 444.945 273.682C443.892 275 442.194 275 438.8 275H437.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_2" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="486" y="117.736">100</tspan>
+                </text>
+                <g id="label_busy_2">
+                    <path id="form_2" d="M472.34 105.66L479.66 105.66L483.321 112L479.66 118.34L472.34 118.34L468.679 112L472.34 105.66Z" fill="url(#paint1_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_2" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="470" y="112.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="3">
+                <g id="room_3">
+                    <mask id="path-19-inside-5_50_4" fill="white">
+                        <path d="M713 97H528V423H713V97Z"/>
+                    </mask>
+                    <path d="M713 97H528V423H713V97Z" fill="#375A6D" stroke="#375A6D" stroke-width="2" mask="url(#path-19-inside-5_50_4)"/>
+                </g>
+                <text id="label_area_3" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="586" y="408.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_3" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="600" y="265.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_3" d="M613.8 257V254C613.8 253.489 613.834 252.989 613.9 252.5M628.2 257V254C628.2 252.172 627.755 250.387 626.923 248.884C626.092 247.38 624.914 246.228 623.545 245.581C622.177 244.935 620.684 244.825 619.265 245.265C617.846 245.706 616.567 246.676 615.6 248.047M619.8 275H616.2C612.806 275 611.108 275 610.055 273.682C609 272.365 609 270.242 609 266C609 261.758 609 259.636 610.055 258.319C611.108 257 612.806 257 616.2 257H625.8C629.194 257 630.892 257 631.945 258.319C633 259.636 633 261.758 633 266C633 270.242 633 272.365 631.945 273.682C630.892 275 629.194 275 625.8 275H624.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_3" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="676" y="117.736">100</tspan>
+                </text>
+                <g id="label_busy_3">
+                    <path id="form_3" d="M662.34 105.66L669.66 105.66L673.321 112L669.66 118.34L662.34 118.34L658.679 112L662.34 105.66Z" fill="url(#paint2_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_3" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="660" y="112.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="4">
+                <g id="room_4">
+                    <mask id="path-26-inside-6_50_4" fill="white">
+                        <path d="M874 97H718V423H874V97Z"/>
+                    </mask>
+                    <path d="M874 97H718V423H874V97Z" fill="#375A6D" stroke="#375A6D" stroke-width="2" mask="url(#path-26-inside-6_50_4)"/>
+                </g>
+                <text id="label_area_4" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="761" y="408.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_4" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="775" y="265.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_4" d="M788.8 257V254C788.8 253.489 788.834 252.989 788.9 252.5M803.2 257V254C803.2 252.172 802.755 250.387 801.923 248.884C801.092 247.38 799.914 246.228 798.545 245.581C797.177 244.935 795.684 244.825 794.265 245.265C792.846 245.706 791.567 246.676 790.6 248.047M794.8 275H791.2C787.806 275 786.108 275 785.055 273.682C784 272.365 784 270.242 784 266C784 261.758 784 259.636 785.055 258.319C786.108 257 787.806 257 791.2 257H800.8C804.194 257 805.892 257 806.945 258.319C808 259.636 808 261.758 808 266C808 270.242 808 272.365 806.945 273.682C805.892 275 804.194 275 800.8 275H799.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_4" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="836" y="117.736">100</tspan>
+                </text>
+                <g id="label_busy_4">
+                    <path id="form_4" d="M822.34 105.66L829.66 105.66L833.321 112L829.66 118.34L822.34 118.34L818.679 112L822.34 105.66Z" fill="url(#paint3_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_4" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="820" y="112.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="5">
+                <g id="room_5">
+                    <mask id="path-33-inside-7_50_4" fill="white">
+                        <path d="M1020 423V97H879.504V423H1020Z"/>
+                    </mask>
+                    <path d="M1020 423V97H879.504V423H1020Z" fill="#375A6D"/>
+                    <path d="M879 97V97.5H879.504V97V96.5H879V97ZM1020 97H1021V96H1020V97ZM1020 423V424H1021V423H1020ZM879.504 423H878.504V424H879.504V423ZM879.504 97V96H878.504V97H879.504ZM1020 97H1019V423H1020H1021V97H1020ZM1020 423V422H879.504V423V424H1020V423ZM879.504 97V98H1020V97V96H879.504V97ZM879.504 423H880.504V97H879.504H878.504V423H879.504Z" fill="#375A6D" mask="url(#path-33-inside-7_50_4)"/>
+                </g>
+                <text id="label_area_5" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="915" y="408.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_5" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="929" y="265.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_5" d="M942.8 257V254C942.8 253.489 942.834 252.989 942.9 252.5M957.2 257V254C957.2 252.172 956.755 250.387 955.923 248.884C955.092 247.38 953.914 246.228 952.545 245.581C951.177 244.935 949.684 244.825 948.265 245.265C946.846 245.706 945.567 246.676 944.6 248.047M948.8 275H945.2C941.806 275 940.108 275 939.055 273.682C938 272.365 938 270.242 938 266C938 261.758 938 259.636 939.055 258.319C940.108 257 941.806 257 945.2 257H954.8C958.194 257 959.892 257 960.945 258.319C962 259.636 962 261.758 962 266C962 270.242 962 272.365 960.945 273.682C959.892 275 958.194 275 954.8 275H953.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_5" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="983" y="117.736">100</tspan>
+                </text>
+                <g id="label_busy_5">
+                    <path id="form_5" d="M969.34 105.66L976.66 105.66L980.321 112L976.66 118.34L969.34 118.34L965.679 112L969.34 105.66Z" fill="url(#paint4_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_5" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="967" y="112.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="6">
+                <g id="room_6">
+                    <mask id="path-41-inside-8_50_4" fill="white">
+                        <path d="M1091 771V507C1018.88 507.17 876.364 507.406 866.523 507.035V771H1091Z"/>
+                    </mask>
+                    <path d="M1091 771V507C1018.88 507.17 876.364 507.406 866.523 507.035V771H1091Z" fill="#375A6D"/>
+                    <path d="M866 507L865.878 507.485C865.955 507.504 866.06 507.512 866.135 507.517C866.229 507.523 866.354 507.529 866.504 507.535L866.523 507.035L866.542 506.536C866.395 506.53 866.282 506.525 866.202 506.519C866.162 506.517 866.133 506.514 866.114 506.512C866.088 506.509 866.098 506.509 866.122 506.515L866 507ZM1091 507H1092V505.998L1091 506L1091 507ZM1091 771V772H1092V771H1091ZM866.523 771H865.523V772H866.523V771ZM866.523 507.035L866.561 506.036L865.523 505.997V507.035H866.523ZM1091 507H1090V771H1091H1092V507H1091ZM1091 771V770H866.523V771V772H1091V771ZM866.523 507.035L866.486 508.035C876.353 508.407 1018.9 508.17 1091 508L1091 507L1091 506C1018.86 506.17 876.375 506.406 866.561 506.036L866.523 507.035ZM866.523 771H867.523V507.035H866.523H865.523V771H866.523Z" fill="#375A6D" mask="url(#path-41-inside-8_50_4)"/>
+                </g>
+                <text id="label_area_6" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="944" y="756.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_6" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="958" y="644.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_6" d="M971.8 634V631C971.8 630.489 971.834 629.989 971.9 629.5M986.2 634V631C986.2 629.172 985.755 627.387 984.923 625.884C984.092 624.38 982.914 623.228 981.545 622.581C980.177 621.935 978.684 621.825 977.265 622.265C975.846 622.706 974.567 623.676 973.6 625.047M977.8 652H974.2C970.806 652 969.108 652 968.055 650.682C967 649.365 967 647.242 967 643C967 638.758 967 636.636 968.055 635.319C969.108 634 970.806 634 974.2 634H983.8C987.194 634 988.892 634 989.945 635.319C991 636.636 991 638.758 991 643C991 647.242 991 649.365 989.945 650.682C988.892 652 987.194 652 983.8 652H982.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_6" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="1054" y="526.736">100</tspan>
+                </text>
+                <g id="label_busy_6">
+                    <path id="form_6" d="M1040.34 514.66L1047.66 514.66L1051.32 521L1047.66 527.34L1040.34 527.34L1036.68 521L1040.34 514.66Z" fill="url(#paint5_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_6" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="1038" y="521.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="7">
+                <g id="room_7">
+                    <mask id="path-49-inside-9_50_4" fill="white">
+                        <path d="M861 507H709V771H861V507Z"/>
+                    </mask>
+                    <path d="M861 507H709V771H861V507Z" fill="#375A6D" stroke="#375A6D" stroke-width="2" mask="url(#path-49-inside-9_50_4)"/>
+                </g>
+                <text id="label_area_7" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="750" y="756.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_7" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="764" y="644.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_7" d="M777.8 634V631C777.8 630.489 777.834 629.989 777.9 629.5M792.2 634V631C792.2 629.172 791.755 627.387 790.923 625.884C790.092 624.38 788.914 623.228 787.545 622.581C786.177 621.935 784.684 621.825 783.265 622.265C781.846 622.706 780.567 623.676 779.6 625.047M783.8 652H780.2C776.806 652 775.108 652 774.055 650.682C773 649.365 773 647.242 773 643C773 638.758 773 636.636 774.055 635.319C775.108 634 776.806 634 780.2 634H789.8C793.194 634 794.892 634 795.945 635.319C797 636.636 797 638.758 797 643C797 647.242 797 649.365 795.945 650.682C794.892 652 793.194 652 789.8 652H788.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_7" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="824" y="526.736">100</tspan>
+                </text>
+                <g id="label_busy_7">
+                    <path id="form_7" d="M810.34 514.66L817.66 514.66L821.321 521L817.66 527.34L810.34 527.34L806.679 521L810.34 514.66Z" fill="url(#paint6_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_7" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="808" y="521.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="8">
+                <g id="room_8">
+                    <mask id="path-56-inside-10_50_4" fill="white">
+                        <path d="M704 507H550V771H704V507Z"/>
+                    </mask>
+                    <path d="M704 507H550V771H704V507Z" fill="#375A6D" stroke="#375A6D" stroke-width="2" mask="url(#path-56-inside-10_50_4)"/>
+                </g>
+                <text id="label_area_8" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="592" y="756.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_8" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="606" y="644.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_8" d="M619.8 634V631C619.8 630.489 619.834 629.989 619.9 629.5M634.2 634V631C634.2 629.172 633.755 627.387 632.923 625.884C632.092 624.38 630.914 623.228 629.545 622.581C628.177 621.935 626.684 621.825 625.265 622.265C623.846 622.706 622.567 623.676 621.6 625.047M625.8 652H622.2C618.806 652 617.108 652 616.055 650.682C615 649.365 615 647.242 615 643C615 638.758 615 636.636 616.055 635.319C617.108 634 618.806 634 622.2 634H631.8C635.194 634 636.892 634 637.945 635.319C639 636.636 639 638.758 639 643C639 647.242 639 649.365 637.945 650.682C636.892 652 635.194 652 631.8 652H630.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_8" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="667" y="526.736">100</tspan>
+                </text>
+                <g id="label_busy_8">
+                    <path id="form_8" d="M653.34 514.66L660.66 514.66L664.321 521L660.66 527.34L653.34 527.34L649.679 521L653.34 514.66Z" fill="url(#paint7_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_8" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="651" y="521.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+            <g id="9">
+                <g id="room_9">
+                    <mask id="path-63-inside-11_50_4" fill="white">
+                        <path d="M545 507H341V771H545V507Z"/>
+                    </mask>
+                    <path d="M545 507H341V771H545V507Z" fill="#375A6D" stroke="#375A6D" stroke-width="2" mask="url(#path-63-inside-11_50_4)"/>
+                </g>
+                <text id="label_area_9" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="408" y="756.736">00,00 &#x43c;&#xb2;</tspan>
+                </text>
+                <text id="label_price_9" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="422" y="644.736">&#x446;&#x435;&#x43d;&#x430;</tspan>
+                </text>
+                <path id="label_lock_9" d="M435.8 634V631C435.8 630.489 435.834 629.989 435.9 629.5M450.2 634V631C450.2 629.172 449.755 627.387 448.923 625.884C448.092 624.38 446.914 623.228 445.545 622.581C444.177 621.935 442.684 621.825 441.265 622.265C439.846 622.706 438.567 623.676 437.6 625.047M441.8 652H438.2C434.806 652 433.108 652 432.055 650.682C431 649.365 431 647.242 431 643C431 638.758 431 636.636 432.055 635.319C433.108 634 434.806 634 438.2 634H447.8C451.194 634 452.892 634 453.945 635.319C455 636.636 455 638.758 455 643C455 647.242 455 649.365 453.945 650.682C452.892 652 451.194 652 447.8 652H446.6" stroke="#EADB5A" stroke-linecap="round"/>
+                <text id="label_name_9" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em">
+                    <tspan x="508" y="526.736">100</tspan>
+                </text>
+                <g id="label_busy_9">
+                    <path id="form_9" d="M494.34 514.66L501.66 514.66L505.321 521L501.66 527.34L494.34 527.34L490.679 521L494.34 514.66Z" fill="url(#paint8_radial_50_4)"/>
+                    <text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;_9" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="5" font-weight="500" letter-spacing="0em">
+                        <tspan x="492" y="521.793">&#x441;&#x434;&#x430;&#x43d;</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+    <defs>
+        <radialGradient id="paint0_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(295.765 109.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint1_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(479.765 109.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint2_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(669.765 109.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint3_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(829.765 109.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint4_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(976.765 109.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint5_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1047.76 518.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint6_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(817.765 518.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint7_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(660.765 518.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+        <radialGradient id="paint8_radial_50_4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(501.765 518.49) rotate(130.972) scale(10.5267)">
+            <stop stop-color="#03CF21"/>
+            <stop offset="0.706731" stop-color="#20CDED"/>
+        </radialGradient>
+    </defs>
+</svg>
