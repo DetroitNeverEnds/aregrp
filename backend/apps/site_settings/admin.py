@@ -22,8 +22,21 @@ class MainSettingsAdmin(admin.ModelAdmin):
         }),
         ('Кейсы', {
             'fields': ('cases_pdf',),
-            'description': 'Один PDF-файл; в API /main-info в поле cases — URL из storage (как у медиа в API объектов).',
+            'description': (
+                'Один PDF; сохранение в media/documents/cases/. '
+                'В ответе /main-info поле cases — URL из storage.'
+            ),
         }),
+        (
+            'Публичные PDF (политика и оплата)',
+            {
+                'fields': ('privacy_pdf', 'oplata_pdf'),
+                'description': (
+                    'Файлы пишутся в media/documents/privacy.pdf и media/documents/oplata.pdf. '
+                    'В API /main-info — пути «/privacy.pdf» и «/oplata.pdf» (настроить nginx alias на эти файлы).'
+                ),
+            },
+        ),
     )
     
     def has_add_permission(self, request):
@@ -92,8 +105,8 @@ class InvestorSettingsAdmin(admin.ModelAdmin):
             {
                 'fields': ('document_1', 'document_2', 'document_3'),
                 'description': (
-                    'Три PDF-файла. В API GET /api/v1/site-settings/investors — поля '
-                    'document_1, document_2, document_3: URL из storage или null.'
+                    'Три PDF в media/documents/investors/. '
+                    'API GET /api/v1/site-settings/investors — document_1, document_2, document_3: URL или null.'
                 ),
             },
         ),
