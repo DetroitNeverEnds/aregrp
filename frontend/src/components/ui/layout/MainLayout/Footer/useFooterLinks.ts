@@ -30,8 +30,8 @@ export const useFooterLinks = () => {
             {
                 title: t('footer.legal.title'),
                 links: [
-                    { to: '/privacy', label: t('footer.legal.privacy') },
-                    { to: '/payment', label: t('footer.legal.payment') },
+                    { to: '/privacy.pdf', label: t('footer.legal.privacy'), reloadDocument: true },
+                    { to: '/oplata.pdf', label: t('footer.legal.payment'), reloadDocument: true },
                 ],
             },
             {

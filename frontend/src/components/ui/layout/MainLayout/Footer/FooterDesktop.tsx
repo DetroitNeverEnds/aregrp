@@ -94,8 +94,14 @@ export const FooterDesktop = () => {
                                         <Text variant="14-reg" color="gray-50">
                                             {title}
                                         </Text>
-                                        {links.map(({ to, label }) => (
-                                            <Link key={to} to={to} size="md" theme="light">
+                                        {links.map(({ to, label, reloadDocument }) => (
+                                            <Link
+                                                key={to}
+                                                to={to}
+                                                size="md"
+                                                theme="light"
+                                                reloadDocument={reloadDocument}
+                                            >
                                                 {label}
                                             </Link>
                                         ))}

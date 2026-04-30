@@ -83,8 +83,14 @@ export const FooterMobile = () => {
                         <Text variant="14-reg" color="gray-50">
                             {title}
                         </Text>
-                        {links.map(({ to, label }) => (
-                            <Link key={to} to={to} theme="light" size="md">
+                        {links.map(({ to, label, reloadDocument }) => (
+                            <Link
+                                key={to}
+                                to={to}
+                                theme="light"
+                                size="md"
+                                reloadDocument={reloadDocument}
+                            >
                                 {label}
                             </Link>
                         ))}
