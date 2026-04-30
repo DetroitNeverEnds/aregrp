@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Tabs.module.scss';
-import { Flex } from '../Flex';
-import Text from '../Text';
+import { Flex } from '@/components/ui/common/Flex';
+import Text from '@/components/ui/common/Text';
 
 export type Tab = {
     value: string;
@@ -17,13 +17,11 @@ export type TabsProps = {
 
 export function Tabs({ value: currentValue, onChange, tabs }: TabsProps) {
     return (
-        <Flex direction="row" align="baseline" gap={0} role="tablist">
+        <Flex direction="row" align="baseline" gap={0}>
             {tabs.map(tab => (
                 <button
                     key={tab.value}
                     type="button"
-                    role="tab"
-                    aria-selected={tab.value === currentValue}
                     className={classNames(styles.tab, {
                         [styles['tab--selected']]: tab.value === currentValue,
                     })}
@@ -35,7 +33,7 @@ export function Tabs({ value: currentValue, onChange, tabs }: TabsProps) {
                 >
                     <div className={styles.tab__lable}>
                         <Text
-                            variant="12-med"
+                            variant="14-med"
                             color={tab.value === currentValue ? 'gray-100' : 'gray-70'}
                         >
                             {tab.label}

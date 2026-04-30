@@ -1,8 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 import styles from './Loader.module.scss';
-import { Spinner, type SpinnerSize } from '../Spinner';
-import Text from '../Text';
+import { Spinner, type SpinnerSize } from '@/components/ui/common/Spinner';
+import Text from '@/components/ui/common/Text';
 
 export interface LoaderProps {
     /** Вариант отображения */
@@ -32,7 +32,7 @@ export const Loader: React.FC<LoaderProps> = ({
     const style = variant === 'block' && height ? { height: `${height}px` } : undefined;
 
     return (
-        <div className={loaderClassNames} role="status" style={style}>
+        <div className={loaderClassNames} style={style}>
             <div className={styles.loader__content}>
                 <Spinner size={spinnerSize} color={spinnerColor} />
                 {text && <Text>{text}</Text>}

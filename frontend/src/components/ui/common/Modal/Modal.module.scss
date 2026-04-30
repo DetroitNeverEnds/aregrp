@@ -1,0 +1,49 @@
+.root {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right))
+        max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+    box-sizing: border-box;
+
+    @include mobile-only {
+        padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+            max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+    }
+}
+
+.backdrop {
+    position: absolute;
+    inset: 0;
+    background: $gray-opacity-100-70;
+    cursor: pointer;
+}
+
+.header {
+    padding: 15px 20px 0;
+}
+
+.content {
+    padding: 0 40px 40px;
+
+    @include mobile-only {
+        padding: 0 16px 24px;
+    }
+}
+
+.panel {
+    position: relative;
+    z-index: 1;
+    background: $gray-0;
+    border-radius: $border-radius-l;
+    box-sizing: border-box;
+    overflow: hidden;
+    max-width: 100%;
+    max-height: min(100vh, 100dvh);
+
+    @include mobile-only {
+        width: 100%;
+        max-width: 100%;
+        border-radius: $border-radius-m;
+    }
+}

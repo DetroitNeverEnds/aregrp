@@ -7,7 +7,7 @@ import { type ColorVariant } from '@/components/ui/common/types/colors';
 
 export type ButtonVariant = 'primary' | 'outlined' | 'secondary' | 'flat';
 export type ButtonTheme = 'light' | 'dark';
-export type ButtonSize = 'lg' | 'md';
+export type ButtonSize = 'lg' | 'md' | 'tiny';
 export type ButtonWidth = 'auto' | 'max';
 
 interface BaseButtonProps {
@@ -30,6 +30,8 @@ type ButtonAsButton = BaseButtonProps &
 type ButtonAsLink = BaseButtonProps &
     Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, keyof BaseButtonProps> & {
         to: string;
+        /** Переопределяет переход по клику (например, navigate из react-router + побочные эффекты) */
+        navigate?: (to: string) => void;
     };
 
 export type ButtonProps = ButtonAsButton | ButtonAsLink;
@@ -63,13 +65,14 @@ export const Button: React.FC<ButtonProps> = props => {
     const tooltipTitle = typeof children === 'string' ? children : undefined;
 
     // Общий контент для кнопки и ссылки
+    const iconSize = size === 'tiny' ? 16 : 24;
+
     const content = (
         <>
             {icon && (
                 <Icon
                     name={icon}
-                    size={24}
-                    aria-hidden={!onlyIcon}
+                    size={iconSize}
                     className={styles.button__icon}
                     color={iconColor}
                 />
@@ -80,9 +83,22 @@ export const Button: React.FC<ButtonProps> = props => {
 
     // Если указан to, рендерим Link
     if ('to' in props && props.to) {
-        const { to, ...linkProps } = restProps as ButtonAsLink;
+        const { to, navigate: customNavigate, onClick, ...linkProps } = restProps as ButtonAsLink;
+        const handleClick: React.MouseEventHandler<HTMLAnchorElement> = e => {
+            if (customNavigate) {
+                e.preventDefault();
+                customNavigate(to);
+            }
+            onClick?.(e);
+        };
         return (
-            <Link to={to} className={buttonClassNames} title={tooltipTitle} {...linkProps}>
+            <Link
+                to={to}
+                className={buttonClassNames}
+                title={tooltipTitle}
+                {...linkProps}
+                onClick={handleClick}
+            >
                 {content}
             </Link>
         );

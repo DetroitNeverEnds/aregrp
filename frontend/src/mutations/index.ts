@@ -7,3 +7,7 @@ export {
 } from './auth';
 
 export { useUpdateProfileMutation, useChangePasswordMutation } from './profile';
+
+export { useCreateBookingMutation } from './bookings';
+
+export { useSendFeedbackMutation } from './feedback';

@@ -10,26 +10,34 @@ import type { UserData } from '@/api';
 import styles from './Profile.module.scss';
 import { ProfileMainInfoView } from './ProfileMainInfoView';
 import { ProfileMainInfoEditForm } from './ProfileMainInfoEditForm';
+import { BetweenRowLayout } from '@/components/ui/layout/BetweenRowLayout';
 
 export const ProfileMainInfoCard = ({ user }: { user: UserData }) => {
     const { t } = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
 
     return (
-        <Card size="xl" direction="column" gap={30} className={styles.mainPanel} align="start">
-            <Flex direction="row" justify="between" align="center" fullWidth wrap="wrap">
+        <Card
+            size="xl"
+            direction="column"
+            gap={30}
+            className={styles.mainPanel}
+            align="start"
+            fullWidth
+        >
+            <BetweenRowLayout>
                 <Text variant="24-med">{t('pages.profile.mainInfo')}</Text>
                 {!isEditing && (
                     <FlatButton type="button" onClick={() => setIsEditing(true)}>
                         <Flex direction="row" gap={8} align="center">
-                            <Icon name="edit" size={14} aria-hidden />
+                            <Icon name="edit" size={14} />
                             <Text variant="12-med" color="gray-70">
                                 {t('pages.profile.edit')}
                             </Text>
                         </Flex>
                     </FlatButton>
                 )}
-            </Flex>
+            </BetweenRowLayout>
 
             {!isEditing ? (
                 <ProfileMainInfoView user={user} />

@@ -1,0 +1,73 @@
+.hero {
+    margin-bottom: 20px;
+    position: relative;
+    padding-top: 85px;
+    padding-bottom: 190px;
+    border-radius: 0 0 $border-radius-xl $border-radius-xl;
+    overflow: hidden;
+    background: $gradient-primary-700-900-lr;
+
+    @include mobile-only {
+        padding: 24px 16px 40px;
+    }
+
+    &__content {
+        z-index: 1;
+
+        &__text {
+            width: 840px;
+
+            @include mobile-only {
+                width: 100%;
+            }
+        }
+    }
+
+    &__city {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+
+        @include mobile-only {
+            bottom: 0;
+            left: 0;
+            right: auto;
+            height: 300px;
+        }
+    }
+
+    &__arrow {
+        width: 600px;
+        height: auto;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+
+        @include mobile-only {
+            bottom: -13px;
+            right: -350px;
+        }
+    }
+}
+
+.strategyCard {
+    flex: 1;
+
+    &__header {
+        height: 56px;
+    }
+}
+
+.faq {
+    width: 100%;
+}
+
+.faqItem {
+    align-items: flex-start;
+}
+
+.map {
+    height: 580px;
+}

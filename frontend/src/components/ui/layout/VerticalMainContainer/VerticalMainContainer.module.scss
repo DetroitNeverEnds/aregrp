@@ -1,11 +1,11 @@
 .wrapper {
     padding: 0 $main-content-padding;
-    width: 100%;
-    box-sizing: border-box;
+
+    @include mobile-only {
+        padding: 0 $main-content-padding-mobile;
+    }
 }
 
 .container {
-    box-sizing: border-box;
-    width: 100%;
     max-width: $max-content-width;
 }

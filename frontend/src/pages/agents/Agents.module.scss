@@ -1,5 +1,4 @@
 .hero {
-    width: 100%;
     border-radius: 0 0 $border-radius-xl $border-radius-xl;
     background: $gradient-primary-700-900-lr;
     position: relative;
@@ -7,19 +6,48 @@
     padding-bottom: 90px;
     margin-bottom: 20px;
 
+    @include mobile-only {
+        padding: $main-content-padding-mobile;
+        padding-top: 24px;
+        padding-bottom: 40px;
+    }
+
     &__info {
         max-width: 700px;
+    }
+
+    &__icon {
+        @include mobile-only {
+            height: 175px;
+            width: auto;
+        }
     }
 }
 
 .bc {
-    margin-bottom: -40px;
+    @include desktop-only {
+        margin-bottom: -40px;
+    }
 }
 
-.benefits {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 40px;
-    column-gap: $columns-gap;
+.columns {
+    grid-template-rows: repeat(5, auto);
+
+    @include mobile-only {
+        grid-template-rows: none;
+        gap: 48px;
+    }
+
+    &__column {
+        display: grid;
+        grid-template-rows: subgrid;
+        grid-row: span 5;
+        gap: 40px;
+
+        @include mobile-only {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+    }
 }

@@ -3,9 +3,12 @@ import { Flex } from '@/components/ui/common/Flex';
 import { Icon, type IconName } from '@/components/ui/common/Icon';
 import Text from '@/components/ui/common/Text';
 import { FeatureCard } from '@/components/ui/layout/Container';
-import { Column } from '@/components/ui/layout/TwoColumnsContainer';
+import { Column } from '@/components/ui/layout/Column';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Columns } from '@/components/ui/layout/Columns';
+
+import commonStyles from '@/styles/breakpoint-utilities.module.scss';
 
 type Variant = 'working' | 'sale';
 export type BenefitsProps = {
@@ -84,10 +87,15 @@ export const Benefits = (props: BenefitsProps) => {
 
     return (
         <FeatureCard gap={80}>
-            <Flex direction="row" align="start" gap={24} fullWidth>
+            <Columns columnssNum={2}>
                 <Column gap={40} style={{ width: '768px' }}>
-                    <Divider />
-                    <Text variant="h2">{benefit.title}</Text>
+                    <Divider className={commonStyles.desktopOnly} />
+                    <Text variant="h2" wrap>
+                        {benefit.title}
+                    </Text>
+                    {/* <Text className={commonStyles.mobileOnly} variant="h5" wrap>
+                        {benefit.title}
+                    </Text> */}
                 </Column>
                 <Column gap={40}>
                     <Divider />
@@ -98,8 +106,8 @@ export const Benefits = (props: BenefitsProps) => {
                         </Text>
                     </Flex>
                 </Column>
-            </Flex>
-            <Flex direction="row" align="start" gap={93} fullWidth>
+            </Columns>
+            <Columns columnssNum={4}>
                 {benefit.items.map((benefit, index) => (
                     <Column key={index} gap={20} align="start">
                         <Icon name={benefit.icon} size={32} color="primary-yellow" />
@@ -111,7 +119,7 @@ export const Benefits = (props: BenefitsProps) => {
                         <Text variant="20-reg">{benefit.title}</Text>
                     </Column>
                 ))}
-            </Flex>
+            </Columns>
         </FeatureCard>
     );
 };

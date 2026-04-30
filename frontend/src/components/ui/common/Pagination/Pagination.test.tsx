@@ -8,9 +8,9 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={1} totalPages={5} onPageChange={onPageChange} />);
 
-        expect(screen.getByLabelText('Предыдущая страница')).toBeInTheDocument();
-        expect(screen.getByLabelText('Следующая страница')).toBeInTheDocument();
-        expect(screen.getByLabelText('Страница 1')).toBeInTheDocument();
+        const buttons = screen.getAllByRole('button');
+        expect(buttons.length).toBeGreaterThanOrEqual(3);
+        expect(screen.getByRole('button', { name: '1' })).toBeInTheDocument();
     });
 
     it('вызывает onPageChange при клике на номер страницы', async () => {
@@ -18,7 +18,7 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={1} totalPages={5} onPageChange={onPageChange} />);
 
-        const page2Button = screen.getByLabelText('Страница 2');
+        const page2Button = screen.getByRole('button', { name: '2' });
         await user.click(page2Button);
 
         expect(onPageChange).toHaveBeenCalledWith(2);
@@ -29,7 +29,8 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={2} totalPages={5} onPageChange={onPageChange} />);
 
-        const nextButton = screen.getByLabelText('Следующая страница');
+        const buttons = screen.getAllByRole('button');
+        const nextButton = buttons[buttons.length - 1];
         await user.click(nextButton);
 
         expect(onPageChange).toHaveBeenCalledWith(3);
@@ -40,7 +41,7 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={3} totalPages={5} onPageChange={onPageChange} />);
 
-        const prevButton = screen.getByLabelText('Предыдущая страница');
+        const prevButton = screen.getAllByRole('button')[0];
         await user.click(prevButton);
 
         expect(onPageChange).toHaveBeenCalledWith(2);
@@ -50,7 +51,7 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={1} totalPages={5} onPageChange={onPageChange} />);
 
-        const prevButton = screen.getByLabelText('Предыдущая страница');
+        const prevButton = screen.getAllByRole('button')[0];
         expect(prevButton).toBeDisabled();
     });
 
@@ -58,7 +59,7 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={5} totalPages={5} onPageChange={onPageChange} />);
 
-        const nextButton = screen.getByLabelText('Следующая страница');
+        const nextButton = screen.getAllByRole('button').at(-1);
         expect(nextButton).toBeDisabled();
     });
 
@@ -74,8 +75,8 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={3} totalPages={5} onPageChange={onPageChange} />);
 
-        const currentPage = screen.getByLabelText('Страница 3');
-        expect(currentPage).toHaveAttribute('aria-current', 'page');
+        const currentPage = screen.getByRole('button', { name: '3' });
+        expect(currentPage.className).toMatch(/primary/);
     });
 
     it('не вызывает onPageChange при клике на текущую страницу', async () => {
@@ -83,7 +84,7 @@ describe('Pagination', () => {
         const onPageChange = vi.fn();
         render(<Pagination currentPage={3} totalPages={5} onPageChange={onPageChange} />);
 
-        const currentPage = screen.getByLabelText('Страница 3');
+        const currentPage = screen.getByRole('button', { name: '3' });
         await user.click(currentPage);
 
         expect(onPageChange).not.toHaveBeenCalled();

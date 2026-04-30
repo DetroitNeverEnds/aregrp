@@ -2,6 +2,8 @@
  * Типы для auth handlers
  */
 
+export type UserType = 'individual' | 'agent';
+
 /**
  * Данные пользователя
  */
@@ -9,7 +11,7 @@ export interface UserData {
     id: number;
     username: string;
     email: string;
-    user_type: string;
+    user_type: UserType;
     full_name?: string | null;
     phone?: string | null;
     organization_name?: string | null;

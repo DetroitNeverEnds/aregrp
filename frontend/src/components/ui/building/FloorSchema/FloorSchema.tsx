@@ -2,9 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
 import styles from './FloorSchema.module.scss';
-import type { FloorPremiseOut } from '@/api';
 
-export type FloorRoom = FloorPremiseOut;
+export type FloorRoom = {
+    uuid: string;
+    name: string;
+    label_area: string;
+    label_price: string;
+    is_available: boolean;
+    is_occupied: boolean;
+};
 
 type RoomListeners = {
     group: SVGGElement;
@@ -46,41 +52,38 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
             group.setAttribute('data-premise-name', room.name);
 
             const roomPath = group.querySelector<SVGPathElement>('path[id="room"]');
-            const isSelected = !room.is_occupied && room.uuid === selectedPremiseId;
+            const isSelected = room.is_available && room.uuid === selectedPremiseId;
             roomPath?.setAttribute(
                 'class',
-                room.is_occupied
-                    ? styles['floorSchema__room--occupied']
-                    : isSelected
-                      ? styles['floorSchema__room--selected']
-                      : styles['floorSchema__room--free'],
+                room.is_available
+                    ? isSelected
+                        ? styles['floorSchema__room--selected']
+                        : styles['floorSchema__room--free']
+                    : styles['floorSchema__room--unavailable'],
             );
 
-            if (room.is_occupied) {
-                group.setAttribute('aria-disabled', 'true');
+            const areaTspan = group.querySelector<SVGTSpanElement>('text#label_area tspan');
+            if (areaTspan) {
+                areaTspan.textContent = room.is_available ? room.label_area : '';
+            }
+
+            const priceTspan = group.querySelector<SVGTSpanElement>('text#label_price tspan');
+            if (priceTspan) {
+                priceTspan.textContent = room.is_available ? room.label_price : '';
+            }
+
+            if (!room.is_available) {
                 group.removeAttribute('tabindex');
                 group.removeAttribute('role');
 
                 return;
             }
 
-            group.setAttribute('aria-disabled', 'false');
-            group.setAttribute('role', 'button');
             group.setAttribute('tabindex', '0');
 
             const numberTspan = group.querySelector<SVGTSpanElement>('text#number_area tspan');
             if (numberTspan) {
                 numberTspan.textContent = room.name;
-            }
-
-            const areaTspan = group.querySelector<SVGTSpanElement>('text#label_area tspan');
-            if (areaTspan) {
-                areaTspan.textContent = room.label_area;
-            }
-
-            const priceTspan = group.querySelector<SVGTSpanElement>('text#label_price tspan');
-            if (priceTspan) {
-                priceTspan.textContent = room.label_price;
             }
 
             const onClick = () => onRoomSelect?.(room);

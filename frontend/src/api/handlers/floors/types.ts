@@ -11,6 +11,7 @@ export type FloorPremiseOut = {
     name: string;
     label_area: string;
     label_price: string;
+    is_available: boolean;
     is_occupied: boolean;
 };
 

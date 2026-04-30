@@ -1,0 +1,82 @@
+.sheet {
+    // --- Оверлей --------------------------------------------------------------
+    &__root {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: stretch;
+        box-sizing: border-box;
+        padding: 0;
+        pointer-events: auto;
+    }
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        background: $gray-opacity-100-70;
+        z-index: 0;
+        animation: sheet-backdrop-in 0.2s ease forwards;
+    }
+
+    // --- Панель ---------------------------------------------------------------
+    &__panel {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        max-height: min(92vh, 92dvh);
+        box-sizing: border-box;
+        overflow: hidden auto;
+        background: $gray-0;
+        border-radius: 30px 30px 0 0;
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08);
+        padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+        animation: sheet-panel-in 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    }
+
+    &__header {
+        flex-shrink: 0;
+        padding: 0;
+        min-height: 0;
+        box-sizing: border-box;
+    }
+
+    &__title {
+        flex: 1;
+        min-width: 0;
+        text-align: left;
+    }
+
+    &__content {
+        padding: 0;
+        box-sizing: border-box;
+    }
+}
+
+@keyframes sheet-backdrop-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes sheet-panel-in {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}

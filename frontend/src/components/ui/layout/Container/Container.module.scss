@@ -1,0 +1,22 @@
+.container {
+    &--secondary {
+        gap: 40px;
+        @include mobile-only {
+            gap: 24px;
+        }
+    }
+
+    &--regular {
+        gap: 60px;
+        @include mobile-only {
+            gap: 24px;
+        }
+    }
+
+    &--main {
+        gap: 100px;
+        @include mobile-only {
+            gap: 48px;
+        }
+    }
+}

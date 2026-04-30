@@ -5,15 +5,15 @@ import type {
     PasswordResetConfirmData,
     AuthResponse,
     Message,
-} from '../api/handlers/auth/types';
+} from '@/api/handlers/auth/types';
 import {
     register,
     login,
     logout,
     requestPasswordReset,
     confirmPasswordReset,
-} from '../api/handlers/auth';
-import type { ApiError } from '../api';
+} from '@/api/handlers/auth';
+import type { ApiError } from '@/api';
 
 export type UserType = 'individual' | 'agent';
 export type RegisterMutationData = {
@@ -59,7 +59,7 @@ export function useRegisterMutation(
             });
         },
         async onSuccess(data, variables, onMutateResult, mutationContext) {
-            await queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await queryClient.invalidateQueries({ queryKey: ['profile'] });
             onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
         ...restOptions,
@@ -74,7 +74,7 @@ export function useLoginMutation(
     return useMutation({
         mutationFn: login,
         async onSuccess(data, variables, onMutateResult, mutationContext) {
-            await queryClient.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await queryClient.invalidateQueries({ queryKey: ['profile'] });
             onSuccess?.(data, variables, onMutateResult, mutationContext);
         },
         ...restOptions,
@@ -87,7 +87,7 @@ export function useLogoutMutation(
     return useMutation({
         mutationFn: logout,
         async onSuccess(_data, _variables, _onMutateResult, context) {
-            await context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await context.client.invalidateQueries({ queryKey: ['profile'] });
         },
         ...options,
     });
@@ -108,7 +108,7 @@ export function useConfirmPasswordResetMutation(
     return useMutation({
         mutationFn: confirmPasswordReset,
         async onSuccess(_data, _variables, _onMutateResult, context) {
-            await context.client.invalidateQueries({ queryKey: ['profile', 'user'] });
+            await context.client.invalidateQueries({ queryKey: ['profile'] });
         },
         ...options,
     });

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { FlatButton } from './FlatButton';
-import { Icon } from '../Icon';
+import { Icon } from '@/components/ui/common/Icon';
 
 const meta = {
     title: 'UI/Common/FlatButton',

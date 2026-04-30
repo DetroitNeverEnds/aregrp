@@ -102,7 +102,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                         )}
                         {minRentPrice && (
                             <Text variant="12-reg" color="gray-70">
-                                {minSalePrice && 'или '} {formatPrice(Number(minRentPrice))}/мес.
+                                {minSalePrice && 'или '} от {formatPrice(Number(minRentPrice))}/мес.
                             </Text>
                         )}
                         {previewUrl && (
@@ -138,7 +138,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                             </Link>
                         )}
                     </Flex>
-                    <div className={styles.tooltip__arrow} aria-hidden />
+                    <div className={styles.tooltip__arrow} />
                 </div>
             )}
         </div>

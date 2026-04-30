@@ -22,7 +22,7 @@ describe('Switch', () => {
 
         render(<Switch options={defaultOptions} value="option1" onChange={handleChange} />);
 
-        const button2 = screen.getByRole('radio', { name: /Option 2/i });
+        const button2 = screen.getByRole('button', { name: /Option 2/i });
         await user.click(button2);
 
         expect(handleChange).toHaveBeenCalledWith('option2');
@@ -34,7 +34,7 @@ describe('Switch', () => {
 
         render(<Switch options={defaultOptions} value="option1" onChange={handleChange} />);
 
-        const button1 = screen.getByRole('radio', { name: /Option 1/i });
+        const button1 = screen.getByRole('button', { name: /Option 1/i });
         await user.click(button1);
 
         expect(handleChange).not.toHaveBeenCalled();
@@ -48,7 +48,7 @@ describe('Switch', () => {
             <Switch options={defaultOptions} value="option1" onChange={handleChange} disabled />,
         );
 
-        const button2 = screen.getByRole('radio', { name: /Option 2/i });
+        const button2 = screen.getByRole('button', { name: /Option 2/i });
         await user.click(button2);
 
         expect(handleChange).not.toHaveBeenCalled();
@@ -60,7 +60,7 @@ describe('Switch', () => {
 
         render(<Switch options={defaultOptions} value="option1" onChange={handleChange} />);
 
-        const button2 = screen.getByRole('radio', { name: /Option 2/i });
+        const button2 = screen.getByRole('button', { name: /Option 2/i });
         button2.focus();
         await user.keyboard('{Enter}');
 
@@ -73,7 +73,7 @@ describe('Switch', () => {
 
         render(<Switch options={defaultOptions} value="option1" onChange={handleChange} />);
 
-        const button2 = screen.getByRole('radio', { name: /Option 2/i });
+        const button2 = screen.getByRole('button', { name: /Option 2/i });
         button2.focus();
         await user.keyboard(' ');
 
@@ -92,8 +92,8 @@ describe('Switch', () => {
     it('отключает кнопки когда disabled', () => {
         render(<Switch options={defaultOptions} value="option1" disabled />);
 
-        const button1 = screen.getByRole('radio', { name: /Option 1/i });
-        const button2 = screen.getByRole('radio', { name: /Option 2/i });
+        const button1 = screen.getByRole('button', { name: /Option 1/i });
+        const button2 = screen.getByRole('button', { name: /Option 2/i });
 
         expect(button1).toBeDisabled();
         expect(button2).toBeDisabled();

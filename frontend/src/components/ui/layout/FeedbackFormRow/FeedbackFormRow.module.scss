@@ -1,5 +1,21 @@
 .formColumnContent {
-    padding-right: 140px;
+    gap: 80px;
+
+    @include desktop-only {
+        padding-right: 140px;
+    }
+
+    @include mobile-only {
+        gap: 24px;
+    }
+
+    &__title {
+        gap: 20px;
+
+        @include mobile-only {
+            gap: 16px;
+        }
+    }
 }
 
 .imgColumn {
@@ -11,4 +27,8 @@
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
+
+    @include mobile-only {
+        height: 350px;
+    }
 }

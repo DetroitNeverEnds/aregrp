@@ -2,11 +2,14 @@ import React from 'react';
 import classNames from 'classnames';
 import styles from './Icon.module.scss';
 import { iconMap, type IconName } from './iconConfig';
-import type { ColorVariant } from '../types/colors';
+import type { ColorVariant } from '@/components/ui/common/types/colors';
 
 export type IconSize = 14 | 16 | 20 | 24 | 32 | 50;
 
-export interface IconProps extends React.SVGAttributes<SVGElement> {
+export interface IconProps extends Omit<
+    React.SVGAttributes<SVGElement>,
+    keyof React.AriaAttributes | 'role'
+> {
     /** Название иконки */
     name: IconName;
     /** Размер иконки в пикселях */
@@ -15,12 +18,6 @@ export interface IconProps extends React.SVGAttributes<SVGElement> {
     color?: ColorVariant;
     /** Дополнительный CSS класс */
     className?: string;
-    /** Описание иконки для accessibility */
-    'aria-label'?: string;
-    /** Скрыть иконку от screen readers (для декоративных иконок) */
-    'aria-hidden'?: boolean;
-    /** Роль элемента */
-    role?: string;
 }
 
 export const Icon: React.FC<IconProps> = ({
@@ -29,9 +26,6 @@ export const Icon: React.FC<IconProps> = ({
     color,
     className = '',
     style,
-    'aria-label': ariaLabel,
-    'aria-hidden': ariaHidden,
-    role = 'img',
     ...props
 }) => {
     const IconComponent = iconMap[name];
@@ -48,20 +42,8 @@ export const Icon: React.FC<IconProps> = ({
         className,
     );
 
-    // Определяем aria-атрибуты
-    const ariaProps: React.AriaAttributes & { role?: string } = {};
-
-    if (ariaHidden) {
-        ariaProps['aria-hidden'] = true;
-    } else {
-        ariaProps.role = role;
-        if (ariaLabel) {
-            ariaProps['aria-label'] = ariaLabel;
-        }
-    }
-
     return (
-        <span className={iconClassNames} style={style} {...ariaProps}>
+        <span className={iconClassNames} style={style}>
             <IconComponent {...props} />
         </span>
     );

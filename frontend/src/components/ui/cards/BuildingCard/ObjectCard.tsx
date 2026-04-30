@@ -1,9 +1,9 @@
-import { Button } from '../../common/Button';
-import { Flex } from '../../common/Flex';
-import { Divider } from '../../common/Divider';
-import { Text } from '../../common/Text';
+import { Button } from '@/components/ui/common/Button';
+import { Flex } from '@/components/ui/common/Flex';
+import { Divider } from '@/components/ui/common/Divider';
+import { Text } from '@/components/ui/common/Text';
 import styles from './ObjectCard.module.scss';
-import { Column } from '../../layout/TwoColumnsContainer';
+import { Column } from '@/components/ui/layout/Column';
 import { type BuildingCatalogue } from '@/api';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
@@ -18,9 +18,8 @@ export interface BuildingCardProps {
 export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
     const { getLinkToCatalogue } = useFilterSearchParams();
     const {
-        // title,
+        title,
         description,
-        address,
         uuid,
         min_rent_price: minRentPrice,
         min_sale_price: minSalePrice,
@@ -55,7 +54,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                         color="primary-900"
                         className={styles.buildingCard__name__title}
                     >
-                        {address}
+                        {title}
                     </Text>
                     {(minRentPrice || minSalePrice) && (
                         <Flex gap={4} align="end">
@@ -78,13 +77,15 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                 <Divider />
 
                 {/* Описание */}
-                <Text
-                    variant="20-reg"
-                    color="gray-100"
-                    className={styles.buildingCard__description}
-                >
-                    {description}
-                </Text>
+                {description && (
+                    <Text
+                        variant="20-reg"
+                        color="gray-100"
+                        className={styles.buildingCard__description}
+                    >
+                        {description}
+                    </Text>
+                )}
             </Flex>
 
             {/* Кнопки */}

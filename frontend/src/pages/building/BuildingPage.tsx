@@ -9,27 +9,34 @@ import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContai
 import { ErrorLoading } from '@/components/ui/layout/ErrorLoading/ErrorLoading';
 import { useBuildingDetail } from '@/queries';
 
-import { BuildingDetailBoundaryContent } from './BuildingPage.components';
+import { BuildingContent } from './BuildingPage.components';
+import { useEffect } from 'react';
 
 type Params = { buildingUuid: string };
 
 export const BuildingPage = () => {
     const { t } = useTranslation();
     const { buildingUuid } = useParams<Params>();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [buildingUuid]);
 
     const buildingDetailQ = useBuildingDetail(buildingUuid || '');
 
-    if (!buildingUuid) {
-        return (
-            <Page>
-                <VerticalMainContainer>
+    return (
+        <Page>
+            <VerticalMainContainer>
+                {buildingUuid ? (
+                    <QueryBoundary
+                        query={buildingDetailQ}
+                        render={data => <BuildingContent data={data} />}
+                    />
+                ) : (
                     <ErrorLoading message={t('errors.somethingWrong')} />
-                    <Benefits variant="sale" />
-                    <FeedbackFormRow />
-                </VerticalMainContainer>
-            </Page>
-        );
-    }
-
-    return <QueryBoundary query={buildingDetailQ} Component={BuildingDetailBoundaryContent} />;
+                )}
+                <Benefits variant="sale" />
+                <FeedbackFormRow originKey="building" />
+            </VerticalMainContainer>
+        </Page>
+    );
 };

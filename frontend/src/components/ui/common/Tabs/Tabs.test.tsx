@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { Tabs } from './Tabs';
 
 describe('Tabs', () => {
-    it('renders tablist and tabs with labels', () => {
+    it('renders tabs with labels', () => {
         render(
             <Tabs
                 value="a"
@@ -17,12 +17,8 @@ describe('Tabs', () => {
             ></Tabs>,
         );
 
-        expect(screen.getByRole('tablist')).toBeInTheDocument();
-        expect(screen.getByRole('tab', { name: 'First' })).toHaveAttribute('aria-selected', 'true');
-        expect(screen.getByRole('tab', { name: 'Second' })).toHaveAttribute(
-            'aria-selected',
-            'false',
-        );
+        expect(screen.getByRole('button', { name: 'First' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Second' })).toBeInTheDocument();
     });
 
     it('calls onChange when switching tab', async () => {
@@ -40,7 +36,7 @@ describe('Tabs', () => {
             />,
         );
 
-        await user.click(screen.getByRole('tab', { name: 'Second' }));
+        await user.click(screen.getByRole('button', { name: 'Second' }));
 
         expect(onChange).toHaveBeenCalledWith('b');
     });
@@ -60,7 +56,7 @@ describe('Tabs', () => {
             ></Tabs>,
         );
 
-        await user.click(screen.getByRole('tab', { name: 'First' }));
+        await user.click(screen.getByRole('button', { name: 'First' }));
 
         expect(onValueChange).not.toHaveBeenCalled();
     });

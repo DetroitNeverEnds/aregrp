@@ -77,14 +77,8 @@ const dataTableExampleColumns: TableColumn<Row>[] = [
         header: '',
         headerAlign: 'right',
         cellAlign: 'right',
-        render: ({ row }) => (
-            <Button
-                variant="outlined"
-                theme="light"
-                size="sm"
-                type="button"
-                aria-label={`Открыть: ${row.name}`}
-            >
+        render: () => (
+            <Button variant="outlined" theme="light" size="sm" type="button">
                 Открыть
             </Button>
         ),

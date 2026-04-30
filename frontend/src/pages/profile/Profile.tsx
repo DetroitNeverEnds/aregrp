@@ -20,6 +20,7 @@ import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundar
 import type { UserData } from '@/api';
 import { ProfileMainInfoCard } from './ProfileMainInfoCard';
 import { ProfileObjectsCard } from './ProfileObjectsCard';
+import { ProfileBoookingsCard } from './ProfileBookingsCard';
 
 type MenuItems = {
     label: string;
@@ -138,7 +139,7 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                             onClick={() => logoutMutation.mutate()}
                             disabled={logoutMutation.isPending}
                         >
-                            <Icon name="exit" size={14} aria-hidden />
+                            <Icon name="exit" size={14} />
                             <Text variant="12-med" color="gray-100">
                                 {t('pages.profile.logout')}
                             </Text>
@@ -147,7 +148,8 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
                 </Flex>
 
                 {currentItem === 'profile' && <ProfileMainInfoCard user={user} />}
-                {currentItem === 'booking' && <ProfileObjectsCard />}
+                {currentItem === 'objects' && <ProfileObjectsCard />}
+                {currentItem === 'booking' && <ProfileBoookingsCard />}
             </Flex>
         </VerticalMainContainer>
     );
@@ -161,11 +163,11 @@ export const Profile = () => {
         if (userQ.data && !userQ.data.data) {
             navigate(`/auth/login?redirect=${encodeURIComponent('/profile')}`, { replace: true });
         }
-    }, [navigate, userQ.data]);
+    }, [navigate, userQ, userQ.data]);
 
     return (
         <Page>
-            <QueryBoundary query={userQ} Component={ProfileContent} />
+            <QueryBoundary query={userQ} render={data => <ProfileContent data={data} />} />
         </Page>
     );
 };

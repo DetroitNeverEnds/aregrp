@@ -4,7 +4,7 @@ import axios, {
     type AxiosError,
     type InternalAxiosRequestConfig,
 } from 'axios';
-import type { ApiError, ProblemDetail } from '../types';
+import type { ApiError, ProblemDetail } from '@/api/types';
 
 /**
  * Конфигурация базового API клиента

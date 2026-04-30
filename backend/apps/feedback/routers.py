@@ -43,6 +43,8 @@ async def create_feedback(request, data: FeedbackCreateIn):
             phone=data.phone.strip()[:20],
             subject=data.subject.strip(),
             message=(data.message or '').strip(),
+            origin_key=data.origin.key.strip(),
+            origin_url=data.origin.url.strip(),
         )
         obj.full_clean()
         obj.save()

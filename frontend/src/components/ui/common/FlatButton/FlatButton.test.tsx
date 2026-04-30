@@ -41,12 +41,12 @@ describe('FlatButton', () => {
 
     it('передает дополнительные props', () => {
         render(
-            <FlatButton data-testid="test-button" aria-label="Тестовая кнопка">
+            <FlatButton data-testid="test-button" name="test-name">
                 Кнопка
             </FlatButton>,
         );
         const button = screen.getByTestId('test-button');
-        expect(button).toHaveAttribute('aria-label', 'Тестовая кнопка');
+        expect(button).toHaveAttribute('name', 'test-name');
     });
 
     it('имеет type="button" по умолчанию', () => {

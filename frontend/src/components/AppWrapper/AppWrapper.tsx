@@ -1,9 +1,9 @@
 import React, { Suspense } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { useI18nReady } from '../../i18n/hooks';
-import { queryClient } from '../../lib/queryClient';
+import { useI18nReady } from '@/i18n/hooks';
+import { queryClient } from '@/lib/queryClient';
 import '../../lib/apiClient';
-import { Loader } from '../ui/common/Loader';
+import { Loader } from '@/components/ui/common/Loader';
 import styles from './AppWrapper.module.scss';
 import { QueryWaiter } from './queryWaiter';
 
@@ -38,7 +38,7 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
         <Suspense
             fallback={
                 <div className={styles.appWrapper__fallback}>
-                    <Loader variant="overlay" spinnerSize="lg" aria-label="Загрузка приложения" />
+                    <Loader variant="overlay" spinnerSize="lg" />
                 </div>
             }
         >

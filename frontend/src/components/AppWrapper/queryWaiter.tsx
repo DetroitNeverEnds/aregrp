@@ -1,8 +1,8 @@
 import { type PropsWithChildren } from 'react';
-import { useSiteInfo } from '../../queries/siteInfo';
+import { useSiteInfo } from '@/queries/siteInfo';
 import _ from 'lodash';
-import { Loader } from '../ui/common/Loader';
-import { useUser } from '../../queries/profile';
+import { Loader } from '@/components/ui/common/Loader';
+import { useUser } from '@/queries/profile';
 import { ErrorLoading } from '@/components/ui/layout/ErrorLoading/ErrorLoading';
 import { useTranslation } from 'react-i18next';
 

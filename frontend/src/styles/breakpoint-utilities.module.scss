@@ -1,0 +1,13 @@
+/** Видно только при max-width: $breakpoint-desktop - 1px */
+.mobileOnly {
+    @include desktop-only {
+        display: none !important;
+    }
+}
+
+/** Видно только при min-width: $breakpoint-desktop */
+.desktopOnly {
+    @include mobile-only {
+        display: none !important;
+    }
+}

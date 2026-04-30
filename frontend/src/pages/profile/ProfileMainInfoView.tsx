@@ -13,7 +13,6 @@ export const ProfileMainInfoView = ({ user }: { user: UserData }) => {
                 ? [
                       { label: t('pages.profile.orgNameLabel'), value: user.organization_name },
                       { label: t('pages.profile.phoneLabel'), value: user.phone },
-                      { label: t('pages.profile.fullNameLabel'), value: user.full_name },
                       { label: t('pages.profile.innLabel'), value: user.inn },
                   ]
                 : [

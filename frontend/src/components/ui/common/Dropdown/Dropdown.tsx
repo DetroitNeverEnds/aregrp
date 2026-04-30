@@ -2,9 +2,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
 import styles from './Dropdown.module.scss';
-import { Flex } from '../Flex';
-import Icon from '../Icon';
-import FlatButton from '../FlatButton';
+import { Flex } from '@/components/ui/common/Flex';
+import Icon from '@/components/ui/common/Icon';
+import FlatButton from '@/components/ui/common/FlatButton';
 
 export type Size = 'lg' | 'sm' | 'tiny';
 
@@ -123,7 +123,7 @@ export function Dropdown({
             </Flex>
 
             {isOpened && (
-                <div ref={dropdownRef} className={dropdownClassNames} role="listbox">
+                <div ref={dropdownRef} className={dropdownClassNames} data-testid="dropdown-panel">
                     {children}
                 </div>
             )}

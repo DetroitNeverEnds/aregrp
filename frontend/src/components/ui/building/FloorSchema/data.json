@@ -5,7 +5,8 @@
         "name": "101",
         "label_area": "16.2 м²",
         "label_price": "12 838 111 ₽",
-        "is_occupied": false
+        "is_occupied": false,
+        "is_available": true
     },
     {
         "uuid": "00000000-0000-0000-0000-000000000102",
@@ -13,7 +14,8 @@
         "name": "102",
         "label_area": "13.5 м²",
         "label_price": "12 838 000 ₽",
-        "is_occupied": true
+        "is_occupied": true,
+        "is_available": false
     },
     {
         "uuid": "00000000-0000-0000-0000-000000000103",
@@ -21,7 +23,8 @@
         "name": "103",
         "label_area": "20.4 м²",
         "label_price": "12 838 000 ₽",
-        "is_occupied": true
+        "is_occupied": true,
+        "is_available": false
     },
     {
         "uuid": "00000000-0000-0000-0000-000000000104",
@@ -29,7 +32,8 @@
         "name": "104",
         "label_area": "12.8 м²",
         "label_price": "12 838 000 ₽",
-        "is_occupied": true
+        "is_occupied": true,
+        "is_available": false
     },
     {
         "uuid": "00000000-0000-0000-0000-000000000105",
@@ -37,7 +41,8 @@
         "name": "105",
         "label_area": "13.6 м²",
         "label_price": "2 838 000 ₽",
-        "is_occupied": false
+        "is_occupied": false,
+        "is_available": true
     },
     {
         "uuid": "00000000-0000-0000-0000-000000000106",
@@ -45,7 +50,8 @@
         "name": "106",
         "label_area": "14.6 м²",
         "label_price": "12 838 000 ₽",
-        "is_occupied": false
+        "is_occupied": false,
+        "is_available": true
     },
     {
         "uuid": "00000000-0000-0000-0000-000000000107",
@@ -53,6 +59,7 @@
         "name": "107",
         "label_area": "16.2 м²",
         "label_price": "12 838 000 ₽",
-        "is_occupied": false
+        "is_occupied": false,
+        "is_available": true
     }
 ]

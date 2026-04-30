@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import classNames from 'classnames';
 import styles from './RadioButtons.module.scss';
-import { Text, type TextVariant } from '../../Text';
+import { Text, type TextVariant } from '@/components/ui/common/Text';
 
 export type RadioButtonSize = 'lg' | 'md' | 'sm';
 export type RadioButtonDirection = 'vertical' | 'horizontal';
@@ -97,7 +97,7 @@ export const RadioButtons: React.FC<RadioButtonsProps> = ({
 
     return (
         <div className={containerClassNames}>
-            <div className={groupClassNames} role="radiogroup">
+            <div className={groupClassNames}>
                 {options.map(option => {
                     const isChecked = value === option.value;
                     const isDisabled = disabled || option.disabled;
@@ -126,7 +126,6 @@ export const RadioButtons: React.FC<RadioButtonsProps> = ({
                                     onKeyDown={e =>
                                         handleKeyDown(e, option.value, Boolean(isDisabled))
                                     }
-                                    aria-checked={isChecked}
                                 />
                                 <div className={radioClassNames}>
                                     {isChecked && <div className={styles['radio-inner-circle']} />}

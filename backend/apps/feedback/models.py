@@ -59,6 +59,21 @@ class Feedback(models.Model):
         verbose_name="Дата обновления"
     )
 
+    origin_key = models.CharField(
+        max_length=200,
+        verbose_name="Ключ источника",
+        help_text="Ключ источника обращения",
+        default='Unknown',
+    )
+
+    origin_url = models.URLField(
+        verbose_name="URL источника",
+        help_text="URL источника обращения",
+        blank=True,
+        default='',
+        max_length=2000,
+    )
+
     class Meta:
         verbose_name = "Обратная связь"
         verbose_name_plural = "Обратная связь"

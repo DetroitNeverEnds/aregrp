@@ -1,0 +1,13 @@
+.modalStage {
+    width: calc(100vw - 150px);
+    height: calc(100vh - 150px);
+    position: relative;
+    margin-top: 10px;
+    box-sizing: border-box;
+
+    @include mobile-only {
+        width: 100%;
+        max-width: 100%;
+        height: min(calc(100dvh - 160px), calc(100vh - 160px));
+    }
+}

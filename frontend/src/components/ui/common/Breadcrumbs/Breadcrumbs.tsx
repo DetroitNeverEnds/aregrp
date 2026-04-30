@@ -1,7 +1,7 @@
 import classNames from 'classnames';
-import { Flex } from '../Flex';
-import { Link } from '../Link';
-import Text from '../Text';
+import { Flex } from '@/components/ui/common/Flex';
+import { Link } from '@/components/ui/common/Link';
+import Text from '@/components/ui/common/Text';
 
 import styles from './Breadcrumbs.module.scss';
 

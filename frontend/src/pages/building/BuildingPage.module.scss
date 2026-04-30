@@ -1,21 +1,28 @@
 @use '@/components/ui/building/FloorSchema/FloorSchema.module.scss' as *;
 
-.detailsPanelWrapper {
-    flex-shrink: 0;
-    transition: width 0.3s ease;
+@keyframes officeCardEnter {
+    from {
+        opacity: 0;
+        transform: translateX(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .officeCard {
+    flex-shrink: 0;
+    transition: width 0.3s ease;
     width: 500px;
     overflow: hidden;
 }
 
-.floorchema,
 .floorSchema {
+    transition: width 1s ease;
+    transition: transform 1s ease;
+    overflow: hidden;
     flex-grow: 1;
-    flex-shrink: 1;
-    min-width: 0;
-    transition: width 0.3s ease;
 
     &__header {
         &__text {
@@ -30,15 +37,16 @@
         @mixin square {
             width: 20px;
             height: 20px;
+            flex-shrink: 0;
         }
 
         &__free {
             @include square;
             background-color: $free-room-color;
         }
-        &__occupied {
+        &__unavailable {
             @include square;
-            background-color: $occupied-room-color;
+            background-color: $unavailable-room-color;
         }
         &__other {
             @include square;
@@ -47,15 +55,30 @@
     }
 }
 
+.officeCard ~ .floorSchema {
+    /* опционально: лёгкий визуальный сдвиг, чтобы с motion карточки смотрелось цельно */
+    transform: translateX(0);
+}
+
 .premiseDetails {
     &__gallery {
         height: 400px;
         width: 100%;
     }
+
+    /* FlatButton задаёт line-height: 0; для подписи как у Link нужна высота строки */
+    &__generateLink:hover {
+        color: $primary-700;
+    }
 }
 
-.gallery {
-    width: 100%;
-    height: 650px;
-    box-sizing: border-box;
+.infrastructure {
+    &__categories {
+        overflow: scroll;
+    }
+    &__gallery {
+        width: 100%;
+        height: 650px;
+        box-sizing: border-box;
+    }
 }

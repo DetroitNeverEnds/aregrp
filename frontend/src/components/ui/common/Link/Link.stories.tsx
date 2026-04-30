@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { BrowserRouter } from 'react-router-dom';
 import { Link } from './Link';
-import { iconNames } from '../Icon';
+import { iconNames } from '@/components/ui/common/Icon';
 
 const meta = {
     title: 'UI/Common/Link',
@@ -46,6 +46,11 @@ const meta = {
             options: [undefined, ...iconNames],
             description: 'Иконка справа от текста',
         },
+        variant: {
+            control: 'select',
+            options: ['default', 'external'],
+            description: 'default — react-router; external — обычный <a href>',
+        },
     },
 } satisfies Meta<typeof Link>;
 
@@ -56,6 +61,14 @@ export const Default: Story = {
     args: {
         to: '/example',
         children: 'Ссылка по умолчанию',
+    },
+};
+
+export const External: Story = {
+    args: {
+        to: 'https://example.com',
+        variant: 'external',
+        children: 'Внешняя ссылка (без client-side navigate)',
     },
 };
 

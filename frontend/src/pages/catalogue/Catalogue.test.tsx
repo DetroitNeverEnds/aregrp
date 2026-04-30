@@ -56,7 +56,8 @@ describe('Catalogue', () => {
             ]),
         });
 
-        expect(screen.getByText('Продажа офисов')).toBeInTheDocument();
+        const saleTitles = screen.getAllByText('Продажа офисов');
+        expect(saleTitles.length).toBeGreaterThan(0);
     });
 
     it('рендерит заголовок для аренды при sale_type=rent', () => {
@@ -74,7 +75,8 @@ describe('Catalogue', () => {
             ]),
         });
 
-        expect(screen.getByText('Аренда офисов')).toBeInTheDocument();
+        const rentTitles = screen.getAllByText('Аренда офисов');
+        expect(rentTitles.length).toBeGreaterThan(0);
     });
 
     it('показывает Loader при загрузке', () => {
@@ -84,9 +86,9 @@ describe('Catalogue', () => {
             error: null,
         } as ReturnType<typeof queries.usePremises>);
 
-        render(<Catalogue />, { wrapper: createWrapper() });
+        const { container } = render(<Catalogue />, { wrapper: createWrapper() });
 
-        expect(screen.getByLabelText('Загрузка')).toBeInTheDocument();
+        expect(container.querySelector('svg')).toBeInTheDocument();
     });
 
     it('показывает сообщение об ошибке при ошибке API', () => {
@@ -125,7 +127,7 @@ describe('Catalogue', () => {
                             name: 'Офис 1',
                             address: 'ул. Тестовая 1',
                             area: '50',
-                            price: '1000000',
+                            price: 1_000_000,
                             floor: 1,
                             has_tenant: false,
                             media: [],

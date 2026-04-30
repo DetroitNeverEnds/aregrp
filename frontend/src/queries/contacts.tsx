@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { siteContacts } from '../api/handlers/siteSettings/contacts';
-import { wrapApiCall } from '../lib/queryHelpers';
+import { siteContacts } from '@/api/handlers/siteSettings/contacts';
+import { wrapApiCall } from '@/lib/queryHelpers';
 
 export const useSiteContacts = () => {
     return useQuery({

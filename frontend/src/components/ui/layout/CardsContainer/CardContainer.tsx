@@ -33,7 +33,7 @@ export const CardContainer = (props: CardContainerProps) => {
             )}
             {props.loadMore &&
                 (props.loadMoreLoading ? (
-                    <Spinner size="lg" aria-label="Загрузка" />
+                    <Spinner size="lg" />
                 ) : (
                     <Button variant="outlined" onClick={props.loadMore}>
                         Показать еще

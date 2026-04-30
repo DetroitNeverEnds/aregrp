@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Flex } from './Flex';
-import { Button } from '../Button';
-import { Text } from '../Text';
+import { Button } from '@/components/ui/common/Button';
+import { Text } from '@/components/ui/common/Text';
 
 const meta = {
     title: 'UI/Common/Flex',
