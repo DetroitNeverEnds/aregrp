@@ -140,7 +140,9 @@ async def building_detail(request, building_uuid: UUID):
         "Данные этажа: building_uuid, floor_number, schema_svg и premises "
         "[{ uuid, name, label_area, label_price, is_available, is_occupied }]. "
         f"Обязательный query sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT} или "
-        f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — семантика is_available."
+        f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — is_available по типу; "
+        "аренда: is_occupied всегда false; продажа: is_occupied только если "
+        "available_for_rent и есть активная аренда."
     ),
 )
 async def floor_premises_list(

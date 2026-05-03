@@ -189,30 +189,34 @@ class TestRegistration:
         assert data["code"] == "ACCOUNTS_MISSING_ORGANIZATION_NAME"
         assert "organization" in data["detail"].lower()
     
-    async def test_register_agent_missing_inn(self, client):
-        """Тест регистрации агента без ИНН."""
+    async def test_register_agent_without_inn_success(self, client):
+        """Тест успешной регистрации агента без ИНН в запросе."""
         response = await client.post(
             "/auth/register",
             json={
                 "user_type": "agent",
                 "full_name": "Петр Петров",
-                "email": "agent3@example.com",
+                "email": "agent-no-inn@example.com",
                 "phone": "+79991234572",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
                 "organization_name": "ООО Тест",
-                # inn отсутствует
-                "use_cookies": False
+                "use_cookies": False,
             }
         )
-        
-        assert response.status_code == 400
+
+        assert response.status_code == 200
         data = response.json()
-        
-        assert data["status"] == 400
-        assert data["code"] == "ACCOUNTS_MISSING_INN"
-        assert "inn" in data["detail"].lower()
-    
+        user_data = data["user"]
+        assert user_data["user_type"] == "agent"
+        assert user_data["organization_name"] == "ООО Тест"
+        assert user_data.get("inn") in ("", None)
+
+        user = await sync_to_async(CustomUser.objects.get)(email="agent-no-inn@example.com")
+        assert user.user_type == "agent"
+        assert user.organization_name == "ООО Тест"
+        assert user.inn == ""
+
     async def test_register_invalid_user_type(self, client):
         """Тест регистрации с неверным типом пользователя."""
         response = await client.post(

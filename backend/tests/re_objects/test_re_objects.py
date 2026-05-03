@@ -493,3 +493,114 @@ class TestFloorPremises:
         assert data["floor_number"] == 999
         assert data["schema_svg"] is None
         assert data["premises"] == []
+
+    async def test_floor_premises_rent_is_occupied_always_false(
+        self, client, building_with_premise, test_user,
+    ):
+        """sale_type=rent: is_occupied всегда false; is_available по активной аренде."""
+        building, premise = building_with_premise
+        floor_number = premise.floor.number
+        deal_until = timezone.now().date() + timedelta(days=30)
+
+        @sync_to_async
+        def _deal():
+            Deal.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=deal_until,
+                commission_amount=1,
+            )
+
+        await _deal()
+        response = await client.get(
+            f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
+        )
+        assert response.status_code == 200
+        item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
+        assert item["is_occupied"] is False
+        assert item["is_available"] is False
+
+    async def test_floor_premises_sale_is_occupied_when_rent_active(
+        self, client, city, test_user,
+    ):
+        """sale_type=sale: при available_for_rent и активной аренде is_occupied true."""
+
+        @sync_to_async
+        def _setup():
+            building = Building.objects.create(
+                name='БЦ Этаж продажа',
+                address='ул. Схемная, 3',
+                city=city,
+                description='',
+            )
+            floor = Floor.objects.create(building=building, number=2)
+            premise = Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('40'),
+                price_per_month=80_000,
+                price_per_sqm=200_000,
+                available_for_rent=True,
+                available_for_sale=True,
+                room_number='201',
+            )
+            Deal.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=timezone.now().date() + timedelta(days=60),
+                commission_amount=1,
+            )
+            return building, premise
+
+        building, premise = await _setup()
+        response = await client.get(
+            f"/floors/{building.uuid}/{premise.floor.number}?sale_type=sale"
+        )
+        assert response.status_code == 200
+        item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
+        assert item["is_occupied"] is True
+
+    async def test_floor_premises_sale_is_occupied_false_when_not_for_rent(
+        self, client, city, test_user,
+    ):
+        """sale_type=sale: только продажа — is_occupied false, даже если есть сделка аренды в БД."""
+
+        @sync_to_async
+        def _setup():
+            building = Building.objects.create(
+                name='БЦ Только продажа',
+                address='ул. Продажная, 9',
+                city=city,
+                description='',
+            )
+            floor = Floor.objects.create(building=building, number=1)
+            premise = Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('30'),
+                price_per_month=0,
+                price_per_sqm=250_000,
+                available_for_rent=False,
+                available_for_sale=True,
+                room_number='S9',
+            )
+            Deal.objects.create(
+                user_id=test_user.id,
+                premise=premise,
+                deal_type=Deal.DealType.RENT,
+                rent_expires_at=timezone.now().date() + timedelta(days=30),
+                commission_amount=1,
+            )
+            return building, premise
+
+        building, premise = await _setup()
+        response = await client.get(
+            f"/floors/{building.uuid}/{premise.floor.number}?sale_type=sale"
+        )
+        assert response.status_code == 200
+        item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
+        assert item["is_occupied"] is False

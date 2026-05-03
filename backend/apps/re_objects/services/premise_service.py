@@ -572,7 +572,9 @@ def _floor_premise_availability_rows(
 ) -> list[tuple[Premise, bool, bool]]:
     """
     Для списка помещений этажа: (premise, is_available, is_occupied).
-    is_occupied — есть сделка аренды; is_available — по sale_type (rent/sale).
+    rent: is_occupied всегда False; is_available — свободно для аренды.
+    sale: is_occupied False, если помещение не в аренду (нет available_for_rent),
+    иначе True при активной аренде; is_available — свободно для продажи.
     """
     if not premises:
         return []
@@ -583,12 +585,6 @@ def _floor_premise_availability_rows(
     today = timezone.now().date()
     now = timezone.now()
 
-    any_rent = set(
-        Deal.objects.filter(
-            premise_id__in=pids,
-            deal_type=Deal.DealType.RENT,
-        ).values_list('premise_id', flat=True)
-    )
     active_rent = set(
         Deal.objects.filter(
             premise_id__in=pids,
@@ -611,14 +607,15 @@ def _floor_premise_availability_rows(
 
     out: list[tuple[Premise, bool, bool]] = []
     for p in premises:
-        is_occ = p.pk in any_rent
         if st == rent:
+            is_occ = False
             is_avail = bool(
                 p.available_for_rent
                 and p.pk not in active_rent
                 and p.pk not in booked
             )
         else:
+            is_occ = bool(p.available_for_rent and p.pk in active_rent)
             is_avail = bool(
                 p.available_for_sale
                 and p.pk not in booked
@@ -636,7 +633,7 @@ async def get_premises_for_floor(
     """
     Список помещений на этаже здания.
 
-    sale_type: rent|sale (обязателен в API) — is_available; is_occupied — по сделкам аренды.
+    sale_type: rent|sale — is_available по типу сделки; is_occupied см. _floor_premise_availability_rows.
     """
     try:
         floor = await Floor.objects.select_related("building").aget(
