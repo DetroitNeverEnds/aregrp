@@ -33,12 +33,6 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
         price,
     } = item;
 
-    // const displayAmount = useMemo(() => {
-    //     if (type === 'rent') return rent_price ?? price;
-    //     if (type === 'sale') return sale_price ?? price;
-    //     return rent_price ?? sale_price ?? price;
-    // }, [type, rent_price, sale_price, price]);
-
     const formatPrice = (value: number | null) => {
         if (value === null || value === undefined) {
             return '—';
@@ -117,6 +111,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                     </Flex>
                     <Button
                         to={link}
+                        onClick={() => window.scrollTo({ top: 0 })}
                         size="lg"
                         variant="primary"
                         icon="arrow-button"

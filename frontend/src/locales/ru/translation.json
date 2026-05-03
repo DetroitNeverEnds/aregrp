@@ -234,7 +234,6 @@
             "generateLink": "Сгенерировать ссылку",
             "generateLinkModal": {
                 "objectLabel": "Объект:",
-                "spamHint": "Нет письма? Проверьте папку «Спам»",
                 "sectionTitle": "Создание ссылки",
                 "clientNamePlaceholder": "Имя клиента",
                 "phonePlaceholder": "Телефон",
@@ -254,7 +253,10 @@
             },
             "floor": "Этаж",
             "book": "Забронировать",
-            "authToBook": "Авторизуйтесь, чтобы забронировать",
+            "authToBook": {
+                "auth": "Авторизуйтесь",
+                "toBook": ", чтобы забронировать"
+            },
             "details": "Подробнее"
         },
         "catalogue": {
