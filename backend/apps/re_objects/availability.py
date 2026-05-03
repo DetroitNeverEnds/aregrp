@@ -7,7 +7,8 @@
 Аннотации _active_rent_period / _has_sale_deal / _any_rent_deal — для has_tenant, схемы этажа и т.п., не для
 фильтра available.
 
-Занятость по схеме этажа (is_occupied): см. premise_service._floor_premise_availability_rows (зависит от sale_type).
+Занятость по схеме этажа (is_occupied): см. premise_service._floor_premise_availability_rows — только флаги помещения,
+без сделок.
 """
 from __future__ import annotations
 

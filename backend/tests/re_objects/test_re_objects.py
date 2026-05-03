@@ -521,10 +521,10 @@ class TestFloorPremises:
         assert item["is_occupied"] is False
         assert item["is_available"] is False
 
-    async def test_floor_premises_sale_is_occupied_when_rent_active(
+    async def test_floor_premises_sale_is_occupied_false_when_also_for_rent(
         self, client, city, test_user,
     ):
-        """sale_type=sale: при available_for_rent и активной аренде is_occupied true."""
+        """sale_type=sale: доступно и для аренды — is_occupied false; сделки не влияют."""
 
         @sync_to_async
         def _setup():
@@ -561,12 +561,12 @@ class TestFloorPremises:
         )
         assert response.status_code == 200
         item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
-        assert item["is_occupied"] is True
+        assert item["is_occupied"] is False
 
-    async def test_floor_premises_sale_is_occupied_false_when_not_for_rent(
-        self, client, city, test_user,
+    async def test_floor_premises_sale_is_occupied_true_sale_only(
+        self, client, city,
     ):
-        """sale_type=sale: только продажа — is_occupied false, даже если есть сделка аренды в БД."""
+        """sale_type=sale: только продажа (не в аренду) — is_occupied true."""
 
         @sync_to_async
         def _setup():
@@ -588,13 +588,6 @@ class TestFloorPremises:
                 available_for_sale=True,
                 room_number='S9',
             )
-            Deal.objects.create(
-                user_id=test_user.id,
-                premise=premise,
-                deal_type=Deal.DealType.RENT,
-                rent_expires_at=timezone.now().date() + timedelta(days=30),
-                commission_amount=1,
-            )
             return building, premise
 
         building, premise = await _setup()
@@ -603,4 +596,4 @@ class TestFloorPremises:
         )
         assert response.status_code == 200
         item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
-        assert item["is_occupied"] is False
+        assert item["is_occupied"] is True

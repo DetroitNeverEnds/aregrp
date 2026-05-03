@@ -135,7 +135,7 @@ class FloorPremiseOut(Schema):
     label_area: str  # площадь, например "50 м²"
     label_price: str  # стоимость, например "100 000 ₽"
     is_available: bool  # по sale_type запроса: свободно для аренды или для продажи
-    is_occupied: bool  # rent: всегда False; sale: занято по аренде, только если available_for_rent
+    is_occupied: bool  # rent: всегда False; sale: только флаги — True если sale и не в аренду
 
 
 class FloorResponseOut(Schema):

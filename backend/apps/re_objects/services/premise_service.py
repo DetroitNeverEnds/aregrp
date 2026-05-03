@@ -572,9 +572,10 @@ def _floor_premise_availability_rows(
 ) -> list[tuple[Premise, bool, bool]]:
     """
     Для списка помещений этажа: (premise, is_available, is_occupied).
-    rent: is_occupied всегда False; is_available — свободно для аренды.
-    sale: is_occupied False, если помещение не в аренду (нет available_for_rent),
-    иначе True при активной аренде; is_available — свободно для продажи.
+    is_occupied берётся только из флагов помещения в админке, без сделок.
+    rent: всегда False (упрощение схемы).
+    sale: True если в продаже и не в аренду (available_for_sale и не available_for_rent).
+    is_available — по sale_type: свободно для аренды или для продажи (как раньше, со сделками/бронями).
     """
     if not premises:
         return []
@@ -615,7 +616,7 @@ def _floor_premise_availability_rows(
                 and p.pk not in booked
             )
         else:
-            is_occ = bool(p.available_for_rent and p.pk in active_rent)
+            is_occ = bool(p.available_for_sale and not p.available_for_rent)
             is_avail = bool(
                 p.available_for_sale
                 and p.pk not in booked
