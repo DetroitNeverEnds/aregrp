@@ -494,6 +494,50 @@ class TestFloorPremises:
         assert data["schema_svg"] is None
         assert data["premises"] == []
 
+    async def test_floor_premises_label_price_depends_on_sale_type(self, client, city):
+        """label_price должен соответствовать sale_type запроса."""
+
+        @sync_to_async
+        def _setup():
+            building = Building.objects.create(
+                name='БЦ Цена по типу сделки',
+                address='ул. Ценовая, 1',
+                city=city,
+                description='',
+            )
+            floor = Floor.objects.create(building=building, number=1)
+            premise = Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('40'),
+                price_per_month=80_000,
+                price_per_sqm=200_000,
+                available_for_rent=True,
+                available_for_sale=True,
+                room_number='P1',
+            )
+            return building, premise
+
+        building, premise = await _setup()
+        floor_number = premise.floor.number
+
+        rent_response = await client.get(
+            f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
+        )
+        sale_response = await client.get(
+            f"/floors/{building.uuid}/{floor_number}?sale_type=sale"
+        )
+
+        assert rent_response.status_code == 200
+        assert sale_response.status_code == 200
+
+        rent_item = next(i for i in rent_response.json()["premises"] if i["uuid"] == str(premise.uuid))
+        sale_item = next(i for i in sale_response.json()["premises"] if i["uuid"] == str(premise.uuid))
+
+        assert rent_item["label_price"] == "80 000 ₽"
+        assert sale_item["label_price"] == "8 000 000 ₽"
+
     async def test_floor_premises_rent_is_occupied_always_false(
         self, client, building_with_premise, test_user,
     ):
