@@ -27,7 +27,12 @@ from core.pagination import get_paginated_list
 from apps.bookings.models import Booking
 from apps.deals.models import Deal
 
-from ..availability import annotate_premise_availability, premise_filter_for_buildings_q
+from ..availability import (
+    annotate_premise_availability,
+    floor_is_occupied_value,
+    has_tenant_value,
+    premise_filter_for_buildings_q,
+)
 from ..models import Building, Floor, Premise
 from ..schemas import (
     BaseMediaItemOut,
@@ -474,7 +479,7 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
         address=p.building.address,
         floor=p.floor.number if p.floor else None,
         area=p.area,
-        has_tenant=bool(getattr(p, '_any_rent_deal', False)),
+        has_tenant=has_tenant_value(available_for_rent=p.available_for_rent),
         media=_build_premise_media(p),
     )
 
@@ -482,15 +487,9 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
 def premise_to_detail_out(
     p: Premise,
     sale_type: Optional[str] = None,
-    *,
-    has_rent_deal: Optional[bool] = None,
 ) -> PremiseDetailOut:
     """Маппинг Premise -> PremiseDetailOut; price — полная продажа или аренда по типу запроса."""
-    tenant = (
-        bool(has_rent_deal)
-        if has_rent_deal is not None
-        else bool(getattr(p, '_any_rent_deal', False))
-    )
+    tenant = has_tenant_value(available_for_rent=p.available_for_rent)
     return PremiseDetailOut(
         uuid=str(p.uuid),
         building_uuid=str(p.building.uuid),
@@ -536,7 +535,7 @@ async def get_premise_by_uuid(
     Возвращает помещение по UUID в виде PremiseDetailOut или None.
 
     Использует aget() и prefetch images.
-    has_tenant — наличие сделок аренды по помещению.
+    has_tenant — по флагу available_for_rent (без сделок).
     """
     try:
         p = await Premise.objects.select_related(
@@ -544,11 +543,7 @@ async def get_premise_by_uuid(
         ).prefetch_related("images").aget(uuid=premise_uuid)
     except Premise.DoesNotExist:
         return None
-    has_rent = await Deal.objects.filter(
-        premise_id=p.pk,
-        deal_type=Deal.DealType.RENT,
-    ).aexists()
-    return premise_to_detail_out(p, sale_type, has_rent_deal=has_rent)
+    return premise_to_detail_out(p, sale_type)
 
 
 def _format_area(value: Decimal) -> str:
@@ -616,7 +611,11 @@ def _floor_premise_availability_rows(
                 and p.pk not in booked
             )
         else:
-            is_occ = bool(p.available_for_sale and not p.available_for_rent)
+            is_occ = floor_is_occupied_value(
+                st,
+                available_for_sale=p.available_for_sale,
+                available_for_rent=p.available_for_rent,
+            )
             is_avail = bool(
                 p.available_for_sale
                 and p.pk not in booked
