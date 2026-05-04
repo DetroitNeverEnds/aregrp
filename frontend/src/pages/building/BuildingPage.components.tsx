@@ -39,6 +39,8 @@ import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { Sheet } from '@/components/ui/common/Sheet';
 import { BetweenRowLayout } from '@/components/ui/layout/BetweenRowLayout';
 import { useGadget } from '@/hooks';
+import { Link } from '@/components/ui/common/Link';
+import { useLoginLink } from '@/lib/getAuthLink';
 
 type BuildingInfo = BuildingDetailOut;
 
@@ -88,6 +90,7 @@ const PremiseDetailsCardContent = ({
     const { t } = useTranslation();
     const user = useUser().data?.data;
     const isAuthenticated = user !== undefined;
+    const loginLink = useLoginLink();
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
@@ -165,7 +168,10 @@ const PremiseDetailsCardContent = ({
                         </Button>
                         {!isAuthenticated && (
                             <Text color="gray-50" variant="12-reg">
-                                {t('pages.building.authToBook')}
+                                <Link to={loginLink} size="sm">
+                                    {t('pages.building.authToBook.auth')}
+                                </Link>
+                                {t('pages.building.authToBook.toBook')}
                             </Text>
                         )}
                     </Column>
@@ -239,11 +245,6 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     );
     const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloorFromParams } = params;
     const saleTypeForFloor = saleTypeForFloorFromParams || 'sale';
-
-    // На обновление параметров, скроллим наверх
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [params.floor, params.selectedPremise]);
 
     const legend = useMemo(
         () => [

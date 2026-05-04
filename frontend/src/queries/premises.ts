@@ -14,6 +14,7 @@ import {
     type PremiseFilterParams,
     type BuildingFilterParams,
     type PremiseDetail,
+    type BuildingCatalogue,
     type BuildingCatalogueParams,
     type BuildingsCatalogueResponse,
     type BuildingDetailOut,
@@ -45,6 +46,50 @@ export function useBuildingsCatalogue(
     return useQuery({
         queryKey: ['buildings', 'catalogue', params],
         queryFn: () => wrapApiCall(getBuildingsCatalogue)(params),
+    });
+}
+
+/** Совпадает с le=100 в GET /api/v1/buildings/ — максимум записей за один запрос */
+const BUILDINGS_CATALOGUE_CHUNK_SIZE = 100;
+
+/**
+ * Полный каталог зданий: последовательно запрашивает все страницы (до total_pages).
+ */
+export function useBuildingsCatalogueAll(
+    baseParams?: Omit<BuildingCatalogueParams, 'page' | 'page_size'>,
+): UseQueryResult<QueryResult<{ items: BuildingCatalogue[] }>, Error> {
+    return useQuery({
+        queryKey: ['buildings', 'catalogue', 'all', baseParams],
+        queryFn: async () => {
+            const wrappedGet = wrapApiCall(getBuildingsCatalogue);
+            const items: BuildingCatalogue[] = [];
+            let page = 1;
+
+            while (true) {
+                const result = await wrappedGet({
+                    page_size: BUILDINGS_CATALOGUE_CHUNK_SIZE,
+                    page,
+                    ...baseParams,
+                });
+
+                if (result.error) {
+                    return { error: result.error };
+                }
+
+                const data = result.data;
+                if (!data) {
+                    return { data: { items: [] } };
+                }
+
+                items.push(...data.items);
+
+                if (page >= data.total_pages) {
+                    return { data: { items } };
+                }
+
+                page += 1;
+            }
+        },
     });
 }
 

@@ -4,6 +4,7 @@ export { useSiteInfo } from './siteInfo';
 export {
     useBuildings,
     useBuildingsCatalogue,
+    useBuildingsCatalogueAll,
     usePremises,
     usePremisesInfinite,
     usePremisesForRent,
