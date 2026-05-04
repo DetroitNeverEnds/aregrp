@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Flex } from '@/components/ui/common/Flex';
 import { Link } from '@/components/ui/common/Link';
 import { Button } from '@/components/ui/common/Button';
@@ -13,6 +13,7 @@ import { useUser } from '@/queries/profile';
 import type { HeaderTheme } from './Header.types';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { useNavLinks } from './useNavLinks';
+import { useLoginLink } from '@/lib/getAuthLink';
 
 export type HeaderDesktopProps = {
     theme: HeaderTheme;
@@ -20,7 +21,6 @@ export type HeaderDesktopProps = {
 
 export const HeaderDesktop = ({ theme }: HeaderDesktopProps) => {
     const { t } = useTranslation();
-    const location = useLocation();
     const navigate = useNavigate();
     const siteInfo = useSiteInfo().data?.data;
     const userInfo = useUser().data?.data;
@@ -28,9 +28,7 @@ export const HeaderDesktop = ({ theme }: HeaderDesktopProps) => {
     const isDark = theme === 'dark';
     const linkTheme = isDark ? 'light' : 'blue';
 
-    const loginPath = location.pathname.startsWith('/auth')
-        ? '/auth/login'
-        : `/auth/login?redirect=${encodeURIComponent(location.pathname + location.search)}`;
+    const loginPath = useLoginLink();
 
     const navLinks = useNavLinks();
 

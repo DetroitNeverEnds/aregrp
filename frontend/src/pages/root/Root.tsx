@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex } from '@/components/ui/common/Flex';
 import { useLayoutSettings } from '@/hooks/useLayoutSettings';
@@ -14,7 +14,7 @@ import Container, { FeatureCard } from '@/components/ui/layout/Container';
 import { Column } from '@/components/ui/layout/Column';
 import { Divider } from '@/components/ui/common/Divider';
 import { FeedbackFormRow } from '@/components/ui/layout/FeedbackFormRow';
-import { useBuildingsCatalogueInfinite, usePremises } from '@/queries/premises';
+import { useBuildingsCatalogueAll, usePremises } from '@/queries/premises';
 import { Welcome } from './components/Welcome';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContainer';
@@ -42,27 +42,27 @@ export const Root = () => {
 
     useLayoutSettings(layoutSettings);
 
-    // const buildingsData = useBuildingsCatalogue({ page_size: Config.pageSizeMain }).data?.data;
     const premises = usePremises({ sale_type: 'sale', page_size: Config.pageSizeMain }).data?.data;
-    const {
-        data: buildingsData,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-    } = useBuildingsCatalogueInfinite({ page_size: Config.pageSizeMain });
-    const buildings = useMemo(
-        () => buildingsData?.pages.flatMap(page => page?.data?.items ?? []) ?? [],
-        [buildingsData],
+    const { data: buildingsCatalogueAll } = useBuildingsCatalogueAll();
+    const allBuildings = useMemo(
+        () => buildingsCatalogueAll?.data?.items ?? [],
+        [buildingsCatalogueAll],
+    );
+    const [buildingsCardLimit, setBuildingsCardLimit] = useState(Config.pageSizeMain);
+    const buildingsForCards = useMemo(
+        () => allBuildings.slice(0, buildingsCardLimit),
+        [allBuildings, buildingsCardLimit],
     );
     const mapsMarkers = useMemo(
         () =>
-            buildings.map(item => ({
+            allBuildings.map(item => ({
                 key: item.uuid,
                 coordinates: item.geo_point,
                 content: <BuildingMapMarker item={item} />,
             })),
-        [buildings],
+        [allBuildings],
     );
+    const canShowMoreBuildingCards = buildingsCardLimit < allBuildings.length;
 
     useEffect(() => {
         return () => {
@@ -121,10 +121,14 @@ export const Root = () => {
                         onMapClick={() => setActiveBuildingMarkerUuid(undefined)}
                     />
                     <CardContainer
-                        loadMore={hasNextPage ? () => fetchNextPage() : undefined}
-                        loadMoreLoading={isFetchingNextPage}
+                        loadMore={
+                            canShowMoreBuildingCards
+                                ? () =>
+                                      setBuildingsCardLimit(prev => prev + Config.pageSizeMain)
+                                : undefined
+                        }
                     >
-                        {buildings?.map(item => (
+                        {buildingsForCards.map(item => (
                             <BuildingCard key={item.uuid} item={item} />
                         ))}
                     </CardContainer>
