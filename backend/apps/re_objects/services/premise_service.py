@@ -268,19 +268,20 @@ def _video_api_urls(vid) -> tuple[Optional[str], Optional[str]]:
 
 
 def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
-    """Собирает медиа здания: один плоский список images + videos, сортировка по order."""
-    items: list[tuple[int, int, str, str, str]] = []
+    """Собирает медиа здания: один плоский список images + videos; основное фото первое, далее по order."""
+    items: list[tuple[int, int, int, str, str, str]] = []
     for img in building.images.all():
         url, full_url = _photo_api_urls(img)
         if url and full_url:
-            items.append((img.order, img.pk, "photo", url, full_url))
+            primary_rank = 0 if img.is_primary else 1
+            items.append((primary_rank, img.order, img.pk, "photo", url, full_url))
     for vid in building.videos.all():
         url, full_url = _video_api_urls(vid)
         if url and full_url:
-            items.append((vid.order, vid.pk, "video", url, full_url))
-    items.sort(key=lambda x: (x[0], x[1]))
+            items.append((1, vid.order, vid.pk, "video", url, full_url))
+    items.sort(key=lambda x: (x[0], x[1], x[2]))
     return [
-        BaseMediaItemOut(type=t, url=u, full_url=fu) for _, _, t, u, fu in items
+        BaseMediaItemOut(type=t, url=u, full_url=fu) for _, _, _, t, u, fu in items
     ]
 
 
@@ -343,13 +344,13 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
     """
     Собирает категории и медиа здания.
 
-    Возвращает (media_categories, media). Один плоский список images + videos, сортировка по order.
+    Возвращает (media_categories, media). Один плоский список images + videos; основное фото первое, далее по order.
 
     Исключение для GET /buildings/{uuid}: в media и url, и full_url равны «полному» URL (как full_url
     в списке зданий): фото — detail WebP, видео — оригинал ролика.
     """
     categories: set[str] = set()
-    items: list[tuple[int, int, str, str, str, str, Optional[str]]] = []
+    items: list[tuple[int, int, int, str, str, str, str, Optional[str]]] = []
 
     for img in building.images.all():
         url, full_url = _photo_api_urls(img)
@@ -357,19 +358,22 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
             cat = img.category.strip() if img.category else ""
             if cat:
                 categories.add(cat)
-            items.append((img.order, img.pk, "photo", url, full_url, cat, img.title or None))
+            primary_rank = 0 if img.is_primary else 1
+            items.append(
+                (primary_rank, img.order, img.pk, "photo", url, full_url, cat, img.title or None)
+            )
     for vid in building.videos.all():
         url, full_url = _video_api_urls(vid)
         if url and full_url:
             cat = vid.category.strip() if vid.category else ""
             if cat:
                 categories.add(cat)
-            items.append((vid.order, vid.pk, "video", url, full_url, cat, vid.title or None))
+            items.append((1, vid.order, vid.pk, "video", url, full_url, cat, vid.title or None))
 
-    items.sort(key=lambda x: (x[0], x[1]))
+    items.sort(key=lambda x: (x[0], x[1], x[2]))
     media = [
         BuildingMediaItemOut(type=t, url=fu, full_url=fu, category=cat, title=title)
-        for _, _, t, _, fu, cat, title in items
+        for _, _, _, t, _, fu, cat, title in items
     ]
     return (sorted(categories), media)
 
@@ -421,9 +425,12 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
 
 
 def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
-    """Собирает медиа помещения: плоский список с type, url, full_url. Видео помещений в модели пока нет."""
+    """Собирает медиа помещения: плоский список с type, url, full_url; основное фото первое. Видео в модели пока нет."""
     out: list[BaseMediaItemOut] = []
-    for img in sorted(p.images.all(), key=lambda x: (x.order, x.pk)):
+    for img in sorted(
+        p.images.all(),
+        key=lambda x: (0 if x.is_primary else 1, x.order, x.pk),
+    ):
         url, full_url = _photo_api_urls(img)
         if url and full_url:
             out.append(BaseMediaItemOut(type="photo", url=url, full_url=full_url))
@@ -565,7 +572,10 @@ def _floor_premise_availability_rows(
 ) -> list[tuple[Premise, bool, bool]]:
     """
     Для списка помещений этажа: (premise, is_available, is_occupied).
-    is_occupied — есть сделка аренды; is_available — по sale_type (rent/sale).
+    is_occupied берётся только из флагов помещения в админке, без сделок.
+    rent: всегда False (упрощение схемы).
+    sale: True если в продаже и не в аренду (available_for_sale и не available_for_rent).
+    is_available — по sale_type: свободно для аренды или для продажи (как раньше, со сделками/бронями).
     """
     if not premises:
         return []
@@ -576,12 +586,6 @@ def _floor_premise_availability_rows(
     today = timezone.now().date()
     now = timezone.now()
 
-    any_rent = set(
-        Deal.objects.filter(
-            premise_id__in=pids,
-            deal_type=Deal.DealType.RENT,
-        ).values_list('premise_id', flat=True)
-    )
     active_rent = set(
         Deal.objects.filter(
             premise_id__in=pids,
@@ -604,14 +608,15 @@ def _floor_premise_availability_rows(
 
     out: list[tuple[Premise, bool, bool]] = []
     for p in premises:
-        is_occ = p.pk in any_rent
         if st == rent:
+            is_occ = False
             is_avail = bool(
                 p.available_for_rent
                 and p.pk not in active_rent
                 and p.pk not in booked
             )
         else:
+            is_occ = bool(p.available_for_sale and not p.available_for_rent)
             is_avail = bool(
                 p.available_for_sale
                 and p.pk not in booked
@@ -629,7 +634,7 @@ async def get_premises_for_floor(
     """
     Список помещений на этаже здания.
 
-    sale_type: rent|sale (обязателен в API) — is_available; is_occupied — по сделкам аренды.
+    sale_type: rent|sale — is_available по типу сделки; is_occupied см. _floor_premise_availability_rows.
     """
     try:
         floor = await Floor.objects.select_related("building").aget(

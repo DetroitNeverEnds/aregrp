@@ -54,3 +54,4 @@ media/
 /svg_ready_full.svg
 /svg_ready_full (1).svg
 /Визуализация/
+/backend/.env.prod

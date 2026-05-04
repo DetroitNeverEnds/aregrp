@@ -47,14 +47,24 @@ class SingletonModel(models.Model):
             raise ValidationError("Может существовать только один экземпляр этой модели.")
 
 
-def main_settings_cases_pdf_upload_path(_instance, filename):
+def main_settings_document_privacy_pdf_path(_instance, _filename):
+    """Фиксированный путь в MEDIA (нейтральный каталог documents/)."""
+    return "documents/privacy.pdf"
+
+
+def main_settings_document_oplata_pdf_path(_instance, _filename):
+    """Фиксированный путь в MEDIA (нейтральный каталог documents/)."""
+    return "documents/oplata.pdf"
+
+
+def main_settings_cases_pdf_upload_path(_instance, _filename):
     """Путь загрузки PDF с кейсами (singleton — один файл, уникальное имя при замене)."""
-    return f"site_settings/cases/{uuid.uuid4().hex}.pdf"
+    return f"documents/cases/{uuid.uuid4().hex}.pdf"
 
 
-def investor_settings_pdf_upload_path(_instance, filename):
-    """Путь загрузки PDF для раздела «Инвесторам»."""
-    return f"site_settings/investors/{uuid.uuid4().hex}.pdf"
+def investor_settings_pdf_upload_path(_instance, _filename):
+    """Путь загрузки PDF для раздела «Инвесторам» (нейтральный префикс в media)."""
+    return f"documents/investors/{uuid.uuid4().hex}.pdf"
 
 
 class MainSettings(SingletonModel):
@@ -112,6 +122,28 @@ class MainSettings(SingletonModel):
         upload_to=main_settings_cases_pdf_upload_path,
         verbose_name="Кейсы (PDF)",
         help_text="PDF-файл с кейсами для раздела «Кейсы»",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+    )
+    privacy_pdf = models.FileField(
+        upload_to=main_settings_document_privacy_pdf_path,
+        verbose_name="Политика обработки персональных данных и конфиденциальность",
+        help_text=(
+            "PDF сохраняется в media/documents/privacy.pdf. "
+            "В API /main-info — путь /privacy.pdf (на проде nginx отдаёт файл по короткому URL)."
+        ),
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
+    )
+    oplata_pdf = models.FileField(
+        upload_to=main_settings_document_oplata_pdf_path,
+        verbose_name="Бронирование и оплата, правила возврата",
+        help_text=(
+            "PDF сохраняется в media/documents/oplata.pdf. "
+            "В API /main-info — путь /oplata.pdf (на проде nginx отдаёт файл по короткому URL)."
+        ),
         blank=True,
         null=True,
         validators=[FileExtensionValidator(allowed_extensions=["pdf"])],

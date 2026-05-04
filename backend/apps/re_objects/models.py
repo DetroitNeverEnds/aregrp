@@ -542,7 +542,7 @@ class PremiseImage(MediaFilesMixin, models.Model):
     class Meta:
         verbose_name = "Изображение помещения"
         verbose_name_plural = "Изображения помещений"
-        ordering = ['premise', 'order', 'created_at']
+        ordering = ['premise', '-is_primary', 'order', 'created_at']
         indexes = [
             models.Index(fields=['premise', 'is_primary']),
         ]
@@ -669,7 +669,7 @@ class BuildingImage(MediaFilesMixin, models.Model):
     class Meta:
         verbose_name = "Изображение здания"
         verbose_name_plural = "Изображения зданий"
-        ordering = ['building', 'order', 'created_at']
+        ordering = ['building', '-is_primary', 'order', 'created_at']
         indexes = [
             models.Index(fields=['building', 'is_primary']),
             models.Index(fields=['building', 'category']),

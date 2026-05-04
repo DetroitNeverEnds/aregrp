@@ -15,6 +15,8 @@ class MainSettingsOut(Schema):
     org_name: str | None = None
     inn: str | None = None
     cases: str | None = None
+    privacy_pdf: str | None = None
+    oplata_pdf: str | None = None
 
 
 

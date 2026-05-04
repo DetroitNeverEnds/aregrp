@@ -34,7 +34,7 @@ auth_router = Router()
     "/register",
     response={200: AuthOut, 400: ProblemDetail},
     summary="Регистрация пользователя",
-    description="Создаёт пользователя (individual или agent). Для агентов обязательны organization_name и inn. Возвращает JWT токены; опционально use_cookies.",
+    description="Создаёт пользователя (individual или agent). Для агентов обязательно organization_name; inn опционален. Возвращает JWT токены; опционально use_cookies.",
 )
 async def register(request, data: UserRegistrationIn):  # pylint: disable=unused-argument
     """
@@ -52,7 +52,7 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
     - `password1`: Пароль
     - `password2`: Подтверждение пароля
     - `organization_name`: Название организации (обязательно для агентов)
-    - `inn`: ИНН (обязательно для агентов)
+    - `inn`: ИНН (опционально для агентов)
     - `use_cookies`: Установить токены в HTTP-Only cookies (опционально)
     
     **Пример запроса для физического лица:**
@@ -103,7 +103,7 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
     
     **Коды ошибок:**
     - `400`: Пароли не совпадают, пользователь уже существует, ошибка валидации пароля,
-             не указаны обязательные поля для агента (organization_name, inn)
+             не указано обязательное поле для агента (organization_name)
     """
     try:
         # Валидация типа пользователя
@@ -124,14 +124,6 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
                     code=AccountsErrorCodes.MISSING_ORGANIZATION_NAME,
                     title="Missing organization name",
                     detail="Organization name is required for agents",
-                    instance="/api/v1/auth/register"
-                )
-            if not data.inn:
-                return 400, create_accounts_error(
-                    status=400,
-                    code=AccountsErrorCodes.MISSING_INN,
-                    title="Missing INN",
-                    detail="INN is required for agents",
                     instance="/api/v1/auth/register"
                 )
         
@@ -197,7 +189,7 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
             
             if data.user_type == 'agent':
                 user.organization_name = data.organization_name
-                user.inn = data.inn
+                user.inn = (data.inn or "").strip()
             
             await user.asave()
             

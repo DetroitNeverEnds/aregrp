@@ -3,6 +3,7 @@
 """
 import pytest
 from asgiref.sync import sync_to_async
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from apps.site_settings.models import ContactsSettings, MainSettings
 
@@ -65,6 +66,31 @@ class TestMainInfo:
         assert data["max_link"] == "https://max.ru/u/79990001122"
         assert data["telegram_link"] == "https://t.me/test"
         assert data["cases"] is None
+        assert data["privacy_pdf"] is None
+        assert data["oplata_pdf"] is None
+
+    async def test_main_info_canonical_paths_when_documents_uploaded(self, api_client, db):
+        """privacy_pdf и oplata_pdf в ответе — короткие пути сайта, не URL storage."""
+        pdf_bytes = b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n"
+
+        def create_with_documents():
+            obj = MainSettings(phone="+79990007788", email="docs@example.com", description="D")
+            obj.save()
+            obj.privacy_pdf.save(
+                "drop.pdf",
+                SimpleUploadedFile("drop.pdf", pdf_bytes, content_type="application/pdf"),
+            )
+            obj.oplata_pdf.save(
+                "drop.pdf",
+                SimpleUploadedFile("drop.pdf", pdf_bytes, content_type="application/pdf"),
+            )
+
+        await sync_to_async(create_with_documents)()
+        response = await api_client.get("/site-settings/main-info")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["privacy_pdf"] == "/privacy.pdf"
+        assert data["oplata_pdf"] == "/oplata.pdf"
 
     @pytest.fixture
     async def main_settings_fallback(self, db):

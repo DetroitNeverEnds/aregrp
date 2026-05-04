@@ -740,7 +740,7 @@
             }
           }
         },
-        "description": "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, telegram_link), описание, название организации (org_name), ИНН, кейсы (cases — URL PDF из storage или null).",
+        "description": "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, telegram_link), описание, название организации (org_name), ИНН, кейсы (cases — URL PDF из storage или null), privacy_pdf и oplata_pdf — \"/privacy.pdf\" и \"/oplata.pdf\" если файлы загружены иначе null (короткие пути для nginx).",
         "tags": [
           "Site Settings"
         ]
@@ -1626,6 +1626,12 @@
                     "title": "Number",
                     "type": "string"
                   },
+                  "title": {
+                    "default": "",
+                    "description": "Название помещения (по желанию)",
+                    "title": "Title",
+                    "type": "string"
+                  },
                   "description": {
                     "default": "",
                     "description": "Описание",
@@ -1810,7 +1816,6 @@
           "ACCOUNTS_PASSWORD_VALIDATION_FAILED",
           "ACCOUNTS_INVALID_USER_TYPE",
           "ACCOUNTS_MISSING_ORGANIZATION_NAME",
-          "ACCOUNTS_MISSING_INN",
           "ACCOUNTS_UNAUTHORIZED",
           "ACCOUNTS_TOKEN_EXPIRED",
           "ACCOUNTS_INVALID_TOKEN",
@@ -2009,6 +2014,7 @@
         "type": "object"
       },
       "BookingOut": {
+        "description": "Бронь: premise_name — название помещения (title), не номер для схемы этажа.",
         "properties": {
           "id": {
             "title": "Id",
@@ -2082,6 +2088,7 @@
         "type": "object"
       },
       "PremiseBriefOut": {
+        "description": "Кратко о помещении в ЛК: name — название (title), не номер для схемы этажа.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -2471,6 +2478,28 @@
               }
             ],
             "title": "Cases"
+          },
+          "privacy_pdf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Privacy Pdf"
+          },
+          "oplata_pdf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oplata Pdf"
           }
         },
         "required": [
@@ -2643,7 +2672,7 @@
         "type": "object"
       },
       "PremiseListOut": {
-        "description": "Помещение в списке.\n\nprice — устаревшее поле для обратной совместимости (как раньше: от sale_type/флагов).\nsale_price — полная стоимость продажи, если помещение в продаже; иначе null.\nrent_price — аренда за месяц, если в аренде; иначе null.",
+        "description": "Помещение в списке.\n\nname — название помещения (Premise.title), не номер для схемы этажа.\nprice — устаревшее поле для обратной совместимости (как раньше: от sale_type/флагов).\nsale_price — полная стоимость продажи, если помещение в продаже; иначе null.\nrent_price — аренда за месяц, если в аренде; иначе null.",
         "properties": {
           "uuid": {
             "title": "Uuid",
@@ -3181,7 +3210,7 @@
         "type": "object"
       },
       "FloorPremiseOut": {
-        "description": "Помещение на этаже: номер/название, площадь, стоимость, доступность и занятость по аренде.",
+        "description": "Помещение на этаже: name — номер для подписи на схеме (room_number), плюс площадь, цена, доступность.",
         "properties": {
           "uuid": {
             "title": "Uuid",

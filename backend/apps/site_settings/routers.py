@@ -20,13 +20,22 @@ def _file_field_url(field_file) -> str | None:
     return field_file.url
 
 
+def _canonical_public_pdf_path(field_file, path: str) -> str | None:
+    """Короткий путь на сайте (nginx отдаёт файл), без раскрытия MEDIA."""
+    if not field_file or not getattr(field_file, "name", None):
+        return None
+    return path
+
+
 @site_settings_router.get(
     "/main-info",
     response={200: MainSettingsOut, 404: ProblemDetail},
     summary="Получить основные настройки сайта",
     description=(
         "Возвращает основные настройки: контакты (phone, display_phone, email, max_link, "
-        "telegram_link), описание, название организации (org_name), ИНН, кейсы (cases — URL PDF из storage или null)."
+        "telegram_link), описание, название организации (org_name), ИНН, кейсы "
+        "(cases — URL PDF из storage или null), privacy_pdf и oplata_pdf — "
+        "\"/privacy.pdf\" и \"/oplata.pdf\" если файлы загружены иначе null (короткие пути для nginx)."
     ),
 )
 async def get_main_settings(request):
@@ -38,6 +47,7 @@ async def get_main_settings(request):
     - Описание и название организации: description, org_name
     - ИНН: inn
     - Кейсы: cases — ссылка на PDF из DEFAULT_FILE_STORAGE (часто относительная /media/… или полный URL в S3)
+    - Документы: privacy_pdf, oplata_pdf — короткие пути «/privacy.pdf», «/oplata.pdf», если файл загружен
 
     Эндпоинт публичный, аутентификация не требуется.
     При отсутствии настроек в БД возвращает 404.
@@ -56,6 +66,8 @@ async def get_main_settings(request):
                 org_name=settings.org_name or None,
                 inn=settings.inn or None,
                 cases=_file_field_url(settings.cases_pdf),
+                privacy_pdf=_canonical_public_pdf_path(settings.privacy_pdf, "/privacy.pdf"),
+                oplata_pdf=_canonical_public_pdf_path(settings.oplata_pdf, "/oplata.pdf"),
             )
 
         return 200, await sync_to_async(build_out)()
