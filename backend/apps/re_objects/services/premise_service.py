@@ -657,7 +657,7 @@ async def get_premises_for_floor(
 
     items: list[FloorPremiseOut] = []
     for p, is_avail, is_occ in rows:
-        if p.available_for_sale and not p.available_for_rent:
+        if sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
             label_price = _format_floor_label_price(p.full_sell_price)
         else:
             label_price = _format_floor_label_price(p.price_per_month)
