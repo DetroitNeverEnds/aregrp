@@ -123,8 +123,7 @@ export const Root = () => {
                     <CardContainer
                         loadMore={
                             canShowMoreBuildingCards
-                                ? () =>
-                                      setBuildingsCardLimit(prev => prev + Config.pageSizeMain)
+                                ? () => setBuildingsCardLimit(prev => prev + Config.pageSizeMain)
                                 : undefined
                         }
                     >

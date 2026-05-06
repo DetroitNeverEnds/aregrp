@@ -57,7 +57,7 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
                                 key={fullSrc}
                                 className={mediaClass}
                                 src={fullSrc}
-                                controls={false}
+                                controls
                                 muted={true}
                                 playsInline
                                 autoPlay

@@ -102,7 +102,12 @@ const PremiseDetailsCardContent = ({
                     {premise.name} - {buildingTitle}
                 </title>
             </Helmet>
-            <Gallery premise={premise} fit="contain" className={styles.premiseDetails__gallery} />
+            <Gallery
+                premise={premise}
+                fit="contain"
+                className={styles.premiseDetails__gallery}
+                type="full"
+            />
             <Card background="gray" gap={40} align="start" fullWidth>
                 <Flex gap={6} align="start" fullWidth>
                     <Flex
