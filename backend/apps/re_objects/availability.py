@@ -4,7 +4,7 @@
 Фильтры каталога (query available, список зданий для фильтра): «свободно» — только без активной брони
 (expires_at > now); сделки аренды/продажи в эти фильтры не входят.
 
-Аннотации _active_rent_period / _has_sale_deal / _any_rent_deal — для has_tenant, схемы этажа и т.п., не для
+Аннотации _active_rent_period / _has_sale_deal / _any_rent_deal — для внутренних проверок и фильтров, не для
 фильтра available.
 
 Занятость по схеме этажа (is_occupied): см. premise_service._floor_premise_availability_rows — только флаги помещения,
@@ -77,6 +77,47 @@ def annotate_premise_availability(qs: QuerySet[Premise]):
         _has_sale_deal=Exists(sale_deal_subquery()),
         _active_booking=Exists(active_booking_subquery()),
     )
+
+
+def has_tenant_value(*, available_for_rent: bool) -> bool:
+    """
+    Значение has_tenant для списков/детали помещений.
+
+    Бизнес-правило: если помещение недоступно для аренды, считаем что арендатор есть.
+    """
+    return premise_is_occupied_by_rent_availability(available_for_rent=available_for_rent)
+
+
+def premise_is_occupied_by_rent_availability(*, available_for_rent: bool) -> bool:
+    """
+    Унифицированное правило «занято ли помещение» по флагам помещения.
+
+    Если помещение недоступно для аренды, считаем его занятым.
+    """
+    return not bool(available_for_rent)
+
+
+def floor_is_occupied_value(
+    sale_type: str,
+    *,
+    available_for_sale: bool,
+    available_for_rent: bool,
+) -> bool:
+    """
+    Значение is_occupied для схемы этажа.
+
+    Текущая бизнес-логика:
+    - rent: всегда False (упрощение отображения);
+    - sale: True, если помещение в продаже и не предлагается в аренду.
+    """
+    if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
+        return False
+    if sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
+        return bool(
+            available_for_sale
+            and premise_is_occupied_by_rent_availability(available_for_rent=available_for_rent)
+        )
+    return False
 
 
 def premise_filter_for_buildings_q(
