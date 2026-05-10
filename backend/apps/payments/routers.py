@@ -12,7 +12,7 @@ payments_router = Router(tags=['Payments'])
 
 @payments_router.post(
     '/',
-    response={201: PaymentCreateOut, 401: ProblemDetail, 502: ProblemDetail},
+    response={201: PaymentCreateOut, 400: ProblemDetail, 401: ProblemDetail, 404: ProblemDetail, 409: ProblemDetail, 502: ProblemDetail},
     auth=jwt_auth,
     summary='Создать платеж за бронирование',
     description='Создает платеж YooKassa для бронирования помещения по premise_id.',

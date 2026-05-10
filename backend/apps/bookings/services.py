@@ -6,7 +6,6 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
-from apps.deals.models import Deal
 from apps.re_objects.models import Premise
 
 from .errors import BookingsErrorCodes, create_bookings_error
@@ -69,39 +68,7 @@ def create_booking(
             ),
         )
 
-    today = timezone.now().date()
-    if deal_type == rent:
-        if Deal.objects.filter(
-            premise=premise,
-            deal_type=Deal.DealType.RENT,
-            rent_expires_at__gte=today,
-        ).exists():
-            return None, (
-                400,
-                create_bookings_error(
-                    status=400,
-                    code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
-                    title="Premise not available for booking",
-                    detail="The premise has an active rent deal for the current period",
-                    instance="/api/v1/bookings",
-                ),
-            )
-    elif deal_type == sale and Deal.objects.filter(
-        premise=premise,
-        deal_type=Deal.DealType.SALE,
-    ).exists():
-        return None, (
-            400,
-            create_bookings_error(
-                status=400,
-                code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
-                title="Premise not available for booking",
-                detail="The premise already has a sale deal",
-                instance="/api/v1/bookings",
-            ),
-        )
-
-    if deal_type == rent and not premise.available_for_rent:
+    if deal_type == rent and not premise.is_available_for_rent():
         return None, (
             400,
             create_bookings_error(
@@ -113,7 +80,7 @@ def create_booking(
             ),
         )
 
-    if deal_type == sale and not premise.available_for_sale:
+    if deal_type == sale and not premise.is_available_for_sale():
         return None, (
             400,
             create_bookings_error(
