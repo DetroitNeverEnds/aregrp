@@ -56,6 +56,9 @@ class ErrorCode(str, Enum):
     # Deals (личный кабинет / сделки)
     DEALS_INVALID_DEAL_TYPE = "DEALS_INVALID_DEAL_TYPE"
 
+    # Payments
+    PAYMENTS_CREATION_ERROR = "PAYMENTS_CREATION_ERROR"
+
 
 class ProblemDetail(Schema):
     """
