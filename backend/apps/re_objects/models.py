@@ -385,6 +385,12 @@ class Premise(models.Model):
         city_name = self.city.name if self.city else "—"
         return f"{self.room_number or self.title or 'Помещение'} ({city_name}{building_info}{floor_info})"
 
+    def is_available_for_sale(self) -> bool:
+        return self.available_for_sale is True
+
+    def is_available_for_rent(self) -> bool:
+        return self.available_for_rent is True
+
     def clean(self):
         super().clean()
         errors = {}
