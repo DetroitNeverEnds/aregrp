@@ -14,7 +14,7 @@ class TestPremisePriceValidation:
             city=city,
             description='',
         )
-        floor = Floor.objects.create(building=building, number=1)
+        floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
         p = Premise(
             building=building,
             city=city,
@@ -36,7 +36,7 @@ class TestPremisePriceValidation:
             city=city,
             description='',
         )
-        floor = Floor.objects.create(building=building, number=1)
+        floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
         p = Premise(
             building=building,
             city=city,
@@ -58,7 +58,7 @@ class TestPremisePriceValidation:
             city=city,
             description='',
         )
-        floor = Floor.objects.create(building=building, number=1)
+        floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
         p = Premise.objects.create(
             building=building,
             city=city,
@@ -79,7 +79,7 @@ class TestPremisePriceValidation:
             city=city,
             description='',
         )
-        floor = Floor.objects.create(building=building, number=1)
+        floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
         p = Premise.objects.create(
             building=building,
             city=city,
@@ -100,7 +100,7 @@ class TestPremisePriceValidation:
             city=city,
             description='',
         )
-        floor = Floor.objects.create(building=building, number=1)
+        floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
         p = Premise(
             building=building,
             city=city,
@@ -123,7 +123,7 @@ class TestPremisePriceValidation:
             city=city,
             description='',
         )
-        floor = Floor.objects.create(building=building, number=1)
+        floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
         p = Premise.objects.create(
             building=building,
             city=city,

@@ -33,7 +33,7 @@ def test_premise_image_save_writes_card_and_detail(city):
         city=city,
         description='',
     )
-    floor = Floor.objects.create(building=building, number=1)
+    floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
     premise = Premise.objects.create(
         building=building,
         city=city,
@@ -63,7 +63,7 @@ def test_photo_api_urls_prefers_card_and_detail(city):
         city=city,
         description='',
     )
-    floor = Floor.objects.create(building=building, number=1)
+    floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
     premise = Premise.objects.create(
         building=building,
         city=city,

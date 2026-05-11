@@ -55,7 +55,7 @@ def _create_building_with_premise(city):
         city=city,
         description='Тестовое здание',
     )
-    floor = Floor.objects.create(building=building, number=1)
+    floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
     premise = Premise.objects.create(
         building=building,
         city=city,
