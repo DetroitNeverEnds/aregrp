@@ -77,7 +77,11 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
 
     return (
         <div className={styles.officeCard}>
-            <Gallery premise={item} className={styles.officeCard__gallery} onClick={navigateToOffice} />
+            <Gallery
+                premise={item}
+                className={styles.officeCard__gallery}
+                onClick={navigateToOffice}
+            />
 
             <Flex direction="column" gap={20} className={styles.officeCard__content}>
                 <Flex
@@ -86,7 +90,11 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                     fullWidth
                     className={styles.officeCard__content__namePrice}
                 >
-                    <Text variant="24-med" className={styles.officeCard__name} onClick={navigateToOffice}>
+                    <Text
+                        variant="24-med"
+                        className={styles.officeCard__name}
+                        onClick={navigateToOffice}
+                    >
                         {name}
                     </Text>
                     <Flex align="end" gap={8}>
