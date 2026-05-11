@@ -13,6 +13,7 @@ import {
     setActiveBuildingMarkerUuid,
     subscribeActiveBuildingMarker,
 } from '@/lib/buildingMapMarkerActiveStore';
+import { NavLink } from 'react-router-dom';
 
 export type BuildingMapMarkerProps = {
     item: BuildingCatalogue;
@@ -39,6 +40,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
         media,
     } = item;
     const previewUrl = media.find(m => m.type === 'photo')?.url;
+    const buildingLink = `/building/${uuid}`;
 
     const active = useSyncExternalStore(
         subscribeActiveBuildingMarker,
@@ -92,9 +94,14 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
             {active && (
                 <div className={styles.tooltip}>
                     <Flex align="start" gap={6} className={styles.tooltip__card}>
-                        <Text variant="14-med" color="gray-100">
-                            {address}
-                        </Text>
+                        <Link
+                            size="lg"
+                            theme="black"
+                            className={styles.tooltip__card__title}
+                            to={buildingLink}
+                        >
+                            {title || address}
+                        </Link>
                         {minSalePrice && (
                             <Text variant="12-reg" color="gray-70">
                                 от {formatPrice(Number(minSalePrice))}
@@ -106,12 +113,9 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                             </Text>
                         )}
                         {previewUrl && (
-                            <img
-                                src={previewUrl}
-                                alt=""
-                                className={styles.tooltip__card__image}
-                                draggable={false}
-                            />
+                            <NavLink to={buildingLink}>
+                                <img src={previewUrl} className={styles.tooltip__card__image} />
+                            </NavLink>
                         )}
                         {minSalePrice && (
                             <Link

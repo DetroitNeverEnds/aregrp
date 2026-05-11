@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { Button } from '@/components/ui/common/Button';
 import { Flex } from '@/components/ui/common/Flex';
 import { Text } from '@/components/ui/common/Text';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
@@ -7,6 +6,7 @@ import styles from './OfficeCard.module.scss';
 import type { PremiseListItem, SaleType } from '@/api';
 import { Divider } from '@/components/ui/common/Divider';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 export interface OfficeCardProps {
     item: PremiseListItem;
@@ -19,6 +19,7 @@ export interface OfficeCardProps {
  */
 export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     const {
         uuid,
@@ -55,6 +56,10 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
         }
         return `/building/${building_uuid}?${new URLSearchParams(search)}`;
     }, [building_uuid, floor, type, uuid]);
+    const navigateToOffice = () => {
+        navigate(link);
+        window.scrollTo({ top: 0 });
+    };
 
     const traits = useMemo(() => {
         return [
@@ -72,7 +77,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
 
     return (
         <div className={styles.officeCard}>
-            <Gallery premise={item} className={styles.officeCard__gallery} />
+            <Gallery premise={item} className={styles.officeCard__gallery} onClick={navigateToOffice} />
 
             <Flex direction="column" gap={20} className={styles.officeCard__content}>
                 <Flex
@@ -81,7 +86,9 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                     fullWidth
                     className={styles.officeCard__content__namePrice}
                 >
-                    <Text variant="24-med">{name}</Text>
+                    <Text variant="24-med" className={styles.officeCard__name} onClick={navigateToOffice}>
+                        {name}
+                    </Text>
                     <Flex align="end" gap={8}>
                         {(type === 'any' || type == 'sale') && sale_price && (
                             <Text variant="20-med" color="gray-70" align="right">
@@ -99,7 +106,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
 
                 <Divider />
 
-                <Flex direction="row" align="start" justify="between" gap={40} fullWidth>
+                <Flex direction="row" align="start" gap={40} fullWidth>
                     <Flex gap={20} align="start">
                         {traits.map(trait => (
                             <Flex key={trait.label} direction="row">
@@ -109,15 +116,6 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                             </Flex>
                         ))}
                     </Flex>
-                    <Button
-                        to={link}
-                        onClick={() => window.scrollTo({ top: 0 })}
-                        size="lg"
-                        variant="primary"
-                        icon="arrow-button"
-                        iconColor="primary-yellow"
-                        onlyIcon
-                    />
                 </Flex>
             </Flex>
         </div>

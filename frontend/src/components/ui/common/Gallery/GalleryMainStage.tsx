@@ -10,8 +10,7 @@ export type GalleryMainStageProps = {
     variant: 'preview' | 'full';
     fit: 'cover' | 'contain';
     className?: string;
-    /** В режиме preview: клик открывает полный просмотр */
-    onOpen?: () => void;
+    onClick?: () => void;
 };
 
 export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
@@ -19,7 +18,7 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
     variant,
     fit,
     className,
-    onOpen,
+    onClick,
 }) => {
     const mediaClass = classNames(styles.media, styles[`media__fit-${fit}`], className);
     const fullSrc = item.full_url ?? item.url;
@@ -30,9 +29,9 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
                 <div
                     key={item.url}
                     className={classNames(styles.mainStage, {
-                        [styles.mainStage__clickable]: onOpen !== undefined,
+                        [styles.mainStage__clickable]: onClick !== undefined,
                     })}
-                    onClick={onOpen}
+                    onClick={onClick}
                 >
                     <img src={item.url} alt="" className={mediaClass} />
                     {item.type === 'video' && (
@@ -42,7 +41,10 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
                                 icon="play"
                                 onlyIcon
                                 iconColor="gray-100"
-                                onClick={onOpen}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    onClick?.();
+                                }}
                             />
                         </div>
                     )}
@@ -50,7 +52,13 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
             )}
             {variant === 'full' && (
                 <>
-                    <div className={styles.mainStage} key={fullSrc}>
+                    <div
+                        className={classNames(styles.mainStage, {
+                            [styles.mainStage__clickable]: onClick !== undefined,
+                        })}
+                        key={fullSrc}
+                        onClick={onClick}
+                    >
                         {item.type === 'photo' && <img src={fullSrc} className={mediaClass} />}
                         {item.type === 'video' && (
                             <video

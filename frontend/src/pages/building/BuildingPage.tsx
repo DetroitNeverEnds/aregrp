@@ -30,6 +30,7 @@ export const BuildingPage = () => {
                     <QueryBoundary
                         query={buildingDetailQ}
                         render={data => <BuildingContent data={data} />}
+                        onRetry="default"
                     />
                 ) : (
                     <ErrorLoading message={t('errors.somethingWrong')} />

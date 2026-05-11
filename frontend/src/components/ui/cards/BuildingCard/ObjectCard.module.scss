@@ -8,6 +8,7 @@
         border-radius: 20px;
         overflow: hidden;
         position: relative;
+        cursor: pointer;
     }
 
     &__image {
@@ -25,6 +26,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            cursor: pointer;
         }
     }
 

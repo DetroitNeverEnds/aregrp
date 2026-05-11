@@ -16,8 +16,8 @@ export type GalleryProps = {
     building?: BuildingCatalogue;
 
     type?: 'thumbs' | 'full';
-    /** Только для `type="thumbs"`: открывать модалку по клику на превью */
-    canOpenFull?: boolean;
+    /** Только для `type="thumbs"`: либо открыть модалку, либо выполнить колбэк по клику на превью */
+    onClick?: (() => void) | 'openFull';
     size?: 'm' | 'l';
     fit?: 'cover' | 'contain';
     className?: string;
@@ -31,7 +31,7 @@ type GalleryBodyProps = Omit<GalleryProps, 'media' | 'premise' | 'building'> & {
 const GalleryBody = ({
     media,
     type = 'thumbs',
-    canOpenFull = true,
+    onClick = 'openFull',
     size = 'm',
     fit = 'cover',
     className,
@@ -41,11 +41,13 @@ const GalleryBody = ({
 
     const variant = type === 'thumbs' ? 'preview' : 'full';
 
-    const openModal = () => {
-        if (type === 'thumbs' && canOpenFull) {
-            setModalOpen(true);
-        }
-    };
+    const isOpenFullClick = type === 'thumbs' && onClick === 'openFull';
+    const stageClickHandler =
+        onClick === 'openFull'
+            ? type === 'thumbs'
+                ? () => setModalOpen(true)
+                : undefined
+            : onClick;
 
     const safeIndex = Math.min(currentMediaIndex, Math.max(0, media.length - 1));
     const current = media[safeIndex];
@@ -56,7 +58,7 @@ const GalleryBody = ({
                 item={current}
                 variant={variant}
                 fit={fit}
-                onOpen={type === 'thumbs' && canOpenFull ? openModal : undefined}
+                onClick={stageClickHandler}
             />
             <GalleryControls
                 currentIndex={safeIndex}
@@ -65,7 +67,7 @@ const GalleryBody = ({
                 onNext={() => setCurrentMediaIndex(i => (i + 1) % media.length)}
                 size={size}
             />
-            {type === 'thumbs' && canOpenFull && (
+            {isOpenFullClick && (
                 <GalleryModal
                     open={modalOpen}
                     onClose={() => setModalOpen(false)}
@@ -84,7 +86,7 @@ export const Gallery = ({
     premise,
     building,
     type = 'thumbs',
-    canOpenFull = true,
+    onClick = 'openFull',
     size = 'm',
     fit = 'cover',
     className,
@@ -110,7 +112,7 @@ export const Gallery = ({
             key={JSON.stringify(media)}
             media={media}
             type={type}
-            canOpenFull={canOpenFull}
+            onClick={onClick}
             size={size}
             fit={fit}
             className={className}

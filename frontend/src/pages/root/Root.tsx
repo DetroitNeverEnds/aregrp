@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex } from '@/components/ui/common/Flex';
 import { useLayoutSettings } from '@/hooks/useLayoutSettings';
@@ -27,6 +27,7 @@ import { BuildingMapMarker } from './components/BuildingMapMarker/BuildingMapMar
 import { setActiveBuildingMarkerUuid } from '@/lib/buildingMapMarkerActiveStore';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { Columns } from '@/components/ui/layout/Columns';
+import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 
 const layoutSettings: LayoutSettings = {
     header: {
@@ -43,26 +44,8 @@ export const Root = () => {
     useLayoutSettings(layoutSettings);
 
     const premises = usePremises({ sale_type: 'sale', page_size: Config.pageSizeMain }).data?.data;
-    const { data: buildingsCatalogueAll } = useBuildingsCatalogueAll();
-    const allBuildings = useMemo(
-        () => buildingsCatalogueAll?.data?.items ?? [],
-        [buildingsCatalogueAll],
-    );
+    const buildingsCatalogueAllQ = useBuildingsCatalogueAll();
     const [buildingsCardLimit, setBuildingsCardLimit] = useState(Config.pageSizeMain);
-    const buildingsForCards = useMemo(
-        () => allBuildings.slice(0, buildingsCardLimit),
-        [allBuildings, buildingsCardLimit],
-    );
-    const mapsMarkers = useMemo(
-        () =>
-            allBuildings.map(item => ({
-                key: item.uuid,
-                coordinates: item.geo_point,
-                content: <BuildingMapMarker item={item} />,
-            })),
-        [allBuildings],
-    );
-    const canShowMoreBuildingCards = buildingsCardLimit < allBuildings.length;
 
     useEffect(() => {
         return () => {
@@ -115,22 +98,45 @@ export const Root = () => {
                             </Text>
                         </Flex>
                     </>
-                    <YandexMap
-                        markers={mapsMarkers}
-                        className={styles.map}
-                        onMapClick={() => setActiveBuildingMarkerUuid(undefined)}
+                    <QueryBoundary
+                        query={buildingsCatalogueAllQ}
+                        render={data => {
+                            const allBuildings = data.items ?? [];
+                            const buildingsForCards = allBuildings.slice(0, buildingsCardLimit);
+                            const mapsMarkers = allBuildings.map(item => ({
+                                key: item.uuid,
+                                coordinates: item.geo_point,
+                                content: <BuildingMapMarker item={item} />,
+                            }));
+                            const canShowMoreBuildingCards =
+                                buildingsCardLimit < allBuildings.length;
+
+                            return (
+                                <>
+                                    <YandexMap
+                                        markers={mapsMarkers}
+                                        className={styles.map}
+                                        onMapClick={() => setActiveBuildingMarkerUuid(undefined)}
+                                    />
+                                    <CardContainer
+                                        loadMore={
+                                            canShowMoreBuildingCards
+                                                ? () =>
+                                                      setBuildingsCardLimit(
+                                                          prev => prev + Config.pageSizeMain,
+                                                      )
+                                                : undefined
+                                        }
+                                    >
+                                        {buildingsForCards.map(item => (
+                                            <BuildingCard key={item.uuid} item={item} />
+                                        ))}
+                                    </CardContainer>
+                                </>
+                            );
+                        }}
+                        onRetry="default"
                     />
-                    <CardContainer
-                        loadMore={
-                            canShowMoreBuildingCards
-                                ? () => setBuildingsCardLimit(prev => prev + Config.pageSizeMain)
-                                : undefined
-                        }
-                    >
-                        {buildingsForCards.map(item => (
-                            <BuildingCard key={item.uuid} item={item} />
-                        ))}
-                    </CardContainer>
                 </Container>
 
                 {/* Office Buildings Benefits */}
