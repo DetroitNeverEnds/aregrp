@@ -7,7 +7,7 @@
    Ответ: { items: [...], total, page, page_size, total_pages }.    Параметры: sale_type, available (только брони), building, building_uuids, цена/площадь, order_by, page, page_size.
 2) GET /api/v1/premises/buildings — список зданий для фильтра; sale_type, available (только брони).
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
-4) GET /api/v1/buildings/{uuid} — информация о здании (media_categories, media).
+4) GET /api/v1/buildings/{uuid} — информация о здании (floors, media_categories, media).
 5) GET /api/v1/floors/{building_uuid}/{floor_number} — этаж; обязательный query sale_type (rent|sale) для is_available.
 6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ...). Всегда: sale_price, rent_price (по флагам available_for_sale / available_for_rent).
@@ -111,7 +111,7 @@ async def building_list(
     response={200: BuildingDetailOut, 404: ProblemDetail},
     summary="Здание по UUID",
     description=(
-        "Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, "
+        "Деталь: uuid, title, address, description, floors, year_built, min_sale_price, "
         "min_rent_price, media_categories, media. В media для детали здания поля url и full_url "
         "совпадают и равны «полному» URL (detail WebP для фото, оригинал для видео)."
     ),

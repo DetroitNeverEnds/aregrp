@@ -171,9 +171,9 @@ class BuildingAdmin(admin.ModelAdmin):
 @admin.register(Floor)
 class FloorAdmin(admin.ModelAdmin):
     """Админка для этажей."""
-    list_display = ('building', 'number', 'description', 'created_at')
+    list_display = ('building', 'number', 'title', 'created_at')
     list_filter = ('building__city', 'created_at')
-    search_fields = ('building__name', 'description', 'number')
+    search_fields = ('building__name', 'title', 'number')
     ordering = ('building', 'number')
     autocomplete_fields = ['building']
     readonly_fields = ('created_at', 'updated_at')

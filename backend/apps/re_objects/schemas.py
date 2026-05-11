@@ -98,8 +98,17 @@ class BuildingListOut(Schema):
     media: list[BaseMediaItemOut]
 
 
+class BuildingFloorOut(Schema):
+    """Этаж в деталке здания: ключ для запроса этажа и доступность по типам сделки."""
+
+    key: str
+    title: str
+    has_sale: bool
+    has_rent: bool
+
+
 class BuildingDetailOut(Schema):
-    """Здание (деталь): uuid, title, address, description, geo_point, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.
+    """Здание (деталь): uuid, title, address, description, geo_point, floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
     В media для этой ручки url и full_url совпадают (оба — «полный» URL медиа).
     """
@@ -109,7 +118,7 @@ class BuildingDetailOut(Schema):
     address: str
     description: str
     geo_point: Optional[BuildingGeoPointOut] = None
-    total_floors: Optional[int] = None
+    floors: list[BuildingFloorOut]
     year_built: Optional[int] = None
     min_sale_price: Optional[int] = None
     min_rent_price: Optional[int] = None

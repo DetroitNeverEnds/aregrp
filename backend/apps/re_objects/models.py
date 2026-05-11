@@ -194,11 +194,11 @@ class Floor(models.Model):
         verbose_name="Номер этажа",
         help_text="Номер этажа (может быть отрицательным для подвалов)"
     )
-    description = models.CharField(
+    title = models.CharField(
         max_length=500,
-        verbose_name="Описание",
-        blank=True,
-        help_text="Описание этажа (например, 'Офисный этаж')"
+        verbose_name="Название этажа",
+        blank=False,
+        help_text="Название этажа (например, 'Офисный этаж')"
     )
     schema_svg = models.FileField(
         upload_to=floor_schema_svg_upload_path,
@@ -222,6 +222,24 @@ class Floor(models.Model):
 
     def __str__(self):
         return f"{self.building.name}, этаж {self.number}"
+
+    def to_building_floor_payload(self) -> dict[str, object]:
+        """Данные этажа для GET /buildings/{uuid}."""
+        return {
+            'key': str(self.number),
+            'title': self.title,
+            'has_sale': self.premises.filter(available_for_sale=True).exists(),
+            'has_rent': self.premises.filter(available_for_rent=True).exists(),
+        }
+
+    def clean(self):
+        super().clean()
+        if not self.title or not self.title.strip():
+            raise ValidationError({'title': 'Укажите название этажа.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Premise(models.Model):

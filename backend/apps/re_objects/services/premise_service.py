@@ -37,6 +37,7 @@ from ..models import Building, Floor, Premise
 from ..schemas import (
     BaseMediaItemOut,
     BuildingDetailOut,
+    BuildingFloorOut,
     BuildingGeoPointOut,
     BuildingListOut,
     BuildingListResponse,
@@ -306,6 +307,12 @@ def building_to_list_out(b: Building) -> BuildingListOut:
     )
 
 
+@sync_to_async
+def _get_building_floor_items(building_id: int) -> list[BuildingFloorOut]:
+    floors = Floor.objects.filter(building_id=building_id).order_by('number')
+    return [BuildingFloorOut(**floor.to_building_floor_payload()) for floor in floors]
+
+
 def get_buildings_queryset():
     """Строит queryset зданий с помещениями и аннотациями min_rent, min_sale."""
     return (
@@ -385,7 +392,7 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
 
 async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
     """
-    Здание по UUID: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media.
+    Здание по UUID: uuid, title, address, description, floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
     Только здания с помещениями. Использует aget() и prefetch images, videos.
     В media для детали url и full_url одинаковы (полный URL медиа).
@@ -411,6 +418,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
         return None
 
     media_categories, media = _build_building_detail_media(b)
+    floors = await _get_building_floor_items(b.id)
     min_rent_val = int(b.min_rent) if b.min_rent is not None else None
     min_sale_val = int(b.min_sale) if b.min_sale is not None else None
 
@@ -420,7 +428,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
         address=b.address,
         description=b.description or "",
         geo_point=_building_geo_point_out(b),
-        total_floors=b.total_floors,
+        floors=floors,
         year_built=b.year_built,
         min_sale_price=min_sale_val,
         min_rent_price=min_rent_val,
