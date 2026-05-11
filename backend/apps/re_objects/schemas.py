@@ -86,7 +86,11 @@ class BuildingGeoPointOut(Schema):
 
 
 class BuildingListOut(Schema):
-    """Здание в списке: uuid, title, address, description, geo_point, min_sale_price, min_rent_price, media."""
+    """Здание в списке: uuid, title, address, description, geo_point, min_sale_price, min_rent_price, media.
+
+    При фильтре sale_type в /buildings/ отдается только релевантное поле цены:
+    rent -> min_rent_price, sale -> min_sale_price.
+    """
 
     uuid: str
     title: str

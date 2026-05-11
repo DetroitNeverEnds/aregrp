@@ -39,15 +39,13 @@ from ..schemas import (
     BuildingDetailOut,
     BuildingFloorOut,
     BuildingGeoPointOut,
-    BuildingListOut,
-    BuildingListResponse,
     BuildingMediaItemOut,
     BuildingOptionOut,
     FloorPremiseOut,
     FloorResponseOut,
+    PremiseDetailOut,
     PremiseListOut,
     PremiseListResponse,
-    PremiseDetailOut,
 )
 
 
@@ -291,20 +289,26 @@ def _build_building_media(building: Building) -> list[BaseMediaItemOut]:
     ]
 
 
-def building_to_list_out(b: Building) -> BuildingListOut:
-    """Маппинг Building -> BuildingListOut (uuid, title, address, description, min_sale_price, min_rent_price, media)."""
+def building_to_list_out(b: Building, sale_type: Optional[str] = None) -> dict:
+    """Маппинг Building -> dict с условной выдачей min_*_price по sale_type."""
     min_rent_val = int(b.min_rent) if b.min_rent is not None else None
     min_sale_val = int(b.min_sale) if b.min_sale is not None else None
-    return BuildingListOut(
+    payload = dict(
         uuid=str(b.uuid),
         title=b.name,
         address=b.address,
         description=b.description or "",
         geo_point=_building_geo_point_out(b),
-        min_sale_price=min_sale_val,
-        min_rent_price=min_rent_val,
         media=_build_building_media(b),
     )
+    if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
+        payload["min_rent_price"] = min_rent_val
+    elif sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
+        payload["min_sale_price"] = min_sale_val
+    else:
+        payload["min_sale_price"] = min_sale_val
+        payload["min_rent_price"] = min_rent_val
+    return payload
 
 
 @sync_to_async
@@ -313,10 +317,16 @@ def _get_building_floor_items(building_id: int) -> list[BuildingFloorOut]:
     return [BuildingFloorOut(**floor.to_building_floor_payload()) for floor in floors]
 
 
-def get_buildings_queryset():
+def get_buildings_queryset(sale_type: Optional[str] = None):
     """Строит queryset зданий с помещениями и аннотациями min_rent, min_sale."""
+    qs = Building.objects.filter(premises__isnull=False)
+    if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
+        qs = qs.filter(premises__available_for_rent=True)
+    elif sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
+        qs = qs.filter(premises__available_for_sale=True)
+
     return (
-        Building.objects.filter(premises__isnull=False)
+        qs
         .prefetch_related("images", "videos")
         .annotate(
             min_rent=Min(
@@ -336,20 +346,21 @@ def get_buildings_queryset():
 async def get_buildings(
     page: int = 1,
     page_size: int = 6,
-) -> BuildingListResponse:
+    sale_type: Optional[str] = None,
+) -> dict:
     """
     Список зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
 
     Пагинация: page, page_size. Ответ: { items, total, page, page_size, total_pages }.
     """
-    qs = get_buildings_queryset()
+    qs = get_buildings_queryset(sale_type=sale_type)
     result = await get_paginated_list(
         qs,
         page=page,
         page_size=page_size,
-        to_out=building_to_list_out,
+        to_out=lambda building: building_to_list_out(building, sale_type=sale_type),
     )
-    return BuildingListResponse(**result)
+    return result
 
 
 def _build_building_detail_media(building: Building) -> tuple[list[str], list[BuildingMediaItemOut]]:
