@@ -98,7 +98,7 @@ def create_building_with_floor(
             total_floors=total_floors,
             year_built=year_built,
         )
-        Floor.objects.create(building=building, number=1, description="Этаж 1")
+        Floor.objects.create(building=building, number=1, title="Этаж 1")
 
         for i, f in enumerate(img_files, start=1):
             BuildingImage.objects.create(
@@ -134,7 +134,7 @@ def create_floor_in_building(
     request,
     building_uuid: UUID,
     number: int = Form(..., description="Номер этажа"),
-    description: str = Form("", description="Описание этажа"),
+    title: str = Form(..., description="Название этажа"),
 ):
     """Создаёт этаж в здании."""
     try:
@@ -148,13 +148,13 @@ def create_floor_in_building(
     floor = Floor.objects.create(
         building=building,
         number=number,
-        description=description or "",
+        title=title,
     )
     return 200, {
         "id": floor.id,
         "building_uuid": str(building.uuid),
         "number": floor.number,
-        "description": floor.description,
+        "title": floor.title,
     }
 
 

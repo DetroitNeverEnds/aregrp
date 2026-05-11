@@ -117,10 +117,79 @@ class TestBuildingDetail:
         assert data["uuid"] == str(building.uuid)
         assert data["title"] == building.name
         assert data["address"] == building.address
+        assert "total_floors" not in data
+        assert "floors" in data
+        assert isinstance(data["floors"], list)
+        assert len(data["floors"]) == 1
+        assert data["floors"][0] == {
+            "key": "1",
+            "title": "Этаж 1",
+            "has_sale": False,
+            "has_rent": True,
+        }
         assert "media_categories" in data
         assert "media" in data
         assert isinstance(data["media_categories"], list)
         assert isinstance(data["media"], list)
+
+    async def test_building_detail_floors_availability_flags(self, client, city):
+        """floors: has_sale/has_rent считаются только по флагам помещений на каждом этаже."""
+
+        @sync_to_async
+        def setup():
+            building = Building.objects.create(
+                name='БЦ Этажи деталь',
+                address='ул. Этажная, 1',
+                city=city,
+                description='',
+            )
+            floor1 = Floor.objects.create(building=building, number=1, title='Офисы')
+            floor2 = Floor.objects.create(building=building, number=2, title='Продажа')
+            floor3 = Floor.objects.create(building=building, number=3, title='Микс')
+            Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor1,
+                area=Decimal('20'),
+                price_per_month=50_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='101',
+            )
+            Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor2,
+                area=Decimal('25'),
+                price_per_month=0,
+                price_per_sqm=200_000,
+                available_for_rent=False,
+                available_for_sale=True,
+                room_number='201',
+            )
+            Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor3,
+                area=Decimal('30'),
+                price_per_month=80_000,
+                price_per_sqm=220_000,
+                available_for_rent=True,
+                available_for_sale=True,
+                room_number='301',
+            )
+            return building
+
+        building = await setup()
+        response = await client.get(f"/buildings/{building.uuid}")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["floors"] == [
+            {"key": "1", "title": "Офисы", "has_sale": False, "has_rent": True},
+            {"key": "2", "title": "Продажа", "has_sale": True, "has_rent": False},
+            {"key": "3", "title": "Микс", "has_sale": True, "has_rent": True},
+        ]
 
     async def test_building_detail_media_url_equals_full_url(self, client, city):
         """Деталь здания: в media поля url и full_url совпадают (оба как full_url в списке)."""
@@ -142,7 +211,7 @@ class TestBuildingDetail:
                 city=city,
                 description='',
             )
-            fl = Floor.objects.create(building=b, number=1)
+            fl = Floor.objects.create(building=b, number=1, title='Этаж 1')
             Premise.objects.create(
                 building=b,
                 city=city,
@@ -184,7 +253,7 @@ class TestBuildingDetail:
                 city=city,
                 description='',
             )
-            fl = Floor.objects.create(building=b, number=1)
+            fl = Floor.objects.create(building=b, number=1, title='Этаж 1')
             Premise.objects.create(
                 building=b,
                 city=city,
@@ -355,7 +424,7 @@ class TestPremisesList:
                 city=city,
                 description="",
             )
-            floor = Floor.objects.create(building=building, number=1)
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
             p = Premise.objects.create(
                 building=building,
                 city=city,
@@ -417,7 +486,7 @@ class TestPremiseDetail:
                 city=city,
                 description="",
             )
-            floor = Floor.objects.create(building=building, number=1)
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
             return Premise.objects.create(
                 building=building,
                 city=city,
@@ -505,7 +574,7 @@ class TestFloorPremises:
                 city=city,
                 description='',
             )
-            floor = Floor.objects.create(building=building, number=1)
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
             premise = Premise.objects.create(
                 building=building,
                 city=city,
@@ -578,7 +647,7 @@ class TestFloorPremises:
                 city=city,
                 description='',
             )
-            floor = Floor.objects.create(building=building, number=2)
+            floor = Floor.objects.create(building=building, number=2, title='Этаж 2')
             premise = Premise.objects.create(
                 building=building,
                 city=city,
@@ -620,7 +689,7 @@ class TestFloorPremises:
                 city=city,
                 description='',
             )
-            floor = Floor.objects.create(building=building, number=1)
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
             premise = Premise.objects.create(
                 building=building,
                 city=city,
