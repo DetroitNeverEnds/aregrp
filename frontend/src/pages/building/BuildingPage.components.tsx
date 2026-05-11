@@ -258,19 +258,19 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                 style: styles.floorSchema__legend__free,
             },
             {
-                title: t(
-                    saleTypeForFloor === 'sale'
-                        ? 'pages.building.legend.unavailable_sale'
-                        : 'pages.building.legend.unavailable_rent',
-                ),
+                title: t('pages.building.legend.unavailable'),
                 style: styles.floorSchema__legend__unavailable,
             },
             {
-                title: t('pages.building.legend.other'),
-                style: styles.floorSchema__legend__other,
+                title: t('pages.building.legend.windows'),
+                style: styles.floorSchema__legend__windows,
+            },
+            {
+                title: t('pages.building.legend.partitions'),
+                style: styles.floorSchema__legend__partitions,
             },
         ],
-        [saleTypeForFloor, t],
+        [t],
     );
 
     const buildingPageSearch = useMemo(() => {

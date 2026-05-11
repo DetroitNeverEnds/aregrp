@@ -52,6 +52,14 @@
             @include square;
             background-color: $other-room-color;
         }
+        &__windows {
+            @include square;
+            background-color: rgb(143 182 249);
+        }
+        &__partitions {
+            @include square;
+            background-color: rgb(217 217 217);
+        }
     }
 }
 
