@@ -8,6 +8,8 @@ import { type BuildingCatalogue } from '@/api';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useDevice } from '@/hooks';
 
 export interface BuildingCardProps {
     item: BuildingCatalogue;
@@ -17,6 +19,8 @@ export interface BuildingCardProps {
  * Компонент карточки здания (building)
  */
 export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
+    const { t } = useTranslation();
+    const device = useDevice();
     const { getLinkToCatalogue } = useFilterSearchParams();
     const navigate = useNavigate();
     const {
@@ -113,7 +117,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                             size="md"
                             width="max"
                         >
-                            Каталог продажи
+                            {t(`components.ObjectCard.saleCatalog_${device}`)}
                         </Button>
                     )}
                 </Column>
@@ -128,7 +132,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                             size="md"
                             width="max"
                         >
-                            Каталог аренды
+                            {t(`components.ObjectCard.rentCatalog_${device}`)}
                         </Button>
                     )}
                 </Column>

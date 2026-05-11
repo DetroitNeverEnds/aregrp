@@ -38,7 +38,7 @@ import { SingleSelect } from '@/components/ui/common/input/Select';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { Sheet } from '@/components/ui/common/Sheet';
 import { BetweenRowLayout } from '@/components/ui/layout/BetweenRowLayout';
-import { useGadget } from '@/hooks';
+import { useDevice } from '@/hooks';
 import { Link } from '@/components/ui/common/Link';
 import { useLoginLink } from '@/lib/getAuthLink';
 
@@ -360,7 +360,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
         [],
     );
 
-    const gadget = useGadget();
+    const device = useDevice();
 
     return (
         <>
@@ -370,7 +370,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
             <Flex direction="row" gap={24} fullWidth align="start">
                 {selectedPremise && (
                     <>
-                        {gadget === 'desktop' && (
+                        {device === 'desktop' && (
                             <Card
                                 withShadow
                                 gap={12}
@@ -396,7 +396,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                 />
                             </Card>
                         )}
-                        {gadget === 'mobile' && (
+                        {device === 'mobile' && (
                             <Sheet
                                 open={true}
                                 onClose={() =>

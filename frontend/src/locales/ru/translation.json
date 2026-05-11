@@ -130,9 +130,18 @@
             "nothingFound": "Ничего не найдено",
             "searchCenters": "Поиск бизнес-центров"
         },
+        "ObjectCard": {
+            "saleCatalog_desktop": "Каталог продажи",
+            "rentCatalog_desktop": "Каталог аренды",
+            "saleCatalog_mobile": "Продажа",
+            "rentCatalog_mobile": "Аренда"
+        },
         "OfficeCard": {
             "hasTennant": "Есть",
             "noTennant": "Нет"
+        },
+        "YandexMap": {
+            "interactionHint": "Нажмите на карту для взаимодействия"
         }
     },
     "errors": {

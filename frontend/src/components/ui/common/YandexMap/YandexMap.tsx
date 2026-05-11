@@ -9,7 +9,8 @@ import {
 } from '@/lib/yamaps';
 import { YaMapsCustomization } from './customization';
 import classNames from 'classnames';
-import { useEffect, useMemo, useRef, type PropsWithChildren } from 'react';
+import { useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     getActiveBuildingMarkerUuid,
     subscribeActiveBuildingMarker,
@@ -18,6 +19,8 @@ import _ from 'lodash';
 import { CoordinateToMapCoordinates, type Coordinate } from '@/lib/map/types';
 import Config from '@/config';
 import type { LngLat } from '@yandex/ymaps3-types';
+import Text from '../Text';
+import { Flex } from '../Flex';
 
 const FOCUS_MARKER_VERTICAL_OFFSET_PX = 140;
 const WEB_MERCATOR_TILE_SIZE = 256;
@@ -60,6 +63,9 @@ export const YandexMap = ({
     apiKey,
     className,
 }: YandexMapProps) => {
+    const { t } = useTranslation();
+    const [mapActive, setMapActive] = useState(false);
+    const wrapperRef = useRef<HTMLDivElement | null>(null);
     const mapRef = useRef<React.ElementRef<typeof YMap> | null>(null);
     const markersRef = useRef(markers);
     const markerEntitiesRef = useRef<Record<string, React.ElementRef<typeof YMapMarker> | null>>(
@@ -169,11 +175,29 @@ export const YandexMap = ({
         };
     }, [staticMap]);
 
-    return (
-        <div className={classNames(styles.wrapper, className)}>
+    useEffect(() => {
+        if (staticMap) {
+            setMapActive(false);
+            return;
+        }
+        const onPointerDown = (event: PointerEvent) => {
+            const target = event.target;
+            if (!(target instanceof Node)) return;
+            if (!wrapperRef.current?.contains(target)) {
+                setMapActive(false);
+            }
+        };
+        document.addEventListener('pointerdown', onPointerDown, true);
+        return () => {
+            document.removeEventListener('pointerdown', onPointerDown, true);
+        };
+    }, [staticMap]);
+
+    const mapContent = useMemo(
+        () => (
             <YMap
                 ref={mapRef}
-                location={initialMapLocationRef.current}
+                location={initialMapLocationRef.current!}
                 className={classNames(styles.map)}
                 key={apiKey}
                 behaviors={staticMap ? [] : undefined}
@@ -204,6 +228,25 @@ export const YandexMap = ({
                     );
                 })}
             </YMap>
+        ),
+        [apiKey, markers, onMapClick, staticMap],
+    );
+
+    return (
+        <div className={classNames(styles.wrapper, className)} ref={wrapperRef}>
+            {mapContent}
+            {!staticMap && !mapActive && (
+                <div
+                    className={styles.interactionOverlay}
+                    onPointerDown={() => {
+                        setMapActive(true);
+                    }}
+                >
+                    <Flex className={styles.interactionHint}>
+                        <Text variant="12-reg">{t('components.YandexMap.interactionHint')}</Text>
+                    </Flex>
+                </div>
+            )}
         </div>
     );
 };
