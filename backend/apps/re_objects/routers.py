@@ -28,7 +28,6 @@ from api.schemas import ProblemDetail
 from .errors import ReObjectsErrorCodes, create_re_objects_error
 from .schemas import (
     BuildingDetailOut,
-    BuildingListResponse,
     BuildingOptionOut,
     FloorResponseOut,
     PremiseDetailOut,
@@ -92,17 +91,29 @@ async def building_filter_list(
 
 @buildings_router.get(
     "/",
-    response={200: BuildingListResponse},
+    response={200: dict},
     summary="Список зданий",
-    description="Список зданий с помещениями. Пагинация: page, page_size. Ответ: items, total, page, page_size, total_pages.",
+    description=(
+        "Список зданий с помещениями. Пагинация: page, page_size. "
+        f"Опционально sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}. "
+        "Ответ: items, total, page, page_size, total_pages."
+    ),
 )
 async def building_list(
     request,
+    sale_type: Optional[str] = Query(
+        None,
+        description=(
+            f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — только здания с помещениями под аренду; "
+            f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — только под продажу"
+        ),
+    ),
     page: int = Query(1, ge=1, description="Номер страницы"),
     page_size: int = Query(6, ge=1, le=100, description="Размер страницы"),
 ):
     """Список зданий с пагинацией. Ответ: items, total, page, page_size, total_pages."""
-    result = await get_buildings(page=page, page_size=page_size)
+    st = _validated_floor_sale_type(sale_type) if sale_type is not None else None
+    result = await get_buildings(page=page, page_size=page_size, sale_type=st)
     return 200, result
 
 

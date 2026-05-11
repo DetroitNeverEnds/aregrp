@@ -101,6 +101,154 @@ class TestBuildingsList:
         assert data["page"] == 1
         assert data["page_size"] == 6
 
+    async def test_buildings_list_sale_type_rent_filters_and_price_field(self, client, city):
+        """sale_type=rent: только здания с арендой и только min_rent_price."""
+
+        @sync_to_async
+        def setup():
+            rent_building = Building.objects.create(
+                name='БЦ Только аренда',
+                address='ул. Арендная, 1',
+                city=city,
+                description='',
+            )
+            rent_floor = Floor.objects.create(building=rent_building, number=1, title='Аренда')
+            Premise.objects.create(
+                building=rent_building,
+                city=city,
+                floor=rent_floor,
+                area=Decimal('40'),
+                price_per_month=80_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='101',
+            )
+
+            sale_building = Building.objects.create(
+                name='БЦ Только продажа',
+                address='ул. Продажная, 2',
+                city=city,
+                description='',
+            )
+            sale_floor = Floor.objects.create(building=sale_building, number=1, title='Продажа')
+            Premise.objects.create(
+                building=sale_building,
+                city=city,
+                floor=sale_floor,
+                area=Decimal('50'),
+                price_per_sqm=200_000,
+                available_for_rent=False,
+                available_for_sale=True,
+                room_number='201',
+            )
+            return str(rent_building.uuid), str(sale_building.uuid)
+
+        rent_uuid, sale_uuid = await setup()
+        response = await client.get("/buildings/?sale_type=rent")
+
+        assert response.status_code == 200
+        data = response.json()
+        ids = {item["uuid"] for item in data["items"]}
+        assert rent_uuid in ids
+        assert sale_uuid not in ids
+        for item in data["items"]:
+            assert "min_rent_price" in item
+            assert "min_sale_price" not in item
+
+    async def test_buildings_list_sale_type_sale_filters_and_price_field(self, client, city):
+        """sale_type=sale: только здания с продажей и только min_sale_price."""
+
+        @sync_to_async
+        def setup():
+            rent_building = Building.objects.create(
+                name='БЦ Аренда only',
+                address='ул. Rent, 1',
+                city=city,
+                description='',
+            )
+            rent_floor = Floor.objects.create(building=rent_building, number=1, title='Аренда')
+            Premise.objects.create(
+                building=rent_building,
+                city=city,
+                floor=rent_floor,
+                area=Decimal('35'),
+                price_per_month=70_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='R-01',
+            )
+
+            sale_building = Building.objects.create(
+                name='БЦ Sale only',
+                address='ул. Sale, 2',
+                city=city,
+                description='',
+            )
+            sale_floor = Floor.objects.create(building=sale_building, number=1, title='Продажа')
+            Premise.objects.create(
+                building=sale_building,
+                city=city,
+                floor=sale_floor,
+                area=Decimal('45'),
+                price_per_sqm=210_000,
+                available_for_rent=False,
+                available_for_sale=True,
+                room_number='S-01',
+            )
+            return str(rent_building.uuid), str(sale_building.uuid)
+
+        rent_uuid, sale_uuid = await setup()
+        response = await client.get("/buildings/?sale_type=sale")
+
+        assert response.status_code == 200
+        data = response.json()
+        ids = {item["uuid"] for item in data["items"]}
+        assert sale_uuid in ids
+        assert rent_uuid not in ids
+        for item in data["items"]:
+            assert "min_sale_price" in item
+            assert "min_rent_price" not in item
+
+    async def test_buildings_list_without_sale_type_returns_both_prices(self, client, city):
+        """Без sale_type в каждом item присутствуют оба поля min_*_price."""
+
+        @sync_to_async
+        def setup():
+            building = Building.objects.create(
+                name='БЦ Без фильтра',
+                address='ул. Общая, 1',
+                city=city,
+                description='',
+            )
+            floor = Floor.objects.create(building=building, number=1, title='Этаж')
+            Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('60'),
+                price_per_month=90_000,
+                price_per_sqm=220_000,
+                available_for_rent=True,
+                available_for_sale=True,
+                room_number='301',
+            )
+
+        await setup()
+        response = await client.get("/buildings/")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["items"]
+        for item in data["items"]:
+            assert "min_sale_price" in item
+            assert "min_rent_price" in item
+
+    async def test_buildings_list_invalid_sale_type_returns_422(self, client):
+        """Невалидный sale_type -> 422."""
+        response = await client.get("/buildings/?sale_type=invalid")
+
+        assert response.status_code == 422
+
 
 
 @pytest.mark.django_db
