@@ -451,7 +451,6 @@ class TestBuildingsList:
         assert no_match_uuid not in ids
 
 
-
 @pytest.mark.django_db
 class TestBuildingDetail:
     """GET /buildings/{uuid} — здание по UUID."""
