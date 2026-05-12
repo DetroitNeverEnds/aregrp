@@ -249,6 +249,206 @@ class TestBuildingsList:
 
         assert response.status_code == 422
 
+    async def test_buildings_list_filters_by_building_uuids(self, client, city):
+        """building_uuids ограничивает выдачу только указанными зданиями."""
+
+        @sync_to_async
+        def setup():
+            b1 = Building.objects.create(
+                name='БЦ UUID 1',
+                address='ул. UUID, 1',
+                city=city,
+                description='',
+            )
+            f1 = Floor.objects.create(building=b1, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=b1,
+                city=city,
+                floor=f1,
+                area=Decimal('40'),
+                price_per_month=70_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='U1',
+            )
+
+            b2 = Building.objects.create(
+                name='БЦ UUID 2',
+                address='ул. UUID, 2',
+                city=city,
+                description='',
+            )
+            f2 = Floor.objects.create(building=b2, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=b2,
+                city=city,
+                floor=f2,
+                area=Decimal('45'),
+                price_per_month=75_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='U2',
+            )
+            return str(b1.uuid), str(b2.uuid)
+
+        b1_uuid, b2_uuid = await setup()
+        response = await client.get(f"/buildings/?building_uuids={b1_uuid}")
+
+        assert response.status_code == 200
+        data = response.json()
+        ids = {item["uuid"] for item in data["items"]}
+        assert b1_uuid in ids
+        assert b2_uuid not in ids
+
+    async def test_buildings_list_filters_by_rent_price_range(self, client, city):
+        """sale_type=rent + min_price/max_price фильтруют здания по цене аренды помещений."""
+
+        @sync_to_async
+        def setup():
+            low = Building.objects.create(
+                name='БЦ Дешевле',
+                address='ул. Price, 1',
+                city=city,
+                description='',
+            )
+            low_floor = Floor.objects.create(building=low, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=low,
+                city=city,
+                floor=low_floor,
+                area=Decimal('45'),
+                price_per_month=60_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='P-LOW',
+            )
+
+            high = Building.objects.create(
+                name='БЦ Дороже',
+                address='ул. Price, 2',
+                city=city,
+                description='',
+            )
+            high_floor = Floor.objects.create(building=high, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=high,
+                city=city,
+                floor=high_floor,
+                area=Decimal('50'),
+                price_per_month=130_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='P-HIGH',
+            )
+            return str(low.uuid), str(high.uuid)
+
+        low_uuid, high_uuid = await setup()
+        response = await client.get("/buildings/?sale_type=rent&min_price=100000&max_price=150000")
+
+        assert response.status_code == 200
+        ids = {item["uuid"] for item in response.json()["items"]}
+        assert high_uuid in ids
+        assert low_uuid not in ids
+
+    async def test_buildings_list_filters_by_area_range(self, client, city):
+        """min_area/max_area фильтруют здания по площади связанных помещений."""
+
+        @sync_to_async
+        def setup():
+            small = Building.objects.create(
+                name='БЦ Малый',
+                address='ул. Area, 1',
+                city=city,
+                description='',
+            )
+            small_floor = Floor.objects.create(building=small, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=small,
+                city=city,
+                floor=small_floor,
+                area=Decimal('35'),
+                price_per_month=80_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='A-S',
+            )
+
+            large = Building.objects.create(
+                name='БЦ Большой',
+                address='ул. Area, 2',
+                city=city,
+                description='',
+            )
+            large_floor = Floor.objects.create(building=large, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=large,
+                city=city,
+                floor=large_floor,
+                area=Decimal('90'),
+                price_per_month=120_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='A-L',
+            )
+            return str(small.uuid), str(large.uuid)
+
+        small_uuid, large_uuid = await setup()
+        response = await client.get("/buildings/?min_area=80&max_area=100")
+
+        assert response.status_code == 200
+        ids = {item["uuid"] for item in response.json()["items"]}
+        assert large_uuid in ids
+        assert small_uuid not in ids
+
+    async def test_buildings_list_combined_sale_type_price_area_filters(self, client, city):
+        """Комбинация sale_type=sale + price + area применяет фильтры к одному помещению здания."""
+
+        @sync_to_async
+        def setup():
+            matched = Building.objects.create(
+                name='БЦ Комбо подходит',
+                address='ул. Combo, 1',
+                city=city,
+                description='',
+            )
+            matched_floor = Floor.objects.create(building=matched, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=matched,
+                city=city,
+                floor=matched_floor,
+                area=Decimal('70'),
+                price_per_sqm=200_000,
+                available_for_rent=False,
+                available_for_sale=True,
+                room_number='C-OK',
+            )
+
+            no_match = Building.objects.create(
+                name='БЦ Комбо не подходит',
+                address='ул. Combo, 2',
+                city=city,
+                description='',
+            )
+            no_match_floor = Floor.objects.create(building=no_match, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=no_match,
+                city=city,
+                floor=no_match_floor,
+                area=Decimal('45'),
+                price_per_sqm=120_000,
+                available_for_rent=False,
+                available_for_sale=True,
+                room_number='C-NO',
+            )
+            return str(matched.uuid), str(no_match.uuid)
+
+        matched_uuid, no_match_uuid = await setup()
+        response = await client.get("/buildings/?sale_type=sale&min_price=13000000&min_area=60")
+
+        assert response.status_code == 200
+        ids = {item["uuid"] for item in response.json()["items"]}
+        assert matched_uuid in ids
+        assert no_match_uuid not in ids
 
 
 @pytest.mark.django_db

@@ -318,15 +318,15 @@ def _get_building_floor_items(building_id: int) -> list[BuildingFloorOut]:
 
 
 def get_buildings_queryset(sale_type: Optional[str] = None):
-    """Строит queryset зданий с помещениями и аннотациями min_rent, min_sale."""
-    qs = Building.objects.filter(premises__isnull=False)
+    """Строит queryset зданий с фильтрацией по связанным помещениям и аннотациями min_rent, min_sale."""
+    premise_q = Q(premises__isnull=False)
     if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
-        qs = qs.filter(premises__available_for_rent=True)
+        premise_q &= Q(premises__available_for_rent=True)
     elif sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
-        qs = qs.filter(premises__available_for_sale=True)
+        premise_q &= Q(premises__available_for_sale=True)
 
     return (
-        qs
+        Building.objects.filter(premise_q)
         .prefetch_related("images", "videos")
         .annotate(
             min_rent=Min(
@@ -347,13 +347,40 @@ async def get_buildings(
     page: int = 1,
     page_size: int = 6,
     sale_type: Optional[str] = None,
+    building_uuids: Optional[list[UUID]] = None,
+    min_price: Optional[int] = None,
+    max_price: Optional[int] = None,
+    min_area: Optional[Decimal] = None,
+    max_area: Optional[Decimal] = None,
 ) -> dict:
     """
     Список зданий: uuid, title, address, description, min_sale_price, min_rent_price, media.
 
+    Фильтры any-premise применяются по связанным помещениям:
+    - building_uuids
+    - min/max price (sale -> full_sell_price, иначе -> price_per_month)
+    - min/max area
     Пагинация: page, page_size. Ответ: { items, total, page, page_size, total_pages }.
     """
     qs = get_buildings_queryset(sale_type=sale_type)
+    if building_uuids:
+        qs = qs.filter(uuid__in=building_uuids)
+
+    price_field = (
+        "premises__full_sell_price"
+        if sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE
+        else "premises__price_per_month"
+    )
+    if min_price is not None:
+        qs = qs.filter(**{f"{price_field}__gte": min_price})
+    if max_price is not None:
+        qs = qs.filter(**{f"{price_field}__lte": max_price})
+    if min_area is not None:
+        qs = qs.filter(premises__area__gte=min_area)
+    if max_area is not None:
+        qs = qs.filter(premises__area__lte=max_area)
+
+    qs = qs.distinct().order_by("name")
     result = await get_paginated_list(
         qs,
         page=page,

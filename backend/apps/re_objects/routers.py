@@ -94,7 +94,8 @@ async def building_filter_list(
     response={200: dict},
     summary="Список зданий",
     description=(
-        "Список зданий с помещениями. Пагинация: page, page_size. "
+        "Список зданий с помещениями. Фильтры: building_uuids, min/max price, min/max area. "
+        "Пагинация: page, page_size. "
         f"Опционально sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}. "
         "Ответ: items, total, page, page_size, total_pages."
     ),
@@ -110,10 +111,30 @@ async def building_list(
     ),
     page: int = Query(1, ge=1, description="Номер страницы"),
     page_size: int = Query(6, ge=1, le=100, description="Размер страницы"),
+    building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
+    min_price: Optional[int] = Query(
+        None,
+        description="Минимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
+    ),
+    max_price: Optional[int] = Query(
+        None,
+        description="Максимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
+    ),
+    min_area: Optional[Decimal] = Query(None, description="Минимальная площадь, м²"),
+    max_area: Optional[Decimal] = Query(None, description="Максимальная площадь, м²"),
 ):
     """Список зданий с пагинацией. Ответ: items, total, page, page_size, total_pages."""
     st = _validated_floor_sale_type(sale_type) if sale_type is not None else None
-    result = await get_buildings(page=page, page_size=page_size, sale_type=st)
+    result = await get_buildings(
+        page=page,
+        page_size=page_size,
+        sale_type=st,
+        building_uuids=parse_building_uuids(building_uuids),
+        min_price=min_price,
+        max_price=max_price,
+        min_area=min_area,
+        max_area=max_area,
+    )
     return 200, result
 
 
