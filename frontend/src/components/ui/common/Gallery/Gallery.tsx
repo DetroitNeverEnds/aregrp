@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import styles from './Gallery.module.scss';
 import type { BuildingCatalogue, PremiseListItem } from '@/api';
@@ -27,6 +27,18 @@ type GalleryBodyProps = Omit<GalleryProps, 'media' | 'premise' | 'building'> & {
     media: GalleryMedia[];
 };
 
+const preloadedImageUrls = new Set<string>();
+
+const preloadImage = (url?: string) => {
+    if (!url || preloadedImageUrls.has(url)) {
+        return;
+    }
+
+    const image = new Image();
+    image.src = url;
+    preloadedImageUrls.add(url);
+};
+
 /** Локальное состояние слайда/модалки; `key={media.length}` снаружи сбрасывает индекс при смене числа элементов. */
 const GalleryBody = ({
     media,
@@ -51,6 +63,25 @@ const GalleryBody = ({
 
     const safeIndex = Math.min(currentMediaIndex, Math.max(0, media.length - 1));
     const current = media[safeIndex];
+
+    useEffect(() => {
+        if (media.length === 0) {
+            return;
+        }
+
+        const prevIndex = (safeIndex - 1 + media.length) % media.length;
+        const nextIndex = (safeIndex + 1) % media.length;
+        const candidates = [media[safeIndex], media[prevIndex], media[nextIndex]];
+
+        candidates.forEach(item => {
+            if (item?.type !== 'photo') {
+                return;
+            }
+
+            preloadImage(item.url);
+            preloadImage(item.full_url);
+        });
+    }, [media, safeIndex]);
 
     return (
         <div className={classNames(styles.container, styles[`container__size-${size}`], className)}>
