@@ -1,8 +1,10 @@
+from uuid import UUID
+
 from ninja import Schema
 
 
 class PaymentCreateIn(Schema):
-    premise_id: int
+    premise_uuid: UUID
 
 
 class PaymentAmountOut(Schema):
