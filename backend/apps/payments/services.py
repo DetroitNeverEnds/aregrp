@@ -62,9 +62,9 @@ def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
         )
 
 
-def create_payment(user_id: int, premise_id: int) -> tuple[PaymentCreateOut | None, tuple[int, dict] | None]:
+def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreateOut | None, tuple[int, dict] | None]:
     try:
-        premise = Premise.objects.get(pk=premise_id)
+        premise = Premise.objects.get(uuid=premise_uuid)
     except Premise.DoesNotExist:
         return None, (
             404,
@@ -72,10 +72,12 @@ def create_payment(user_id: int, premise_id: int) -> tuple[PaymentCreateOut | No
                 status=404,
                 code=PaymentsErrorCodes.PREMISE_NOT_FOUND,
                 title='Premise not found',
-                detail='No premise with the given ID',
+                detail='No premise with the given UUID',
                 instance='/api/v1/payments/',
             ),
         )
+
+    premise_id = premise.pk
 
     if not premise.is_available_for_sale():
         return None, (

@@ -24,8 +24,9 @@ class Payment(models.Model):
 
     class Meta:
         db_table = 'payments'
-        verbose_name = 'Payment'
-        verbose_name_plural = 'Payments'
+        verbose_name = 'Платёж'
+        verbose_name_plural = 'Платежи'
+        ordering = ['-created_at']
 
     def __str__(self) -> str:
         return f'{self.provider_payment_id} ({self.status})'

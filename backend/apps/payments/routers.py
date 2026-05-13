@@ -16,10 +16,10 @@ payments_router = Router(tags=['Payments'])
     response={201: PaymentCreateOut, 400: ProblemDetail, 401: ProblemDetail, 404: ProblemDetail, 409: ProblemDetail, 502: ProblemDetail},
     auth=jwt_auth,
     summary='Создать платеж за бронирование',
-    description='Создает платеж YooKassa для бронирования помещения по premise_id.',
+    description='Создает платеж YooKassa для бронирования помещения по premise_uuid.',
 )
 async def create_payment_endpoint(request, data: PaymentCreateIn):
-    out, err = await sync_to_async(create_payment, thread_sensitive=True)(request.auth.id, data.premise_id)
+    out, err = await sync_to_async(create_payment, thread_sensitive=True)(request.auth.id, data.premise_uuid)
     if err:
         status, body = err
         return status, body
