@@ -1099,7 +1099,7 @@ class TestFloorPremises:
     async def test_floor_premises_sale_is_occupied_false_when_also_for_rent(
         self, client, city, test_user,
     ):
-        """sale_type=sale: доступно и для аренды — is_occupied false; сделки не влияют."""
+        """sale_type=sale: при выключенном show_rented_button is_occupied=false; сделки не влияют."""
 
         @sync_to_async
         def _setup():
@@ -1119,6 +1119,7 @@ class TestFloorPremises:
                 price_per_sqm=200_000,
                 available_for_rent=True,
                 available_for_sale=True,
+                show_rented_button=False,
                 room_number='201',
             )
             Deal.objects.create(
@@ -1138,10 +1139,10 @@ class TestFloorPremises:
         item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
         assert item["is_occupied"] is False
 
-    async def test_floor_premises_sale_is_occupied_true_sale_only(
+    async def test_floor_premises_sale_is_occupied_true_when_show_rented_button_enabled(
         self, client, city,
     ):
-        """sale_type=sale: только продажа (не в аренду) — is_occupied true."""
+        """sale_type=sale: при включенном show_rented_button is_occupied=true."""
 
         @sync_to_async
         def _setup():
@@ -1161,6 +1162,7 @@ class TestFloorPremises:
                 price_per_sqm=250_000,
                 available_for_rent=False,
                 available_for_sale=True,
+                show_rented_button=True,
                 room_number='S9',
             )
             return building, premise
