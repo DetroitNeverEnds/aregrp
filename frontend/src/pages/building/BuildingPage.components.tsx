@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
 import Helmet from 'react-helmet';
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
@@ -23,13 +22,8 @@ import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedS
 import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';
 import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
 import { useUser } from '@/queries/profile';
-import type {
-    BuildingDetailOut,
-    FloorResponseOut,
-    PremiseDetail,
-    PremiseListItem,
-    SaleType,
-} from '@/api';
+import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListItem } from '@/api';
+import type { SaleType } from '@/api/handlers/types';
 import MedicalCrossIcon from './medical-cross.svg?react';
 import { GenerateLinkModal } from './GenerateLinkModal';
 
@@ -45,13 +39,13 @@ import { useLoginLink } from '@/lib/getAuthLink';
 type BuildingInfo = BuildingDetailOut;
 
 type BuildingSearchParams = {
-    floor: number;
+    floor?: string;
     selectedPremise?: string;
     sale_type?: 'sale' | 'rent';
 };
 
 const parseBuildingSearchParams: SearchParamsParser<BuildingSearchParams> = raw => ({
-    floor: Number(raw.floor) || 1,
+    floor: raw.floor,
     selectedPremise: raw.selectedPremise || undefined,
     sale_type: raw.sale_type === 'sale' || raw.sale_type === 'rent' ? raw.sale_type : undefined,
 });
@@ -248,8 +242,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
         },
         [params, setSearchParams],
     );
-    const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloorFromParams } = params;
-    const saleTypeForFloor = saleTypeForFloorFromParams || 'sale';
+    const { floor: currentFloorRaw, selectedPremise, sale_type: saleTypeRaw } = params;
+    const currentFloor = currentFloorRaw || buildingInfo.floors?.[0]?.key;
+    const saleType = saleTypeRaw || 'sale';
 
     const legend = useMemo(
         () => [
@@ -319,21 +314,24 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
         () => ({
             building_uuids: buildingInfo.uuid,
             ...catalogFilter,
-            ...(saleTypeForFloor ? { sale_type: saleTypeForFloor } : {}),
+            ...(saleType ? { sale_type: saleType } : {}),
         }),
-        [buildingInfo.uuid, catalogFilter, saleTypeForFloor],
+        [buildingInfo.uuid, catalogFilter, saleType],
     );
     const premisesInfiniteQ = usePremisesInfinite(otherPremisesParams);
 
-    const floorQ = useFloor(buildingInfo.uuid, saleTypeForFloor, currentFloor);
+    const floorQ = useFloor(buildingInfo.uuid, saleType || 'sale', currentFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     useEffect(() => {
-        if (selectedPremiseQ.data?.data && selectedPremiseQ.data?.data.floor !== currentFloor) {
+        if (
+            selectedPremiseQ.data?.data &&
+            String(selectedPremiseQ.data?.data.floor) !== String(currentFloor)
+        ) {
             setSearchParams(
                 toSearchParams({
                     ...params,
-                    floor: selectedPremiseQ.data?.data.floor ?? 0,
+                    floor: String(selectedPremiseQ.data?.data.floor),
                     selectedPremise: undefined,
                 }),
             );
@@ -342,7 +340,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     }, [selectedPremiseQ.data?.data, currentFloor, setSearchParams, params]);
 
     const onFloorSelect = useCallback(
-        (floor: number) => {
+        (floor: string) => {
             setSearchParams(toSearchParams({ ...params, floor, selectedPremise: undefined }));
         },
         [params, setSearchParams],
@@ -383,7 +381,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                         <PremiseDetailsCardContent
                                             data={data}
                                             canBook={
-                                                saleTypeForFloor === 'sale' &&
+                                                saleType === 'sale' &&
                                                 (floorQ.data?.data?.premises?.find(
                                                     premise => premise.uuid === selectedPremise,
                                                 )?.is_available ??
@@ -412,7 +410,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                         <PremiseDetailsCardContent
                                             data={data}
                                             canBook={
-                                                saleTypeForFloor === 'sale' &&
+                                                saleType === 'sale' &&
                                                 (floorQ.data?.data?.premises?.find(
                                                     premise => premise.uuid === selectedPremise,
                                                 )?.is_available ??
@@ -445,7 +443,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     { label: { title: t('common.rent') }, value: 'rent' },
                                 ]}
                                 onChange={val => setSaleType(val || 'sale')}
-                                value={saleTypeForFloor}
+                                value={saleType}
                             />
                         </Flex>
                         <Flex
@@ -460,7 +458,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     { label: { title: t('common.rent') }, value: 'rent' },
                                 ]}
                                 onChange={val => setSaleType(val || 'sale')}
-                                value={saleTypeForFloor}
+                                value={saleType}
                             />
                             <Text variant="h2" className={styles.floorSchema__header__text}>
                                 {buildingInfo?.title}
@@ -484,13 +482,17 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                         />
 
                         <Flex direction="row" gap={12}>
-                            {_.range(1, (buildingInfo.total_floors || 1) + 1).map(floor => (
+                            {buildingInfo.floors?.map(floor => (
                                 <Button
-                                    key={floor}
-                                    variant={currentFloor === floor ? 'primary' : 'secondary'}
-                                    onClick={() => onFloorSelect(floor)}
+                                    key={floor.key}
+                                    variant={currentFloor === floor.key ? 'primary' : 'secondary'}
+                                    onClick={() => onFloorSelect(floor.key)}
+                                    disabled={
+                                        (saleType === 'sale' && !floor.has_sale) ||
+                                        (saleType === 'rent' && !floor.has_rent)
+                                    }
                                 >
-                                    {t('pages.building.floor')} {floor}
+                                    {floor.title}
                                 </Button>
                             ))}
                         </Flex>
@@ -525,7 +527,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     <OfficeCard
                                         key={premiseData.uuid}
                                         item={premiseData}
-                                        type={saleTypeForFloor || 'any'}
+                                        type={saleType || 'any'}
                                     />
                                 ))}
                             </CardContainer>

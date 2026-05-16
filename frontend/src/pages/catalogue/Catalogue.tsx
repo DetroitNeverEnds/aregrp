@@ -177,11 +177,15 @@ export const Catalogue = () => {
                                 }));
 
                                 return (
-                                    <YandexMap
-                                        markers={mapMarkers}
-                                        className={styles.map}
-                                        onMapClick={() => setActiveBuildingMarkerUuid(undefined)}
-                                    />
+                                    data.items.length > 0 && (
+                                        <YandexMap
+                                            markers={mapMarkers}
+                                            className={styles.map}
+                                            onMapClick={() =>
+                                                setActiveBuildingMarkerUuid(undefined)
+                                            }
+                                        />
+                                    )
                                 );
                             }}
                             onRetry="default"

@@ -142,12 +142,13 @@ export function useFloorPremises(
 export function useFloor(
     buildingUuid: string,
     saleType: SaleType,
-    floorNumber?: number,
+    floorNumber?: string,
 ): UseQueryResult<QueryResult<FloorResponseOut>, Error> {
     return useQuery({
         queryKey: ['floors', 'detail', buildingUuid, floorNumber, saleType],
+        // TODO: fix type
         queryFn: () =>
-            wrapApiCall(getFloor)(buildingUuid, floorNumber as number, { sale_type: saleType }),
-        enabled: !!buildingUuid && typeof floorNumber === 'number',
+            wrapApiCall(getFloor)(buildingUuid, Number(floorNumber), { sale_type: saleType }),
+        enabled: !!buildingUuid && Boolean(floorNumber),
     });
 }

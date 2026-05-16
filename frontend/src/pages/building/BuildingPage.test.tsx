@@ -51,6 +51,11 @@ const mockBuildingDetail = {
     title: 'Тестовое здание',
     address: 'ул. Тестовая 1',
     total_floors: 3,
+    floors: [
+        { key: '1', title: '1 этаж', has_sale: true, has_rent: true },
+        { key: '2', title: '2 этаж', has_sale: true, has_rent: false },
+        { key: '3', title: '3 этаж', has_sale: false, has_rent: true },
+    ],
     media: [],
     media_categories: ['Фото', 'Планировки'],
 };

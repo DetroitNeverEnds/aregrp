@@ -53,12 +53,20 @@ export type BuildingMediaItem = {
 
 export type BuildingMediaCategory = string;
 
+export type BuildingFloorOut = {
+    key: string;
+    title: string;
+    has_sale: boolean;
+    has_rent: boolean;
+};
+
 export interface BuildingDetailOut {
     uuid: string;
     title: string;
     address: string;
     description: string;
     total_floors?: number | null;
+    floors?: BuildingFloorOut[];
     year_built?: number | null;
     geo_point?: {
         lat: number;
