@@ -7,7 +7,7 @@
 - get_buildings_for_filter(sale_type, available) — здания для фильтра; available — только брони, None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
 - get_premise_by_uuid(...): price — legacy; sale_price / rent_price — по флагам available_for_sale / available_for_rent.
-- get_premises_for_floor(building_uuid, floor_number, sale_type) — данные этажа (is_available зависит от sale_type).
+- get_premises_for_floor(building_uuid, floor_id, sale_type) — данные этажа (is_available зависит от sale_type).
 
 Рассчитан на async-контекст (Uvicorn + Django 5 + Ninja):
 - публичные функции — async, обращаются к БД через async ORM (aget, acount, async for);
@@ -523,7 +523,7 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
-        floor=p.floor.number if p.floor else None,
+        floor_id=str(p.floor_id) if p.floor_id is not None else None,
         area=p.area,
         has_tenant=has_tenant_value(available_for_rent=p.available_for_rent),
         media=_build_premise_media(p),
@@ -544,7 +544,7 @@ def premise_to_detail_out(
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
-        floor=p.floor.number if p.floor else None,
+        floor_id=str(p.floor_id) if p.floor_id is not None else None,
         area=p.area,
         has_tenant=tenant,
         media=_build_premise_media(p),
@@ -673,7 +673,7 @@ def _floor_premise_availability_rows(
 
 async def get_premises_for_floor(
     building_uuid: UUID,
-    floor_number: int,
+    floor_id: str,
     sale_type: str,
 ) -> FloorResponseOut:
     """
@@ -682,14 +682,18 @@ async def get_premises_for_floor(
     sale_type: rent|sale — is_available по типу сделки; is_occupied см. _floor_premise_availability_rows.
     """
     try:
+        floor_id_int = int(floor_id)
         floor = await Floor.objects.select_related("building").aget(
             building__uuid=building_uuid,
-            number=floor_number,
+            id=floor_id_int,
         )
-    except Floor.DoesNotExist:
+    except (ValueError, TypeError, Floor.DoesNotExist):
+        floor_number = int(floor_id) if str(floor_id).isdigit() else 0
         return FloorResponseOut(
             building_uuid=str(building_uuid),
+            floor_id=floor_id,
             floor_number=floor_number,
+            title='',
             schema_svg=None,
             premises=[],
         )
@@ -719,6 +723,8 @@ async def get_premises_for_floor(
     schema_svg = await _read_floor_schema_svg(floor)
     return FloorResponseOut(
         building_uuid=str(floor.building.uuid),
+        floor_id=str(floor.id),
+        title=floor.title,
         floor_number=floor.number,
         schema_svg=schema_svg,
         premises=items,

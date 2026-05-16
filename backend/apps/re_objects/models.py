@@ -226,7 +226,7 @@ class Floor(models.Model):
     def to_building_floor_payload(self) -> dict[str, object]:
         """Данные этажа для GET /buildings/{uuid}."""
         return {
-            'key': str(self.number),
+            'key': str(self.id),
             'title': self.title,
             'has_sale': self.premises.filter(available_for_sale=True).exists(),
             'has_rent': self.premises.filter(available_for_rent=True).exists(),

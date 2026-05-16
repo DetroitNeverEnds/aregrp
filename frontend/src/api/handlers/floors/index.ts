@@ -11,6 +11,7 @@ export type GetFloorQuery = {
  */
 export const getFloor = (
     buildingUuid: string,
+    // TODO(backend-contract): rename to floorId and use `/floors/${buildingUuid}/${floorId}` when frontend migration starts.
     floorNumber: number,
     query?: GetFloorQuery,
 ): Promise<FloorResponseOut> => {

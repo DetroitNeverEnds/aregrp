@@ -457,7 +457,7 @@ class TestBuildingDetail:
 
     async def test_building_detail_success(self, client, building_with_premise):
         """Успешное получение здания по UUID — media_categories, media."""
-        building, _ = building_with_premise
+        building, premise = building_with_premise
         response = await client.get(f"/buildings/{building.uuid}")
 
         assert response.status_code == 200
@@ -470,7 +470,7 @@ class TestBuildingDetail:
         assert isinstance(data["floors"], list)
         assert len(data["floors"]) == 1
         assert data["floors"][0] == {
-            "key": "1",
+            "key": str(premise.floor_id),
             "title": "Этаж 1",
             "has_sale": False,
             "has_rent": True,
@@ -526,17 +526,17 @@ class TestBuildingDetail:
                 available_for_sale=True,
                 room_number='301',
             )
-            return building
+            return building, floor1, floor2, floor3
 
-        building = await setup()
+        building, floor1, floor2, floor3 = await setup()
         response = await client.get(f"/buildings/{building.uuid}")
 
         assert response.status_code == 200
         data = response.json()
         assert data["floors"] == [
-            {"key": "1", "title": "Офисы", "has_sale": False, "has_rent": True},
-            {"key": "2", "title": "Продажа", "has_sale": True, "has_rent": False},
-            {"key": "3", "title": "Микс", "has_sale": True, "has_rent": True},
+            {"key": str(floor1.id), "title": "Офисы", "has_sale": False, "has_rent": True},
+            {"key": str(floor2.id), "title": "Продажа", "has_sale": True, "has_rent": False},
+            {"key": str(floor3.id), "title": "Микс", "has_sale": True, "has_rent": True},
         ]
 
     async def test_building_detail_media_url_equals_full_url(self, client, city):
@@ -687,6 +687,7 @@ class TestPremisesList:
             assert "sale_price" in item
             assert "rent_price" in item
             assert "address" in item
+            assert "floor_id" in item
             assert "area" in item
             assert "has_tenant" in item
             assert "media" in item
@@ -819,6 +820,7 @@ class TestPremiseDetail:
         assert data["rent_price"] is not None
         assert data["sale_price"] is None
         assert "address" in data
+        assert data["floor_id"] == str(premise.floor_id)
         assert "area" in data
         assert "description" in data
         assert "media" in data
@@ -868,21 +870,23 @@ class TestPremiseDetail:
 
 @pytest.mark.django_db
 class TestFloorPremises:
-    """GET /floors/{building_uuid}/{floor_number} — помещения на этаже."""
+    """GET /floors/{building_uuid}/{floor_id} — помещения на этаже."""
 
     async def test_floor_premises_success(self, client, building_with_premise):
         """Успешный ответ — объект этажа с premises."""
         building, premise = building_with_premise
-        floor_number = premise.floor.number if premise.floor else 1
+        floor_id = premise.floor.id if premise.floor else 1
         response = await client.get(
-            f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
+            f"/floors/{building.uuid}/{floor_id}?sale_type=rent"
         )
 
         assert response.status_code == 200
         data = response.json()
         assert isinstance(data, dict)
         assert data["building_uuid"] == str(building.uuid)
-        assert data["floor_number"] == floor_number
+        assert data["floor_id"] == str(premise.floor.id)
+        assert data["title"] == premise.floor.title
+        assert data["floor_number"] == premise.floor.number
         assert "schema_svg" in data
         assert "premises" in data
         assert isinstance(data["premises"], list)
@@ -907,7 +911,9 @@ class TestFloorPremises:
         assert response.status_code == 200
         data = response.json()
         assert data["building_uuid"] == str(building.uuid)
+        assert data["floor_id"] == "999"
         assert data["floor_number"] == 999
+        assert data["title"] == ""
         assert data["schema_svg"] is None
         assert data["premises"] == []
 
@@ -937,13 +943,13 @@ class TestFloorPremises:
             return building, premise
 
         building, premise = await _setup()
-        floor_number = premise.floor.number
+        floor_id = premise.floor.id
 
         rent_response = await client.get(
-            f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
+            f"/floors/{building.uuid}/{floor_id}?sale_type=rent"
         )
         sale_response = await client.get(
-            f"/floors/{building.uuid}/{floor_number}?sale_type=sale"
+            f"/floors/{building.uuid}/{floor_id}?sale_type=sale"
         )
 
         assert rent_response.status_code == 200
@@ -960,7 +966,7 @@ class TestFloorPremises:
     ):
         """sale_type=rent: is_occupied всегда false; is_available по активной аренде."""
         building, premise = building_with_premise
-        floor_number = premise.floor.number
+        floor_id = premise.floor.id
         deal_until = timezone.now().date() + timedelta(days=30)
 
         @sync_to_async
@@ -975,7 +981,7 @@ class TestFloorPremises:
 
         await _deal()
         response = await client.get(
-            f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
+            f"/floors/{building.uuid}/{floor_id}?sale_type=rent"
         )
         assert response.status_code == 200
         item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
@@ -1018,7 +1024,7 @@ class TestFloorPremises:
 
         building, premise = await _setup()
         response = await client.get(
-            f"/floors/{building.uuid}/{premise.floor.number}?sale_type=sale"
+            f"/floors/{building.uuid}/{premise.floor.id}?sale_type=sale"
         )
         assert response.status_code == 200
         item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
@@ -1053,7 +1059,7 @@ class TestFloorPremises:
 
         building, premise = await _setup()
         response = await client.get(
-            f"/floors/{building.uuid}/{premise.floor.number}?sale_type=sale"
+            f"/floors/{building.uuid}/{premise.floor.id}?sale_type=sale"
         )
         assert response.status_code == 200
         item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))

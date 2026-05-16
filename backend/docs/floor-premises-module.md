@@ -6,14 +6,14 @@
 
 ## Схема API
 
-**Метод и путь:** `GET /api/v1/floors/{building_uuid}/{floor_number}`
+**Метод и путь:** `GET /api/v1/floors/{building_uuid}/{floor_id}`
 
 | Параметр        | Где   | Тип     | Описание |
 |-----------------|-------|---------|----------|
 | `building_uuid` | path  | uuid    | UUID здания |
-| `floor_number`  | path  | integer | Номер этажа (может быть отрицательным для подвалов) |
+| `floor_id`      | path  | string  | Идентификатор этажа (Floor.id), передается строкой |
 
-**Пример запроса:** `GET /api/v1/floors/a1b2c3d4-e5f6-7890-abcd-ef1234567890/1`
+**Пример запроса:** `GET /api/v1/floors/a1b2c3d4-e5f6-7890-abcd-ef1234567890/17`
 
 ---
 
@@ -24,7 +24,8 @@
 | Поле           | Тип            | Описание |
 |----------------|----------------|----------|
 | `building_uuid`| string (uuid)  | UUID здания |
-| `floor_number` | integer        | Номер этажа |
+| `floor_id`     | string         | Идентификатор этажа |
+| `floor_number` | integer        | Номер этажа (deprecated) |
 | `schema_svg`   | string \| null | Содержимое SVG-схемы этажа (текст) или `null`, если схема не загружена |
 | `premises`     | array          | Список помещений этажа |
 
@@ -43,6 +44,7 @@
 ```json
 {
   "building_uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "floor_id": "17",
   "floor_number": 1,
   "schema_svg": "<svg><!-- ... --></svg>",
   "premises": [
@@ -81,8 +83,8 @@
 
 **floor.json** — это JSON-ответ эндпоинта:
 
-- **Запрос:** `GET /api/v1/floors/{building_uuid}/{floor_number}`
-- **Ответ:** объект с полями `building_uuid`, `floor_number`, `schema_svg`, `premises`.
+- **Запрос:** `GET /api/v1/floors/{building_uuid}/{floor_id}`
+- **Ответ:** объект с полями `building_uuid`, `floor_id`, `floor_number`, `schema_svg`, `premises`.
 
 Фронт может считать ответ этого запроса «floor.json»: сохранить в состояние или положить в файл при сборке, если нужен статический JSON.
 

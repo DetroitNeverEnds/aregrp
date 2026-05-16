@@ -8,7 +8,7 @@
 2) GET /api/v1/premises/buildings — список зданий для фильтра; sale_type, available (только брони).
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
 4) GET /api/v1/buildings/{uuid} — информация о здании (floors, media_categories, media).
-5) GET /api/v1/floors/{building_uuid}/{floor_number} — этаж; обязательный query sale_type (rent|sale) для is_available.
+5) GET /api/v1/floors/{building_uuid}/{floor_id} — этаж; обязательный query sale_type (rent|sale) для is_available.
 6) GET /api/v1/premises/{premise_uuid} — детальная карточка помещения по UUID (те же поля + description,
    price_per_sqm, ...). Всегда: sale_price, rent_price (по флагам available_for_sale / available_for_rent).
    Поле price — обратная совместимость (зависит от sale_type). 404 — ProblemDetail.
@@ -165,11 +165,11 @@ async def building_detail(request, building_uuid: UUID):
 # ─── Floors (prefix /floors) ──────────────────────────────────────────────────
 
 @floors_router.get(
-    "/{building_uuid}/{floor_number}",
+    "/{building_uuid}/{floor_id}",
     response={200: FloorResponseOut},
     summary="Помещения на этаже",
     description=(
-        "Данные этажа: building_uuid, floor_number, schema_svg и premises "
+        "Данные этажа: building_uuid, floor_id, floor_number (deprecated), title, schema_svg и premises "
         "[{ uuid, name, label_area, label_price, is_available, is_occupied }]. "
         f"Обязательный query sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT} или "
         f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — is_available по типу; "
@@ -180,7 +180,7 @@ async def building_detail(request, building_uuid: UUID):
 async def floor_premises_list(
     request,
     building_uuid: UUID,
-    floor_number: int,
+    floor_id: str,
     sale_type: str = Query(
         ...,
         description=(
@@ -193,7 +193,7 @@ async def floor_premises_list(
     st = _validated_floor_sale_type(sale_type)
     items = await get_premises_for_floor(
         building_uuid=building_uuid,
-        floor_number=floor_number,
+        floor_id=floor_id,
         sale_type=st,
     )
     return 200, items
@@ -263,7 +263,7 @@ async def premise_list(
     response={200: PremiseDetailOut, 404: ProblemDetail},
     summary="Детальная информация о помещении",
     description=(
-        "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor, area, has_tenant, media, "
+        "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor_id, area, has_tenant, media, "
         "description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. "
         "sale_price / rent_price — всегда в ответе (null, если вид сделки не предлагается). "
         f"Параметр sale_type: price — как раньше ({settings.RE_OBJECTS_SALE_TYPE_SALE} — продажа, иначе аренда). "

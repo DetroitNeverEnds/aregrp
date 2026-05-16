@@ -91,10 +91,12 @@ buildings:
 # ───────────────────────────────────────────────────────────────────
 
 floors:
-  - GET /floors/<building_uuid>/<floor_number>
+  - GET /floors/<building_uuid>/<floor_id>
     данные этажа:
       building_uuid: string
-      floor_number: number
+      floor_id: string
+      title: string
+      floor_number: number   # deprecated
       schema_svg: string # содержимое SVG или null
       premises:
         - uuid: string
@@ -120,7 +122,7 @@ premises:
         name: string
         price: number
         address: string
-        floor: number      # optional
+        floor_id: string   # optional
         area: number
         has_tenant: boolean
         media: object
@@ -136,7 +138,7 @@ premises:
       name: string
       price: number
       address: string
-      floor: number
+      floor_id: string
       area: number
       has_tenant: boolean
       media: object

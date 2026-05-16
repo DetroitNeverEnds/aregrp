@@ -1147,7 +1147,7 @@
             }
           }
         },
-        "description": "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. sale_price / rent_price — всегда в ответе (null, если вид сделки не предлагается). Параметр sale_type: price — как раньше (sale — продажа, иначе аренда). 404 — ProblemDetail.",
+        "description": "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor_id, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. sale_price / rent_price — всегда в ответе (null, если вид сделки не предлагается). Параметр sale_type: price — как раньше (sale — продажа, иначе аренда). 404 — ProblemDetail.",
         "tags": [
           "Premises"
         ]
@@ -1248,7 +1248,7 @@
         ]
       }
     },
-    "/api/v1/floors/{building_uuid}/{floor_number}": {
+    "/api/v1/floors/{building_uuid}/{floor_id}": {
       "get": {
         "operationId": "apps_re_objects_routers_floor_premises_list",
         "summary": "Помещения на этаже",
@@ -1265,10 +1265,10 @@
           },
           {
             "in": "path",
-            "name": "floor_number",
+            "name": "floor_id",
             "schema": {
-              "title": "Floor Number",
-              "type": "integer"
+              "title": "Floor Id",
+              "type": "string"
             },
             "required": true
           },
@@ -1296,7 +1296,7 @@
             }
           }
         },
-        "description": "Данные этажа: building_uuid, floor_number, schema_svg и premises [{ uuid, name, label_area, label_price, is_available, is_occupied }]. Обязательный query sale_type: rent или sale — семантика is_available.",
+        "description": "Данные этажа: building_uuid, floor_id, floor_number (deprecated), title, schema_svg и premises [{ uuid, name, label_area, label_price, is_available, is_occupied }]. Обязательный query sale_type: rent или sale — семантика is_available.",
         "tags": [
           "Floors"
         ]
@@ -2723,16 +2723,16 @@
             "title": "Address",
             "type": "string"
           },
-          "floor": {
+          "floor_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Floor"
+            "title": "Floor Id"
           },
           "area": {
             "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -2852,16 +2852,16 @@
             "title": "Address",
             "type": "string"
           },
-          "floor": {
+          "floor_id": {
             "anyOf": [
               {
-                "type": "integer"
+                "type": "string"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Floor"
+            "title": "Floor Id"
           },
           "area": {
             "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
@@ -3249,10 +3249,18 @@
         "type": "object"
       },
       "FloorResponseOut": {
-        "description": "Ответ по этажу: UUID здания, номер этажа, SVG-схема и список помещений.",
+        "description": "Ответ по этажу: UUID здания, floor_id, title, floor_number (deprecated), SVG-схема и список помещений.",
         "properties": {
           "building_uuid": {
             "title": "Building Uuid",
+            "type": "string"
+          },
+          "floor_id": {
+            "title": "Floor Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
             "type": "string"
           },
           "floor_number": {
@@ -3280,6 +3288,8 @@
         },
         "required": [
           "building_uuid",
+          "floor_id",
+          "title",
           "floor_number",
           "premises"
         ],
