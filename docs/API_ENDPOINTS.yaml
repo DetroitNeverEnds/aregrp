@@ -78,9 +78,9 @@ buildings:
     BuildingMediaItem:
       type: "photo" | "video"
       category: string
-      url: string
+      url: string              # превью (card.webp)
+      full_url: string         # detail.webp для photo, оригинал .mp4 для video
       title: string            # optional
-      is_primary: boolean     # для фото
 
   - GET /buildings/<uuid>/floor/<number>
     информация об этаже (TODO)

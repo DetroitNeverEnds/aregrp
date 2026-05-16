@@ -396,8 +396,8 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
 
     Возвращает (media_categories, media). Один плоский список images + videos; основное фото первое, далее по order.
 
-    Исключение для GET /buildings/{uuid}: в media и url, и full_url равны «полному» URL (как full_url
-    в списке зданий): фото — detail WebP, видео — оригинал ролика.
+    Для GET /buildings/{uuid}: url — превью (card), full_url — полный медиа URL
+    (detail WebP для фото, оригинал для видео).
     """
     categories: set[str] = set()
     items: list[tuple[int, int, int, str, str, str, str, Optional[str]]] = []
@@ -422,8 +422,8 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
 
     items.sort(key=lambda x: (x[0], x[1], x[2]))
     media = [
-        BuildingMediaItemOut(type=t, url=fu, full_url=fu, category=cat, title=title)
-        for _, _, _, t, _, fu, cat, title in items
+        BuildingMediaItemOut(type=t, url=u, full_url=fu, category=cat, title=title)
+        for _, _, _, t, u, fu, cat, title in items
     ]
     return (sorted(categories), media)
 
@@ -433,7 +433,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
     Здание по UUID: uuid, title, address, description, floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
     Только здания с помещениями. Использует aget() и prefetch images, videos.
-    В media для детали url и full_url одинаковы (полный URL медиа).
+    В media для детали: url — превью (card), full_url — полный URL медиа.
     """
     try:
         b = await (
