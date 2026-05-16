@@ -2,6 +2,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 from datetime import timedelta
 from decimal import Decimal
+import uuid
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
@@ -63,7 +64,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_id': self.premise.id},
+            data={'premise_uuid': str(self.premise.uuid)},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -94,7 +95,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_id': self.premise.id},
+            data={'premise_uuid': str(self.premise.uuid)},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -106,7 +107,7 @@ class PaymentsCreateEndpointTests(TestCase):
     def test_create_payment_premise_not_found(self):
         response = self.client.post(
             self.url,
-            data={'premise_id': 999999},
+            data={'premise_uuid': str(uuid.uuid4())},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -120,7 +121,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_id': self.premise.id},
+            data={'premise_uuid': str(self.premise.uuid)},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -137,7 +138,7 @@ class PaymentsCreateEndpointTests(TestCase):
         )
         response = self.client.post(
             self.url,
-            data={'premise_id': self.premise.id},
+            data={'premise_uuid': str(self.premise.uuid)},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
