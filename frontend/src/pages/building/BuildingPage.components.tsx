@@ -383,7 +383,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             <Gallery
                                 media={buildingMedia}
                                 type="full"
-                                size="l"
+                                size="m"
                                 fit="cover"
                                 orientation="vertical"
                                 className={styles.buildingMediaSidebar}

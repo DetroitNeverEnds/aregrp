@@ -15,8 +15,6 @@
 }
 
 .vertical {
-    width: 100%;
-
     &__size-m {
         border-radius: $border-radius-m;
     }
@@ -26,15 +24,10 @@
     }
 
     &__list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        overflow-y: auto;
-        max-height: 100%;
-        padding: 0 4px 4px;
+        overflow: scroll;;
+        height: 100%;
+        width: 100%;
         scrollbar-width: thin;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
     }
 
     &__item {

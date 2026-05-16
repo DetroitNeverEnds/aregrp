@@ -7,6 +7,7 @@ import { GalleryMainStage } from './GalleryMainStage';
 import { GalleryControls } from './GalleryControls';
 import { GalleryModal } from './GalleryModal';
 import type { GalleryMedia } from './Gallery.types';
+import { Flex } from '../Flex';
 
 export type { GalleryMedia } from './Gallery.types';
 
@@ -133,22 +134,25 @@ const VerticalGalleryBody = ({ media, size = 'm', className }: VerticalGalleryBo
 
     return (
         <>
-            <div
-                className={classNames(styles.vertical, styles[`vertical__size-${size}`], className)}
+            <Flex
+                gap={12}
+                className={classNames(
+                    styles.vertical__list,
+                    styles[`vertical__size-${size}`],
+                    className,
+                )}
             >
-                <div className={styles.vertical__list}>
-                    {media.map((item, index) => (
-                        <button
-                            key={`${item.url}-${index}`}
-                            type="button"
-                            className={styles.vertical__item}
-                            onClick={() => openMedia(index)}
-                        >
-                            <img src={item.url} alt="" className={styles.vertical__image} />
-                        </button>
-                    ))}
-                </div>
-            </div>
+                {media.map((item, index) => (
+                    <button
+                        key={`${item.url}-${index}`}
+                        type="button"
+                        className={styles.vertical__item}
+                        onClick={() => openMedia(index)}
+                    >
+                        <img src={item.url} alt="" className={styles.vertical__image} />
+                    </button>
+                ))}
+            </Flex>
             <GalleryModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
