@@ -1,9 +1,19 @@
-import type { BaseMediaItem } from '@/api/handlers/types';
+import type { BaseMediaItem, SaleType } from '@/api/handlers/types';
+import type { OrderBy } from '@/api/handlers/premises/types';
 
 /**
  * Параметры для получения каталога зданий
  */
 export interface BuildingCatalogueParams {
+    sale_type?: SaleType;
+    available?: boolean;
+    building?: string;
+    building_uuids?: string;
+    min_price?: number;
+    max_price?: number;
+    min_area?: number;
+    max_area?: number;
+    order_by?: OrderBy;
     page?: number;
     page_size?: number;
 }

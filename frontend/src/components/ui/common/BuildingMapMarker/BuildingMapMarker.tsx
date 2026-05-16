@@ -1,22 +1,22 @@
 import classNames from 'classnames';
+import { NavLink } from 'react-router-dom';
+import { useSyncExternalStore } from 'react';
 import type { BuildingCatalogue } from '@/api';
 import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text';
-import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
-// import MarkerPinIcon from '@/icons/other/marker-pin.svg?react';
-import styles from './BuildingMapMarker.module.scss';
 import { Link } from '@/components/ui/common/Link';
-import PinIcon from './pin.svg?react';
-import { useSyncExternalStore } from 'react';
+import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import {
     getActiveBuildingMarkerUuid,
     setActiveBuildingMarkerUuid,
     subscribeActiveBuildingMarker,
 } from '@/lib/buildingMapMarkerActiveStore';
-import { NavLink } from 'react-router-dom';
+import PinIcon from './pin.svg?react';
+import styles from './BuildingMapMarker.module.scss';
 
 export type BuildingMapMarkerProps = {
     item: BuildingCatalogue;
+    showCatalogueLinks?: boolean;
     /** Вызывается после переключения открытого тултипа (клик по маркеру). */
     onMarkerClick?: (detail: { uuid: string; open: boolean }) => void;
 };
@@ -29,7 +29,11 @@ const formatPrice = (price: number) =>
         maximumFractionDigits: 0,
     }).format(price);
 
-export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProps) => {
+export const BuildingMapMarker = ({
+    item,
+    showCatalogueLinks = true,
+    onMarkerClick,
+}: BuildingMapMarkerProps) => {
     const { getLinkToCatalogue } = useFilterSearchParams();
     const {
         uuid,
@@ -66,7 +70,6 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                 className={styles.marker}
                 onClick={handleMarkerClick}
             >
-                {/* <MarkerPinIcon className={classNames(styles.icon, active && styles.iconActive)} /> */}
                 <Flex
                     align="center"
                     justify="center"
@@ -117,7 +120,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                                 <img src={previewUrl} className={styles.tooltip__card__image} />
                             </NavLink>
                         )}
-                        {minSalePrice && (
+                        {showCatalogueLinks && minSalePrice && (
                             <Link
                                 to={getLinkToCatalogue({
                                     sale_type: 'sale',
@@ -129,7 +132,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                                 </Text>
                             </Link>
                         )}
-                        {minRentPrice && (
+                        {showCatalogueLinks && minRentPrice && (
                             <Link
                                 to={getLinkToCatalogue({
                                     sale_type: 'rent',

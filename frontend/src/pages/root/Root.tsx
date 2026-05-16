@@ -14,7 +14,7 @@ import Container, { FeatureCard } from '@/components/ui/layout/Container';
 import { Column } from '@/components/ui/layout/Column';
 import { Divider } from '@/components/ui/common/Divider';
 import { FeedbackFormRow } from '@/components/ui/layout/FeedbackFormRow';
-import { useBuildingsCatalogueAll, usePremises } from '@/queries/premises';
+import { usePremises } from '@/queries/premises';
 import { Welcome } from './components/Welcome';
 import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContainer';
 import { CardContainer } from '@/components/ui/layout/CardsContainer/CardContainer';
@@ -23,11 +23,12 @@ import { BenifitsWorking } from '@/components/ui/cards/Benefits';
 import { Page } from '@/components/ui/layout/Page/Page';
 import Config from '@/config';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
-import { BuildingMapMarker } from './components/BuildingMapMarker/BuildingMapMarker';
+import { BuildingMapMarker } from '@/components/ui/common/BuildingMapMarker';
 import { setActiveBuildingMarkerUuid } from '@/lib/buildingMapMarkerActiveStore';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { Columns } from '@/components/ui/layout/Columns';
 import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
+import { useBuildingsCatalogueAll } from '@/queries';
 
 const layoutSettings: LayoutSettings = {
     header: {

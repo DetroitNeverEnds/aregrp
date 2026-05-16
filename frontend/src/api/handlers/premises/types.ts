@@ -2,9 +2,7 @@
  * Типы для premises handlers
  */
 
-import type { BaseMediaItem } from '@/api/handlers/types';
-
-export type SaleType = 'rent' | 'sale';
+import type { BaseMediaItem, SaleType } from '@/api/handlers/types';
 
 /** Помещение в списке (OpenAPI: PremiseListOut) */
 export interface PremiseListItem {

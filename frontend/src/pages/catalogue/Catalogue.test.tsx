@@ -9,11 +9,17 @@ vi.mock('@/hooks/useLayoutSettings', () => ({
     useLayoutSettings: vi.fn(),
 }));
 
+vi.mock('@/components/ui/common/YandexMap', () => ({
+    YandexMap: () => <div data-testid="yandex-map" />,
+}));
+
 vi.mock('@/queries', () => ({
     usePremises: vi.fn(),
+    useBuildingsCatalogueAll: vi.fn(),
 }));
 
 const mockUsePremises = vi.mocked(queries.usePremises);
+const mockUseBuildingsCatalogueAll = vi.mocked(queries.useBuildingsCatalogueAll);
 
 const createWrapper = (initialEntries: string[] = ['/catalogue']) => {
     const queryClient = new QueryClient({
@@ -39,6 +45,13 @@ describe('Catalogue', () => {
             isFetching: false,
             error: null,
         } as ReturnType<typeof queries.usePremises>);
+        mockUseBuildingsCatalogueAll.mockReturnValue({
+            isPending: false,
+            data: {
+                data: { items: [] },
+            },
+            refetch: vi.fn(),
+        } as ReturnType<typeof queries.useBuildingsCatalogueAll>);
     });
 
     it('рендерит заголовок для продажи при sale_type=sale', () => {

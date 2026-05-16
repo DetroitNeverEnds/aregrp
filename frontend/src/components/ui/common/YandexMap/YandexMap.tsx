@@ -109,7 +109,6 @@ export const YandexMap = ({
                     _.max([Config.map.minBound, diff.lon * Config.map.boundRatio]),
             },
         };
-        console.log(result);
 
         return result;
     }, [markers]);
