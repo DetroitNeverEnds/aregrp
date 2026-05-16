@@ -13,6 +13,10 @@ export type GalleryMainStageProps = {
     onClick?: () => void;
 };
 
+/**
+ * Основная сцена галереи:
+ * в `preview` режиме показывает превью, в `full` — полноразмерный media-контент.
+ */
 export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
     item,
     variant,

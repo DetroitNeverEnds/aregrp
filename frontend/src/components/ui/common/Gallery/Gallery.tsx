@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import styles from './Gallery.module.scss';
 import type { BuildingCatalogue, PremiseListItem } from '@/api';
@@ -20,12 +20,15 @@ export type GalleryProps = {
     onClick?: (() => void) | 'openFull';
     size?: 'm' | 'l';
     fit?: 'cover' | 'contain';
+    orientation?: 'horizontal' | 'vertical';
     className?: string;
 };
 
 type GalleryBodyProps = Omit<GalleryProps, 'media' | 'premise' | 'building'> & {
     media: GalleryMedia[];
 };
+
+type VerticalGalleryBodyProps = Pick<GalleryBodyProps, 'media' | 'size' | 'className'>;
 
 const preloadedImageUrls = new Set<string>();
 
@@ -39,7 +42,10 @@ const preloadImage = (url?: string) => {
     preloadedImageUrls.add(url);
 };
 
-/** Локальное состояние слайда/модалки; `key={media.length}` снаружи сбрасывает индекс при смене числа элементов. */
+/**
+ * Базовый режим галереи (горизонтальный):
+ * отображает один текущий слайд, контролы и модалку.
+ */
 const GalleryBody = ({
     media,
     type = 'thumbs',
@@ -112,6 +118,54 @@ const GalleryBody = ({
     );
 };
 
+/**
+ * Вертикальный режим:
+ * рендерит прокручиваемый список карточек и открывает модалку по клику.
+ */
+const VerticalGalleryBody = ({ media, size = 'm', className }: VerticalGalleryBodyProps) => {
+    const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const openMedia = useCallback((index: number) => {
+        setCurrentMediaIndex(index);
+        setModalOpen(true);
+    }, []);
+
+    return (
+        <>
+            <div
+                className={classNames(styles.vertical, styles[`vertical__size-${size}`], className)}
+            >
+                <div className={styles.vertical__list}>
+                    {media.map((item, index) => (
+                        <button
+                            key={`${item.url}-${index}`}
+                            type="button"
+                            className={styles.vertical__item}
+                            onClick={() => openMedia(index)}
+                        >
+                            <img src={item.url} alt="" className={styles.vertical__image} />
+                        </button>
+                    ))}
+                </div>
+            </div>
+            <GalleryModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                media={media}
+                currentIndex={currentMediaIndex}
+                onIndexChange={setCurrentMediaIndex}
+                size={size}
+            />
+        </>
+    );
+};
+
+/**
+ * Универсальная галерея для photo/video:
+ * - `horizontal` — слайдер с индикаторами
+ * - `vertical` — вертикальная лента карточек
+ */
 export const Gallery = ({
     media: rawMedia,
     premise,
@@ -120,6 +174,7 @@ export const Gallery = ({
     onClick = 'openFull',
     size = 'm',
     fit = 'cover',
+    orientation = 'horizontal',
     className,
 }: GalleryProps) => {
     const media = useMemo((): GalleryMedia[] => {
@@ -138,15 +193,27 @@ export const Gallery = ({
         );
     }
 
-    return (
-        <GalleryBody
-            key={JSON.stringify(media)}
-            media={media}
-            type={type}
-            onClick={onClick}
-            size={size}
-            fit={fit}
-            className={className}
-        />
-    );
+    switch (orientation) {
+        case 'vertical':
+            return (
+                <VerticalGalleryBody
+                    key={JSON.stringify(media)}
+                    media={media}
+                    size={size}
+                    className={className}
+                />
+            );
+        case 'horizontal':
+            return (
+                <GalleryBody
+                    key={JSON.stringify(media)}
+                    media={media}
+                    type={type}
+                    onClick={onClick}
+                    size={size}
+                    fit={fit}
+                    className={className}
+                />
+            );
+    }
 };
