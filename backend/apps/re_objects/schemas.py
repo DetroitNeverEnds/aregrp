@@ -90,6 +90,7 @@ class BuildingListOut(Schema):
 
     При фильтре sale_type в /buildings/ отдается только релевантное поле цены:
     rent -> min_rent_price, sale -> min_sale_price.
+    В media: url — превью (card), full_url — полный URL медиа.
     """
 
     uuid: str
