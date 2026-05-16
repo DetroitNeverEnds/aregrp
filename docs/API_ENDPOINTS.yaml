@@ -56,7 +56,7 @@ buildings:
         description: string
         min_sale_price: number   # optional
         min_rent_price: number   # optional
-        media: MedialList
+        media: MedialList        # url=card.webp (превью), full_url=detail.webp/photo или .mp4/video
       total: number
       page: number
       page_size: number

@@ -95,6 +95,7 @@ async def building_filter_list(
     summary="Список зданий",
     description=(
         "Список зданий с помещениями. Фильтры: building_uuids, min/max price, min/max area. "
+        "В media: url — превью (card), full_url — полный URL (detail WebP для фото, оригинал для видео). "
         "Пагинация: page, page_size. "
         f"Опционально sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}. "
         "Ответ: items, total, page, page_size, total_pages."
