@@ -14,6 +14,7 @@ from uuid import UUID, uuid4
 from apps.bookings.models import Booking
 from apps.deals.models import Deal
 from apps.re_objects.models import Building, BuildingImage, Floor, Premise
+from apps.re_objects.services.premise_service import _build_building_detail_media
 
 
 @pytest.fixture
@@ -539,8 +540,8 @@ class TestBuildingDetail:
             {"key": "3", "title": "Микс", "has_sale": True, "has_rent": True},
         ]
 
-    async def test_building_detail_media_url_equals_full_url(self, client, city):
-        """Деталь здания: в media поля url и full_url совпадают (оба как full_url в списке)."""
+    async def test_building_detail_media_uses_preview_in_url(self, client, city):
+        """Деталь здания: в media url — превью, full_url — детальный URL."""
         from io import BytesIO
 
         from django.core.files.uploadedfile import SimpleUploadedFile
@@ -578,7 +579,53 @@ class TestBuildingDetail:
         data = response.json()
         assert len(data['media']) >= 1
         m0 = data['media'][0]
-        assert m0['url'] == m0['full_url']
+        assert m0['url'] != m0['full_url']
+        assert m0['url'].endswith('card.webp')
+        assert m0['full_url'].endswith('detail.webp')
+
+    def test_building_detail_media_video_uses_card_preview(self):
+        """Для видео в деталке url — card.webp, full_url — исходный файл ролика."""
+
+        class _FileLike:
+            def __init__(self, url: str):
+                self.url = url
+
+        class _Image:
+            def __init__(self):
+                self.card = _FileLike('/media/buildings/35/images/img1/card.webp')
+                self.detail = _FileLike('/media/buildings/35/images/img1/detail.webp')
+                self.category = ''
+                self.title = None
+                self.is_primary = True
+                self.order = 1
+                self.pk = 101
+
+        class _Video:
+            def __init__(self):
+                self.card = _FileLike('/media/buildings/35/videos/vid1/card.webp')
+                self.file = _FileLike('/media/buildings/35/videos/vid1/1.mp4')
+                self.category = ''
+                self.title = None
+                self.order = 2
+                self.pk = 202
+
+        class _Rel:
+            def __init__(self, rows):
+                self._rows = rows
+
+            def all(self):
+                return self._rows
+
+        class _BuildingStub:
+            def __init__(self):
+                self.images = _Rel([_Image()])
+                self.videos = _Rel([_Video()])
+
+        _, media = _build_building_detail_media(_BuildingStub())
+        video_item = next(item for item in media if item.type == 'video')
+
+        assert video_item.url.endswith('card.webp')
+        assert video_item.full_url.endswith('1.mp4')
 
     async def test_building_primary_image_first_in_api(self, client, city):
         """Основное фото первое в media при detail и list, даже при order больше других снимков."""

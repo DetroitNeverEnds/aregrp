@@ -114,7 +114,7 @@ class BuildingFloorOut(Schema):
 class BuildingDetailOut(Schema):
     """Здание (деталь): uuid, title, address, description, geo_point, floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
-    В media для этой ручки url и full_url совпадают (оба — «полный» URL медиа).
+    В media для этой ручки url — превью (card), full_url — полный URL медиа.
     """
 
     uuid: str
