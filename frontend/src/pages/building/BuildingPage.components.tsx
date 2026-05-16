@@ -98,7 +98,13 @@ const PremiseDetailsCardContent = ({
                     {premise.name} - {buildingTitle}
                 </title>
             </Helmet>
-            <Card background="gray" gap={40} align="start" fullWidth>
+            <Card
+                background="gray"
+                gap={40}
+                align="start"
+                fullWidth
+                className={styles.premiseDetails}
+            >
                 <Flex gap={6} align="start" fullWidth>
                     <Flex
                         direction="row"
@@ -172,6 +178,7 @@ const PremiseDetailsCardContent = ({
                     </Column>
                 </Flex>
             )}
+            <Gallery premise={premise} orientation="vertical" size="m" type="thumbs" />
 
             <GenerateLinkModal
                 open={generateLinkOpen}
@@ -355,40 +362,37 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
             </Helmet>
             <Flex direction="row" gap={24} fullWidth align="start">
                 {device === 'desktop' && (selectedPremise || buildingMedia.length > 0) && (
-                    <Card
-                        withShadow
-                        gap={12}
-                        className={classNames(styles.officeCard)}
-                        align="start"
-                    >
-                        {selectedPremise ? (
-                            <QueryBoundary
-                                query={selectedPremiseQ}
-                                render={data => (
-                                    <PremiseDetailsCardContent
-                                        data={data}
-                                        canBook={
-                                            saleType === 'sale' &&
-                                            (floorQ.data?.data?.premises?.find(
-                                                premise => premise.uuid === selectedPremise,
-                                            )?.is_available ??
-                                                false)
-                                        }
-                                        buildingTitle={buildingInfo.title}
-                                    />
-                                )}
-                                onRetry="default"
-                            />
-                        ) : (
-                            <Gallery
-                                media={buildingMedia}
-                                type="full"
-                                size="m"
-                                fit="cover"
-                                orientation="vertical"
-                                className={styles.buildingMediaSidebar}
-                            />
-                        )}
+                    <Card withShadow className={classNames(styles.officeCard)} align="start">
+                        <Flex gap={12} className={styles.officeCard__content}>
+                            {selectedPremise ? (
+                                <QueryBoundary
+                                    query={selectedPremiseQ}
+                                    render={data => (
+                                        <PremiseDetailsCardContent
+                                            data={data}
+                                            canBook={
+                                                saleType === 'sale' &&
+                                                (floorQ.data?.data?.premises?.find(
+                                                    premise => premise.uuid === selectedPremise,
+                                                )?.is_available ??
+                                                    false)
+                                            }
+                                            buildingTitle={buildingInfo.title}
+                                        />
+                                    )}
+                                    onRetry="default"
+                                />
+                            ) : (
+                                <Gallery
+                                    media={buildingMedia}
+                                    type="full"
+                                    size="m"
+                                    fit="cover"
+                                    orientation="vertical"
+                                    className={styles.buildingMediaSidebar}
+                                />
+                            )}
+                        </Flex>
                     </Card>
                 )}
                 {selectedPremise && device === 'mobile' && (

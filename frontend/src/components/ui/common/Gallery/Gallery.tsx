@@ -29,7 +29,7 @@ type GalleryBodyProps = Omit<GalleryProps, 'media' | 'premise' | 'building'> & {
     media: GalleryMedia[];
 };
 
-type VerticalGalleryBodyProps = Pick<GalleryBodyProps, 'media' | 'size' | 'className'>;
+type VerticalGalleryBodyProps = Pick<GalleryBodyProps, 'media' | 'size' | 'fit' | 'className'>;
 
 const preloadedImageUrls = new Set<string>();
 
@@ -123,7 +123,12 @@ const GalleryBody = ({
  * Вертикальный режим:
  * рендерит прокручиваемый список карточек и открывает модалку по клику.
  */
-const VerticalGalleryBody = ({ media, size = 'm', className }: VerticalGalleryBodyProps) => {
+const VerticalGalleryBody = ({
+    media,
+    size = 'm',
+    fit = 'cover',
+    className,
+}: VerticalGalleryBodyProps) => {
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -143,14 +148,21 @@ const VerticalGalleryBody = ({ media, size = 'm', className }: VerticalGalleryBo
                 )}
             >
                 {media.map((item, index) => (
-                    <button
+                    <div
                         key={`${item.url}-${index}`}
-                        type="button"
                         className={styles.vertical__item}
                         onClick={() => openMedia(index)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={event => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                openMedia(index);
+                            }
+                        }}
                     >
-                        <img src={item.url} alt="" className={styles.vertical__image} />
-                    </button>
+                        <GalleryMainStage item={item} variant="preview" fit={fit} />
+                    </div>
                 ))}
             </Flex>
             <GalleryModal
@@ -204,6 +216,7 @@ export const Gallery = ({
                     key={JSON.stringify(media)}
                     media={media}
                     size={size}
+                    fit={fit}
                     className={className}
                 />
             );
