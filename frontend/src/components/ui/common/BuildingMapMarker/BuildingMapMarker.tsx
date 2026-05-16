@@ -13,9 +13,11 @@ import {
 } from '@/lib/buildingMapMarkerActiveStore';
 import PinIcon from './pin.svg?react';
 import styles from './BuildingMapMarker.module.scss';
+import type { SaleType } from '@/api/handlers/types';
 
 export type BuildingMapMarkerProps = {
     item: BuildingCatalogue;
+    saleType?: SaleType;
     showCatalogueLinks?: boolean;
     /** Вызывается после переключения открытого тултипа (клик по маркеру). */
     onMarkerClick?: (detail: { uuid: string; open: boolean }) => void;
@@ -31,6 +33,7 @@ const formatPrice = (price: number) =>
 
 export const BuildingMapMarker = ({
     item,
+    saleType = 'sale',
     showCatalogueLinks = true,
     onMarkerClick,
 }: BuildingMapMarkerProps) => {
@@ -44,7 +47,7 @@ export const BuildingMapMarker = ({
         media,
     } = item;
     const previewUrl = media.find(m => m.type === 'photo')?.url;
-    const buildingLink = `/building/${uuid}`;
+    const buildingLink = `/building/${uuid}?sale_type=${saleType}`;
 
     const active = useSyncExternalStore(
         subscribeActiveBuildingMarker,

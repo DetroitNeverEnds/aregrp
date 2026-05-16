@@ -172,7 +172,11 @@ export const Catalogue = () => {
                                     key: item.uuid,
                                     coordinates: item.geo_point,
                                     content: (
-                                        <BuildingMapMarker item={item} showCatalogueLinks={false} />
+                                        <BuildingMapMarker
+                                            item={item}
+                                            showCatalogueLinks={false}
+                                            saleType={saleType}
+                                        />
                                     ),
                                 }));
 
