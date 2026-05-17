@@ -56,9 +56,6 @@ export const FigmaGenerateLinkDemo: Story = {
                             Цена: 4 287 000 ₽
                         </Text>
                     </Flex>
-                    <Text variant="14-med" color="gray-50">
-                        Нет письма? Проверьте папку «Спам»
-                    </Text>
                     <Text variant="24-med" color="gray-100">
                         Создание ссылки
                     </Text>

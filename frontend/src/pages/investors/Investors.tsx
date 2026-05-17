@@ -15,9 +15,7 @@ import { Card } from '@/components/ui/common/Card/Card';
 import { YandexMap } from '@/components/ui/common/YandexMap';
 import { BenifitsWorking } from '@/components/ui/cards/Benefits';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
-import { useBuildingsCatalogueInfinite } from '@/queries/premises';
-import Config from '@/config';
-import { BuildingMapMarker } from '@/pages/root/components/BuildingMapMarker/BuildingMapMarker';
+import { BuildingMapMarker } from '@/components/ui/common/BuildingMapMarker';
 import { setActiveBuildingMarkerUuid } from '@/lib/buildingMapMarkerActiveStore';
 
 import CityPic from './assets/city.svg?react';
@@ -30,8 +28,9 @@ import { Column } from '@/components/ui/layout/Column';
 import { Columns } from '@/components/ui/layout/Columns';
 import { Divider } from '@/components/ui/common/Divider';
 import { Collapse } from './Collapse';
-import { useInvestorSettings } from '@/queries';
+import { useBuildingsCatalogueAll, useInvestorSettings } from '@/queries';
 import classNames from 'classnames';
+import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 
 const Welcome = () => {
     const { t } = useTranslation();
@@ -123,22 +122,7 @@ export const Investors = () => {
     );
 
     const investorsData = useInvestorSettings().data?.data;
-    const { data: buildingsData } = useBuildingsCatalogueInfinite({
-        page_size: Config.pageSizeMain,
-    });
-    const buildings = useMemo(
-        () => buildingsData?.pages.flatMap(page => page?.data?.items ?? []) ?? [],
-        [buildingsData],
-    );
-    const mapsMarkers = useMemo(
-        () =>
-            buildings.map(item => ({
-                key: item.uuid,
-                coordinates: item.geo_point,
-                content: <BuildingMapMarker item={item} />,
-            })),
-        [buildings],
-    );
+    const buildingsCatalogueAllQ = useBuildingsCatalogueAll();
 
     useEffect(() => {
         return () => {
@@ -186,9 +170,8 @@ export const Investors = () => {
                     </Flex>
                     <Columns columnssNum={3}>
                         {strategies.map(({ key, link }) => (
-                            <Column>
+                            <Column key={key}>
                                 <Card
-                                    key={key}
                                     direction="column"
                                     align="stretch"
                                     justify="between"
@@ -258,10 +241,24 @@ export const Investors = () => {
                             </Text>
                         </Flex>
                     </Flex>
-                    <YandexMap
-                        markers={mapsMarkers}
-                        className={styles.map}
-                        onMapClick={() => setActiveBuildingMarkerUuid(undefined)}
+                    <QueryBoundary
+                        query={buildingsCatalogueAllQ}
+                        render={data => {
+                            const mapsMarkers = (data.items ?? []).map(item => ({
+                                key: item.uuid,
+                                coordinates: item.geo_point,
+                                content: <BuildingMapMarker item={item} />,
+                            }));
+
+                            return (
+                                <YandexMap
+                                    markers={mapsMarkers}
+                                    className={styles.map}
+                                    onMapClick={() => setActiveBuildingMarkerUuid(undefined)}
+                                />
+                            );
+                        }}
+                        onRetry="default"
                     />
                 </Container>
 
@@ -279,7 +276,7 @@ export const Investors = () => {
                         className={styles.faq}
                     >
                         {faqItems.map(item => (
-                            <Collapse title={item.question} collapsed={true}>
+                            <Collapse key={item.question} title={item.question} collapsed={true}>
                                 <Text variant="14-reg">{item.answer}</Text>
                             </Collapse>
                         ))}

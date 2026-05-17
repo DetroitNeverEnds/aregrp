@@ -11,19 +11,22 @@ export type GalleryControlsProps = {
     onPrev: () => void;
     onNext: () => void;
     size: 'm' | 'l';
+    showArrows?: boolean;
     /** Кнопки поверх модалки — чуть выше по z-index */
     placement?: 'inline' | 'modal';
 };
 
+/** Стрелки + индикатор текущего слайда для инлайн/модального режима. */
 export const GalleryControls: React.FC<GalleryControlsProps> = ({
     currentIndex,
     total,
     onPrev,
     onNext,
     size,
+    showArrows = true,
     placement = 'inline',
 }) => {
-    const showNav = total > 1;
+    const showNav = total > 1 && showArrows;
 
     return (
         <>

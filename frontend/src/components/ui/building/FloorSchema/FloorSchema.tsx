@@ -17,6 +17,48 @@ type RoomListeners = {
     onClick?: () => void;
 };
 
+const ROOM_ID_PREFIX = 'room_';
+
+const extractRoomToken = (value: string): string | undefined => {
+    const normalizedValue = value.trim();
+    if (!normalizedValue) {
+        return undefined;
+    }
+
+    return normalizedValue.startsWith(ROOM_ID_PREFIX)
+        ? normalizedValue.slice(ROOM_ID_PREFIX.length)
+        : normalizedValue;
+};
+
+const getFallbackRoomName = (roomGroupId: string): string =>
+    roomGroupId.startsWith(ROOM_ID_PREFIX) ? roomGroupId.slice(ROOM_ID_PREFIX.length) : roomGroupId;
+
+const setTextLabelByPrefix = (group: SVGGElement, labelPrefix: string, value: string) => {
+    const label = group.querySelector<SVGTextElement>(`text[id^="${labelPrefix}"]`);
+    if (!label) {
+        return;
+    }
+
+    const tspan = label.querySelector<SVGTSpanElement>('tspan');
+    if (tspan) {
+        tspan.textContent = value;
+        return;
+    }
+
+    label.textContent = value;
+};
+
+const setElementsVisibilityByPrefix = (group: SVGGElement, prefix: string, isVisible: boolean) => {
+    const elements = group.querySelectorAll<SVGElement>(`[id^="${prefix}"]`);
+    elements.forEach(element => {
+        if (isVisible) {
+            element.removeAttribute('display');
+        } else {
+            element.setAttribute('display', 'none');
+        }
+    });
+};
+
 export type FloorSchemaProps = {
     svg: string;
     rooms: FloorRoom[];
@@ -41,53 +83,58 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
         }
 
         const listeners: RoomListeners[] = [];
-
+        const roomsByToken = new Map<string, FloorRoom>();
         rooms.forEach(room => {
-            // Важно: id может начинаться с цифры, поэтому CSS селектор вида "#105" невалиден.
-            const group = root.querySelector<SVGGElement>(`g[id="${room.name}"]`);
-            if (!group) {
+            const roomToken = extractRoomToken(room.name);
+            if (!roomToken || roomsByToken.has(roomToken)) {
                 return;
             }
 
-            group.setAttribute('data-premise-name', room.name);
+            roomsByToken.set(roomToken, room);
+        });
 
-            const roomPath = group.querySelector<SVGPathElement>('path[id="room"]');
-            const isSelected = room.is_available && room.uuid === selectedPremiseId;
-            roomPath?.setAttribute(
+        const roomGroups = root.querySelectorAll<SVGGElement>(`g[id^="${ROOM_ID_PREFIX}"]`);
+        roomGroups.forEach(group => {
+            const roomId = group.id;
+            const roomToken = extractRoomToken(roomId);
+            if (!roomToken) {
+                return;
+            }
+
+            const room = roomsByToken.get(roomToken);
+            const fallbackName = getFallbackRoomName(roomId);
+            const roomName = room?.name || fallbackName;
+            const isAvailable = room?.is_available ?? false;
+            const isSelected = Boolean(room && isAvailable && room.uuid === selectedPremiseId);
+
+            group.setAttribute('data-premise-name', roomName);
+
+            const roomGeometry = group.querySelector<SVGElement>('[id^="poly"]');
+            roomGeometry?.setAttribute(
                 'class',
-                room.is_available
+                isAvailable
                     ? isSelected
                         ? styles['floorSchema__room--selected']
                         : styles['floorSchema__room--free']
                     : styles['floorSchema__room--unavailable'],
             );
 
-            const areaTspan = group.querySelector<SVGTSpanElement>('text#label_area tspan');
-            if (areaTspan) {
-                areaTspan.textContent = room.is_available ? room.label_area : '';
-            }
+            setTextLabelByPrefix(group, 'label_name', roomName);
+            setTextLabelByPrefix(group, 'label_area', isAvailable && room ? room.label_area : '');
+            setTextLabelByPrefix(group, 'label_price', isAvailable && room ? room.label_price : '');
+            setElementsVisibilityByPrefix(group, 'label_lock', !isAvailable);
+            setElementsVisibilityByPrefix(group, 'label_busy', Boolean(room?.is_occupied));
 
-            const priceTspan = group.querySelector<SVGTSpanElement>('text#label_price tspan');
-            if (priceTspan) {
-                priceTspan.textContent = room.is_available ? room.label_price : '';
-            }
-
-            if (!room.is_available) {
+            if (!isAvailable || !room) {
                 group.removeAttribute('tabindex');
                 group.removeAttribute('role');
-
                 return;
             }
 
             group.setAttribute('tabindex', '0');
-
-            const numberTspan = group.querySelector<SVGTSpanElement>('text#number_area tspan');
-            if (numberTspan) {
-                numberTspan.textContent = room.name;
-            }
+            group.setAttribute('role', 'button');
 
             const onClick = () => onRoomSelect?.(room);
-
             group.addEventListener('click', onClick);
 
             listeners.push({

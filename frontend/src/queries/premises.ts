@@ -1,7 +1,6 @@
 import { useInfiniteQuery, useQuery, type UseQueryResult } from '@tanstack/react-query';
 import {
     getBuildings,
-    getBuildingsCatalogue,
     getBuildingDetail,
     getFloor,
     getFloorPremises,
@@ -14,15 +13,12 @@ import {
     type PremiseFilterParams,
     type BuildingFilterParams,
     type PremiseDetail,
-    type BuildingCatalogueParams,
-    type BuildingsCatalogueResponse,
     type BuildingDetailOut,
     type FloorPremiseOut,
     type FloorResponseOut,
-    type SaleType,
 } from '@/api';
 import { wrapApiCall, type QueryResult } from '@/lib/queryHelpers';
-import Config from '@/config';
+import type { SaleType } from '@/api/handlers/types';
 
 /**
  * Хук для получения списка зданий
@@ -33,42 +29,6 @@ export function useBuildings(
     return useQuery({
         queryKey: ['buildings', params],
         queryFn: () => wrapApiCall(getBuildings)(params),
-    });
-}
-
-/**
- * Хук для получения каталога зданий
- */
-export function useBuildingsCatalogue(
-    params?: BuildingCatalogueParams,
-): UseQueryResult<QueryResult<BuildingsCatalogueResponse>, Error> {
-    return useQuery({
-        queryKey: ['buildings', 'catalogue', params],
-        queryFn: () => wrapApiCall(getBuildingsCatalogue)(params),
-    });
-}
-
-/**
- * Хук для получения каталога зданий с пагинацией «Показать еще»
- */
-export function useBuildingsCatalogueInfinite(baseParams?: Omit<BuildingCatalogueParams, 'page'>) {
-    const pageSize = Config.pageSizeMain;
-    return useInfiniteQuery({
-        queryKey: ['buildings', 'catalogue', 'infinite', baseParams],
-        queryFn: async ({ pageParam = 1 }) => {
-            const result = await wrapApiCall(getBuildingsCatalogue)({
-                page_size: pageSize,
-                page: pageParam,
-                ...baseParams,
-            });
-            return result;
-        },
-        getNextPageParam: lastResult => {
-            const data = lastResult?.data;
-            if (!data || data.page >= data.total_pages) return undefined;
-            return data.page + 1;
-        },
-        initialPageParam: 1,
     });
 }
 
@@ -182,12 +142,13 @@ export function useFloorPremises(
 export function useFloor(
     buildingUuid: string,
     saleType: SaleType,
-    floorNumber?: number,
+    floorNumber?: string,
 ): UseQueryResult<QueryResult<FloorResponseOut>, Error> {
     return useQuery({
         queryKey: ['floors', 'detail', buildingUuid, floorNumber, saleType],
+        // TODO: fix type
         queryFn: () =>
-            wrapApiCall(getFloor)(buildingUuid, floorNumber as number, { sale_type: saleType }),
-        enabled: !!buildingUuid && typeof floorNumber === 'number',
+            wrapApiCall(getFloor)(buildingUuid, Number(floorNumber), { sale_type: saleType }),
+        enabled: !!buildingUuid && Boolean(floorNumber),
     });
 }

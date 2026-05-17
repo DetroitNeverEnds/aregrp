@@ -6,6 +6,10 @@
     padding-bottom: 90px;
     margin-bottom: 20px;
 
+    @include desktop-only {
+        height: 585px;
+    }
+
     @include mobile-only {
         padding: $main-content-padding-mobile;
         padding-top: 24px;

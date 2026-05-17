@@ -167,7 +167,11 @@ export const Profile = () => {
 
     return (
         <Page>
-            <QueryBoundary query={userQ} render={data => <ProfileContent data={data} />} />
+            <QueryBoundary
+                query={userQ}
+                render={data => <ProfileContent data={data} />}
+                onRetry="default"
+            />
         </Page>
     );
 };

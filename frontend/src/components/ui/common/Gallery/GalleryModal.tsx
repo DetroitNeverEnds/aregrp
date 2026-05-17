@@ -16,6 +16,7 @@ export type GalleryModalProps = {
     size: 'm' | 'l';
 };
 
+/** Модальный просмотрщик media с навигацией по всему набору. */
 export const GalleryModal: React.FC<GalleryModalProps> = ({
     open,
     onClose,
