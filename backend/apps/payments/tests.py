@@ -217,6 +217,9 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
         self.assertEqual(Payment.objects.count(), 1)
         self.assertEqual(Payment.objects.first().provider_payment_id, 'payment-id')
         self.assertEqual(Booking.objects.filter(premise=self.premise, user=self.user).count(), 1)
+        payment = Payment.objects.get(provider_payment_id='payment-id')
+        booking = Booking.objects.get(premise=self.premise, user=self.user)
+        self.assertEqual(booking.source_payment_id, payment.pk)
 
     def test_handle_webhook_invalid_json_returns_400(self):
         status, body = handle_yookassa_webhook(b'{')
@@ -267,6 +270,8 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
         payment.refresh_from_db()
         self.assertEqual(payment.status, 'succeeded')
         self.assertEqual(Booking.objects.filter(premise=self.premise, user=self.user).count(), 1)
+        booking = Booking.objects.get(premise=self.premise, user=self.user)
+        self.assertEqual(booking.source_payment_id, payment.pk)
 
     @patch('apps.payments.services.WebhookNotification')
     def test_handle_webhook_payment_canceled_does_not_create_booking(self, webhook_notification_mock):

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+from apps.payments.models import Payment
 from apps.re_objects.models import Premise
 
 
@@ -29,6 +30,15 @@ class Booking(models.Model):
         verbose_name="Тип сделки",
     )
     expires_at = models.DateTimeField(verbose_name="Истекает")
+    source_payment = models.ForeignKey(
+        Payment,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='created_bookings',
+        verbose_name='Платёж, создавший бронь',
+        help_text='Заполняется при автоматическом создании брони после успешной оплаты (продажа)',
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
 
     class Meta:

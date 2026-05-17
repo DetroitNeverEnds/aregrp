@@ -28,6 +28,9 @@ def _booking_to_out(b: Booking) -> BookingOut:
         deal_type=b.deal_type,
         expires_at=b.expires_at,
         created_at=b.created_at,
+        source_payment_provider_id=(
+            b.source_payment.provider_payment_id if b.source_payment_id else None
+        ),
     )
 
 
@@ -189,14 +192,16 @@ def create_booking(
             expires_at=expires_at,
         )
 
-    booking = Booking.objects.select_related("premise", "premise__building").get(pk=booking.pk)
+    booking = Booking.objects.select_related(
+        "premise", "premise__building", "source_payment"
+    ).get(pk=booking.pk)
     return _booking_to_out(booking), None
 
 
 def list_bookings_for_user(user) -> list[BookingOut]:
     qs = (
         Booking.objects.filter(user=user)
-        .select_related("premise", "premise__building")
+        .select_related("premise", "premise__building", "source_payment")
         .order_by("-created_at")
     )
     if settings.BOOKINGS_LIST_ONLY_ACTIVE:

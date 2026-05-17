@@ -71,6 +71,7 @@ def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
             premise=premise,
             deal_type=Booking.DealType.SALE,
             expires_at=expires_at,
+            source_payment=local_payment,
         )
 
 
