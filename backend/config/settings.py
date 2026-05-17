@@ -201,6 +201,8 @@ EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 EMAIL_PORT = config('EMAIL_PORT', cast=int, default=587)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
+# Порт 465 (SMTPS): implicit TLS — True; порт 587: обычно False, используется USE_TLS/STARTTLS
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', cast=bool, default=False)
 # Секунды на connect/send; без таймаута smtplib может долго «висеть» при плохой сети
 EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', cast=int, default=3)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
