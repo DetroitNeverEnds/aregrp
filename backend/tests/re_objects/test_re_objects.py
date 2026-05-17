@@ -13,7 +13,8 @@ from uuid import UUID, uuid4
 
 from apps.bookings.models import Booking
 from apps.deals.models import Deal
-from apps.re_objects.models import Building, BuildingImage, Floor, Premise
+from apps.re_objects.models import Building, BuildingImage, BuildingVideo, Floor, Premise
+from apps.re_objects.services.premise_service import _build_building_detail_media
 
 
 @pytest.fixture
@@ -300,6 +301,73 @@ class TestBuildingsList:
         assert b1_uuid in ids
         assert b2_uuid not in ids
 
+    async def test_buildings_list_building_uuids_video_media_uses_preview_url(self, client, city):
+        """Для /buildings/?building_uuids=... у видео: url=card.webp, full_url=mp4."""
+
+        @sync_to_async
+        def setup():
+            b1 = Building.objects.create(
+                name='БЦ UUID VIDEO 1',
+                address='ул. UUID Video, 1',
+                city=city,
+                description='',
+            )
+            f1 = Floor.objects.create(building=b1, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=b1,
+                city=city,
+                floor=f1,
+                area=Decimal('44'),
+                price_per_month=72_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='UV1',
+            )
+
+            b2 = Building.objects.create(
+                name='БЦ UUID VIDEO 2',
+                address='ул. UUID Video, 2',
+                city=city,
+                description='',
+            )
+            f2 = Floor.objects.create(building=b2, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=b2,
+                city=city,
+                floor=f2,
+                area=Decimal('46'),
+                price_per_month=74_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='UV2',
+            )
+
+            BuildingVideo.objects.bulk_create(
+                [
+                    BuildingVideo(
+                        building=b1,
+                        file='buildings/35/videos/slot1/1.mp4',
+                        card='buildings/35/videos/slot1/card.webp',
+                        order=1,
+                    ),
+                ]
+            )
+            return str(b1.uuid), str(b2.uuid)
+
+        b1_uuid, b2_uuid = await setup()
+        response = await client.get(f"/buildings/?building_uuids={b1_uuid}")
+
+        assert response.status_code == 200
+        data = response.json()
+        ids = {item["uuid"] for item in data["items"]}
+        assert b1_uuid in ids
+        assert b2_uuid not in ids
+
+        item = next(i for i in data["items"] if i["uuid"] == b1_uuid)
+        video = next(m for m in item["media"] if m["type"] == "video")
+        assert video["url"].endswith("card.webp")
+        assert video["full_url"].endswith("1.mp4")
+
     async def test_buildings_list_filters_by_rent_price_range(self, client, city):
         """sale_type=rent + min_price/max_price фильтруют здания по цене аренды помещений."""
 
@@ -539,8 +607,8 @@ class TestBuildingDetail:
             {"key": "3", "title": "Микс", "has_sale": True, "has_rent": True},
         ]
 
-    async def test_building_detail_media_url_equals_full_url(self, client, city):
-        """Деталь здания: в media поля url и full_url совпадают (оба как full_url в списке)."""
+    async def test_building_detail_media_uses_preview_in_url(self, client, city):
+        """Деталь здания: в media url — превью, full_url — детальный URL."""
         from io import BytesIO
 
         from django.core.files.uploadedfile import SimpleUploadedFile
@@ -578,7 +646,53 @@ class TestBuildingDetail:
         data = response.json()
         assert len(data['media']) >= 1
         m0 = data['media'][0]
-        assert m0['url'] == m0['full_url']
+        assert m0['url'] != m0['full_url']
+        assert m0['url'].endswith('card.webp')
+        assert m0['full_url'].endswith('detail.webp')
+
+    def test_building_detail_media_video_uses_card_preview(self):
+        """Для видео в деталке url — card.webp, full_url — исходный файл ролика."""
+
+        class _FileLike:
+            def __init__(self, url: str):
+                self.url = url
+
+        class _Image:
+            def __init__(self):
+                self.card = _FileLike('/media/buildings/35/images/img1/card.webp')
+                self.detail = _FileLike('/media/buildings/35/images/img1/detail.webp')
+                self.category = ''
+                self.title = None
+                self.is_primary = True
+                self.order = 1
+                self.pk = 101
+
+        class _Video:
+            def __init__(self):
+                self.card = _FileLike('/media/buildings/35/videos/vid1/card.webp')
+                self.file = _FileLike('/media/buildings/35/videos/vid1/1.mp4')
+                self.category = ''
+                self.title = None
+                self.order = 2
+                self.pk = 202
+
+        class _Rel:
+            def __init__(self, rows):
+                self._rows = rows
+
+            def all(self):
+                return self._rows
+
+        class _BuildingStub:
+            def __init__(self):
+                self.images = _Rel([_Image()])
+                self.videos = _Rel([_Video()])
+
+        _, media = _build_building_detail_media(_BuildingStub())
+        video_item = next(item for item in media if item.type == 'video')
+
+        assert video_item.url.endswith('card.webp')
+        assert video_item.full_url.endswith('1.mp4')
 
     async def test_building_primary_image_first_in_api(self, client, city):
         """Основное фото первое в media при detail и list, даже при order больше других снимков."""
@@ -629,18 +743,18 @@ class TestBuildingDetail:
         building, primary_pk = await setup()
 
         @sync_to_async
-        def primary_detail_url():
+        def primary_card_url():
             img = BuildingImage.objects.get(pk=primary_pk)
-            return img.detail.url if img.detail else img.original.url
+            return img.card.url if img.card else img.original.url
 
-        want_detail = await primary_detail_url()
+        want_card = await primary_card_url()
 
         response = await client.get(f"/buildings/{building.uuid}")
         assert response.status_code == 200
         detail = response.json()
         assert len(detail['media']) >= 2
         assert detail['media'][0]['type'] == 'photo'
-        assert detail['media'][0]['url'] == want_detail
+        assert detail['media'][0]['url'] == want_card
 
         list_response = await client.get('/buildings/')
         assert list_response.status_code == 200
@@ -649,7 +763,7 @@ class TestBuildingDetail:
         assert item is not None
         assert len(item['media']) >= 2
         assert item['media'][0]['type'] == 'photo'
-        assert item['media'][0]['full_url'] == want_detail
+        assert item['media'][0]['url'] == want_card
 
     async def test_building_detail_not_found(self, client):
         """404 для несуществующего UUID."""
@@ -985,7 +1099,7 @@ class TestFloorPremises:
     async def test_floor_premises_sale_is_occupied_false_when_also_for_rent(
         self, client, city, test_user,
     ):
-        """sale_type=sale: доступно и для аренды — is_occupied false; сделки не влияют."""
+        """sale_type=sale: при выключенном show_rented_button is_occupied=false; сделки не влияют."""
 
         @sync_to_async
         def _setup():
@@ -1005,6 +1119,7 @@ class TestFloorPremises:
                 price_per_sqm=200_000,
                 available_for_rent=True,
                 available_for_sale=True,
+                show_rented_button=False,
                 room_number='201',
             )
             Deal.objects.create(
@@ -1024,10 +1139,10 @@ class TestFloorPremises:
         item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
         assert item["is_occupied"] is False
 
-    async def test_floor_premises_sale_is_occupied_true_sale_only(
+    async def test_floor_premises_sale_is_occupied_true_when_show_rented_button_enabled(
         self, client, city,
     ):
-        """sale_type=sale: только продажа (не в аренду) — is_occupied true."""
+        """sale_type=sale: при включенном show_rented_button is_occupied=true."""
 
         @sync_to_async
         def _setup():
@@ -1047,6 +1162,7 @@ class TestFloorPremises:
                 price_per_sqm=250_000,
                 available_for_rent=False,
                 available_for_sale=True,
+                show_rented_button=True,
                 room_number='S9',
             )
             return building, premise

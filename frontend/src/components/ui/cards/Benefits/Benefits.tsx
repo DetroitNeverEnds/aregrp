@@ -88,7 +88,7 @@ export const Benefits = (props: BenefitsProps) => {
     return (
         <FeatureCard gap={80}>
             <Columns columnssNum={2}>
-                <Column gap={40} style={{ width: '768px' }}>
+                <Column gap={40}>
                     <Divider className={commonStyles.desktopOnly} />
                     <Text variant="h2" wrap>
                         {benefit.title}

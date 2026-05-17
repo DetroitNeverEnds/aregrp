@@ -80,9 +80,6 @@ const GenerateLinkModalContent = ({ premise }: GenerateLinkModalContentProps) =>
                     {premise.rent_price && `${formatRubles(premise.rent_price)} / месяц`}
                 </Text>
             </Flex>
-            <Text variant="14-med" color="gray-50">
-                {t('pages.building.generateLinkModal.spamHint')}
-            </Text>
             <Text variant="24-med" color="gray-100">
                 {t('pages.building.generateLinkModal.sectionTitle')}
             </Text>

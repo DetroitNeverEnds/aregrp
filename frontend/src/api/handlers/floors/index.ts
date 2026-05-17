@@ -1,6 +1,6 @@
 import { api } from '@/api/base/api';
-import type { SaleType } from '@/api/handlers/premises/types';
 import type { FloorPremiseOut, FloorResponseOut } from './types';
+import type { SaleType } from '../types';
 
 export type GetFloorQuery = {
     sale_type?: SaleType;

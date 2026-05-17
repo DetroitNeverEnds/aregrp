@@ -100,23 +100,19 @@ def premise_is_occupied_by_rent_availability(*, available_for_rent: bool) -> boo
 def floor_is_occupied_value(
     sale_type: str,
     *,
-    available_for_sale: bool,
-    available_for_rent: bool,
+    show_rented_button: bool,
 ) -> bool:
     """
     Значение is_occupied для схемы этажа.
 
     Текущая бизнес-логика:
     - rent: всегда False (упрощение отображения);
-    - sale: True, если помещение в продаже и не предлагается в аренду.
+    - sale: True, если в админке включён флаг «Показать кнопку "Сдано"».
     """
     if sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
         return False
     if sale_type == settings.RE_OBJECTS_SALE_TYPE_SALE:
-        return bool(
-            available_for_sale
-            and premise_is_occupied_by_rent_availability(available_for_rent=available_for_rent)
-        )
+        return bool(show_rented_button)
     return False
 
 

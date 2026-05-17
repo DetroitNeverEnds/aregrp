@@ -5,6 +5,7 @@
         opacity: 0;
         transform: translateX(15px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -15,7 +16,21 @@
     flex-shrink: 0;
     transition: width 0.3s ease;
     width: 500px;
+    max-height: 720px;
     overflow: hidden;
+
+    &__content {
+        width: 100%;
+        min-height: 0;
+        border-radius: $border-radius-m;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+}
+
+.buildingMediaSidebar {
+    width: 100%;
 }
 
 .floorSchema {
@@ -28,6 +43,7 @@
         &__text {
             flex-shrink: 1;
         }
+
         &__link {
             flex-shrink: 0;
         }
@@ -44,13 +60,25 @@
             @include square;
             background-color: $free-room-color;
         }
+
         &__unavailable {
             @include square;
             background-color: $unavailable-room-color;
         }
+
         &__other {
             @include square;
             background-color: $other-room-color;
+        }
+
+        &__windows {
+            @include square;
+            background-color: rgb(143 182 249);
+        }
+
+        &__partitions {
+            @include square;
+            background-color: rgb(217 217 217);
         }
     }
 }
@@ -61,11 +89,6 @@
 }
 
 .premiseDetails {
-    &__gallery {
-        height: 400px;
-        width: 100%;
-    }
-
     /* FlatButton задаёт line-height: 0; для подписи как у Link нужна высота строки */
     &__generateLink:hover {
         color: $primary-700;
@@ -76,9 +99,15 @@
     &__categories {
         overflow: scroll;
     }
+
     &__gallery {
         width: 100%;
         height: 650px;
         box-sizing: border-box;
     }
+}
+
+.map {
+    width: 100%;
+    height: 520px;
 }

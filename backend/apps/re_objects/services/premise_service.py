@@ -396,8 +396,8 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
 
     Возвращает (media_categories, media). Один плоский список images + videos; основное фото первое, далее по order.
 
-    Исключение для GET /buildings/{uuid}: в media и url, и full_url равны «полному» URL (как full_url
-    в списке зданий): фото — detail WebP, видео — оригинал ролика.
+    Для GET /buildings/{uuid}: url — превью (card), full_url — полный медиа URL
+    (detail WebP для фото, оригинал для видео).
     """
     categories: set[str] = set()
     items: list[tuple[int, int, int, str, str, str, str, Optional[str]]] = []
@@ -422,8 +422,8 @@ def _build_building_detail_media(building: Building) -> tuple[list[str], list[Bu
 
     items.sort(key=lambda x: (x[0], x[1], x[2]))
     media = [
-        BuildingMediaItemOut(type=t, url=fu, full_url=fu, category=cat, title=title)
-        for _, _, _, t, _, fu, cat, title in items
+        BuildingMediaItemOut(type=t, url=u, full_url=fu, category=cat, title=title)
+        for _, _, _, t, u, fu, cat, title in items
     ]
     return (sorted(categories), media)
 
@@ -433,7 +433,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
     Здание по UUID: uuid, title, address, description, floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
     Только здания с помещениями. Использует aget() и prefetch images, videos.
-    В media для детали url и full_url одинаковы (полный URL медиа).
+    В media для детали: url — превью (card), full_url — полный URL медиа.
     """
     try:
         b = await (
@@ -613,9 +613,9 @@ def _floor_premise_availability_rows(
 ) -> list[tuple[Premise, bool, bool]]:
     """
     Для списка помещений этажа: (premise, is_available, is_occupied).
-    is_occupied берётся только из флагов помещения в админке, без сделок.
+    is_occupied берётся только из флага show_rented_button в админке, без сделок.
     rent: всегда False (упрощение схемы).
-    sale: True если в продаже и не в аренду (available_for_sale и не available_for_rent).
+    sale: True если включён show_rented_button.
     is_available — по sale_type: свободно для аренды или для продажи (как раньше, со сделками/бронями).
     """
     if not premises:
@@ -659,8 +659,7 @@ def _floor_premise_availability_rows(
         else:
             is_occ = floor_is_occupied_value(
                 st,
-                available_for_sale=p.available_for_sale,
-                available_for_rent=p.available_for_rent,
+                show_rented_button=p.show_rented_button,
             )
             is_avail = bool(
                 p.available_for_sale

@@ -90,6 +90,7 @@ class BuildingListOut(Schema):
 
     При фильтре sale_type в /buildings/ отдается только релевантное поле цены:
     rent -> min_rent_price, sale -> min_sale_price.
+    В media: url — превью (card), full_url — полный URL медиа.
     """
 
     uuid: str
@@ -114,7 +115,7 @@ class BuildingFloorOut(Schema):
 class BuildingDetailOut(Schema):
     """Здание (деталь): uuid, title, address, description, geo_point, floors, year_built, min_sale_price, min_rent_price, media_categories, media.
 
-    В media для этой ручки url и full_url совпадают (оба — «полный» URL медиа).
+    В media для этой ручки url — превью (card), full_url — полный URL медиа.
     """
 
     uuid: str
@@ -148,7 +149,7 @@ class FloorPremiseOut(Schema):
     label_area: str  # площадь, например "50 м²"
     label_price: str  # стоимость, например "100 000 ₽"
     is_available: bool  # по sale_type запроса: свободно для аренды или для продажи
-    is_occupied: bool  # rent: всегда False; sale: только флаги — True если sale и не в аренду
+    is_occupied: bool  # rent: всегда False; sale: по флагу show_rented_button
 
 
 class FloorResponseOut(Schema):

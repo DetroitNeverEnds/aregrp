@@ -25,21 +25,19 @@ def send_password_reset_email(user, token):
     try:
         reset_url = f"{settings.FRONTEND_URL}/password-reset/confirm?token={token}"
 
-        subject = 'Password Reset Request'
+        subject = "Восстановление пароля — Aregrp.ru"
         message = f"""
-Hello {user.username},
+Здравствуйте, {user.username}!
 
-You requested a password reset for your account.
+Вы запросили восстановление пароля для аккаунта на сайте Aregrp.ru.
 
-Please open the following link to reset your password:
+Чтобы задать новый пароль, перейдите по ссылке:
 {reset_url}
 
-This link will expire in {settings.PASSWORD_RESET_TOKEN_LIFETIME_HOURS} hours.
+Если вы не отправляли этот запрос, проигнорируйте письмо — пароль не изменится.
 
-If you did not request this password reset, please ignore this email.
-
-Best regards,
-Your App Team
+С уважением,
+Команда Aregrp.ru
 """
 
         send_mail(

@@ -7,6 +7,10 @@
     overflow: hidden;
     background: $gradient-primary-700-900-lr;
 
+    @include desktop-only {
+        height: 585px;
+    }
+
     @include mobile-only {
         padding: 24px 16px 40px;
     }

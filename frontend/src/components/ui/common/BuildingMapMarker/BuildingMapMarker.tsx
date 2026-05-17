@@ -1,21 +1,24 @@
 import classNames from 'classnames';
+import { NavLink } from 'react-router-dom';
+import { useSyncExternalStore } from 'react';
 import type { BuildingCatalogue } from '@/api';
 import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text';
-import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
-// import MarkerPinIcon from '@/icons/other/marker-pin.svg?react';
-import styles from './BuildingMapMarker.module.scss';
 import { Link } from '@/components/ui/common/Link';
-import PinIcon from './pin.svg?react';
-import { useSyncExternalStore } from 'react';
+import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import {
     getActiveBuildingMarkerUuid,
     setActiveBuildingMarkerUuid,
     subscribeActiveBuildingMarker,
 } from '@/lib/buildingMapMarkerActiveStore';
+import PinIcon from './pin.svg?react';
+import styles from './BuildingMapMarker.module.scss';
+import type { SaleType } from '@/api/handlers/types';
 
 export type BuildingMapMarkerProps = {
     item: BuildingCatalogue;
+    saleType?: SaleType;
+    showCatalogueLinks?: boolean;
     /** Вызывается после переключения открытого тултипа (клик по маркеру). */
     onMarkerClick?: (detail: { uuid: string; open: boolean }) => void;
 };
@@ -28,7 +31,12 @@ const formatPrice = (price: number) =>
         maximumFractionDigits: 0,
     }).format(price);
 
-export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProps) => {
+export const BuildingMapMarker = ({
+    item,
+    saleType = 'sale',
+    showCatalogueLinks = true,
+    onMarkerClick,
+}: BuildingMapMarkerProps) => {
     const { getLinkToCatalogue } = useFilterSearchParams();
     const {
         uuid,
@@ -39,6 +47,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
         media,
     } = item;
     const previewUrl = media.find(m => m.type === 'photo')?.url;
+    const buildingLink = `/building/${uuid}?sale_type=${saleType}`;
 
     const active = useSyncExternalStore(
         subscribeActiveBuildingMarker,
@@ -64,7 +73,6 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                 className={styles.marker}
                 onClick={handleMarkerClick}
             >
-                {/* <MarkerPinIcon className={classNames(styles.icon, active && styles.iconActive)} /> */}
                 <Flex
                     align="center"
                     justify="center"
@@ -92,9 +100,14 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
             {active && (
                 <div className={styles.tooltip}>
                     <Flex align="start" gap={6} className={styles.tooltip__card}>
-                        <Text variant="14-med" color="gray-100">
-                            {address}
-                        </Text>
+                        <Link
+                            size="lg"
+                            theme="black"
+                            className={styles.tooltip__card__title}
+                            to={buildingLink}
+                        >
+                            {title || address}
+                        </Link>
                         {minSalePrice && (
                             <Text variant="12-reg" color="gray-70">
                                 от {formatPrice(Number(minSalePrice))}
@@ -106,14 +119,11 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                             </Text>
                         )}
                         {previewUrl && (
-                            <img
-                                src={previewUrl}
-                                alt=""
-                                className={styles.tooltip__card__image}
-                                draggable={false}
-                            />
+                            <NavLink to={buildingLink}>
+                                <img src={previewUrl} className={styles.tooltip__card__image} />
+                            </NavLink>
                         )}
-                        {minSalePrice && (
+                        {showCatalogueLinks && minSalePrice && (
                             <Link
                                 to={getLinkToCatalogue({
                                     sale_type: 'sale',
@@ -125,7 +135,7 @@ export const BuildingMapMarker = ({ item, onMarkerClick }: BuildingMapMarkerProp
                                 </Text>
                             </Link>
                         )}
-                        {minRentPrice && (
+                        {showCatalogueLinks && minRentPrice && (
                             <Link
                                 to={getLinkToCatalogue({
                                     sale_type: 'rent',

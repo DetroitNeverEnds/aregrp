@@ -95,6 +95,7 @@ async def building_filter_list(
     summary="Список зданий",
     description=(
         "Список зданий с помещениями. Фильтры: building_uuids, min/max price, min/max area. "
+        "В media: url — превью (card), full_url — полный URL (detail WebP для фото, оригинал для видео). "
         "Пагинация: page, page_size. "
         f"Опционально sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}. "
         "Ответ: items, total, page, page_size, total_pages."
@@ -144,8 +145,8 @@ async def building_list(
     summary="Здание по UUID",
     description=(
         "Деталь: uuid, title, address, description, floors, year_built, min_sale_price, "
-        "min_rent_price, media_categories, media. В media для детали здания поля url и full_url "
-        "совпадают и равны «полному» URL (detail WebP для фото, оригинал для видео)."
+        "min_rent_price, media_categories, media. В media для детали здания: url — превью "
+        "(card), full_url — полный URL (detail WebP для фото, оригинал для видео)."
     ),
 )
 async def building_detail(request, building_uuid: UUID):
@@ -173,8 +174,8 @@ async def building_detail(request, building_uuid: UUID):
         "[{ uuid, name, label_area, label_price, is_available, is_occupied }]. "
         f"Обязательный query sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT} или "
         f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — is_available по типу; "
-        "is_occupied только из флагов помещения: аренда — всегда false; продажа — true, "
-        "если доступно для продажи и недоступно для аренды."
+        "is_occupied только из флагов помещения: аренда — всегда false; продажа — по флагу "
+        "\"Показать кнопку 'Сдано'\"."
     ),
 )
 async def floor_premises_list(

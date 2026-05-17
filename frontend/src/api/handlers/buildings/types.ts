@@ -1,9 +1,19 @@
-import type { BaseMediaItem } from '@/api/handlers/types';
+import type { BaseMediaItem, SaleType } from '@/api/handlers/types';
+import type { OrderBy } from '@/api/handlers/premises/types';
 
 /**
  * Параметры для получения каталога зданий
  */
 export interface BuildingCatalogueParams {
+    sale_type?: SaleType;
+    available?: boolean;
+    building?: string;
+    building_uuids?: string;
+    min_price?: number;
+    max_price?: number;
+    min_area?: number;
+    max_area?: number;
+    order_by?: OrderBy;
     page?: number;
     page_size?: number;
 }
@@ -43,12 +53,20 @@ export type BuildingMediaItem = {
 
 export type BuildingMediaCategory = string;
 
+export type BuildingFloorOut = {
+    key: string;
+    title: string;
+    has_sale: boolean;
+    has_rent: boolean;
+};
+
 export interface BuildingDetailOut {
     uuid: string;
     title: string;
     address: string;
     description: string;
     total_floors?: number | null;
+    floors?: BuildingFloorOut[];
     year_built?: number | null;
     geo_point?: {
         lat: number;
