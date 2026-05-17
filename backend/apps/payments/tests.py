@@ -146,6 +146,30 @@ class PaymentsCreateEndpointTests(TestCase):
         body = response.json()
         self.assertEqual(body['code'], 'PAYMENTS_ACTIVE_BOOKING_EXISTS')
 
+    def test_create_payment_active_unfinished_payment_exists(self):
+        Payment.objects.create(
+            premise=self.premise,
+            provider_payment_id='active-payment-id',
+            idempotence_key=uuid.uuid4(),
+            status=Payment.Status.PENDING,
+            paid=False,
+            amount_value=Decimal('10000.00'),
+            amount_currency='RUB',
+            description='Pending payment',
+            metadata={'user_id': str(self.user.id)},
+        )
+
+        response = self.client.post(
+            self.url,
+            data={'premise_uuid': str(self.premise.uuid)},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 409)
+        body = response.json()
+        self.assertEqual(body['code'], 'PAYMENTS_PREMISE_UNAVAILABLE')
+
 
 class PaymentsWebhookHandlerServiceTests(TestCase):
     def setUp(self):
@@ -266,6 +290,30 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
         self.assertEqual(status, 200)
         self.assertIsNone(body)
         self.assertEqual(Booking.objects.filter(premise=self.premise, user=self.user).count(), 0)
+
+    @patch('apps.payments.services.WebhookNotification')
+    def test_handle_webhook_unknown_status_falls_back_to_pending(self, webhook_notification_mock):
+        webhook_notification_mock.return_value = SimpleNamespace(
+            event='payment.waiting_for_capture',
+            object=SimpleNamespace(
+                id='payment-unknown-status-id',
+                status='refunded',
+                paid=False,
+                amount=SimpleNamespace(value='10000.00', currency='RUB'),
+                description='Unknown status payment',
+            ),
+        )
+        payload = (
+            f'{{"event":"payment.waiting_for_capture","object":{{"id":"payment-unknown-status-id","metadata":'
+            f'{{"payment_token":"3fa85f64-5717-4562-b3fc-2c963f66afa6","user_id":"{self.user.id}","premise_id":"{self.premise.id}"}}}}}}'
+        ).encode()
+
+        status, body = handle_yookassa_webhook(payload)
+
+        self.assertEqual(status, 200)
+        self.assertIsNone(body)
+        payment = Payment.objects.get(provider_payment_id='payment-unknown-status-id')
+        self.assertEqual(payment.status, Payment.Status.PENDING)
 
 
 class PaymentsWebhookEndpointTests(TestCase):
