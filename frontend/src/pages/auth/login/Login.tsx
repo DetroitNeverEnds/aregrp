@@ -9,6 +9,7 @@ import { Link } from '@/components/ui/common/Link';
 import { Text } from '@/components/ui/common/Text';
 import { Flex } from '@/components/ui/common/Flex';
 import { useLoginMutation } from '@/mutations';
+import { resolveAuthRedirect } from '@/lib/authRedirect';
 
 type LoginFormData = {
     email: string;
@@ -20,6 +21,7 @@ export const Login: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const redirectTo = resolveAuthRedirect(searchParams.get('redirect'));
     const { handleSubmit, control, formState, setError } = useForm<LoginFormData>({
         defaultValues: {
             email: '',
@@ -30,8 +32,7 @@ export const Login: React.FC = () => {
 
     const { mutate: loginMutate, isPending } = useLoginMutation({
         onSuccess: () => {
-            const redirect = searchParams.get('redirect');
-            navigate(redirect && redirect.startsWith('/') ? redirect : '/');
+            navigate(redirectTo);
         },
         onError: error => {
             console.error('Ошибка входа:', error);
@@ -85,8 +86,8 @@ export const Login: React.FC = () => {
                         {t('auth.common.noAccount')}{' '}
                         <Link
                             to={
-                                searchParams.get('redirect')
-                                    ? `/auth/register?redirect=${encodeURIComponent(searchParams.get('redirect')!)}`
+                                redirectTo !== '/'
+                                    ? `/auth/register?redirect=${encodeURIComponent(redirectTo)}`
                                     : '/auth/register'
                             }
                             size="lg"

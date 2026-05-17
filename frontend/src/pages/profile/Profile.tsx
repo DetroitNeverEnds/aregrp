@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import classNames from 'classnames';
 import { Flex } from '@/components/ui/common/Flex';
@@ -158,12 +158,14 @@ export const ProfileContent = ({ data: user }: { data: UserData }) => {
 export const Profile = () => {
     const userQ = useUser();
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (userQ.data && !userQ.data.data) {
-            navigate(`/auth/login?redirect=${encodeURIComponent('/profile')}`, { replace: true });
+            const redirect = `${location.pathname}${location.search}${location.hash}`;
+            navigate(`/auth/login?redirect=${encodeURIComponent(redirect)}`, { replace: true });
         }
-    }, [navigate, userQ, userQ.data]);
+    }, [location.hash, location.pathname, location.search, navigate, userQ, userQ.data]);
 
     return (
         <Page>

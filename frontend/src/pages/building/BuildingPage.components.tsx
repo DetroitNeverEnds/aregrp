@@ -200,7 +200,8 @@ const PremiseDetailsCardContent = ({
                         )}
                         {isAuthenticated && createPaymentM.error && (
                             <Text color="error-default" variant="12-reg">
-                                {createPaymentM.error.detail || t('errors.somethingWrong')}
+                                {/* {createPaymentM.error.detail || t('errors.somethingWrong')} */}
+                                {t(`errors.${createPaymentM.error.code}`)}
                             </Text>
                         )}
                     </Column>

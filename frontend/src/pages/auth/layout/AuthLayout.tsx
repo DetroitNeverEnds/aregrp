@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import { Link } from '@/components/ui/common/Link';
 import { Flex } from '@/components/ui/common/Flex';
+import { resolveAuthRedirect } from '@/lib/authRedirect';
 
 import TwoRowsLogo from '@/icons/logo/twoRows.svg?react';
 import Lion1Logo from '@/icons/logo/lion1.svg?react';
@@ -14,8 +15,7 @@ export const AuthLayout: React.FC = () => {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const redirectTo = useMemo(() => {
-        const redirect = searchParams.get('redirect');
-        return redirect && redirect.startsWith('/') ? redirect : '/';
+        return resolveAuthRedirect(searchParams.get('redirect'));
     }, [searchParams]);
 
     return (
@@ -47,7 +47,7 @@ export const AuthLayout: React.FC = () => {
                         className={styles.auth__backDesktop}
                         size="md"
                         theme="black"
-                        to="/"
+                        to={redirectTo}
                         leadingIcon="arrow-narrow-left"
                     >
                         {t('auth.common.backToSite')}
