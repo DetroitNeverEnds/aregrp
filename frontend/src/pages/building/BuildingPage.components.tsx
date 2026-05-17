@@ -37,6 +37,7 @@ import { Link } from '@/components/ui/common/Link';
 import { useLoginLink } from '@/lib/getAuthLink';
 import { YandexMap } from '@/components/ui/common/YandexMap';
 import { MapPin } from '@/components/ui/common/MapPin';
+import { useCreatePaymentMutation } from '@/mutations';
 
 type BuildingInfo = BuildingDetailOut;
 
@@ -90,6 +91,23 @@ const PremiseDetailsCardContent = ({
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
+    const createPaymentM = useCreatePaymentMutation();
+
+    const onBookClick = useCallback(async () => {
+        createPaymentM.reset();
+
+        try {
+            const payment = await createPaymentM.mutateAsync({ premise_uuid: premise.uuid });
+            const confirmationUrl = payment.confirmation?.confirmation_url;
+
+            if (confirmationUrl) {
+                window.location.assign(confirmationUrl);
+                return;
+            }
+        } catch {
+            return;
+        }
+    }, [createPaymentM, premise.uuid]);
 
     return (
         <>
@@ -164,7 +182,12 @@ const PremiseDetailsCardContent = ({
             {canBook && (
                 <Flex direction="row" gap={6} align="stretch" fullWidth>
                     <Column gap={6} align="center">
-                        <Button variant="primary" width="max" disabled={!isAuthenticated}>
+                        <Button
+                            variant="primary"
+                            width="max"
+                            disabled={!isAuthenticated || createPaymentM.isPending}
+                            onClick={onBookClick}
+                        >
                             {t('pages.building.book')}
                         </Button>
                         {!isAuthenticated && (
@@ -173,6 +196,11 @@ const PremiseDetailsCardContent = ({
                                     {t('pages.building.authToBook.auth')}
                                 </Link>
                                 {t('pages.building.authToBook.toBook')}
+                            </Text>
+                        )}
+                        {isAuthenticated && createPaymentM.error && (
+                            <Text color="error-default" variant="12-reg">
+                                {createPaymentM.error.detail || t('errors.somethingWrong')}
                             </Text>
                         )}
                     </Column>
