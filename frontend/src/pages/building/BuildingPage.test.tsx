@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BuildingPage } from './BuildingPage';
 import * as queries from '@/queries';
 
+vi.mock('@/components/ui/common/YandexMap', () => ({
+    YandexMap: () => <div data-testid="yandex-map" />,
+}));
+
 vi.mock('@/hooks/useLayoutSettings', () => ({
     useLayoutSettings: vi.fn(),
 }));
