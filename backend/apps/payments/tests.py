@@ -84,6 +84,10 @@ class PaymentsCreateEndpointTests(TestCase):
 
         payload = payment_create_mock.call_args.args[0]
         self.assertIn('metadata', payload)
+        self.assertEqual(
+            payload['description'],
+            f'Бронирование: {self.premise.building.address} — {self.premise.title}',
+        )
         self.assertEqual(payload['metadata']['user_id'], str(self.user.id))
         self.assertEqual(payload['metadata']['premise_id'], str(self.premise.id))
         self.assertEqual(payload['metadata']['premise_uuid'], str(self.premise.uuid))

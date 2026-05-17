@@ -38,6 +38,19 @@ def _is_positive_int_string(value: str) -> bool:
     return value.isdigit() and int(value) > 0
 
 
+def _build_payment_description(premise: Premise) -> str:
+    building_address = (premise.building.address or '').strip()
+    premise_name = (premise.title or '').strip()
+    room_number = (premise.room_number or '').strip()
+
+    if not premise_name:
+        premise_name = f'Помещение {room_number}' if room_number else 'Помещение'
+    if not building_address:
+        building_address = 'Адрес не указан'
+
+    return f'Бронирование: {building_address} — {premise_name}'
+
+
 def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
     user_id_raw = metadata.get('user_id')
     premise_id_raw = metadata.get('premise_id')
@@ -153,7 +166,7 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
         )
 
     amount_value = _build_amount_value()
-    description = f'Бронирование помещения {premise_id}'
+    description = _build_payment_description(premise)
     idempotence_key = uuid.uuid4()
     metadata = {
         'payment_token': str(idempotence_key),
