@@ -27,6 +27,11 @@ from ..services.utils import get_user_data
 
 logger = logging.getLogger(__name__)
 
+# Единый текст успеха при запросе сброса (в т.ч. если пользователя нет — без раскрытия факта).
+PASSWORD_RESET_PUBLIC_MESSAGE = (
+    "Если такой email зарегистрирован, на него отправлена ссылка для восстановления пароля."
+)
+
 auth_router = Router()
 
 
@@ -597,7 +602,7 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
     **Пример ответа:**
     ```json
     {
-        "message": "If an account with this email exists, a password reset link has been sent."
+        "message": "Если такой email зарегистрирован, на него отправлена ссылка для восстановления пароля."
     }
     ```
     
@@ -611,7 +616,7 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
         except CustomUser.DoesNotExist:  # type: ignore
             # Для безопасности возвращаем успешный ответ даже если пользователь не найден
             return 200, {
-                "message": "If an account with this email exists, a password reset link has been sent."
+                "message": PASSWORD_RESET_PUBLIC_MESSAGE,
             }
         
         # Генерируем токен сброса пароля
@@ -630,7 +635,7 @@ async def password_reset(request, data: PasswordResetIn):  # pylint: disable=unu
             )
         
         return 200, {
-            "message": "If an account with this email exists, a password reset link has been sent."
+            "message": PASSWORD_RESET_PUBLIC_MESSAGE,
         }
 
     except Exception as e:
