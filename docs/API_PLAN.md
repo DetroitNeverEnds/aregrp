@@ -77,7 +77,10 @@ Buildings:
 Premises:
 - catalogue /api/v1/premises (sale_type в query: rent|sale)
 - деталь /api/v1/premises/<uuid>
-- referal-link /api/v1/premises/link?uuid
+- referal-link-create /api/v1/referrals/links (POST, premise_uuid + phone)
+
+Payments:
+- create /api/v1/payments/ (читает cookie `referral_code`; если код валиден и привязан к premise, пишет referral_link в платеж)
 
 Cases:
 - strategies /api/v1/cases/<cat>

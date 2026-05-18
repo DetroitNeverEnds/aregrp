@@ -5,6 +5,6 @@ from .models import Booking
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ("user", "premise", "deal_type", "source_payment", "expires_at", "created_at")
+    list_display = ("user", "premise", "deal_type", "referrer", "source_payment", "expires_at", "created_at")
     list_filter = ("deal_type",)
-    raw_id_fields = ("user", "premise", "source_payment")
+    raw_id_fields = ("user", "premise", "source_payment", "referrer")

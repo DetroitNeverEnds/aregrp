@@ -39,6 +39,14 @@ class Booking(models.Model):
         verbose_name='Платёж, создавший бронь',
         help_text='Заполняется при автоматическом создании брони после успешной оплаты (продажа)',
     )
+    referrer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='referred_bookings',
+        verbose_name='Реферер',
+    )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создано")
 
     class Meta:

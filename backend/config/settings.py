@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.bookings',
     'apps.deals',
     "apps.payments.apps.PaymentsConfig",
+    'apps.referrals',
 ]
 
 MIDDLEWARE = [
@@ -209,8 +210,19 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER or 'noreply@localhost')
 
-# Frontend URL for password reset links
-FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+# Frontend URLs:
+# - FRONTEND_AUTH_BASE_URL: для auth-ссылок (например, reset password)
+# - FRONTEND_REFERRAL_BASE_URL: для публичных реферальных ссылок
+# Сохраняем обратную совместимость со старыми переменными FRONTEND_URL и FRONTEND_BASE_URL.
+_legacy_frontend_url = config('FRONTEND_URL', default='http://localhost:3000')
+_legacy_frontend_base_url = config('FRONTEND_BASE_URL', default=_legacy_frontend_url)
+
+FRONTEND_AUTH_BASE_URL = config('FRONTEND_AUTH_BASE_URL', default=_legacy_frontend_url)
+FRONTEND_REFERRAL_BASE_URL = config('FRONTEND_REFERRAL_BASE_URL', default=_legacy_frontend_base_url)
+REFERRAL_CODE_COOKIE_NAME = config(
+    'REFERRAL_CODE_COOKIE_NAME',
+    default=config('REFERRAL_COOKIE_NAME', default='referral_code'),
+)
 
 # Logging options
 LOG_LEVEL = config('LOG_LEVEL', default='INFO')

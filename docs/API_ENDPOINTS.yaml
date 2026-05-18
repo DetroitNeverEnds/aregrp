@@ -147,8 +147,22 @@ premises:
       has_parking: boolean
       is_furnished: boolean
 
-  - GET /premises/link?uuid=...
-    referral-ссылка
+  - POST /referrals/links
+    генерация реферальной ссылки для помещения
+    body:
+      premise_uuid: string
+      phone: string
+    response:
+      code: string
+      url: string
+      premise_uuid: string
+      created_at: string
+
+payments:
+  - POST /payments/
+    создание платежа
+    notes:
+      - если в cookie есть referral_code и код соответствует помещению, ссылка привязывается к платежу
 
 
 # ───────────────────────────────────────────────────────────────────
