@@ -1,6 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
+import {
+    TransformWrapper,
+    TransformComponent,
+    type ReactZoomPanPinchContentRef,
+} from 'react-zoom-pan-pinch';
 
+import { FloorSchemaControls } from './FloorSchemaControls';
 import styles from './FloorSchema.module.scss';
 
 export type FloorRoom = {
@@ -29,9 +35,6 @@ const extractRoomToken = (value: string): string | undefined => {
         ? normalizedValue.slice(ROOM_ID_PREFIX.length)
         : normalizedValue;
 };
-
-const getFallbackRoomName = (roomGroupId: string): string =>
-    roomGroupId.startsWith(ROOM_ID_PREFIX) ? roomGroupId.slice(ROOM_ID_PREFIX.length) : roomGroupId;
 
 const setTextLabelByPrefix = (group: SVGGElement, labelPrefix: string, value: string) => {
     const label = group.querySelector<SVGTextElement>(`text[id^="${labelPrefix}"]`);
@@ -74,7 +77,10 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
     onRoomSelect,
     className,
 }) => {
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const rootRef = useRef<HTMLDivElement | null>(null);
+    const transformRef = useRef<ReactZoomPanPinchContentRef | null>(null);
+    const [minScale, setMinScale] = useState(0.1);
 
     useEffect(() => {
         const root = rootRef.current;
@@ -92,6 +98,28 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
 
             roomsByToken.set(roomToken, room);
         });
+
+        // Track pointer movement to distinguish click from drag
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let didDrag = false;
+
+        const onPointerDown = (e: PointerEvent) => {
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            didDrag = false;
+        };
+
+        const onPointerMove = (e: PointerEvent) => {
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            if (Math.sqrt(dx * dx + dy * dy) > 5) {
+                didDrag = true;
+            }
+        };
+
+        root.addEventListener('pointerdown', onPointerDown);
+        root.addEventListener('pointermove', onPointerMove);
 
         const roomGroups = root.querySelectorAll<SVGGElement>(`g[id^="${ROOM_ID_PREFIX}"]`);
         roomGroups.forEach(group => {
@@ -129,7 +157,16 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
             group.setAttribute('tabindex', '0');
             group.setAttribute('role', 'button');
 
-            const onClick = () => onRoomSelect?.(room);
+            const onClick = () => {
+                if (didDrag) {
+                    return;
+                }
+                const isAlreadySelected = room.uuid === selectedPremiseId;
+                onRoomSelect?.(room);
+                if (!isAlreadySelected) {
+                    transformRef.current?.zoomToElement(group as unknown as HTMLElement, 2.5);
+                }
+            };
             group.addEventListener('click', onClick);
 
             listeners.push({
@@ -139,6 +176,8 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
         });
 
         return () => {
+            root.removeEventListener('pointerdown', onPointerDown);
+            root.removeEventListener('pointermove', onPointerMove);
             listeners.forEach(({ group, onClick }) => {
                 if (onClick) {
                     group.removeEventListener('click', onClick);
@@ -147,14 +186,49 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
         };
     }, [onRoomSelect, rooms, selectedPremiseId, svg]);
 
+    // Fit SVG into the container viewport on floor change; derive minScale from fit
+    useEffect(() => {
+        const ref = transformRef.current;
+        const container = containerRef.current;
+        if (!ref || !container) {
+            return;
+        }
+
+        const content = ref.instance.contentComponent;
+        if (!content || content.offsetWidth === 0) {
+            return;
+        }
+
+        const fitScale = Math.min(
+            container.offsetWidth / content.offsetWidth,
+            container.offsetHeight / content.offsetHeight,
+        );
+
+        setMinScale(fitScale);
+        ref.centerView(fitScale, 0);
+    }, [svg]);
+
     return (
-        <div className={classNames(styles.floorSchema, className)}>
-            <div
-                ref={rootRef}
-                className={styles.floorSchema__svgRoot}
-                // SVG приходит из API: в прототипе вставляем как есть
-                dangerouslySetInnerHTML={{ __html: svg }}
-            />
+        <div ref={containerRef} className={classNames(styles.floorSchema, className)}>
+            <TransformWrapper
+                ref={transformRef}
+                minScale={minScale}
+                maxScale={3}
+                centerOnInit
+                limitToBounds
+                centerZoomedOut
+                doubleClick={{ disabled: true }}
+                panning={{ velocityDisabled: true }}
+            >
+                <TransformComponent wrapperClass={styles.floorSchema__canvas}>
+                    <div
+                        ref={rootRef}
+                        className={styles.floorSchema__svgRoot}
+                        dangerouslySetInnerHTML={{ __html: svg }}
+                    />
+                </TransformComponent>
+                <FloorSchemaControls transformRef={transformRef} containerRef={containerRef} />
+            </TransformWrapper>
         </div>
     );
 };
