@@ -16,7 +16,7 @@
     flex-shrink: 0;
     transition: width 0.3s ease;
     width: 500px;
-    max-height: 720px;
+    max-height: 750px;
     overflow: hidden;
 
     &__content {
@@ -26,6 +26,10 @@
         overflow-x: hidden;
         overflow-y: auto;
         scrollbar-width: thin;
+
+        &__title {
+            margin-left: $border-radius-m;
+        }
     }
 }
 
@@ -38,6 +42,11 @@
     transition: transform 1s ease;
     overflow: hidden;
     flex-grow: 1;
+
+    @include desktop-only {
+        max-height: 750px;
+    }
+
 
     &__header {
         &__text {

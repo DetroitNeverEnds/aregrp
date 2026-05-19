@@ -102,12 +102,8 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
             }
 
             const room = roomsByToken.get(roomToken);
-            const fallbackName = getFallbackRoomName(roomId);
-            const roomName = room?.name || fallbackName;
             const isAvailable = room?.is_available ?? false;
             const isSelected = Boolean(room && isAvailable && room.uuid === selectedPremiseId);
-
-            group.setAttribute('data-premise-name', roomName);
 
             const roomGeometry = group.querySelector<SVGElement>('[id^="poly"]');
             roomGeometry?.setAttribute(
@@ -119,7 +115,6 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
                     : styles['floorSchema__room--unavailable'],
             );
 
-            setTextLabelByPrefix(group, 'label_name', roomName);
             setTextLabelByPrefix(group, 'label_area', isAvailable && room ? room.label_area : '');
             setTextLabelByPrefix(group, 'label_price', isAvailable && room ? room.label_price : '');
             setElementsVisibilityByPrefix(group, 'label_lock', !isAvailable);

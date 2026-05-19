@@ -392,7 +392,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
             <Flex direction="row" gap={24} fullWidth align="start">
                 {device === 'desktop' && (selectedPremise || buildingMedia.length > 0) && (
                     <Card withShadow className={classNames(styles.officeCard)} align="start">
-                        <Flex gap={12} className={styles.officeCard__content}>
+                        <Flex gap={12} className={styles.officeCard__content} align="start">
                             {selectedPremise ? (
                                 <QueryBoundary
                                     query={selectedPremiseQ}
@@ -412,14 +412,22 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     onRetry="default"
                                 />
                             ) : (
-                                <Gallery
-                                    media={buildingMedia}
-                                    type="full"
-                                    size="m"
-                                    fit="cover"
-                                    orientation="vertical"
-                                    className={styles.buildingMediaSidebar}
-                                />
+                                <>
+                                    <Text
+                                        variant="20-med"
+                                        className={styles.officeCard__content__title}
+                                    >
+                                        Места общего пользования
+                                    </Text>
+                                    <Gallery
+                                        media={buildingMedia}
+                                        type="full"
+                                        size="m"
+                                        fit="cover"
+                                        orientation="vertical"
+                                        className={styles.buildingMediaSidebar}
+                                    />
+                                </>
                             )}
                         </Flex>
                     </Card>
@@ -453,7 +461,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                         />
                     </Sheet>
                 )}
-                <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
+                <Card size="xl" background="gray" className={styles.floorSchema} gap={20}>
                     <>
                         <Flex
                             direction="row"
@@ -462,7 +470,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             fullWidth
                             className={breakpointStyles.desktopOnly}
                         >
-                            <Text variant="h2" className={styles.floorSchema__header__text}>
+                            <Text variant="h3" className={styles.floorSchema__header__text}>
                                 {buildingInfo?.title}
                             </Text>
                             <SingleSelect<SaleType>
@@ -494,7 +502,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                         </Flex>
                     </>
 
-                    <Flex gap={40} fullWidth className={styles.a}>
+                    <Flex gap={20} fullWidth className={styles.a}>
                         <Flex direction="row" gap={20} wrap="wrap">
                             {legend.map(({ title, style }) => (
                                 <Flex key={title} direction="row" gap={8}>
