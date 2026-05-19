@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { BREAKPOINT_DESKTOP_MIN_PX } from '@/constants/breakpoints';
 
-export type Gadget = 'mobile' | 'desktop';
+export type Device = 'mobile' | 'desktop';
 
 function subscribeMinWidth(minWidthPx: number, onChange: () => void): () => void {
     const query = `(min-width: ${minWidthPx}px)`;
@@ -22,18 +22,17 @@ export function useMediaQueryMinWidth(minWidthPx: number): boolean {
     );
 }
 
+export function useDevice(): Device {
+    if (useMediaQueryMinWidth(BREAKPOINT_DESKTOP_MIN_PX)) {
+        return 'desktop';
+    }
+    return 'mobile';
+}
+
 export function useIsDesktop(): boolean {
-    return useMediaQueryMinWidth(BREAKPOINT_DESKTOP_MIN_PX);
+    return useDevice() === 'desktop';
 }
 
 export function useIsMobile(): boolean {
-    return !useIsDesktop();
-}
-
-/**
- * Текущий layout-гаджет по брейкпоинту `BREAKPOINT_DESKTOP_MIN_PX`.
- * Реакция на смену: `useEffect(..., [gadget])` (или `[useIsDesktop()]`).
- */
-export function useGadget(): Gadget {
-    return useIsDesktop() ? 'desktop' : 'mobile';
+    return useDevice() === 'mobile';
 }

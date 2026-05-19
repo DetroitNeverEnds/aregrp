@@ -4,8 +4,11 @@
 Краткое описание ручек поиска:
 
 1) GET /api/v1/premises — поиск помещений с фильтрами и пагинацией (sale_type опционально).
-   Ответ: { items: [...], total, page, page_size, total_pages }.    Параметры: sale_type, available (только брони), building, building_uuids, цена/площадь, order_by, page, page_size.
-2) GET /api/v1/premises/buildings — список зданий для фильтра; sale_type, available (только брони).
+   Ответ: { items: [...], total, page, page_size, total_pages }.
+   Параметры: sale_type, available (брони и незавершённые оплаты), building, building_uuids,
+   цена/площадь, order_by, page, page_size.
+2) GET /api/v1/premises/buildings — список зданий для фильтра; sale_type, available
+   (тот же смысл, что в каталоге).
 3) GET /api/v1/buildings/ — список зданий с пагинацией (page, page_size).
 4) GET /api/v1/buildings/{uuid} — информация о здании (floors, media_categories, media).
 5) GET /api/v1/floors/{building_uuid}/{floor_id} — этаж; обязательный query sale_type (rent|sale) для is_available.
@@ -17,7 +20,6 @@
 и вызывает async-функции сервиса.
 """
 from decimal import Decimal
-from typing import Optional
 from uuid import UUID
 
 from django.conf import settings
@@ -25,6 +27,7 @@ from ninja import Query, Router
 from ninja.errors import HttpError
 
 from api.schemas import ProblemDetail
+
 from .errors import ReObjectsErrorCodes, create_re_objects_error
 from .schemas import (
     BuildingDetailOut,
@@ -43,7 +46,6 @@ from .services import (
     get_premises_for_floor,
     parse_building_uuids,
 )
-
 
 premises_router = Router(tags=["Premises"])
 buildings_router = Router(tags=["Buildings"])
@@ -70,15 +72,19 @@ def _validated_floor_sale_type(sale_type: str) -> str:
 )
 async def building_filter_list(
     request,
-    sale_type: Optional[str] = Query(
-        None,
-        description=f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — только с помещениями под аренду, {settings.RE_OBJECTS_SALE_TYPE_SALE} — под продажу",
-    ),
-    available: Optional[bool] = Query(
+    sale_type: str | None = Query(
         None,
         description=(
-            "true — без активной брони на помещении; false — с бронью или без флага аренды/продажи. "
-            "Сделки не учитываются. Не передано — без фильтра."
+            f'{settings.RE_OBJECTS_SALE_TYPE_RENT} — только с помещениями под аренду; '
+            f'{settings.RE_OBJECTS_SALE_TYPE_SALE} — под продажу'
+        ),
+    ),
+    available: bool | None = Query(
+        None,
+        description=(
+            "true — свободно: нет активной брони и нет незавершённой оплаты (pending / waiting_for_capture); "
+            "false — иначе или нет флага аренды/продажи. Оформленные сделки (Deal) в фильтр не входят. "
+            "Не передано — без фильтра."
         ),
     ),
 ):
@@ -95,6 +101,7 @@ async def building_filter_list(
     summary="Список зданий",
     description=(
         "Список зданий с помещениями. Фильтры: building_uuids, min/max price, min/max area. "
+        "В media: url — превью (card), full_url — полный URL (detail WebP для фото, оригинал для видео). "
         "Пагинация: page, page_size. "
         f"Опционально sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}. "
         "Ответ: items, total, page, page_size, total_pages."
@@ -102,7 +109,7 @@ async def building_filter_list(
 )
 async def building_list(
     request,
-    sale_type: Optional[str] = Query(
+    sale_type: str | None = Query(
         None,
         description=(
             f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — только здания с помещениями под аренду; "
@@ -111,17 +118,17 @@ async def building_list(
     ),
     page: int = Query(1, ge=1, description="Номер страницы"),
     page_size: int = Query(6, ge=1, le=100, description="Размер страницы"),
-    building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
-    min_price: Optional[int] = Query(
+    building_uuids: str | None = Query(None, description="Фильтр по UUID зданий (через запятую)"),
+    min_price: int | None = Query(
         None,
         description="Минимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
     ),
-    max_price: Optional[int] = Query(
+    max_price: int | None = Query(
         None,
         description="Максимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
     ),
-    min_area: Optional[Decimal] = Query(None, description="Минимальная площадь, м²"),
-    max_area: Optional[Decimal] = Query(None, description="Максимальная площадь, м²"),
+    min_area: Decimal | None = Query(None, description="Минимальная площадь, м²"),
+    max_area: Decimal | None = Query(None, description="Максимальная площадь, м²"),
 ):
     """Список зданий с пагинацией. Ответ: items, total, page, page_size, total_pages."""
     st = _validated_floor_sale_type(sale_type) if sale_type is not None else None
@@ -144,8 +151,8 @@ async def building_list(
     summary="Здание по UUID",
     description=(
         "Деталь: uuid, title, address, description, floors, year_built, min_sale_price, "
-        "min_rent_price, media_categories, media. В media для детали здания поля url и full_url "
-        "совпадают и равны «полному» URL (detail WebP для фото, оригинал для видео)."
+        "min_rent_price, media_categories, media. В media для детали здания: url — превью "
+        "(card), full_url — полный URL (detail WebP для фото, оригинал для видео)."
     ),
 )
 async def building_detail(request, building_uuid: UUID):
@@ -173,8 +180,8 @@ async def building_detail(request, building_uuid: UUID):
         "[{ uuid, name, label_area, label_price, is_available, is_occupied }]. "
         f"Обязательный query sale_type: {settings.RE_OBJECTS_SALE_TYPE_RENT} или "
         f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — is_available по типу; "
-        "is_occupied только из флагов помещения: аренда — всегда false; продажа — true, "
-        "если доступно для продажи и недоступно для аренды."
+        "is_occupied только из флагов помещения: аренда — всегда false; продажа — по флагу "
+        "\"Показать кнопку 'Сдано'\"."
     ),
 )
 async def floor_premises_list(
@@ -208,39 +215,45 @@ async def floor_premises_list(
     description=(
         f"Фильтры: sale_type ({settings.RE_OBJECTS_SALE_TYPE_RENT}|{settings.RE_OBJECTS_SALE_TYPE_SALE}), "
         "available, building, building_uuids, min/max price и площадь, order_by, page, page_size. "
-        "Без available при sale_type=rent|sale — без активной брони (сделки не учитываются)."
+        "Без available при sale_type=rent|sale — только свободные к сделке: нет активной брони и нет "
+        "незавершённой оплаты. Deal не учитываются."
     ),
 )
 async def premise_list(
     request,
-    sale_type: Optional[str] = Query(
+    sale_type: str | None = Query(
         None,
         description=f"{settings.RE_OBJECTS_SALE_TYPE_RENT} — аренда, {settings.RE_OBJECTS_SALE_TYPE_SALE} — продажа",
     ),
-    available: Optional[bool] = Query(
+    available: bool | None = Query(
         None,
         description=(
-            "true — без активной брони; false — с бронью или выключенный флаг аренды/продажи. "
-            "Сделки не учитываются. Не передано при sale_type=rent|sale — то же, что true."
+            "true — свободно: нет активной брони и нет незавершённой оплаты; "
+            "false — иначе или выключенный флаг аренды/продажи. "
+            "Deal не учитываются. Не передано при sale_type=rent|sale — то же, что true."
         ),
     ),
-    building: Optional[str] = Query(None, description="Поиск по адресу или названию здания"),
-    building_uuids: Optional[str] = Query(None, description="Фильтр по UUID зданий (через запятую)"),
-    min_price: Optional[int] = Query(
+    building: str | None = Query(None, description="Поиск по адресу или названию здания"),
+    building_uuids: str | None = Query(None, description="Фильтр по UUID зданий (через запятую)"),
+    min_price: int | None = Query(
         None,
         description="Минимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
     ),
-    max_price: Optional[int] = Query(
+    max_price: int | None = Query(
         None,
         description="Максимальная цена (целые ₽): при sale_type=sale — итог продажи, иначе аренда за месяц.",
     ),
-    min_area: Optional[Decimal] = Query(None, description="Минимальная площадь, м²"),
-    max_area: Optional[Decimal] = Query(None, description="Максимальная площадь, м²"),
+    min_area: Decimal | None = Query(None, description="Минимальная площадь, м²"),
+    max_area: Decimal | None = Query(None, description="Максимальная площадь, м²"),
     order_by: str = Query("default", description="default|price_asc|price_desc|area_asc|area_desc"),
     page: int = Query(1, ge=1, description="Номер страницы"),
     page_size: int = Query(20, ge=1, le=100, description="Размер страницы"),
 ):
-    """Список помещений с фильтрами (sale_type, available, building, building_uuids, price, area) и пагинацией. Ответ: items, total, page, page_size, total_pages."""
+    """Список помещений с фильтрами и пагинацией.
+
+    Параметры: sale_type, available, building, building_uuids, price, area.
+    Ответ: items, total, page, page_size, total_pages.
+    """
     params = PremiseFilterParams(
         sale_type=sale_type,
         available=available,
@@ -273,7 +286,7 @@ async def premise_list(
 async def premise_detail(
     request,
     premise_uuid: UUID,
-    sale_type: Optional[str] = Query(
+    sale_type: str | None = Query(
         None,
         description=(
             f"{settings.RE_OBJECTS_SALE_TYPE_SALE} — price как полная стоимость продажи. "

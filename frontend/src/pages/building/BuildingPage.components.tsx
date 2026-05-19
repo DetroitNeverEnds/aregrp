@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import _ from 'lodash';
 import Helmet from 'react-helmet';
 import { FloorSchema, type FloorRoom } from '@/components/ui/building/FloorSchema';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
@@ -9,7 +8,7 @@ import { Button } from '@/components/ui/common/Button';
 import { Card } from '@/components/ui/common/Card/Card';
 import { FlatButton } from '@/components/ui/common/FlatButton';
 import { Flex } from '@/components/ui/common/Flex';
-import { Gallery, type GalleryMedia } from '@/components/ui/common/Gallery/Gallery';
+import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 import { Loader } from '@/components/ui/common/Loader';
 import Text from '@/components/ui/common/Text';
 import { CardContainer } from '@/components/ui/layout/CardsContainer';
@@ -23,13 +22,8 @@ import { useTypedSearchParams, type SearchParamsParser } from '@/hooks/useTypedS
 import { BuildingOfficeFilter } from '@/components/ui/forms/BuildingOfficeFilter';
 import { useFloor, usePremiseDetail, usePremisesInfinite } from '@/queries';
 import { useUser } from '@/queries/profile';
-import type {
-    BuildingDetailOut,
-    FloorResponseOut,
-    PremiseDetail,
-    PremiseListItem,
-    SaleType,
-} from '@/api';
+import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListItem } from '@/api';
+import type { SaleType } from '@/api/handlers/types';
 import MedicalCrossIcon from './medical-cross.svg?react';
 import { GenerateLinkModal } from './GenerateLinkModal';
 
@@ -38,18 +32,22 @@ import { SingleSelect } from '@/components/ui/common/input/Select';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import { Sheet } from '@/components/ui/common/Sheet';
 import { BetweenRowLayout } from '@/components/ui/layout/BetweenRowLayout';
-import { useGadget } from '@/hooks';
+import { useDevice } from '@/hooks';
+import { Link } from '@/components/ui/common/Link';
+import { useLoginLink } from '@/lib/getAuthLink';
+import { YandexMap } from '@/components/ui/common/YandexMap';
+import { MapPin } from '@/components/ui/common/MapPin';
 
 type BuildingInfo = BuildingDetailOut;
 
 type BuildingSearchParams = {
-    floor: number;
+    floor?: string;
     selectedPremise?: string;
     sale_type?: 'sale' | 'rent';
 };
 
 const parseBuildingSearchParams: SearchParamsParser<BuildingSearchParams> = raw => ({
-    floor: Number(raw.floor) || 1,
+    floor: raw.floor,
     selectedPremise: raw.selectedPremise || undefined,
     sale_type: raw.sale_type === 'sale' || raw.sale_type === 'rent' ? raw.sale_type : undefined,
 });
@@ -88,6 +86,7 @@ const PremiseDetailsCardContent = ({
     const { t } = useTranslation();
     const user = useUser().data?.data;
     const isAuthenticated = user !== undefined;
+    const loginLink = useLoginLink();
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
@@ -99,8 +98,13 @@ const PremiseDetailsCardContent = ({
                     {premise.name} - {buildingTitle}
                 </title>
             </Helmet>
-            <Gallery premise={premise} fit="contain" className={styles.premiseDetails__gallery} />
-            <Card background="gray" gap={40} align="start" fullWidth>
+            <Card
+                background="gray"
+                gap={40}
+                align="start"
+                fullWidth
+                className={styles.premiseDetails}
+            >
                 <Flex gap={6} align="start" fullWidth>
                     <Flex
                         direction="row"
@@ -165,12 +169,16 @@ const PremiseDetailsCardContent = ({
                         </Button>
                         {!isAuthenticated && (
                             <Text color="gray-50" variant="12-reg">
-                                {t('pages.building.authToBook')}
+                                <Link to={loginLink} size="sm">
+                                    {t('pages.building.authToBook.auth')}
+                                </Link>
+                                {t('pages.building.authToBook.toBook')}
                             </Text>
                         )}
                     </Column>
                 </Flex>
             )}
+            <Gallery premise={premise} orientation="vertical" size="m" type="thumbs" />
 
             <GenerateLinkModal
                 open={generateLinkOpen}
@@ -237,13 +245,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
         },
         [params, setSearchParams],
     );
-    const { floor: currentFloor, selectedPremise, sale_type: saleTypeForFloorFromParams } = params;
-    const saleTypeForFloor = saleTypeForFloorFromParams || 'sale';
-
-    // На обновление параметров, скроллим наверх
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [params.floor, params.selectedPremise]);
+    const { floor: currentFloorRaw, selectedPremise, sale_type: saleTypeRaw } = params;
+    const currentFloor = currentFloorRaw || buildingInfo.floors?.[0]?.key;
+    const saleType = saleTypeRaw || 'sale';
 
     const legend = useMemo(
         () => [
@@ -252,19 +256,19 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                 style: styles.floorSchema__legend__free,
             },
             {
-                title: t(
-                    saleTypeForFloor === 'sale'
-                        ? 'pages.building.legend.unavailable_sale'
-                        : 'pages.building.legend.unavailable_rent',
-                ),
+                title: t('pages.building.legend.unavailable'),
                 style: styles.floorSchema__legend__unavailable,
             },
             {
-                title: t('pages.building.legend.other'),
-                style: styles.floorSchema__legend__other,
+                title: t('pages.building.legend.windows'),
+                style: styles.floorSchema__legend__windows,
+            },
+            {
+                title: t('pages.building.legend.partitions'),
+                style: styles.floorSchema__legend__partitions,
             },
         ],
-        [saleTypeForFloor, t],
+        [t],
     );
 
     const buildingPageSearch = useMemo(() => {
@@ -292,15 +296,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     useLayoutSettings(layoutSettings);
 
     // Building info
-    const [currentMediaCategoryIndex, setCurrentMediaCategoryIndex] = useState(0);
-    const currentMediaCategory = useMemo(
-        () => buildingInfo.media_categories[currentMediaCategoryIndex] || '',
-        [buildingInfo.media_categories, currentMediaCategoryIndex],
-    );
-    const selectedMedia: GalleryMedia[] | undefined = useMemo(
-        () => buildingInfo.media.filter(media => media.category === currentMediaCategory),
-        [buildingInfo.media, currentMediaCategory],
-    );
+    const buildingMedia = useMemo(() => buildingInfo.media ?? [], [buildingInfo.media]);
 
     const [catalogFilter, setCatalogFilter] = useState<{
         min_price?: number;
@@ -313,21 +309,24 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
         () => ({
             building_uuids: buildingInfo.uuid,
             ...catalogFilter,
-            ...(saleTypeForFloor ? { sale_type: saleTypeForFloor } : {}),
+            ...(saleType ? { sale_type: saleType } : {}),
         }),
-        [buildingInfo.uuid, catalogFilter, saleTypeForFloor],
+        [buildingInfo.uuid, catalogFilter, saleType],
     );
     const premisesInfiniteQ = usePremisesInfinite(otherPremisesParams);
 
-    const floorQ = useFloor(buildingInfo.uuid, saleTypeForFloor, currentFloor);
+    const floorQ = useFloor(buildingInfo.uuid, saleType || 'sale', currentFloor);
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     useEffect(() => {
-        if (selectedPremiseQ.data?.data && selectedPremiseQ.data?.data.floor !== currentFloor) {
+        if (
+            selectedPremiseQ.data?.data &&
+            String(selectedPremiseQ.data?.data.floor) !== String(currentFloor)
+        ) {
             setSearchParams(
                 toSearchParams({
                     ...params,
-                    floor: selectedPremiseQ.data?.data.floor ?? 0,
+                    floor: String(selectedPremiseQ.data?.data.floor),
                     selectedPremise: undefined,
                 }),
             );
@@ -336,7 +335,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     }, [selectedPremiseQ.data?.data, currentFloor, setSearchParams, params]);
 
     const onFloorSelect = useCallback(
-        (floor: number) => {
+        (floor: string) => {
             setSearchParams(toSearchParams({ ...params, floor, selectedPremise: undefined }));
         },
         [params, setSearchParams],
@@ -354,7 +353,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
         [],
     );
 
-    const gadget = useGadget();
+    const device = useDevice();
 
     return (
         <>
@@ -362,22 +361,17 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                 <title>{buildingInfo.title}</title>
             </Helmet>
             <Flex direction="row" gap={24} fullWidth align="start">
-                {selectedPremise && (
-                    <>
-                        {gadget === 'desktop' && (
-                            <Card
-                                withShadow
-                                gap={12}
-                                className={classNames(styles.officeCard)}
-                                align="start"
-                            >
+                {device === 'desktop' && (selectedPremise || buildingMedia.length > 0) && (
+                    <Card withShadow className={classNames(styles.officeCard)} align="start">
+                        <Flex gap={12} className={styles.officeCard__content}>
+                            {selectedPremise ? (
                                 <QueryBoundary
                                     query={selectedPremiseQ}
                                     render={data => (
                                         <PremiseDetailsCardContent
                                             data={data}
                                             canBook={
-                                                saleTypeForFloor === 'sale' &&
+                                                saleType === 'sale' &&
                                                 (floorQ.data?.data?.premises?.find(
                                                     premise => premise.uuid === selectedPremise,
                                                 )?.is_available ??
@@ -388,38 +382,47 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     )}
                                     onRetry="default"
                                 />
-                            </Card>
-                        )}
-                        {gadget === 'mobile' && (
-                            <Sheet
-                                open={true}
-                                onClose={() =>
-                                    setSearchParams(
-                                        toSearchParams({ ...params, selectedPremise: undefined }),
-                                    )
-                                }
-                                gap={20}
-                            >
-                                <QueryBoundary
-                                    query={selectedPremiseQ}
-                                    render={data => (
-                                        <PremiseDetailsCardContent
-                                            data={data}
-                                            canBook={
-                                                saleTypeForFloor === 'sale' &&
-                                                (floorQ.data?.data?.premises?.find(
-                                                    premise => premise.uuid === selectedPremise,
-                                                )?.is_available ??
-                                                    false)
-                                            }
-                                            buildingTitle={buildingInfo.title}
-                                        />
-                                    )}
-                                    onRetry="default"
+                            ) : (
+                                <Gallery
+                                    media={buildingMedia}
+                                    type="full"
+                                    size="m"
+                                    fit="cover"
+                                    orientation="vertical"
+                                    className={styles.buildingMediaSidebar}
                                 />
-                            </Sheet>
-                        )}
-                    </>
+                            )}
+                        </Flex>
+                    </Card>
+                )}
+                {selectedPremise && device === 'mobile' && (
+                    <Sheet
+                        open={true}
+                        onClose={() =>
+                            setSearchParams(
+                                toSearchParams({ ...params, selectedPremise: undefined }),
+                            )
+                        }
+                        gap={20}
+                    >
+                        <QueryBoundary
+                            query={selectedPremiseQ}
+                            render={data => (
+                                <PremiseDetailsCardContent
+                                    data={data}
+                                    canBook={
+                                        saleType === 'sale' &&
+                                        (floorQ.data?.data?.premises?.find(
+                                            premise => premise.uuid === selectedPremise,
+                                        )?.is_available ??
+                                            false)
+                                    }
+                                    buildingTitle={buildingInfo.title}
+                                />
+                            )}
+                            onRetry="default"
+                        />
+                    </Sheet>
                 )}
                 <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
                     <>
@@ -439,7 +442,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     { label: { title: t('common.rent') }, value: 'rent' },
                                 ]}
                                 onChange={val => setSaleType(val || 'sale')}
-                                value={saleTypeForFloor}
+                                value={saleType}
                             />
                         </Flex>
                         <Flex
@@ -454,7 +457,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     { label: { title: t('common.rent') }, value: 'rent' },
                                 ]}
                                 onChange={val => setSaleType(val || 'sale')}
-                                value={saleTypeForFloor}
+                                value={saleType}
                             />
                             <Text variant="h2" className={styles.floorSchema__header__text}>
                                 {buildingInfo?.title}
@@ -478,13 +481,17 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                         />
 
                         <Flex direction="row" gap={12}>
-                            {_.range(1, (buildingInfo.total_floors || 1) + 1).map(floor => (
+                            {buildingInfo.floors?.map(floor => (
                                 <Button
-                                    key={floor}
-                                    variant={currentFloor === floor ? 'primary' : 'secondary'}
-                                    onClick={() => onFloorSelect(floor)}
+                                    key={floor.key}
+                                    variant={currentFloor === floor.key ? 'primary' : 'secondary'}
+                                    onClick={() => onFloorSelect(floor.key)}
+                                    disabled={
+                                        (saleType === 'sale' && !floor.has_sale) ||
+                                        (saleType === 'rent' && !floor.has_rent)
+                                    }
                                 >
-                                    {t('pages.building.floor')} {floor}
+                                    {floor.title}
                                 </Button>
                             ))}
                         </Flex>
@@ -519,7 +526,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     <OfficeCard
                                         key={premiseData.uuid}
                                         item={premiseData}
-                                        type={saleTypeForFloor || 'any'}
+                                        type={saleType || 'any'}
                                     />
                                 ))}
                             </CardContainer>
@@ -528,33 +535,25 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                 </InfiniteQueryBoundary>
             </Container>
 
-            {/* Картинки инфраструктуры */}
-            <Container>
-                <Text variant="h2">{t('pages.building.infrastructure')}</Text>
-                <Flex
-                    direction="row"
-                    gap={12}
-                    fullWidth
-                    className={styles.infrastructure__categories}
-                >
-                    {buildingInfo?.media_categories.map((category, index) => (
-                        <Button
-                            key={category}
-                            variant={category === currentMediaCategory ? 'primary' : 'outlined'}
-                            onClick={() => setCurrentMediaCategoryIndex(index)}
-                        >
-                            {category}
-                        </Button>
-                    ))}
-                </Flex>
-                <Gallery
-                    type="full"
-                    size="l"
-                    media={selectedMedia}
-                    className={styles.infrastructure__gallery}
-                    key={currentMediaCategory}
-                />
-            </Container>
+            {buildingInfo.geo_point && (
+                <Container>
+                    <Text variant="h2">Местоположение</Text>
+                    <YandexMap
+                        staticMap
+                        className={styles.map}
+                        markers={[
+                            {
+                                key: `building-${buildingInfo.uuid}`,
+                                coordinates: {
+                                    lat: buildingInfo.geo_point.lat,
+                                    lon: buildingInfo.geo_point.lon,
+                                },
+                                content: <MapPin address={buildingInfo.address} />,
+                            },
+                        ]}
+                    />
+                </Container>
+            )}
         </>
     );
 };

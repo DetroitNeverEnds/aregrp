@@ -56,7 +56,7 @@ buildings:
         description: string
         min_sale_price: number   # optional
         min_rent_price: number   # optional
-        media: MedialList
+        media: MedialList        # url=card.webp (превью), full_url=detail.webp/photo или .mp4/video
       total: number
       page: number
       page_size: number
@@ -78,9 +78,9 @@ buildings:
     BuildingMediaItem:
       type: "photo" | "video"
       category: string
-      url: string
+      url: string              # превью (card.webp)
+      full_url: string         # detail.webp для photo, оригинал .mp4 для video
       title: string            # optional
-      is_primary: boolean     # для фото
 
   - GET /buildings/<uuid>/floor/<number>
     информация об этаже (TODO)

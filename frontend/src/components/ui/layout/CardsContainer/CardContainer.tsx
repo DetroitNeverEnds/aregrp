@@ -24,7 +24,7 @@ export const CardContainer = (props: CardContainerProps) => {
     return (
         <Container align="center">
             <div className={styles.container}>{props.children}</div>
-            {props.pagination && (
+            {props.pagination && (props.pagination.totalPages || 0) > 1 && (
                 <Pagination
                     currentPage={props.pagination.currentPage || 1}
                     totalPages={props.pagination.totalPages || 1}

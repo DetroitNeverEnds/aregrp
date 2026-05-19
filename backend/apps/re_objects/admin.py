@@ -185,11 +185,11 @@ class PremiseAdmin(admin.ModelAdmin):
     list_display = (
         'room_number', 'title', 'city', 'building', 'floor_info',
         'area', 'price_per_month', 'premise_type',
-        'available_for_rent', 'available_for_sale', 'created_at'
+        'available_for_rent', 'available_for_sale', 'show_rented_button', 'created_at'
     )
     list_filter = (
         'city', 'city__region', 'building', 'premise_type',
-        'available_for_rent', 'available_for_sale',
+        'available_for_rent', 'available_for_sale', 'show_rented_button',
         'has_windows', 'has_parking', 'is_furnished', 'created_at'
     )
     search_fields = (
@@ -204,7 +204,7 @@ class PremiseAdmin(admin.ModelAdmin):
         ('Основная информация', {
             'fields': (
                 'city', 'building', 'floor', 'room_number', 'title', 'premise_type',
-                'available_for_rent', 'available_for_sale',
+                'available_for_rent', 'available_for_sale', 'show_rented_button',
             )
         }),
         ('Параметры для поиска', {

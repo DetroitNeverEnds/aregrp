@@ -21,3 +21,4 @@ class BookingOut(Schema):
     deal_type: str
     expires_at: datetime
     created_at: datetime
+    source_payment_provider_id: str | None = None

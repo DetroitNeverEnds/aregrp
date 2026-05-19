@@ -5,6 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BuildingPage } from './BuildingPage';
 import * as queries from '@/queries';
 
+vi.mock('@/components/ui/common/YandexMap', () => ({
+    YandexMap: () => <div data-testid="yandex-map" />,
+}));
+
 vi.mock('@/hooks/useLayoutSettings', () => ({
     useLayoutSettings: vi.fn(),
 }));
@@ -51,6 +55,11 @@ const mockBuildingDetail = {
     title: 'Тестовое здание',
     address: 'ул. Тестовая 1',
     total_floors: 3,
+    floors: [
+        { key: '1', title: '1 этаж', has_sale: true, has_rent: true },
+        { key: '2', title: '2 этаж', has_sale: true, has_rent: false },
+        { key: '3', title: '3 этаж', has_sale: false, has_rent: true },
+    ],
     media: [],
     media_categories: ['Фото', 'Планировки'],
 };

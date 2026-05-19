@@ -7,6 +7,9 @@ import { Column } from '@/components/ui/layout/Column';
 import { type BuildingCatalogue } from '@/api';
 import { Gallery } from '@/components/ui/common/Gallery/Gallery';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useDevice } from '@/hooks';
 
 export interface BuildingCardProps {
     item: BuildingCatalogue;
@@ -16,7 +19,10 @@ export interface BuildingCardProps {
  * Компонент карточки здания (building)
  */
 export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
+    const { t } = useTranslation();
+    const device = useDevice();
     const { getLinkToCatalogue } = useFilterSearchParams();
+    const navigate = useNavigate();
     const {
         title,
         description,
@@ -24,6 +30,11 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
         min_rent_price: minRentPrice,
         min_sale_price: minSalePrice,
     } = item;
+    const linkToBuilding = `/building/${uuid}`;
+    const navigateToBuilding = () => {
+        navigate(linkToBuilding);
+        window.scrollTo({ top: 0 });
+    };
 
     // Форматирование цены
     const formatPrice = (price: number) => {
@@ -39,7 +50,11 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
         <Flex justify="between" gap={30} className={styles.buildingCard}>
             <Flex gap={20} fullWidth align="start">
                 {/* Изображение */}
-                <Gallery building={item} className={styles.buildingCard__imageWrapper} />
+                <Gallery
+                    building={item}
+                    className={styles.buildingCard__imageWrapper}
+                    onClick={navigateToBuilding}
+                />
 
                 {/* Заголовок и цена */}
                 <Flex
@@ -53,6 +68,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                         variant="24-med"
                         color="primary-900"
                         className={styles.buildingCard__name__title}
+                        onClick={navigateToBuilding}
                     >
                         {title}
                     </Text>
@@ -101,7 +117,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                             size="md"
                             width="max"
                         >
-                            Каталог продажи
+                            {t(`components.ObjectCard.saleCatalog_${device}`)}
                         </Button>
                     )}
                 </Column>
@@ -116,7 +132,7 @@ export const BuildingCard: React.FC<BuildingCardProps> = ({ item }) => {
                             size="md"
                             width="max"
                         >
-                            Каталог аренды
+                            {t(`components.ObjectCard.rentCatalog_${device}`)}
                         </Button>
                     )}
                 </Column>

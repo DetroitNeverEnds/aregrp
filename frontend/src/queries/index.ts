@@ -3,7 +3,6 @@ export { useInvestorSettings } from './investors';
 export { useSiteInfo } from './siteInfo';
 export {
     useBuildings,
-    useBuildingsCatalogue,
     usePremises,
     usePremisesInfinite,
     usePremisesForRent,
@@ -14,3 +13,8 @@ export {
     useFloor,
 } from './premises';
 export { useUser, useMyBookings, useProfilePremises } from './profile';
+export {
+    useBuildingsCatalogue,
+    useBuildingsCatalogueAll,
+    useBuildingsCatalogueInfinite,
+} from './buildings';

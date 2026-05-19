@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text';
 import { useLayoutSettings } from '@/hooks/useLayoutSettings';
@@ -9,7 +9,7 @@ import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContai
 import { Container } from '@/components/ui/layout/Container';
 import { ObjectsFilter } from '@/components/ui/forms/ObjectsFilter';
 import { CardContainer } from '@/components/ui/layout/CardsContainer';
-import { usePremises } from '@/queries';
+import { useBuildingsCatalogueAll, usePremises } from '@/queries';
 import { Loader } from '@/components/ui/common/Loader';
 import { OfficeCard } from '@/components/ui/cards/OfficeCard';
 import { Page } from '@/components/ui/layout/Page/Page';
@@ -18,6 +18,11 @@ import type { OrderBy } from '@/api';
 import { SingleSelect } from '@/components/ui/common/input/Select/Select';
 import Config from '@/config';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
+import { YandexMap } from '@/components/ui/common/YandexMap';
+import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
+import { BuildingMapMarker } from '@/components/ui/common/BuildingMapMarker';
+import { setActiveBuildingMarkerUuid } from '@/lib/buildingMapMarkerActiveStore';
+import styles from './Catalogue.module.scss';
 
 const ResultsView = () => {
     const { t } = useTranslation();
@@ -72,6 +77,13 @@ export const Catalogue = () => {
     const { t } = useTranslation();
     const { filter, setFilter, getLinkToCatalogue } = useFilterSearchParams();
     const saleType = filter.sale_type ?? 'sale';
+    const buildingsCatalogueAllQ = useBuildingsCatalogueAll(filter);
+
+    useEffect(() => {
+        return () => {
+            setActiveBuildingMarkerUuid(undefined);
+        };
+    }, []);
 
     const layoutSettings = useMemo<LayoutSettings>(
         () => ({
@@ -152,6 +164,36 @@ export const Catalogue = () => {
                             />
                             <ObjectsFilter />
                         </Flex>
+                        <QueryBoundary
+                            query={buildingsCatalogueAllQ}
+                            render={data => {
+                                const filteredBuildings = data.items ?? [];
+                                const mapMarkers = filteredBuildings.map(item => ({
+                                    key: item.uuid,
+                                    coordinates: item.geo_point,
+                                    content: (
+                                        <BuildingMapMarker
+                                            item={item}
+                                            showCatalogueLinks={false}
+                                            saleType={saleType}
+                                        />
+                                    ),
+                                }));
+
+                                return (
+                                    data.items.length > 0 && (
+                                        <YandexMap
+                                            markers={mapMarkers}
+                                            className={styles.map}
+                                            onMapClick={() =>
+                                                setActiveBuildingMarkerUuid(undefined)
+                                            }
+                                        />
+                                    )
+                                );
+                            }}
+                            onRetry="default"
+                        />
                         <ResultsView />
                     </Container>
                 </VerticalMainContainer>

@@ -8,3 +8,5 @@ export interface BaseMediaItem {
     /** Полноразмерное фото или видео для полного просмотра */
     full_url?: string;
 }
+
+export type SaleType = 'sale' | 'rent';

@@ -15,6 +15,14 @@
     &__clickable {
         cursor: pointer;
     }
+
+    &__vertical {
+        flex-direction: column;
+    }
+
+    &__horizontal {
+        flex-direction: row;
+    }
 }
 
 .media {

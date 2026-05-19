@@ -13,6 +13,7 @@ import { Divider } from '@/components/ui/common/Divider';
 import { useSiteContacts } from '@/queries/contacts';
 import { YandexMap } from '@/components/ui/common/YandexMap';
 import { FeedbackFormRow } from '@/components/ui/layout/FeedbackFormRow';
+import { QueryBoundary } from '@/components/ui/layout/QueryBoundary/QueryBoundary';
 
 import styles from './Contacts.module.scss';
 import { MapPin } from '@/components/ui/common/MapPin';
@@ -39,7 +40,8 @@ export const Contacts = () => {
     );
     useLayoutSettings(layoutSettings);
     const siteInfo = useSiteInfo().data?.data;
-    const contacts = useSiteContacts().data?.data;
+    const contactsQ = useSiteContacts();
+    const contacts = contactsQ.data?.data;
 
     const contactsVariants = useMemo(
         () => [
@@ -120,34 +122,40 @@ export const Contacts = () => {
                         </Flex>
                     </Column>
                     <Column className={styles.mapColumn}>
-                        <YandexMap
-                            staticMap
-                            markers={[
-                                {
-                                    key: 'sales-office',
-                                    coordinates: {
-                                        lat: contacts?.coordinates?.lat || 0,
-                                        lon: contacts?.coordinates?.lng || 0,
-                                    },
-                                    content: (
-                                        <MapPin address={contacts?.sales_center_address || '-'}>
-                                            <Card align="start" gap={6} isPin>
-                                                <Text variant="14-med">
-                                                    {t('pages.contacts.salesOffice')}
-                                                </Text>
-                                                <Text variant="12-reg" color="gray-70">
-                                                    {contacts?.sales_center_address || '-'}
-                                                </Text>
-                                                <img
-                                                    src="/img/salesOffice.png"
-                                                    style={{ width: '100%' }}
-                                                />
-                                            </Card>
-                                        </MapPin>
-                                    ),
-                                },
-                            ]}
-                        ></YandexMap>
+                        <QueryBoundary
+                            query={contactsQ}
+                            render={data => (
+                                <YandexMap
+                                    staticMap
+                                    markers={[
+                                        {
+                                            key: 'sales-office',
+                                            coordinates: {
+                                                lat: data.coordinates?.lat || 0,
+                                                lon: data.coordinates?.lng || 0,
+                                            },
+                                            content: (
+                                                <MapPin address={data.sales_center_address || '-'}>
+                                                    <Card align="start" gap={6} isPin>
+                                                        <Text variant="14-med">
+                                                            {t('pages.contacts.salesOffice')}
+                                                        </Text>
+                                                        <Text variant="12-reg" color="gray-70">
+                                                            {data.sales_center_address || '-'}
+                                                        </Text>
+                                                        <img
+                                                            src="/img/salesOffice.png"
+                                                            style={{ width: '100%' }}
+                                                        />
+                                                    </Card>
+                                                </MapPin>
+                                            ),
+                                        },
+                                    ]}
+                                />
+                            )}
+                            onRetry="default"
+                        />
                     </Column>
                 </Columns>
 

@@ -337,6 +337,11 @@ class Premise(models.Model):
         verbose_name="Доступно для продажи",
         help_text="Помещение предлагается к продаже"
     )
+    show_rented_button = models.BooleanField(
+        default=False,
+        verbose_name='Показать кнопку "Сдано"',
+        help_text='В режиме продажи на схеме этажа выставляет is_occupied=true',
+    )
 
     # Описание и детали
     room_number = models.CharField(

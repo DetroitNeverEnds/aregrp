@@ -47,7 +47,7 @@ export const AuthLayout: React.FC = () => {
                         className={styles.auth__backDesktop}
                         size="md"
                         theme="black"
-                        to={redirectTo}
+                        to="/"
                         leadingIcon="arrow-narrow-left"
                     >
                         {t('auth.common.backToSite')}
