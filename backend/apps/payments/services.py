@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import timedelta
 from decimal import Decimal
 import uuid
@@ -11,11 +12,22 @@ from yookassa import Payment as YooKassaPayment
 from yookassa.domain.notification import WebhookNotification
 
 from apps.bookings.models import Booking
+from apps.re_objects.availability import premise_is_available_for_deal
 from apps.re_objects.models import Premise
 
 from .models import Payment
 from .errors import PaymentsErrorCodes, create_payments_error
 from .schemas import PaymentAmountOut, PaymentConfirmationOut, PaymentCreateOut
+
+logger = logging.getLogger(__name__)
+
+
+def _resolve_payment_status(raw_status: str) -> str:
+    if raw_status in Payment.Status.values:
+        return raw_status
+
+    logger.warning('Unsupported YooKassa status "%s". Falling back to pending.', raw_status)
+    return Payment.Status.PENDING
 
 
 def _build_amount_value() -> str:
@@ -24,6 +36,19 @@ def _build_amount_value() -> str:
 
 def _is_positive_int_string(value: str) -> bool:
     return value.isdigit() and int(value) > 0
+
+
+def _build_payment_description(premise: Premise) -> str:
+    building_address = (premise.building.address or '').strip()
+    premise_name = (premise.title or '').strip()
+    room_number = (premise.room_number or '').strip()
+
+    if not premise_name:
+        premise_name = f'Помещение {room_number}' if room_number else 'Помещение'
+    if not building_address:
+        building_address = 'Адрес не указан'
+
+    return f'Бронирование: {building_address} — {premise_name}'
 
 
 def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
@@ -59,6 +84,7 @@ def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
             premise=premise,
             deal_type=Booking.DealType.SALE,
             expires_at=expires_at,
+            source_payment=local_payment,
         )
 
 
@@ -91,20 +117,56 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
             ),
         )
 
-    if Booking.objects.filter(premise=premise, expires_at__gt=timezone.now()).exists():
+    now = timezone.now()
+    has_active_booking = Booking.objects.filter(premise=premise, expires_at__gt=now).exists()
+    has_active_pending_payment = Payment.objects.filter(
+        premise=premise,
+        status__in=(Payment.Status.PENDING, Payment.Status.WAITING_FOR_CAPTURE),
+    ).exists()
+
+    if not premise_is_available_for_deal(
+        premise=premise,
+        deal_type=settings.RE_OBJECTS_SALE_TYPE_SALE,
+        has_active_booking=has_active_booking,
+        has_active_pending_payment=has_active_pending_payment,
+    ):
+        if has_active_booking:
+            return None, (
+                409,
+                create_payments_error(
+                    status=409,
+                    code=PaymentsErrorCodes.ACTIVE_BOOKING_EXISTS,
+                    title='Active booking exists',
+                    detail='This premise already has an active booking',
+                    instance='/api/v1/payments/',
+                ),
+            )
+
+        if has_active_pending_payment:
+            return None, (
+                409,
+                create_payments_error(
+                    status=409,
+                    code=PaymentsErrorCodes.PREMISE_UNAVAILABLE,
+                    title='Payment in progress',
+                    detail='This premise already has an active unfinished payment',
+                    instance='/api/v1/payments/',
+                ),
+            )
+
         return None, (
             409,
             create_payments_error(
                 status=409,
-                code=PaymentsErrorCodes.ACTIVE_BOOKING_EXISTS,
-                title='Active booking exists',
-                detail='This premise already has an active booking',
+                code=PaymentsErrorCodes.PREMISE_UNAVAILABLE,
+                title='Premise unavailable',
+                detail='This premise is currently unavailable for payment',
                 instance='/api/v1/payments/',
             ),
         )
 
     amount_value = _build_amount_value()
-    description = f'Бронирование помещения {premise_id}'
+    description = _build_payment_description(premise)
     idempotence_key = uuid.uuid4()
     metadata = {
         'payment_token': str(idempotence_key),
@@ -147,7 +209,7 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
         defaults={
             'premise': premise,
             'idempotence_key': idempotence_key,
-            'status': str(payment.status),
+            'status': _resolve_payment_status(str(payment.status)),
             'paid': bool(payment.paid),
             'amount_value': Decimal(str(payment.amount.value)),
             'amount_currency': str(payment.amount.currency),
@@ -172,7 +234,7 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
 
     out = PaymentCreateOut(
         id=str(payment.id),
-        status=str(payment.status),
+        status=_resolve_payment_status(str(payment.status)),
         paid=bool(payment.paid),
         amount=PaymentAmountOut(
             value=str(payment.amount.value),
@@ -207,7 +269,7 @@ def handle_yookassa_webhook(raw_body: bytes) -> tuple[int, dict | None]:
     payment = notification_object.object
     event_name = str(notification_object.event)
     payment_id = str(payment.id)
-    payment_status = str(payment.status)
+    payment_status = _resolve_payment_status(str(payment.status))
     payment_paid = bool(payment.paid)
     payment_amount_value = Decimal(str(payment.amount.value))
     payment_amount_currency = str(payment.amount.currency)

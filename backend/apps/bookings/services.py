@@ -6,6 +6,8 @@ from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
 
+from apps.payments.models import Payment
+from apps.re_objects.availability import premise_is_available_for_deal
 from apps.re_objects.models import Premise
 
 from .errors import BookingsErrorCodes, create_bookings_error
@@ -26,6 +28,9 @@ def _booking_to_out(b: Booking) -> BookingOut:
         deal_type=b.deal_type,
         expires_at=b.expires_at,
         created_at=b.created_at,
+        source_payment_provider_id=(
+            b.source_payment.provider_payment_id if b.source_payment_id else None
+        ),
     )
 
 
@@ -68,46 +73,33 @@ def create_booking(
             ),
         )
 
-    if deal_type == rent and not premise.is_available_for_rent():
+    flag_is_available = premise.is_available_for_rent() if deal_type == rent else premise.is_available_for_sale()
+    if not flag_is_available:
         return None, (
             400,
             create_bookings_error(
                 status=400,
                 code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
-                title="Premise not available for rent",
-                detail="This premise is not offered for rent",
-                instance="/api/v1/bookings",
-            ),
-        )
-
-    if deal_type == sale and not premise.is_available_for_sale():
-        return None, (
-            400,
-            create_bookings_error(
-                status=400,
-                code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
-                title="Premise not available for sale",
-                detail="This premise is not offered for sale",
+                title=f"Premise not available for {deal_type}",
+                detail=f"This premise is not offered for {deal_type}",
                 instance="/api/v1/bookings",
             ),
         )
 
     now = timezone.now()
-    if Booking.objects.filter(premise=premise, expires_at__gt=now).exists():
-        return None, (
-            409,
-            create_bookings_error(
-                status=409,
-                code=BookingsErrorCodes.ACTIVE_BOOKING_EXISTS,
-                title="Active booking exists",
-                detail="This premise already has an active booking",
-                instance="/api/v1/bookings",
-            ),
-        )
+    has_active_booking = Booking.objects.filter(premise=premise, expires_at__gt=now).exists()
+    has_active_pending_payment = Payment.objects.filter(
+        premise=premise,
+        status__in=(Payment.Status.PENDING, Payment.Status.WAITING_FOR_CAPTURE),
+    ).exists()
 
-    expires_at = now + timedelta(days=3)
-    with transaction.atomic():
-        if Booking.objects.filter(premise=premise, expires_at__gt=now).select_for_update().exists():
+    if not premise_is_available_for_deal(
+        premise=premise,
+        deal_type=deal_type,
+        has_active_booking=has_active_booking,
+        has_active_pending_payment=has_active_pending_payment,
+    ):
+        if has_active_booking:
             return None, (
                 409,
                 create_bookings_error(
@@ -118,6 +110,81 @@ def create_booking(
                     instance="/api/v1/bookings",
                 ),
             )
+
+        if has_active_pending_payment:
+            return None, (
+                409,
+                create_bookings_error(
+                    status=409,
+                    code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
+                    title="Premise has payment in progress",
+                    detail="This premise has an active unfinished payment",
+                    instance="/api/v1/bookings",
+                ),
+            )
+
+        return None, (
+            409,
+            create_bookings_error(
+                status=409,
+                code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
+                title="Premise unavailable",
+                detail="This premise is currently unavailable",
+                instance="/api/v1/bookings",
+            ),
+        )
+
+    expires_at = now + timedelta(days=3)
+    with transaction.atomic():
+        has_active_booking_locked = Booking.objects.filter(
+            premise=premise,
+            expires_at__gt=now,
+        ).select_for_update().exists()
+        has_active_pending_payment_locked = Payment.objects.filter(
+            premise=premise,
+            status__in=(Payment.Status.PENDING, Payment.Status.WAITING_FOR_CAPTURE),
+        ).select_for_update().exists()
+
+        if not premise_is_available_for_deal(
+            premise=premise,
+            deal_type=deal_type,
+            has_active_booking=has_active_booking_locked,
+            has_active_pending_payment=has_active_pending_payment_locked,
+        ):
+            if has_active_booking_locked:
+                return None, (
+                    409,
+                    create_bookings_error(
+                        status=409,
+                        code=BookingsErrorCodes.ACTIVE_BOOKING_EXISTS,
+                        title="Active booking exists",
+                        detail="This premise already has an active booking",
+                        instance="/api/v1/bookings",
+                    ),
+                )
+
+            if has_active_pending_payment_locked:
+                return None, (
+                    409,
+                    create_bookings_error(
+                        status=409,
+                        code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
+                        title="Premise has payment in progress",
+                        detail="This premise has an active unfinished payment",
+                        instance="/api/v1/bookings",
+                    ),
+                )
+
+            return None, (
+                409,
+                create_bookings_error(
+                    status=409,
+                    code=BookingsErrorCodes.PREMISE_UNAVAILABLE,
+                    title="Premise unavailable",
+                    detail="This premise is currently unavailable",
+                    instance="/api/v1/bookings",
+                ),
+            )
         booking = Booking.objects.create(
             user=user,
             premise=premise,
@@ -125,14 +192,16 @@ def create_booking(
             expires_at=expires_at,
         )
 
-    booking = Booking.objects.select_related("premise", "premise__building").get(pk=booking.pk)
+    booking = Booking.objects.select_related(
+        "premise", "premise__building", "source_payment"
+    ).get(pk=booking.pk)
     return _booking_to_out(booking), None
 
 
 def list_bookings_for_user(user) -> list[BookingOut]:
     qs = (
         Booking.objects.filter(user=user)
-        .select_related("premise", "premise__building")
+        .select_related("premise", "premise__building", "source_payment")
         .order_by("-created_at")
     )
     if settings.BOOKINGS_LIST_ONLY_ACTIVE:
