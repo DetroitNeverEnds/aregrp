@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text';
@@ -25,7 +24,12 @@ export const NotFound = () => {
     return (
         <Page>
             <VerticalMainContainer>
-                <Flex className={styles.container} direction="column" align="center" justify="center">
+                <Flex
+                    className={styles.container}
+                    direction="column"
+                    align="center"
+                    justify="center"
+                >
                     <Flex className={styles.content} direction="column" align="center" gap={24}>
                         <Text className={styles.content__code} variant="h1" color="gray-20">
                             404
