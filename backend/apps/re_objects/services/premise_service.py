@@ -3,8 +3,8 @@
 
 Публичный API:
 - parse_building_uuids(value) — парсит строку 'uuid1,uuid2,...' в список UUID для фильтра зданий.
-- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available по броням, building_query, …).
-- get_buildings_for_filter(sale_type, available) — здания для фильтра; available — только брони, None — без фильтра.
+- get_premise_list(params) — пагинированный список по фильтрам (sale_type, available: брони + незавершённые оплаты, …).
+- get_buildings_for_filter(sale_type, available) — здания для фильтра; available как в каталоге; None — без фильтра.
 - get_buildings(page, page_size) — список зданий с пагинацией.
 - get_premise_by_uuid(...): price — legacy; sale_price / rent_price — по флагам available_for_sale / available_for_rent.
 - get_premises_for_floor(building_uuid, floor_number, sale_type) — данные этажа (is_available зависит от sale_type).
@@ -25,12 +25,13 @@ from django.utils import timezone
 from core.pagination import get_paginated_list
 
 from apps.bookings.models import Booking
-from apps.deals.models import Deal
+from apps.payments.models import Payment
 
 from ..availability import (
     annotate_premise_availability,
     floor_is_occupied_value,
     has_tenant_value,
+    premise_is_available_for_deal,
     premise_filter_for_buildings_q,
 )
 from ..models import Building, Floor, Premise
@@ -96,7 +97,7 @@ class PremiseFilterParams:
     Параметры фильтрации и пагинации списка помещений.
 
     sale_type: rent | sale (из settings). available: при None и sale_type задан — как True (каталог);
-    учитывает только активные брони, не сделки.
+    учитывает активные брони и незавершённые оплаты; модель Deal не используется.
     building_query: поиск по адресу/названию здания. building_uuids: фильтр по UUID зданий (чекбоксы).
     min/max price, min/max area. order_by, page, page_size.
     """
@@ -131,7 +132,7 @@ class PremiseFilterParams:
         page_size: int = 20,
     ):
         self.sale_type = sale_type
-        # True/False — по броням (активная бронь = занято для фильтра); None — без фильтра
+        # True/False — по броням и незавершённым оплатам; None — без фильтра
         self.available = available
         self.building_query = building_query and building_query.strip() or None
         self.building_uuids = list(building_uuids) if building_uuids else None
@@ -148,7 +149,7 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     """
     Строит queryset помещений с фильтрами и сортировкой.
 
-    Фильтры: available (только брони; при sale_type=rent|sale и None — как True), sale_type, building_query,
+    Фильтры: available (активные брони + незавершённые оплаты; при sale_type=rent|sale и None — как True), sale_type, building_query,
     building_uuids, min_price, max_price, min_area, max_area. Сортировка по order_by.
     Не обращается к БД (lazy), пагинация не применяется.
     Результат передаётся в async-методы (acount, async for).
@@ -161,31 +162,28 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     rent = settings.RE_OBJECTS_SALE_TYPE_RENT
     sale = settings.RE_OBJECTS_SALE_TYPE_SALE
 
-    # Каталог с sale_type: без query available — без активной брони (сделки не учитываем).
+    # Каталог с sale_type: без query available — только реально доступные к сделке (без активной брони/оплаты).
     avail = params.available
     if avail is None and params.sale_type in (rent, sale):
         avail = True
 
+    rent_available_q = Q(available_for_rent=True) & Q(_active_booking=False) & Q(_active_pending_payment=False)
+    sale_available_q = Q(available_for_sale=True) & Q(_active_booking=False) & Q(_active_pending_payment=False)
+
     if avail is True:
         if params.sale_type == rent:
-            qs = qs.filter(available_for_rent=True, _active_booking=False)
+            qs = qs.filter(rent_available_q)
         elif params.sale_type == sale:
-            qs = qs.filter(available_for_sale=True, _active_booking=False)
+            qs = qs.filter(sale_available_q)
         else:
-            qs = qs.filter(
-                (Q(available_for_rent=True) & Q(_active_booking=False))
-                | (Q(available_for_sale=True) & Q(_active_booking=False))
-            )
+            qs = qs.filter(rent_available_q | sale_available_q)
     elif avail is False:
         if params.sale_type == rent:
-            qs = qs.filter(Q(available_for_rent=False) | Q(_active_booking=True))
+            qs = qs.filter(~rent_available_q)
         elif params.sale_type == sale:
-            qs = qs.filter(Q(available_for_sale=False) | Q(_active_booking=True))
+            qs = qs.filter(~sale_available_q)
         else:
-            qs = qs.exclude(
-                (Q(available_for_rent=True) & Q(_active_booking=False))
-                | (Q(available_for_sale=True) & Q(_active_booking=False))
-            )
+            qs = qs.exclude(rent_available_q | sale_available_q)
 
     if params.sale_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
         qs = qs.filter(available_for_rent=True)
@@ -240,7 +238,7 @@ async def get_buildings_for_filter(
     Список зданий для фильтра (чекбоксы «бизнес-центры»).
 
     Возвращает здания, у которых есть хотя бы одно помещение с учётом sale_type и available.
-    available: True/False — только по активным броням (не по сделкам), None — без фильтра.
+    available: True/False — как в каталоге (бронь или незавершённый платёж убирает «свободно»); None — без фильтра.
     Ответ: список [{ uuid, name, address }, ...].
     """
     premise_filter = premise_filter_for_buildings_q(sale_type, available)
@@ -616,7 +614,7 @@ def _floor_premise_availability_rows(
     is_occupied берётся только из флага show_rented_button в админке, без сделок.
     rent: всегда False (упрощение схемы).
     sale: True если включён show_rented_button.
-    is_available — по sale_type: свободно для аренды или для продажи (как раньше, со сделками/бронями).
+    is_available — единое правило доступности (флаг + нет активной брони + нет незавершённой оплаты).
     """
     if not premises:
         return []
@@ -624,47 +622,41 @@ def _floor_premise_availability_rows(
     st = sale_type
 
     pids = [p.pk for p in premises]
-    today = timezone.now().date()
-    now = timezone.now()
-
-    active_rent = set(
-        Deal.objects.filter(
-            premise_id__in=pids,
-            deal_type=Deal.DealType.RENT,
-            rent_expires_at__gte=today,
-        ).values_list('premise_id', flat=True)
-    )
-    sale_deals = set(
-        Deal.objects.filter(
-            premise_id__in=pids,
-            deal_type=Deal.DealType.SALE,
-        ).values_list('premise_id', flat=True)
-    )
-    booked = set(
+    active_booking_pids = set(
         Booking.objects.filter(
             premise_id__in=pids,
-            expires_at__gt=now,
+            expires_at__gt=timezone.now(),
+        ).values_list('premise_id', flat=True)
+    )
+    active_pending_payment_pids = set(
+        Payment.objects.filter(
+            premise_id__in=pids,
+            status__in=(Payment.Status.PENDING, Payment.Status.WAITING_FOR_CAPTURE),
         ).values_list('premise_id', flat=True)
     )
 
     out: list[tuple[Premise, bool, bool]] = []
     for p in premises:
+        has_active_booking = p.pk in active_booking_pids
+        has_active_pending_payment = p.pk in active_pending_payment_pids
         if st == rent:
             is_occ = False
-            is_avail = bool(
-                p.available_for_rent
-                and p.pk not in active_rent
-                and p.pk not in booked
+            is_avail = premise_is_available_for_deal(
+                premise=p,
+                deal_type=st,
+                has_active_booking=has_active_booking,
+                has_active_pending_payment=has_active_pending_payment,
             )
         else:
             is_occ = floor_is_occupied_value(
                 st,
                 show_rented_button=p.show_rented_button,
             )
-            is_avail = bool(
-                p.available_for_sale
-                and p.pk not in booked
-                and p.pk not in sale_deals
+            is_avail = premise_is_available_for_deal(
+                premise=p,
+                deal_type=st,
+                has_active_booking=has_active_booking,
+                has_active_pending_payment=has_active_pending_payment,
             )
         out.append((p, is_avail, is_occ))
     return out

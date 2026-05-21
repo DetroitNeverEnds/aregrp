@@ -15,3 +15,5 @@ force-single-line = false
 
 [lint.per-file-ignores]
 "**/migrations/*.py" = ["E501"]
+# Ninja: Query(...) в аргументах эндпойнтов — штатный паттерн.
+"apps/re_objects/routers.py" = ["B008"]

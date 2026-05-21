@@ -5,14 +5,15 @@ Smoke-тесты для API помещений и зданий (re_objects).
 """
 from datetime import timedelta
 from decimal import Decimal
+from uuid import UUID, uuid4
 
 import pytest
 from asgiref.sync import sync_to_async
 from django.utils import timezone
-from uuid import UUID, uuid4
 
 from apps.bookings.models import Booking
 from apps.deals.models import Deal
+from apps.payments.models import Payment
 from apps.re_objects.models import Building, BuildingImage, BuildingVideo, Floor, Premise
 from apps.re_objects.services.premise_service import _build_building_detail_media
 
@@ -829,7 +830,7 @@ class TestPremisesList:
     async def test_premises_list_rent_ignores_deal_shows_premise(
         self, client, building_with_premise, test_user,
     ):
-        """Сделка аренды не скрывает помещение в каталоге; фильтр available смотрит только брони."""
+        """Сделка аренды (Deal) не скрывает помещение в каталоге; available учитывает брони и незавершённые оплаты."""
         building, premise = building_with_premise
         deal_until = timezone.now().date() + timedelta(days=30)
 
@@ -870,6 +871,37 @@ class TestPremisesList:
         await _booking()
         response = await client.get(
             f"/premises?sale_type=rent&building_uuids={building.uuid}"
+        )
+        assert response.status_code == 200
+        uuids = [i["uuid"] for i in response.json()["items"]]
+        assert str(premise.uuid) not in uuids
+
+    async def test_premises_list_sale_hides_premise_with_pending_payment(
+        self, client, building_with_premise,
+    ):
+        """Незавершённая оплата скрывает помещение из доступных в каталоге продажи."""
+        building, premise = building_with_premise
+
+        @sync_to_async
+        def _payment():
+            premise.available_for_sale = True
+            premise.price_per_sqm = 200_000
+            premise.save(update_fields=['available_for_sale', 'price_per_sqm', 'full_sell_price'])
+            Payment.objects.create(
+                premise=premise,
+                provider_payment_id='pending-sale-catalog',
+                idempotence_key=uuid4(),
+                status=Payment.Status.PENDING,
+                paid=False,
+                amount_value=Decimal('10000.00'),
+                amount_currency='RUB',
+                description='Pending payment',
+                metadata={},
+            )
+
+        await _payment()
+        response = await client.get(
+            f"/premises?sale_type=sale&building_uuids={building.uuid}"
         )
         assert response.status_code == 200
         uuids = [i["uuid"] for i in response.json()["items"]]
@@ -1072,7 +1104,7 @@ class TestFloorPremises:
     async def test_floor_premises_rent_is_occupied_always_false(
         self, client, building_with_premise, test_user,
     ):
-        """sale_type=rent: is_occupied всегда false; is_available по активной аренде."""
+        """sale_type=rent: is_occupied всегда false; сделки аренды не влияют на is_available."""
         building, premise = building_with_premise
         floor_number = premise.floor.number
         deal_until = timezone.now().date() + timedelta(days=30)
@@ -1088,6 +1120,36 @@ class TestFloorPremises:
             )
 
         await _deal()
+        response = await client.get(
+            f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
+        )
+        assert response.status_code == 200
+        item = next(i for i in response.json()["premises"] if i["uuid"] == str(premise.uuid))
+        assert item["is_occupied"] is False
+        assert item["is_available"] is True
+
+    async def test_floor_premises_rent_is_unavailable_when_pending_payment_exists(
+        self, client, building_with_premise,
+    ):
+        """sale_type=rent: незавершённая оплата делает помещение недоступным."""
+        building, premise = building_with_premise
+        floor_number = premise.floor.number
+
+        @sync_to_async
+        def _payment():
+            Payment.objects.create(
+                premise=premise,
+                provider_payment_id='pending-floor-rent',
+                idempotence_key=uuid4(),
+                status=Payment.Status.PENDING,
+                paid=False,
+                amount_value=Decimal('10000.00'),
+                amount_currency='RUB',
+                description='Pending payment',
+                metadata={},
+            )
+
+        await _payment()
         response = await client.get(
             f"/floors/{building.uuid}/{floor_number}?sale_type=rent"
         )

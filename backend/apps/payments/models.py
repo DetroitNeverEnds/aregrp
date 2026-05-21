@@ -4,6 +4,12 @@ from apps.re_objects.models import Premise
 
 
 class Payment(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        WAITING_FOR_CAPTURE = 'waiting_for_capture', 'Waiting for capture'
+        SUCCEEDED = 'succeeded', 'Succeeded'
+        CANCELED = 'canceled', 'Canceled'
+
     premise = models.ForeignKey(
         Premise,
         on_delete=models.SET_NULL,
@@ -13,7 +19,11 @@ class Payment(models.Model):
     )
     provider_payment_id = models.CharField(max_length=128, unique=True)
     idempotence_key = models.UUIDField(unique=True)
-    status = models.CharField(max_length=64)
+    status = models.CharField(
+        max_length=32,
+        choices=Status.choices,
+        default=Status.PENDING,
+    )
     paid = models.BooleanField(default=False)
     amount_value = models.DecimalField(max_digits=12, decimal_places=2)
     amount_currency = models.CharField(max_length=3)
