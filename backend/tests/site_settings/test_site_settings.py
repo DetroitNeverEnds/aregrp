@@ -5,7 +5,7 @@ import pytest
 from asgiref.sync import sync_to_async
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from apps.site_settings.models import ContactsSettings, MainSettings
+from apps.site_settings.models import AgentSettings, ContactsSettings, MainSettings
 
 
 def _create_main_settings():
@@ -149,3 +149,44 @@ class TestContacts:
         data = response.json()
         assert data["coordinates"] is None
         assert data["ogrn"] == "123"
+
+
+def _create_agent_settings(table_link: str = ""):
+    obj = AgentSettings(table_link=table_link)
+    obj.save()
+    return obj
+
+
+@pytest.fixture
+async def agent_settings(db):
+    """Создаёт единственный экземпляр AgentSettings со ссылкой на таблицу."""
+    return await sync_to_async(_create_agent_settings)(
+        "https://docs.google.com/spreadsheets/d/test",
+    )
+
+
+@pytest.fixture
+async def agent_settings_empty(db):
+    """AgentSettings без table_link."""
+    return await sync_to_async(_create_agent_settings)()
+
+
+@pytest.mark.django_db
+class TestAgents:
+    """Тесты для GET /site-settings/agents."""
+
+    async def test_agents_success(self, api_client, agent_settings):
+        """Успешное получение настроек агентов."""
+        response = await api_client.get("/site-settings/agents")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["table_link"] == "https://docs.google.com/spreadsheets/d/test"
+
+    async def test_agents_table_link_null_when_empty(self, api_client, agent_settings_empty):
+        """table_link = null, если поле не заполнено."""
+        response = await api_client.get("/site-settings/agents")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["table_link"] is None
