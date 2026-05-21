@@ -13,7 +13,7 @@ export interface PremiseListItem {
     sale_price?: number | null;
     rent_price?: number | null;
     address: string;
-    floor?: number | null;
+    floor_id?: string | null;
     area: string;
     has_tenant: boolean;
     media: BaseMediaItem[];

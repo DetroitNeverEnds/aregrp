@@ -64,7 +64,7 @@ const GenerateLinkModalContent = ({ premise }: GenerateLinkModalContentProps) =>
                     {t('pages.building.area')}: {premise.area} м²
                 </Text>
                 <Text variant="14-reg">
-                    {t('pages.building.floor')}: {premise.floor ?? '—'}
+                    {t('pages.building.floor')}: {premise.floor_id ?? '—'}
                 </Text>
                 <Text variant="14-reg">
                     {t('pages.building.tenant')}:{' '}

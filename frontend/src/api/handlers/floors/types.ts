@@ -17,10 +17,12 @@ export type FloorPremiseOut = {
 
 /**
  * Данные этажа
- * OpenAPI: building_uuid, floor_number, schema_svg (SVG текст) и premises[]
+ * OpenAPI: building_uuid, floor_id, title, floor_number (deprecated), schema_svg (SVG текст) и premises[]
  */
 export type FloorResponseOut = {
     building_uuid: string;
+    floor_id: string;
+    // TODO(backend-contract): API floor endpoint will be requested by floor_id and expose title as primary floor label.
     floor_number: number;
     schema_svg?: string | null;
     premises: FloorPremiseOut[];

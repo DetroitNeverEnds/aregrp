@@ -1470,58 +1470,54 @@
                 ]
             }
         },
-        "/api/v1/floors/{building_uuid}/{floor_number}": {
-            "get": {
-                "operationId": "apps_re_objects_routers_floor_premises_list",
-                "summary": "Помещения на этаже",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "building_uuid",
-                        "schema": {
-                            "format": "uuid",
-                            "title": "Building Uuid",
-                            "type": "string"
-                        },
-                        "required": true
-                    },
-                    {
-                        "in": "path",
-                        "name": "floor_number",
-                        "schema": {
-                            "title": "Floor Number",
-                            "type": "integer"
-                        },
-                        "required": true
-                    },
-                    {
-                        "in": "query",
-                        "name": "sale_type",
-                        "schema": {
-                            "description": "rent — аренда, sale — продажа (обязательно)",
-                            "title": "Sale Type",
-                            "type": "string"
-                        },
-                        "required": true,
-                        "description": "rent — аренда, sale — продажа (обязательно)"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/FloorResponseOut"
-                                }
-                            }
-                        }
-                    }
-                },
-                "description": "Данные этажа: building_uuid, floor_number, schema_svg и premises [{ uuid, name, label_area, label_price, is_available, is_occupied }]. Обязательный query sale_type: rent или sale — is_available по типу; is_occupied только из флагов помещения: аренда — всегда false; продажа — по флагу \"Показать кнопку 'Сдано'\".",
-                "tags": [
-                    "Floors"
-                ]
+        "description": "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor_id, area, has_tenant, media, description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. sale_price / rent_price — всегда в ответе (null, если вид сделки не предлагается). Параметр sale_type: price — как раньше (sale — продажа, иначе аренда). 404 — ProblemDetail.",
+        "tags": [
+          "Premises"
+        ]
+      }
+    },
+    "/api/v1/buildings/": {
+      "get": {
+        "operationId": "apps_re_objects_routers_building_list",
+        "summary": "Список зданий",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "default": 1,
+              "description": "Номер страницы",
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Номер страницы"
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "schema": {
+              "default": 6,
+              "description": "Размер страницы",
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            },
+            "required": false,
+            "description": "Размер страницы"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildingListResponse"
+                }
+              }
             }
         },
         "/api/v1/dev/buildings": {
@@ -1711,67 +1707,74 @@
                 }
             }
         },
-        "/api/v1/dev/buildings/{building_uuid}/media": {
-            "post": {
-                "operationId": "apps_re_objects_dev_routers_add_building_media",
-                "summary": "Добавление медиа здания с категорией",
-                "parameters": [
-                    {
-                        "in": "path",
-                        "name": "building_uuid",
-                        "schema": {
-                            "format": "uuid",
-                            "title": "Building Uuid",
-                            "type": "string"
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                },
-                "description": "Добавляет фото к зданию с указанной категорией. Файлы: multipart/form-data.",
-                "tags": [
-                    "Dev / Test"
-                ],
-                "requestBody": {
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "title": "MultiPartBodyParams",
-                                "type": "object",
-                                "properties": {
-                                    "category": {
-                                        "default": "",
-                                        "description": "Категория (фасад, инфраструктура, вход, общие зоны, этаж_N и т.д.)",
-                                        "title": "Category",
-                                        "type": "string"
-                                    },
-                                    "files": {
-                                        "anyOf": [
-                                            {
-                                                "items": {
-                                                    "format": "binary",
-                                                    "type": "string"
-                                                },
-                                                "type": "array"
-                                            },
-                                            {
-                                                "type": "null"
-                                            }
-                                        ],
-                                        "description": "Фото здания",
-                                        "title": "Files"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "required": true
+        "description": "Деталь: uuid, title, address, description, total_floors, year_built, min_sale_price, min_rent_price, media_categories, media. В media для детали здания: url — превью (card), full_url — полный URL (detail WebP для фото, оригинал для видео).",
+        "tags": [
+          "Buildings"
+        ]
+      }
+    },
+    "/api/v1/floors/{building_uuid}/{floor_id}": {
+      "get": {
+        "operationId": "apps_re_objects_routers_floor_premises_list",
+        "summary": "Помещения на этаже",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "building_uuid",
+            "schema": {
+              "format": "uuid",
+              "title": "Building Uuid",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "floor_id",
+            "schema": {
+              "title": "Floor Id",
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "sale_type",
+            "schema": {
+              "description": "rent — аренда, sale — продажа (обязательно)",
+              "title": "Sale Type",
+              "type": "string"
+            },
+            "required": true,
+            "description": "rent — аренда, sale — продажа (обязательно)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FloorResponseOut"
                 }
             }
+          }
+        },
+        "description": "Данные этажа: building_uuid, floor_id, floor_number (deprecated), title, schema_svg и premises [{ uuid, name, label_area, label_price, is_available, is_occupied }]. Обязательный query sale_type: rent или sale — семантика is_available.",
+        "tags": [
+          "Floors"
+        ]
+      }
+    },
+    "/api/v1/dev/buildings": {
+      "post": {
+        "operationId": "apps_re_objects_dev_routers_create_building_with_floor",
+        "summary": "Создание здания с этажом и медиа",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
         },
         "/api/v1/dev/premises/{building_uuid}": {
             "post": {
@@ -3160,146 +3163,705 @@
                 "title": "PremiseListResponse",
                 "type": "object"
             },
-            "PremiseDetailOut": {
-                "description": "Помещение: полная информация для страницы объекта (все поля списка + описание и доп. параметры).",
-                "properties": {
-                    "uuid": {
-                        "title": "Uuid",
-                        "type": "string"
-                    },
-                    "building_uuid": {
-                        "title": "Building Uuid",
-                        "type": "string"
-                    },
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "price": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Price"
-                    },
-                    "sale_price": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Sale Price"
-                    },
-                    "rent_price": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Rent Price"
-                    },
-                    "address": {
-                        "title": "Address",
-                        "type": "string"
-                    },
-                    "floor": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Floor"
-                    },
-                    "area": {
-                        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                        "title": "Area",
-                        "type": "string"
-                    },
-                    "has_tenant": {
-                        "title": "Has Tenant",
-                        "type": "boolean"
-                    },
-                    "media": {
-                        "items": {
-                            "$ref": "#/components/schemas/BaseMediaItemOut"
-                        },
-                        "title": "Media",
-                        "type": "array"
-                    },
-                    "description": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Description"
-                    },
-                    "price_per_sqm": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Price Per Sqm"
-                    },
-                    "ceiling_height": {
-                        "anyOf": [
-                            {
-                                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "title": "Ceiling Height"
-                    },
-                    "has_windows": {
-                        "default": true,
-                        "title": "Has Windows",
-                        "type": "boolean"
-                    },
-                    "has_parking": {
-                        "default": false,
-                        "title": "Has Parking",
-                        "type": "boolean"
-                    },
-                    "is_furnished": {
-                        "default": false,
-                        "title": "Is Furnished",
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "uuid",
-                    "building_uuid",
-                    "name",
-                    "address",
-                    "area",
-                    "has_tenant",
-                    "media"
-                ],
-                "title": "PremiseDetailOut",
-                "type": "object"
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "ProfilePremisesListResponse",
+        "type": "object"
+      },
+      "UpdateProfileIn": {
+        "properties": {
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "organization_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization Name"
+          },
+          "inn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inn"
+          }
+        },
+        "title": "UpdateProfileIn",
+        "type": "object"
+      },
+      "UpdatePasswordIn": {
+        "properties": {
+          "current_password": {
+            "title": "Current Password",
+            "type": "string"
+          },
+          "new_password1": {
+            "title": "New Password1",
+            "type": "string"
+          },
+          "new_password2": {
+            "title": "New Password2",
+            "type": "string"
+          }
+        },
+        "required": [
+          "current_password",
+          "new_password1",
+          "new_password2"
+        ],
+        "title": "UpdatePasswordIn",
+        "type": "object"
+      },
+      "BookingCreateIn": {
+        "properties": {
+          "premise_uuid": {
+            "format": "uuid",
+            "title": "Premise Uuid",
+            "type": "string"
+          },
+          "deal_type": {
+            "title": "Deal Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "premise_uuid",
+          "deal_type"
+        ],
+        "title": "BookingCreateIn",
+        "type": "object"
+      },
+      "FeedbackOut": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "phone",
+          "subject",
+          "message",
+          "status",
+          "created_at"
+        ],
+        "title": "FeedbackOut",
+        "type": "object"
+      },
+      "FeedbackCreateIn": {
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "email": {
+            "default": "",
+            "maxLength": 100,
+            "title": "Email",
+            "type": "string"
+          },
+          "phone": {
+            "maxLength": 20,
+            "minLength": 1,
+            "title": "Phone",
+            "type": "string"
+          },
+          "subject": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Subject",
+            "type": "string"
+          },
+          "message": {
+            "default": "",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "subject"
+        ],
+        "title": "FeedbackCreateIn",
+        "type": "object"
+      },
+      "MainSettingsOut": {
+        "description": "Схема для возврата основных настроек сайта.",
+        "properties": {
+          "phone": {
+            "title": "Phone",
+            "type": "string"
+          },
+          "display_phone": {
+            "title": "Display Phone",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "max_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Link"
+          },
+          "telegram_link": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telegram Link"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "org_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Org Name"
+          },
+          "inn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inn"
+          },
+          "cases": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cases"
+          },
+          "privacy_pdf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Privacy Pdf"
+          },
+          "oplata_pdf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oplata Pdf"
+          }
+        },
+        "required": [
+          "phone",
+          "display_phone",
+          "email"
+        ],
+        "title": "MainSettingsOut",
+        "type": "object"
+      },
+      "ContactsSettingsOut": {
+        "description": "Схема для возврата настроек контактов.",
+        "properties": {
+          "ogrn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ogrn"
+          },
+          "legal_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legal Address"
+          },
+          "coordinates": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CoordinatesOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sales_center_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sales Center Address"
+          }
+        },
+        "title": "ContactsSettingsOut",
+        "type": "object"
+      },
+      "CoordinatesOut": {
+        "description": "Точка на карте (для JSON).",
+        "properties": {
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lng": {
+            "title": "Lng",
+            "type": "number"
+          }
+        },
+        "required": [
+          "lat",
+          "lng"
+        ],
+        "title": "CoordinatesOut",
+        "type": "object"
+      },
+      "InvestorSettingsOut": {
+        "description": "PDF-документы для раздела «Инвесторам» (URL из storage).",
+        "properties": {
+          "document_1": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document 1"
+          },
+          "document_2": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document 2"
+          },
+          "document_3": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document 3"
+          }
+        },
+        "title": "InvestorSettingsOut",
+        "type": "object"
+      },
+      "BuildingOptionOut": {
+        "description": "Здание для фильтра (чекбоксы «бизнес-центры»): uuid, название, адрес.",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uuid",
+          "name",
+          "address"
+        ],
+        "title": "BuildingOptionOut",
+        "type": "object"
+      },
+      "BaseMediaItemOut": {
+        "description": "Базовая схема медиа: type, url (превью карточки), full_url (деталь / оригинал видео).",
+        "properties": {
+          "type": {
+            "enum": [
+              "photo",
+              "video"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "full_url": {
+            "title": "Full Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "url",
+          "full_url"
+        ],
+        "title": "BaseMediaItemOut",
+        "type": "object"
+      },
+      "PremiseListOut": {
+        "description": "Помещение в списке.\n\nname — название помещения (Premise.title), не номер для схемы этажа.\nprice — устаревшее поле для обратной совместимости (как раньше: от sale_type/флагов).\nsale_price — полная стоимость продажи, если помещение в продаже; иначе null.\nrent_price — аренда за месяц, если в аренде; иначе null.",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "building_uuid": {
+            "title": "Building Uuid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "sale_price": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sale Price"
+          },
+          "rent_price": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rent Price"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "floor_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Id"
+          },
+          "area": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Area",
+            "type": "string"
+          },
+          "has_tenant": {
+            "title": "Has Tenant",
+            "type": "boolean"
+          },
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/BaseMediaItemOut"
+            },
+            "title": "Media",
+            "type": "array"
+          }
+        },
+        "required": [
+          "uuid",
+          "building_uuid",
+          "name",
+          "address",
+          "area",
+          "has_tenant",
+          "media"
+        ],
+        "title": "PremiseListOut",
+        "type": "object"
+      },
+      "PremiseListResponse": {
+        "description": "Ответ списка помещений: items, total, page, page_size, total_pages.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PremiseListOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "page": {
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "total_pages": {
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "PremiseListResponse",
+        "type": "object"
+      },
+      "PremiseDetailOut": {
+        "description": "Помещение: полная информация для страницы объекта (все поля списка + описание и доп. параметры).",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "building_uuid": {
+            "title": "Building Uuid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price"
+          },
+          "sale_price": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sale Price"
+          },
+          "rent_price": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rent Price"
+          },
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "floor_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Id"
+          },
+          "area": {
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Area",
+            "type": "string"
+          },
+          "has_tenant": {
+            "title": "Has Tenant",
+            "type": "boolean"
+          },
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/BaseMediaItemOut"
             },
             "BuildingDetailOut": {
                 "description": "Здание (деталь): uuid, title, address, description, geo_point, floors, year_built, min_sale_price, min_rent_price, media_categories, media.\n\nВ media для этой ручки url — превью (card), full_url — полный URL медиа.",
@@ -3489,44 +4051,137 @@
                 "title": "BuildingMediaItemOut",
                 "type": "object"
             },
-            "FloorPremiseOut": {
-                "description": "Помещение на этаже: name — номер для подписи на схеме (room_number), плюс площадь, цена, доступность.",
-                "properties": {
-                    "uuid": {
-                        "title": "Uuid",
-                        "type": "string"
-                    },
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "label_area": {
-                        "title": "Label Area",
-                        "type": "string"
-                    },
-                    "label_price": {
-                        "title": "Label Price",
-                        "type": "string"
-                    },
-                    "is_available": {
-                        "title": "Is Available",
-                        "type": "boolean"
-                    },
-                    "is_occupied": {
-                        "title": "Is Occupied",
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "uuid",
-                    "name",
-                    "label_area",
-                    "label_price",
-                    "is_available",
-                    "is_occupied"
-                ],
-                "title": "FloorPremiseOut",
-                "type": "object"
+            "title": "Media",
+            "type": "array"
+          }
+        },
+        "required": [
+          "uuid",
+          "title",
+          "address",
+          "description",
+          "media_categories",
+          "media"
+        ],
+        "title": "BuildingDetailOut",
+        "type": "object"
+      },
+      "BuildingMediaItemOut": {
+        "description": "Медиа здания: + category, title.",
+        "properties": {
+          "type": {
+            "enum": [
+              "photo",
+              "video"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          },
+          "full_url": {
+            "title": "Full Url",
+            "type": "string"
+          },
+          "category": {
+            "default": "",
+            "title": "Category",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "required": [
+          "type",
+          "url",
+          "full_url"
+        ],
+        "title": "BuildingMediaItemOut",
+        "type": "object"
+      },
+      "FloorPremiseOut": {
+        "description": "Помещение на этаже: name — номер для подписи на схеме (room_number), плюс площадь, цена, доступность.",
+        "properties": {
+          "uuid": {
+            "title": "Uuid",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "label_area": {
+            "title": "Label Area",
+            "type": "string"
+          },
+          "label_price": {
+            "title": "Label Price",
+            "type": "string"
+          },
+          "is_available": {
+            "title": "Is Available",
+            "type": "boolean"
+          },
+          "is_occupied": {
+            "title": "Is Occupied",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "uuid",
+          "name",
+          "label_area",
+          "label_price",
+          "is_available",
+          "is_occupied"
+        ],
+        "title": "FloorPremiseOut",
+        "type": "object"
+      },
+      "FloorResponseOut": {
+        "description": "Ответ по этажу: UUID здания, floor_id, title, floor_number (deprecated), SVG-схема и список помещений.",
+        "properties": {
+          "building_uuid": {
+            "title": "Building Uuid",
+            "type": "string"
+          },
+          "floor_id": {
+            "title": "Floor Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "floor_number": {
+            "title": "Floor Number",
+            "type": "integer"
+          },
+          "schema_svg": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Svg"
+          },
+          "premises": {
+            "items": {
+              "$ref": "#/components/schemas/FloorPremiseOut"
             },
             "FloorResponseOut": {
                 "description": "Ответ по этажу: UUID здания, номер этажа, SVG-схема и список помещений.",
@@ -3567,12 +4222,16 @@
                 "type": "object"
             }
         },
-        "securitySchemes": {
-            "JWTAuth": {
-                "type": "http",
-                "scheme": "bearer"
-            }
-        }
+        "required": [
+          "building_uuid",
+          "floor_id",
+          "title",
+          "floor_number",
+          "premises"
+        ],
+        "title": "FloorResponseOut",
+        "type": "object"
+      }
     },
     "servers": []
 }
