@@ -12,6 +12,7 @@ from apps.feedback.routers import feedback_router
 from apps.payments.routers import payments_router
 from apps.re_objects.dev_routers import dev_router
 from apps.re_objects.routers import buildings_router, floors_router, premises_router
+from apps.referrals.routers import referrals_router
 from apps.site_settings.routers import site_settings_router
 
 
@@ -34,6 +35,7 @@ api.add_router("/auth", auth_router, tags=["Authentication"])
 api.add_router("/profile", profile_router, tags=["Profile"])
 api.add_router("/bookings", bookings_router)
 api.add_router("/payments", payments_router)
+api.add_router("/referrals", referrals_router)
 api.add_router("/feedback", feedback_router)
 api.add_router("/site-settings", site_settings_router, tags=["Site Settings"])
 api.add_router("/premises", premises_router)

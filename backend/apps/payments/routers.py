@@ -1,4 +1,5 @@
 from asgiref.sync import sync_to_async
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from ninja import Router
 
@@ -19,7 +20,11 @@ payments_router = Router(tags=['Payments'])
     description='Создает платеж YooKassa для бронирования помещения по premise_uuid.',
 )
 async def create_payment_endpoint(request, data: PaymentCreateIn):
-    out, err = await sync_to_async(create_payment, thread_sensitive=True)(request.auth.id, data.premise_uuid)
+    out, err = await sync_to_async(create_payment, thread_sensitive=True)(
+        request.auth.id,
+        data.premise_uuid,
+        request.COOKIES.get(settings.REFERRAL_CODE_COOKIE_NAME),
+    )
     if err:
         status, body = err
         return status, body

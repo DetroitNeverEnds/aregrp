@@ -13,6 +13,7 @@ from apps.bookings.models import Booking
 from apps.payments.models import Payment
 from apps.payments.services import handle_yookassa_webhook
 from apps.re_objects.models import Building, City, Premise, Region
+from apps.referrals.models import ReferralLink
 
 
 @override_settings(
@@ -26,15 +27,31 @@ class PaymentsCreateEndpointTests(TestCase):
             email='test@example.com',
             password='secret',
         )
+        self.referrer = get_user_model().objects.create_user(
+            username='referrer-user',
+            email='referrer@example.com',
+            password='secret',
+        )
         access_token, _ = generate_jwt_tokens(self.user)
         self.auth_header = f'Bearer {access_token}'
         self.url = '/api/v1/payments/'
         self.premise = self._create_sale_premise()
+        self.other_premise = self._create_sale_premise(room_number='102', title='Офис 102')
+        self.valid_referral_link = ReferralLink.objects.create(
+            referrer=self.referrer,
+            premise=self.premise,
+            contact_phone='+7 900 111-22-33',
+        )
+        self.other_referral_link = ReferralLink.objects.create(
+            referrer=self.referrer,
+            premise=self.other_premise,
+            contact_phone='+7 900 444-55-66',
+        )
 
-    def _create_sale_premise(self) -> Premise:
-        region = Region.objects.create(name='Тестовый регион', code='16')
-        city = City.objects.create(name='Казань', region=region, is_default=True)
-        building = Building.objects.create(name='БЦ Тест', address='ул. Тестовая, 1', city=city)
+    def _create_sale_premise(self, room_number: str = '101', title: str = 'Офис 101') -> Premise:
+        region, _ = Region.objects.get_or_create(name='Тестовый регион', defaults={'code': '16'})
+        city, _ = City.objects.get_or_create(name='Казань', region=region, defaults={'is_default': True})
+        building = Building.objects.create(name=f'БЦ Тест {room_number}', address='ул. Тестовая, 1', city=city)
         return Premise.objects.create(
             city=city,
             building=building,
@@ -43,8 +60,8 @@ class PaymentsCreateEndpointTests(TestCase):
             available_for_sale=True,
             available_for_rent=False,
             premise_type=Premise.PremiseType.OFFICE,
-            room_number='101',
-            title='Офис 101',
+            room_number=room_number,
+            title=title,
         )
 
     @patch('apps.payments.services.YooKassaPayment.create')
@@ -107,6 +124,66 @@ class PaymentsCreateEndpointTests(TestCase):
         self.assertEqual(response.status_code, 502)
         body = response.json()
         self.assertEqual(body['code'], 'PAYMENTS_CREATION_ERROR')
+
+    @patch('apps.payments.services.YooKassaPayment.create')
+    def test_create_payment_sets_referral_link_from_cookie(self, payment_create_mock):
+        payment_create_mock.return_value = SimpleNamespace(
+            id='23d93cac-000f-5000-8000-126628f15142',
+            status='pending',
+            paid=False,
+            amount=SimpleNamespace(value='10000.00', currency='RUB'),
+            description='Бронирование помещения 123',
+            confirmation=SimpleNamespace(
+                type='redirect',
+                confirmation_url='https://yoomoney.ru/api-pages/v2/payment-confirm/example',
+            ),
+            created_at='2026-05-09T12:00:00+00:00',
+        )
+        self.client.cookies['referral_code'] = str(self.valid_referral_link.code)
+
+        response = self.client.post(
+            self.url,
+            data={'premise_uuid': str(self.premise.uuid)},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 201)
+        payment = Payment.objects.get(provider_payment_id='23d93cac-000f-5000-8000-126628f15142')
+        self.assertEqual(payment.referral_link_id, self.valid_referral_link.id)
+
+        payload = payment_create_mock.call_args.args[0]
+        self.assertEqual(payload['metadata']['referral_link_id'], str(self.valid_referral_link.id))
+
+    @patch('apps.payments.services.YooKassaPayment.create')
+    def test_create_payment_ignores_referral_cookie_for_other_premise(self, payment_create_mock):
+        payment_create_mock.return_value = SimpleNamespace(
+            id='23d93cac-000f-5000-8000-126628f15143',
+            status='pending',
+            paid=False,
+            amount=SimpleNamespace(value='10000.00', currency='RUB'),
+            description='Бронирование помещения 123',
+            confirmation=SimpleNamespace(
+                type='redirect',
+                confirmation_url='https://yoomoney.ru/api-pages/v2/payment-confirm/example',
+            ),
+            created_at='2026-05-09T12:00:00+00:00',
+        )
+        self.client.cookies['referral_code'] = str(self.other_referral_link.code)
+
+        response = self.client.post(
+            self.url,
+            data={'premise_uuid': str(self.premise.uuid)},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 201)
+        payment = Payment.objects.get(provider_payment_id='23d93cac-000f-5000-8000-126628f15143')
+        self.assertIsNone(payment.referral_link_id)
+
+        payload = payment_create_mock.call_args.args[0]
+        self.assertNotIn('referral_link_id', payload['metadata'])
 
     def test_create_payment_premise_not_found(self):
         response = self.client.post(
@@ -182,6 +259,11 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
             email='webhook@example.com',
             password='secret',
         )
+        self.referrer = get_user_model().objects.create_user(
+            username='webhook-referrer',
+            email='webhook-referrer@example.com',
+            password='secret',
+        )
         region = Region.objects.create(name='Webhook регион', code='17')
         city = City.objects.create(name='Webhook city', region=region, is_default=True)
         building = Building.objects.create(name='Webhook building', address='Webhook addr, 1', city=city)
@@ -195,6 +277,11 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
             premise_type=Premise.PremiseType.OFFICE,
             room_number='201',
             title='Webhook Office',
+        )
+        self.referral_link = ReferralLink.objects.create(
+            referrer=self.referrer,
+            premise=self.premise,
+            contact_phone='+7 911 111-11-11',
         )
 
     @patch('apps.payments.services.WebhookNotification')
@@ -323,6 +410,48 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
         self.assertIsNone(body)
         payment = Payment.objects.get(provider_payment_id='payment-unknown-status-id')
         self.assertEqual(payment.status, Payment.Status.PENDING)
+
+    @patch('apps.payments.services.WebhookNotification')
+    def test_handle_webhook_sets_booking_referrer_from_payment_referral_link(self, webhook_notification_mock):
+        payment = Payment.objects.create(
+            premise=self.premise,
+            provider_payment_id='payment-with-referral',
+            idempotence_key='3fa85f64-5717-4562-b3fc-2c963f66aaa1',
+            status='pending',
+            paid=False,
+            amount_value=Decimal('10000.00'),
+            amount_currency='RUB',
+            description='Webhook payment',
+            metadata={
+                'payment_token': '3fa85f64-5717-4562-b3fc-2c963f66aaa1',
+                'user_id': str(self.user.id),
+                'premise_id': str(self.premise.id),
+            },
+            referral_link=self.referral_link,
+        )
+        webhook_notification_mock.return_value = SimpleNamespace(
+            event='payment.succeeded',
+            object=SimpleNamespace(
+                id='payment-with-referral',
+                status='succeeded',
+                paid=True,
+                amount=SimpleNamespace(value='10000.00', currency='RUB'),
+                description='Webhook payment',
+            ),
+        )
+        payload = (
+            f'{{"event":"payment.succeeded","object":{{"id":"payment-with-referral","metadata":'
+            f'{{"payment_token":"3fa85f64-5717-4562-b3fc-2c963f66aaa1","user_id":"{self.user.id}",'
+            f'"premise_id":"{self.premise.id}"}}}}}}'
+        ).encode()
+
+        status, body = handle_yookassa_webhook(payload)
+
+        self.assertEqual(status, 200)
+        self.assertIsNone(body)
+        booking = Booking.objects.get(premise=self.premise, user=self.user)
+        self.assertEqual(booking.source_payment_id, payment.id)
+        self.assertEqual(booking.referrer_id, self.referrer.id)
 
 
 class PaymentsWebhookEndpointTests(TestCase):
