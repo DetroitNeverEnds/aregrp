@@ -25,6 +25,7 @@ export * from './handlers/floors';
 export * from './handlers/bookings';
 export * from './handlers/feedback';
 export * from './handlers/payments';
+export * from './handlers/referrals';
 
 // Profile handlers (экспортируем только функции, типы уже экспортированы из auth)
 export { getUser, getProfilePremises, updateProfile, changePassword } from './handlers/profile';

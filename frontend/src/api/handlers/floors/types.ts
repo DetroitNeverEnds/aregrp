@@ -22,7 +22,7 @@ export type FloorPremiseOut = {
 export type FloorResponseOut = {
     building_uuid: string;
     floor_id: string;
-    // TODO(backend-contract): API floor endpoint will be requested by floor_id and expose title as primary floor label.
+    title: string;
     floor_number: number;
     schema_svg?: string | null;
     premises: FloorPremiseOut[];
