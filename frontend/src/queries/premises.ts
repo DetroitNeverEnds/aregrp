@@ -148,6 +148,10 @@ export function useFloor(
         queryKey: ['floors', 'detail', buildingUuid, floorId, saleType],
         queryFn: () =>
             wrapApiCall(getFloor)(buildingUuid, floorId as string, { sale_type: saleType }),
-        enabled: !!buildingUuid && Boolean(floorId),
+        enabled:
+            !!buildingUuid &&
+            !!floorId &&
+            floorId !== 'undefined' &&
+            floorId !== 'null',
     });
 }

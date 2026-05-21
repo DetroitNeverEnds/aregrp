@@ -348,14 +348,12 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     useEffect(() => {
-        if (
-            selectedPremiseQ.data?.data &&
-            String(selectedPremiseQ.data?.data.floor) !== String(currentFloor)
-        ) {
+        const premiseFloorId = selectedPremiseQ.data?.data?.floor_id;
+        if (premiseFloorId && premiseFloorId !== currentFloor) {
             setSearchParams(
                 toSearchParams({
                     ...params,
-                    floor: String(selectedPremiseQ.data?.data.floor),
+                    floor: premiseFloorId,
                     selectedPremise: undefined,
                 }),
             );
