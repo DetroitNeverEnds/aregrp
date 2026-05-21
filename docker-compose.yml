@@ -15,6 +15,11 @@ services:
             - ./frontend/src:/app/src:ro
         environment:
             - NODE_ENV=production
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "5"
 
     db:
         image: postgres:17
@@ -26,6 +31,11 @@ services:
         networks:
             - django-network
         restart: always
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "5"
 
     backend:
         image: ${REGISTRY_PREFIX:-}aregrp-backend:${TAG:-local}
@@ -46,6 +56,11 @@ services:
             - backend-network
             - django-network
         restart: always
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "5"
 
     # Nginx reverse proxy
     nginx:
@@ -71,6 +86,11 @@ services:
         networks:
             - frontend-network
             - backend-network
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "5"
 
 networks:
     frontend-network:
