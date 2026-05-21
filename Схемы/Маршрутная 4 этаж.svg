@@ -1,0 +1,432 @@
+<svg width="653" height="793" viewBox="0 0 653 793" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="&#208;&#156;&#208;&#176;&#209;&#128;&#209;&#136;&#209;&#128;&#209;&#131;&#209;&#130;&#208;&#189;&#208;&#176;&#209;&#143; 4 &#209;&#141;&#209;&#130;&#208;&#176;&#208;&#182; 1" clip-path="url(#clip0_38_3800)">
+<g id="&#195;&#144;&#194;&#156;&#195;&#144;&#194;&#176;&#195;&#145;&#194;&#128;&#195;&#145;&#194;&#136;&#195;&#145;&#194;&#128;&#195;&#145;&#194;&#131;&#195;&#145;&#194;&#130;&#195;&#144;&#194;&#189;&#195;&#144;&#194;&#176;&#195;&#145;&#194;&#143; 4 &#195;&#145;&#194;&#141;&#195;&#145;&#194;&#130;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#182;">
+<g id="room_413">
+<path id="poly" d="M494.019 49H380.955C375.432 49 371 53.4772 371 59V95C371 100.523 375.477 105 381 105H494C499.523 105 504 100.523 504 95V59C504 53.4772 499.542 49 494.019 49Z" fill="#375A6D"/>
+<path id="Rectangle 449" d="M374 63H368V91H374V63Z" fill="#8FB6F9"/>
+<text id="label_area" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="449" y="100.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="381" y="75.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="480" y="61.604">413</tspan></text>
+<g id="label_busy">
+<path id="form" d="M469.072 52.928H474.928L477.856 57.9998L474.928 63.0716H469.072L466.144 57.9998L469.072 52.928Z" fill="url(#paint0_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="467" y="58.8681">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock" d="M431.142 72.0003V69.5004C431.142 69.0745 431.17 68.6579 431.225 68.2504M443.142 72.0003V69.5004C443.142 67.9769 442.771 66.4896 442.078 65.2363C441.385 63.983 440.404 63.0231 439.263 62.4845C438.123 61.9458 436.879 61.8539 435.696 62.221C434.514 62.588 433.448 63.3966 432.642 64.5392M436.142 87H433.142C430.314 87 428.899 87 428.021 85.9013C427.142 84.8038 427.142 83.0351 427.142 79.5002C427.142 75.9652 427.142 74.1965 428.021 73.099C428.899 72.0003 430.314 72.0003 433.142 72.0003H441.142C443.97 72.0003 445.385 72.0003 446.263 73.099C447.142 74.1965 447.142 75.9652 447.142 79.5002C447.142 83.0351 447.142 84.8038 446.263 85.9013C445.385 87 443.97 87 441.142 87H440.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_415">
+<path id="poly_2" d="M494 110H381C375.477 110 371 114.477 371 120V162C371 167.523 375.477 172 381 172H494C499.523 172 504 167.523 504 162V120C504 114.477 499.523 110 494 110Z" fill="#375A6D"/>
+<path id="Rectangle 450" d="M374 127H368V155H374V127Z" fill="#8FB6F9"/>
+<text id="label_area_2" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="449" y="167.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_2" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="379" y="140.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_2" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="480" y="122.604">415</tspan></text>
+<g id="label_busy_2">
+<path id="form_2" d="M469.072 113.928H474.928L477.856 119L474.928 124.072H469.072L466.144 119L469.072 113.928Z" fill="url(#paint1_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_2" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="467" y="119.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_2" d="M431.142 135V132.5C431.142 132.074 431.17 131.658 431.225 131.25M443.142 135V132.5C443.142 130.977 442.771 129.49 442.078 128.236C441.385 126.983 440.404 126.023 439.263 125.485C438.123 124.946 436.879 124.854 435.696 125.221C434.514 125.588 433.448 126.397 432.642 127.539M436.142 150H433.142C430.314 150 428.899 150 428.021 148.901C427.142 147.804 427.142 146.035 427.142 142.5C427.142 138.965 427.142 137.197 428.021 136.099C428.899 135 430.314 135 433.142 135H441.142C443.97 135 445.385 135 446.263 136.099C447.142 137.197 447.142 138.965 447.142 142.5C447.142 146.035 447.142 147.804 446.263 148.901C445.385 150 443.97 150 441.142 150H440.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_417">
+<path id="poly_3" d="M495.142 177H381C375.477 177 371 181.477 371 187V236C371 241.523 375.477 246 381 246H495.142C500.664 246 505.142 241.523 505.142 236V187C505.142 181.477 500.664 177 495.142 177Z" fill="#375A6D"/>
+<path id="Rectangle 451" d="M374 198H368V226H374V198Z" fill="#8FB6F9"/>
+<text id="label_area_3" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="449" y="241.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_3" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="379" y="214.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_3" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="480" y="189.604">417</tspan></text>
+<g id="label_busy_3">
+<path id="form_3" d="M469.072 179.928H474.928L477.856 185L474.928 190.072H469.072L466.144 185L469.072 179.928Z" fill="url(#paint2_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_3" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="467" y="185.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_3" d="M431.142 204V201.5C431.142 201.074 431.17 200.658 431.225 200.25M443.142 204V201.5C443.142 199.977 442.771 198.49 442.078 197.236C441.385 195.983 440.404 195.023 439.263 194.485C438.123 193.946 436.879 193.854 435.696 194.221C434.514 194.588 433.448 195.397 432.642 196.539M436.142 219H433.142C430.314 219 428.899 219 428.021 217.901C427.142 216.804 427.142 215.035 427.142 211.5C427.142 207.965 427.142 206.197 428.021 205.099C428.899 204 430.314 204 433.142 204H441.142C443.97 204 445.385 204 446.263 205.099C447.142 206.197 447.142 207.965 447.142 211.5C447.142 215.035 447.142 216.804 446.263 217.901C445.385 219 443.97 219 441.142 219H440.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_411">
+<path id="poly_4" d="M495.142 252H381C375.477 252 371 256.477 371 262V306.5C371 312.023 375.477 316.5 381 316.5H495.142C500.664 316.5 505.142 312.023 505.142 306.5V262C505.142 256.477 500.664 252 495.142 252Z" fill="#375A6D"/>
+<path id="Rectangle 452" d="M374 270H368V298H374V270Z" fill="#8FB6F9"/>
+<text id="label_area_4" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="449" y="311.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_4" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="379" y="285.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_4" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="480" y="264.604">411</tspan></text>
+<g id="label_busy_4">
+<path id="form_4" d="M469.072 254.928H474.928L477.856 260L474.928 265.072H469.072L466.144 260L469.072 254.928Z" fill="url(#paint3_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_4" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="467" y="260.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_4" d="M431.142 276V273.5C431.142 273.074 431.17 272.658 431.225 272.25M443.142 276V273.5C443.142 271.977 442.771 270.49 442.078 269.236C441.385 267.983 440.404 267.023 439.263 266.485C438.123 265.946 436.879 265.854 435.696 266.221C434.514 266.588 433.448 267.397 432.642 268.539M436.142 291H433.142C430.314 291 428.899 291 428.021 289.901C427.142 288.804 427.142 287.035 427.142 283.5C427.142 279.965 427.142 278.197 428.021 277.099C428.899 276 430.314 276 433.142 276H441.142C443.97 276 445.385 276 446.263 277.099C447.142 278.197 447.142 279.965 447.142 283.5C447.142 287.035 447.142 288.804 446.263 289.901C445.385 291 443.97 291 441.142 291H440.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_409">
+<path id="poly_5" d="M470.017 321.5H381C375.477 321.5 371 325.977 371 331.5V422C371 427.523 375.477 432 381 432H439.642C445.164 432 449.578 427.509 449.711 421.988C450.104 405.718 452.721 403.389 470.123 403.056C475.651 402.95 480.134 398.512 480.124 392.983L480.017 331.483C480.008 325.967 475.533 321.5 470.017 321.5Z" fill="#375A6D"/>
+<path id="Rectangle 453" d="M374 353H368V381H374V353Z" fill="#8FB6F9"/>
+<text id="label_area_5" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="376" y="427.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_5" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="379" y="374.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_5" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="455" y="335.604">409</tspan></text>
+<g id="label_busy_5">
+<path id="form_5" d="M444.072 326.928H449.928L452.856 332L449.928 337.072H444.072L441.144 332L444.072 326.928Z" fill="url(#paint4_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_5" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="442" y="332.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_5" d="M419.142 364V361.5C419.142 361.074 419.17 360.658 419.225 360.25M431.142 364V361.5C431.142 359.977 430.771 358.49 430.078 357.236C429.385 355.983 428.404 355.023 427.263 354.485C426.123 353.946 424.879 353.854 423.696 354.221C422.514 354.588 421.448 355.397 420.642 356.539M424.142 379H421.142C418.314 379 416.899 379 416.021 377.901C415.142 376.804 415.142 375.035 415.142 371.5C415.142 367.965 415.142 366.197 416.021 365.099C416.899 364 418.314 364 421.142 364H429.142C431.97 364 433.385 364 434.263 365.099C435.142 366.197 435.142 367.965 435.142 371.5C435.142 375.035 435.142 376.804 434.263 377.901C433.385 379 431.97 379 429.142 379H428.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_405+">
+<path id="poly_6" d="M415.5 461H358.5C352.977 461 348.5 465.477 348.5 471V554C348.5 559.523 352.977 564 358.5 564H415.5C421.023 564 425.5 559.523 425.5 554V471C425.5 465.477 421.023 461 415.5 461Z" fill="#375A6D"/>
+<path id="Rectangle 454" d="M401 464V458H373V464H401Z" fill="#8FB6F9"/>
+<text id="label_area_6" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="370" y="559.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_6" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="352.142" y="512.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_6" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="392.856" y="476.802">405+</tspan></text>
+<g id="label_busy_6">
+<path id="form_6" d="M381.928 468.126H387.784L390.712 473.198L387.784 478.27H381.928L379 473.198L381.928 468.126Z" fill="url(#paint5_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_6" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="379.856" y="474.066">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_6" d="M381.142 508V505.5C381.142 505.074 381.17 504.658 381.225 504.25M393.142 508V505.5C393.142 503.977 392.771 502.49 392.078 501.236C391.385 499.983 390.404 499.023 389.263 498.485C388.123 497.946 386.879 497.854 385.696 498.221C384.514 498.588 383.448 499.397 382.642 500.539M386.142 523H383.142C380.314 523 378.899 523 378.021 521.901C377.142 520.804 377.142 519.035 377.142 515.5C377.142 511.965 377.142 510.197 378.021 509.099C378.899 508 380.314 508 383.142 508H391.142C393.97 508 395.385 508 396.263 509.099C397.142 510.197 397.142 511.965 397.142 515.5C397.142 519.035 397.142 520.804 396.263 521.901C395.385 523 393.97 523 391.142 523H390.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_405">
+<path id="poly_7" d="M333.47 461.033C316.524 461.085 294.413 461.133 280.582 461.112C273.99 461.102 267.5 467.496 267.5 474.088V554C267.5 559.523 271.977 564 277.5 564H333.5C339.023 564 343.5 559.523 343.5 554V471.035C343.5 465.499 339.007 461.016 333.47 461.033Z" fill="#375A6D"/>
+<path id="Rectangle 455" d="M320 464V458H292V464H320Z" fill="#8FB6F9"/>
+<text id="label_area_7" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="289" y="559.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_7" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="271" y="512.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_7" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="319" y="477.604">405</tspan></text>
+<g id="label_busy_7">
+<path id="form_7" d="M308.072 468.928H313.928L316.856 474L313.928 479.072H308.072L305.144 474L308.072 468.928Z" fill="url(#paint6_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_7" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="306" y="474.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_7" d="M300.142 508V505.5C300.142 505.074 300.17 504.658 300.225 504.25M312.142 508V505.5C312.142 503.977 311.771 502.49 311.078 501.236C310.385 499.983 309.404 499.023 308.263 498.485C307.123 497.946 305.879 497.854 304.696 498.221C303.514 498.588 302.448 499.397 301.642 500.539M305.142 523H302.142C299.314 523 297.899 523 297.021 521.901C296.142 520.804 296.142 519.035 296.142 515.5C296.142 511.965 296.142 510.197 297.021 509.099C297.899 508 299.314 508 302.142 508H310.142C312.97 508 314.385 508 315.263 509.099C316.142 510.197 316.142 511.965 316.142 515.5C316.142 519.035 316.142 520.804 315.263 521.901C314.385 523 312.97 523 310.142 523H309.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_400">
+<path id="poly_8" d="M72 615H10C4.47715 615 0 619.477 0 625V743C0 748.523 4.47715 753 10 753H72C77.5229 753 82 748.523 82 743V625C82 619.477 77.5229 615 72 615Z" fill="#375A6D"/>
+<path id="Rectangle 459" d="M53 756V750H25V756H53Z" fill="#8FB6F9"/>
+<text id="label_area_8" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="25" y="746.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_8" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="3" y="683.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_8" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="58" y="627.604">400</tspan></text>
+<g id="label_busy_8">
+<path id="form_8" d="M47.0718 618.928H52.9282L55.8564 624L52.9282 629.072H47.0718L44.1436 624L47.0718 618.928Z" fill="url(#paint7_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_8" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="45" y="624.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_8" d="M35.1416 677V674.5C35.1416 674.074 35.1696 673.658 35.2246 673.25M47.1416 677V674.5C47.1416 672.977 46.7706 671.49 46.0776 670.236C45.3846 668.983 44.4036 668.023 43.2626 667.485C42.1226 666.946 40.8786 666.854 39.6956 667.221C38.5136 667.588 37.4476 668.397 36.6416 669.539M40.1416 692H37.1416C34.3136 692 32.8986 692 32.0206 690.901C31.1416 689.804 31.1416 688.035 31.1416 684.5C31.1416 680.965 31.1416 679.197 32.0206 678.099C32.8986 677 34.3136 677 37.1416 677H45.1416C47.9696 677 49.3846 677 50.2626 678.099C51.1416 679.197 51.1416 680.965 51.1416 684.5C51.1416 688.035 51.1416 689.804 50.2626 690.901C49.3846 692 47.9696 692 45.1416 692H44.1416" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_400_1">
+<path id="poly_9" d="M147 615H97C91.4772 615 87 619.477 87 625V743C87 748.523 91.4772 753 97 753H147C152.523 753 157 748.523 157 743V625C157 619.477 152.523 615 147 615Z" fill="#375A6D"/>
+<path id="Rectangle 460" d="M136 756V750H108V756H136Z" fill="#8FB6F9"/>
+<text id="label_area_9" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="102" y="746.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_9" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="91" y="683.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_9" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="120.856" y="627.802">400A</tspan></text>
+<g id="label_busy_9">
+<path id="form_9" d="M109.928 619.126H115.784L118.712 624.198L115.784 629.27H109.928L107 624.198L109.928 619.126Z" fill="url(#paint8_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_9" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="107.856" y="625.066">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_9" d="M116.142 677V674.5C116.142 674.074 116.17 673.658 116.225 673.25M128.142 677V674.5C128.142 672.977 127.771 671.49 127.078 670.236C126.385 668.983 125.404 668.023 124.263 667.485C123.123 666.946 121.879 666.854 120.696 667.221C119.514 667.588 118.448 668.397 117.642 669.539M121.142 692H118.142C115.314 692 113.899 692 113.021 690.901C112.142 689.804 112.142 688.035 112.142 684.5C112.142 680.965 112.142 679.197 113.021 678.099C113.899 677 115.314 677 118.142 677H126.142C128.97 677 130.385 677 131.263 678.099C132.142 679.197 132.142 680.965 132.142 684.5C132.142 688.035 132.142 689.804 131.263 690.901C130.385 692 128.97 692 126.142 692H125.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_402">
+<path id="poly_10" d="M218 615H172C166.477 615 162 619.477 162 625V743C162 748.523 166.477 753 172 753H218C223.523 753 228 748.523 228 743V625C228 619.477 223.523 615 218 615Z" fill="#375A6D"/>
+<path id="Rectangle 461" d="M207 756V750H179V756H207Z" fill="#8FB6F9"/>
+<text id="label_area_10" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="171" y="746.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_10" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="166" y="683.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_10" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="203" y="627.604">402</tspan></text>
+<g id="label_busy_10">
+<path id="form_10" d="M192.072 618.928H197.928L200.856 624L197.928 629.071H192.072L189.144 624L192.072 618.928Z" fill="url(#paint9_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_10" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="190" y="624.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_10" d="M189.142 678V675.5C189.142 675.074 189.17 674.658 189.225 674.25M201.142 678V675.5C201.142 673.977 200.771 672.49 200.078 671.236C199.385 669.983 198.404 669.023 197.263 668.485C196.123 667.946 194.879 667.854 193.696 668.221C192.514 668.588 191.448 669.397 190.642 670.539M194.142 693H191.142C188.314 693 186.899 693 186.021 691.901C185.142 690.804 185.142 689.035 185.142 685.5C185.142 681.965 185.142 680.197 186.021 679.099C186.899 678 188.314 678 191.142 678H199.142C201.97 678 203.385 678 204.263 679.099C205.142 680.197 205.142 681.965 205.142 685.5C205.142 689.035 205.142 690.804 204.263 691.901C203.385 693 201.97 693 199.142 693H198.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_404">
+<path id="poly_11" d="M290 615H242C236.477 615 232 619.477 232 625V743C232 748.523 236.477 753 242 753H290C295.523 753 300 748.523 300 743V625C300 619.477 295.523 615 290 615Z" fill="#375A6D"/>
+<path id="Rectangle 462" d="M280 756V750H252V756H280Z" fill="#8FB6F9"/>
+<text id="label_area_11" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="244" y="746.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_11" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="236" y="683.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_11" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="275" y="627.604">404</tspan></text>
+<g id="label_busy_11">
+<path id="form_11" d="M264.072 618.928H269.928L272.856 624L269.928 629.072H264.072L261.144 624L264.072 618.928Z" fill="url(#paint10_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_11" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="262" y="624.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_11" d="M260.142 678V675.5C260.142 675.074 260.17 674.658 260.225 674.25M272.142 678V675.5C272.142 673.977 271.771 672.49 271.078 671.236C270.385 669.983 269.404 669.023 268.263 668.485C267.123 667.946 265.879 667.854 264.696 668.221C263.514 668.588 262.448 669.397 261.642 670.539M265.142 693H262.142C259.314 693 257.899 693 257.021 691.901C256.142 690.804 256.142 689.035 256.142 685.5C256.142 681.965 256.142 680.197 257.021 679.099C257.899 678 259.314 678 262.142 678H270.142C272.97 678 274.385 678 275.263 679.099C276.142 680.197 276.142 681.965 276.142 685.5C276.142 689.035 276.142 690.804 275.263 691.901C274.385 693 272.97 693 270.142 693H269.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_406">
+<path id="poly_12" d="M365 615H315C309.477 615 305 619.477 305 625V743C305 748.523 309.477 753 315 753H365C370.523 753 375 748.523 375 743V625C375 619.477 370.523 615 365 615Z" fill="#375A6D"/>
+<path id="Rectangle 463" d="M354 756V750H326V756H354Z" fill="#8FB6F9"/>
+<text id="label_area_12" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="319" y="746.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_12" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="309" y="683.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_12" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="350" y="627.604">406</tspan></text>
+<g id="label_busy_12">
+<path id="form_12" d="M339.072 618.929H344.928L347.856 624.001L344.928 629.072H339.072L336.144 624.001L339.072 618.929Z" fill="url(#paint11_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_12" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="337" y="624.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_12" d="M334.142 678V675.5C334.142 675.074 334.17 674.658 334.225 674.25M346.142 678V675.5C346.142 673.977 345.771 672.49 345.078 671.236C344.385 669.983 343.404 669.023 342.263 668.485C341.123 667.946 339.879 667.854 338.696 668.221C337.514 668.588 336.448 669.397 335.642 670.539M339.142 693H336.142C333.314 693 331.899 693 331.021 691.901C330.142 690.804 330.142 689.035 330.142 685.5C330.142 681.965 330.142 680.197 331.021 679.099C331.899 678 333.314 678 336.142 678H344.142C346.97 678 348.385 678 349.263 679.099C350.142 680.197 350.142 681.965 350.142 685.5C350.142 689.035 350.142 690.804 349.263 691.901C348.385 693 346.97 693 344.142 693H343.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_408">
+<path id="poly_13" d="M510.5 594.5H393.5C387.977 594.5 383.5 598.977 383.5 604.5V783C383.5 788.523 387.977 793 393.5 793H510.5C516.023 793 520.5 788.523 520.5 783V604.5C520.5 598.977 516.023 594.5 510.5 594.5Z" fill="#375A6D"/>
+<text id="label_area_13" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="462" y="785.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_13" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="391" y="695.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_13" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="493" y="613.604">408</tspan></text>
+<g id="label_busy_13">
+<path id="form_13" d="M482.072 604.929H487.928L490.856 610.001L487.928 615.072H482.072L479.144 610.001L482.072 604.929Z" fill="url(#paint12_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_13" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="480" y="610.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_13" d="M446.142 691V688.5C446.142 688.074 446.17 687.658 446.225 687.25M458.142 691V688.5C458.142 686.977 457.771 685.49 457.078 684.236C456.385 682.983 455.404 682.023 454.263 681.485C453.123 680.946 451.879 680.854 450.696 681.221C449.514 681.588 448.448 682.397 447.642 683.539M451.142 706H448.142C445.314 706 443.899 706 443.021 704.901C442.142 703.804 442.142 702.035 442.142 698.5C442.142 694.965 442.142 693.197 443.021 692.099C443.899 691 445.314 691 448.142 691H456.142C458.97 691 460.385 691 461.263 692.099C462.142 693.197 462.142 694.965 462.142 698.5C462.142 702.035 462.142 703.804 461.263 704.901C460.385 706 458.97 706 456.142 706H455.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_410_4">
+<path id="poly_14" d="M640.5 664H543C537.477 664 533 668.477 533 674V731.5C533 737.023 537.477 741.5 543 741.5H640.5C646.023 741.5 650.5 737.023 650.5 731.5V674C650.5 668.477 646.023 664 640.5 664Z" fill="#375A6D"/>
+<path id="Rectangle 473" d="M606 745V739H578V745H606Z" fill="#8FB6F9"/>
+<text id="label_area_14" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="735.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_14" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="536" y="703.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_14" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="619" y="676.604">410&#x413;</tspan></text>
+<g id="label_busy_14">
+<path id="form_14" d="M608.072 667.928H613.928L616.856 673L613.928 678.072H608.072L605.144 673L608.072 667.928Z" fill="url(#paint13_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_14" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="606" y="673.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_14" d="M586.142 697V694.5C586.142 694.074 586.17 693.658 586.225 693.25M598.142 697V694.5C598.142 692.977 597.771 691.49 597.078 690.236C596.385 688.983 595.404 688.023 594.263 687.485C593.123 686.946 591.879 686.854 590.696 687.221C589.514 687.588 588.448 688.397 587.642 689.539M591.142 712H588.142C585.314 712 583.899 712 583.021 710.901C582.142 709.804 582.142 708.035 582.142 704.5C582.142 700.965 582.142 699.197 583.021 698.099C583.899 697 585.314 697 588.142 697H596.142C598.97 697 600.385 697 601.263 698.099C602.142 699.197 602.142 700.965 602.142 704.5C602.142 708.035 602.142 709.804 601.263 710.901C600.385 712 598.97 712 596.142 712H595.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_412">
+<path id="poly_15" d="M640 367H546C540.477 367 536 371.477 536 377V457C536 462.523 540.477 467 546 467H640C645.523 467 650 462.523 650 457V377C650 371.477 645.523 367 640 367Z" fill="#375A6D"/>
+<path id="Rectangle 469" d="M653 404H647V432H653V404Z" fill="#8FB6F9"/>
+<text id="label_area_15" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="462.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_15" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="542" y="417.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_15" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="625" y="380.604">412</tspan></text>
+<g id="label_busy_15">
+<path id="form_15" d="M614.072 371.928H619.928L622.856 377L619.928 382.072H614.072L611.144 377L614.072 371.928Z" fill="url(#paint14_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_15" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="612" y="377.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_15" d="M587.142 414V411.5C587.142 411.074 587.17 410.658 587.225 410.25M599.142 414V411.5C599.142 409.977 598.771 408.49 598.078 407.236C597.385 405.983 596.404 405.023 595.263 404.485C594.123 403.946 592.879 403.854 591.696 404.221C590.514 404.588 589.448 405.397 588.642 406.539M592.142 429H589.142C586.314 429 584.899 429 584.021 427.901C583.142 426.804 583.142 425.035 583.142 421.5C583.142 417.965 583.142 416.197 584.021 415.099C584.899 414 586.314 414 589.142 414H597.142C599.97 414 601.385 414 602.263 415.099C603.142 416.197 603.142 417.965 603.142 421.5C603.142 425.035 603.142 426.804 602.263 427.901C601.385 429 599.97 429 597.142 429H596.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_414">
+<path id="poly_16" d="M640 305H546C540.477 305 536 309.477 536 315V352C536 357.523 540.477 362 546 362H640C645.523 362 650 357.523 650 352V315C650 309.477 645.523 305 640 305Z" fill="#375A6D"/>
+<path id="Rectangle 468" d="M653 320H647V348H653V320Z" fill="#8FB6F9"/>
+<text id="label_area_16" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="597" y="357.604">00,00&#x43c;&#xb2;</tspan></text>
+<text id="label_price_16" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="542" y="335.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_16" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="625" y="317.604">414</tspan></text>
+<g id="label_busy_16">
+<path id="form_16" d="M614.072 308.928H619.928L622.856 314L619.928 319.072H614.072L611.144 314L614.072 308.928Z" fill="url(#paint15_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_16" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="612" y="314.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_16" d="M587.142 329V326.5C587.142 326.074 587.17 325.658 587.225 325.25M599.142 329V326.5C599.142 324.977 598.771 323.49 598.078 322.236C597.385 320.983 596.404 320.023 595.263 319.485C594.123 318.946 592.879 318.854 591.696 319.221C590.514 319.588 589.448 320.397 588.642 321.539M592.142 344H589.142C586.314 344 584.899 344 584.021 342.901C583.142 341.804 583.142 340.035 583.142 336.5C583.142 332.965 583.142 331.197 584.021 330.099C584.899 329 586.314 329 589.142 329H597.142C599.97 329 601.385 329 602.263 330.099C603.142 331.197 603.142 332.965 603.142 336.5C603.142 340.035 603.142 341.804 602.263 342.901C601.385 344 599.97 344 597.142 344H596.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_416">
+<path id="poly_17" d="M640 234H546C540.477 234 536 238.477 536 244V290C536 295.523 540.477 300 546 300H640C645.523 300 650 295.523 650 290V244C650 238.477 645.523 234 640 234Z" fill="#375A6D"/>
+<path id="Rectangle 467" d="M653 253H647V281H653V253Z" fill="#8FB6F9"/>
+<text id="label_area_17" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="295.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_17" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="542" y="270.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_17" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="625" y="246.604">416</tspan></text>
+<g id="label_busy_17">
+<path id="form_17" d="M614.072 237.928H619.928L622.856 243L619.928 248.072H614.072L611.144 243L614.072 237.928Z" fill="url(#paint16_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_17" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="612" y="243.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_17" d="M587.142 264V261.5C587.142 261.074 587.17 260.658 587.225 260.25M599.142 264V261.5C599.142 259.977 598.771 258.49 598.078 257.236C597.385 255.983 596.404 255.023 595.263 254.485C594.123 253.946 592.879 253.854 591.696 254.221C590.514 254.588 589.448 255.397 588.642 256.539M592.142 279H589.142C586.314 279 584.899 279 584.021 277.901C583.142 276.804 583.142 275.035 583.142 271.5C583.142 267.965 583.142 266.197 584.021 265.099C584.899 264 586.314 264 589.142 264H597.142C599.97 264 601.385 264 602.263 265.099C603.142 266.197 603.142 267.965 603.142 271.5C603.142 275.035 603.142 276.804 602.263 277.901C601.385 279 599.97 279 597.142 279H596.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_418">
+<path id="poly_18" d="M640 171H546C540.477 171 536 175.477 536 181V219C536 224.523 540.477 229 546 229H640C645.523 229 650 224.523 650 219V181C650 175.477 645.523 171 640 171Z" fill="#375A6D"/>
+<path id="Rectangle 466" d="M653 187H647V213H653V187Z" fill="#8FB6F9"/>
+<text id="label_area_18" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="224.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_18" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="542" y="201.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_18" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="625" y="183.604">418</tspan></text>
+<g id="label_busy_18">
+<path id="form_18" d="M614.072 174.928H619.928L622.856 180L619.928 185.072H614.072L611.144 180L614.072 174.928Z" fill="url(#paint17_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_18" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="612" y="180.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_18" d="M587.142 193V190.5C587.142 190.074 587.17 189.658 587.225 189.25M599.142 193V190.5C599.142 188.977 598.771 187.49 598.078 186.236C597.385 184.983 596.404 184.023 595.263 183.485C594.123 182.946 592.879 182.854 591.696 183.221C590.514 183.588 589.448 184.397 588.642 185.539M592.142 208H589.142C586.314 208 584.899 208 584.021 206.901C583.142 205.804 583.142 204.035 583.142 200.5C583.142 196.965 583.142 195.197 584.021 194.099C584.899 193 586.314 193 589.142 193H597.142C599.97 193 601.385 193 602.263 194.099C603.142 195.197 603.142 196.965 603.142 200.5C603.142 204.035 603.142 205.804 602.263 206.901C601.385 208 599.97 208 597.142 208H596.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_420">
+<path id="poly_19" d="M640 110H546C540.477 110 536 114.477 536 120V156C536 161.523 540.477 166 546 166H640C645.523 166 650 161.523 650 156V120C650 114.477 645.523 110 640 110Z" fill="#375A6D"/>
+<path id="Rectangle 465" d="M653 126H647V150H653V126Z" fill="#8FB6F9"/>
+<text id="label_area_19" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="161.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_19" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="542" y="138.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_19" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="625" y="122.604">420</tspan></text>
+<g id="label_busy_19">
+<path id="form_19" d="M614.072 112.928H619.928L622.856 118L619.928 123.072H614.072L611.144 118L614.072 112.928Z" fill="url(#paint18_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_19" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="612" y="118.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_19" d="M587.142 130V127.5C587.142 127.074 587.17 126.658 587.225 126.25M599.142 130V127.5C599.142 125.977 598.771 124.49 598.078 123.236C597.385 121.983 596.404 121.023 595.263 120.485C594.123 119.946 592.879 119.854 591.696 120.221C590.514 120.588 589.448 121.397 588.642 122.539M592.142 145H589.142C586.314 145 584.899 145 584.021 143.901C583.142 142.804 583.142 141.035 583.142 137.5C583.142 133.965 583.142 132.197 584.021 131.099C584.899 130 586.314 130 589.142 130H597.142C599.97 130 601.385 130 602.263 131.099C603.142 132.197 603.142 133.965 603.142 137.5C603.142 141.035 603.142 142.804 602.263 143.901C601.385 145 599.97 145 597.142 145H596.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_420+">
+<path id="poly_20" d="M640 38H546C540.477 38 536 42.4772 536 48V96C536 101.523 540.477 106 546 106H640C645.523 106 650 101.523 650 96V48C650 42.4772 645.523 38 640 38Z" fill="#375A6D"/>
+<path id="Rectangle 464" d="M653 58H647V86H653V58Z" fill="#8FB6F9"/>
+<path id="Rectangle 458" d="M573 41V35H545V41H573Z" fill="#8FB6F9"/>
+<text id="label_area_20" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="101.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_20" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="542" y="75.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_20" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="616" y="50.604">420+</tspan></text>
+<g id="label_busy_20">
+<path id="form_20" d="M605.072 41.9282H610.928L613.856 47L610.928 52.0718H605.072L602.144 47L605.072 41.9282Z" fill="url(#paint19_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_20" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="603" y="47.8681">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_20" d="M587.142 70.0003V67.5004C587.142 67.0745 587.17 66.6579 587.225 66.2504M599.142 70.0003V67.5004C599.142 65.9769 598.771 64.4896 598.078 63.2363C597.385 61.983 596.404 61.0231 595.263 60.4845C594.123 59.9458 592.879 59.8539 591.696 60.221C590.514 60.588 589.448 61.3966 588.642 62.5392M592.142 85H589.142C586.314 85 584.899 85 584.021 83.9013C583.142 82.8038 583.142 81.0351 583.142 77.5002C583.142 73.9652 583.142 72.1965 584.021 71.099C584.899 70.0003 586.314 70.0003 589.142 70.0003H597.142C599.97 70.0003 601.385 70.0003 602.263 71.099C603.142 72.1965 603.142 73.9652 603.142 77.5002C603.142 81.0351 603.142 82.8038 602.263 83.9013C601.385 85 599.97 85 597.142 85H596.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_410_3">
+<path id="poly_21" d="M640 604H564C558.477 604 554 608.477 554 614V649C554 654.523 558.477 659 564 659H640C645.523 659 650 654.523 650 649V614C650 608.477 645.523 604 640 604Z" fill="#375A6D"/>
+<path id="Rectangle 472" d="M653 622H647V644H653V622Z" fill="#8FB6F9"/>
+<text id="label_area_21" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="654.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_21" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="556" y="634.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_21" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="619" y="616.604">410&#x412;</tspan></text>
+<g id="label_busy_21">
+<path id="form_21" d="M608.072 607.928H613.928L616.856 613L613.928 618.072H608.072L605.144 613L608.072 607.928Z" fill="url(#paint20_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_21" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="606" y="613.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_21" d="M596.142 626V623.5C596.142 623.074 596.17 622.658 596.225 622.25M608.142 626V623.5C608.142 621.977 607.771 620.49 607.078 619.236C606.385 617.983 605.404 617.023 604.263 616.485C603.123 615.946 601.879 615.854 600.696 616.221C599.514 616.588 598.448 617.397 597.642 618.539M601.142 641H598.142C595.314 641 593.899 641 593.021 639.901C592.142 638.804 592.142 637.035 592.142 633.5C592.142 629.965 592.142 628.197 593.021 627.099C593.899 626 595.314 626 598.142 626H606.142C608.97 626 610.385 626 611.263 627.099C612.142 628.197 612.142 629.965 612.142 633.5C612.142 637.035 612.142 638.804 611.263 639.901C610.385 641 608.97 641 606.142 641H605.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_410_2">
+<path id="poly_22" d="M640 542H564C558.477 542 554 546.477 554 552V589C554 594.523 558.477 599 564 599H640C645.523 599 650 594.523 650 589V552C650 546.477 645.523 542 640 542Z" fill="#375A6D"/>
+<path id="Rectangle 471" d="M653 561H647V581H653V561Z" fill="#8FB6F9"/>
+<text id="label_area_22" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="594.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_22" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="556" y="574.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_22" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="619" y="555.604">410&#x411;</tspan></text>
+<g id="label_busy_22">
+<path id="form_22" d="M608.072 546.928H613.928L616.856 552L613.928 557.072H608.072L605.144 552L608.072 546.928Z" fill="url(#paint21_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_22" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="606" y="552.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_22" d="M596.142 567V564.5C596.142 564.074 596.17 563.658 596.225 563.25M608.142 567V564.5C608.142 562.977 607.771 561.49 607.078 560.236C606.385 558.983 605.404 558.023 604.263 557.485C603.123 556.946 601.879 556.854 600.696 557.221C599.514 557.588 598.448 558.397 597.642 559.539M601.142 582H598.142C595.314 582 593.899 582 593.021 580.901C592.142 579.804 592.142 578.035 592.142 574.5C592.142 570.965 592.142 569.197 593.021 568.099C593.899 567 595.314 567 598.142 567H606.142C608.97 567 610.385 567 611.263 568.099C612.142 569.197 612.142 570.965 612.142 574.5C612.142 578.035 612.142 579.804 611.263 580.901C610.385 582 608.97 582 606.142 582H605.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_410_1">
+<path id="poly_23" d="M640 472H564C558.477 472 554 476.477 554 482V527C554 532.523 558.477 537 564 537H640C645.523 537 650 532.523 650 527V482C650 476.477 645.523 472 640 472Z" fill="#375A6D"/>
+<path id="Rectangle 470" d="M653 491H647V519H653V491Z" fill="#8FB6F9"/>
+<text id="label_area_23" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="594" y="532.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_23" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="557" y="508.604">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_23" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="619" y="485.604">410&#x410;</tspan></text>
+<g id="label_busy_23">
+<path id="form_23" d="M608.072 476.928H613.928L616.856 482L613.928 487.072H608.072L605.144 482L608.072 476.928Z" fill="url(#paint22_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_23" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="606" y="482.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_23" d="M596.142 502V499.5C596.142 499.074 596.17 498.658 596.225 498.25M608.142 502V499.5C608.142 497.977 607.771 496.49 607.078 495.236C606.385 493.983 605.404 493.023 604.263 492.485C603.123 491.946 601.879 491.854 600.696 492.221C599.514 492.588 598.448 493.397 597.642 494.539M601.142 517H598.142C595.314 517 593.899 517 593.021 515.901C592.142 514.804 592.142 513.035 592.142 509.5C592.142 505.965 592.142 504.197 593.021 503.099C593.899 502 595.314 502 598.142 502H606.142C608.97 502 610.385 502 611.263 503.099C612.142 504.197 612.142 505.965 612.142 509.5C612.142 513.035 612.142 514.804 611.263 515.901C610.385 517 608.97 517 606.142 517H605.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_403">
+<path id="poly_24" d="M252.51 461H202.49C196.967 461 192.5 465.477 192.5 471V554C192.5 559.523 196.977 564 202.5 564H252.5C258.023 564 262.5 559.523 262.5 554V471C262.5 465.477 258.032 461 252.51 461Z" fill="#375A6D"/>
+<path id="Rectangle 456" d="M242 464V458H214V464H242Z" fill="#8FB6F9"/>
+<text id="label_area_24" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="208" y="559.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_24" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="196" y="512.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_24" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="239" y="477.604">403</tspan></text>
+<g id="label_busy_24">
+<path id="form_24" d="M228.072 468.928H233.928L236.856 474L233.928 479.072H228.072L225.144 474L228.072 468.928Z" fill="url(#paint23_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_24" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="226" y="474.868">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_24" d="M222.142 508V505.5C222.142 505.074 222.17 504.658 222.225 504.25M234.142 508V505.5C234.142 503.977 233.771 502.49 233.078 501.236C232.385 499.983 231.404 499.023 230.263 498.485C229.123 497.946 227.879 497.854 226.696 498.221C225.514 498.588 224.448 499.397 223.642 500.539M227.142 523H224.142C221.314 523 219.899 523 219.021 521.901C218.142 520.804 218.142 519.035 218.142 515.5C218.142 511.965 218.142 510.197 219.021 509.099C219.899 508 221.314 508 224.142 508H232.142C234.97 508 236.385 508 237.263 509.099C238.142 510.197 238.142 511.965 238.142 515.5C238.142 519.035 238.142 520.804 237.263 521.901C236.385 523 234.97 523 232.142 523H231.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="room_401">
+<path id="poly_25" d="M177.5 471.984H116.5C110.977 471.984 106.5 476.462 106.5 481.984V554C106.5 559.523 110.977 564 116.5 564H177.5C183.023 564 187.5 559.523 187.5 554V481.984C187.5 476.462 183.023 471.984 177.5 471.984Z" fill="#375A6D"/>
+<path id="Rectangle 457" d="M161 474.969V469H133V474.969H161Z" fill="#8FB6F9"/>
+<text id="label_area_25" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="133" y="559.604">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_price_25" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="110" y="512.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_name_25" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="164" y="486.566">401</tspan></text>
+<g id="label_busy_25">
+<path id="form_25" d="M155.072 476.913H160.928L163.856 481.958L160.928 487.003H155.072L152.144 481.958L155.072 476.913Z" fill="url(#paint24_radial_38_3800)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_25" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="153" y="482.9">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+<path id="label_lock_25" d="M141.142 513V510.5C141.142 510.074 141.17 509.658 141.225 509.25M153.142 513V510.5C153.142 508.977 152.771 507.49 152.078 506.236C151.385 504.983 150.404 504.023 149.263 503.485C148.123 502.946 146.879 502.854 145.696 503.221C144.514 503.588 143.448 504.397 142.642 505.539M146.142 528H143.142C140.314 528 138.899 528 138.021 526.901C137.142 525.804 137.142 524.035 137.142 520.5C137.142 516.965 137.142 515.197 138.021 514.099C138.899 513 140.314 513 143.142 513H151.142C153.97 513 155.385 513 156.263 514.099C157.142 515.197 157.142 516.965 157.142 520.5C157.142 524.035 157.142 525.804 156.263 526.901C155.385 528 153.97 528 151.142 528H150.142" stroke="#EADB5A" stroke-linecap="round"/>
+</g>
+<g id="Group 1187">
+<path id="poly_26" d="M67 452.5H10C4.47715 452.5 0 456.977 0 462.5V576.5C0 582.023 4.47715 586.5 10 586.5H67C72.5229 586.5 77 582.023 77 576.5V462.5C77 456.977 72.5229 452.5 67 452.5Z" fill="#D9D9D9"/>
+<path id="Vector 1754" d="M13 568H64" stroke="black"/>
+<path id="Vector 1755" d="M13 562H64" stroke="black"/>
+<path id="Vector 1756" d="M13 556H64" stroke="black"/>
+<path id="Vector 1757" d="M13 550H64" stroke="black"/>
+<path id="Vector 1758" d="M13 544H64" stroke="black"/>
+<path id="Vector 1759" d="M13 538H64" stroke="black"/>
+<path id="Arrow 1" d="M39 524L36.1133 529H41.8868L39 524ZM39 568H39.5V528.5H39H38.5V568H39Z" fill="black"/>
+</g>
+<g id="Group 1188">
+<path id="Vector 1753" d="M494 0H388C382.477 0 378 4.47715 378 10V30.5C378 36.0228 382.477 40.5 388 40.5H494C499.523 40.5 504 36.0229 504 30.5V10C504 4.47715 499.523 0 494 0Z" fill="#D9D9D9"/>
+<path id="Vector 1760" d="M397 4V36" stroke="black"/>
+<path id="Vector 1761" d="M403 4V36" stroke="black"/>
+<path id="Vector 1762" d="M409 4V36" stroke="black"/>
+<path id="Vector 1763" d="M415 4V36" stroke="black"/>
+<path id="Vector 1764" d="M421 4V36" stroke="black"/>
+<path id="Vector 1765" d="M427 4V36" stroke="black"/>
+<path id="Arrow 2" d="M441 20L436 17.1133V22.8868L441 20ZM397 20V20.5H436.5V20V19.5H397V20Z" fill="black"/>
+</g>
+<path id="Vector 2155" d="M518.142 38H522.142C527.664 38 532.142 42.4772 532.142 48V462C532.142 466.971 536.171 471 541.142 471C546.112 471 550.142 475.029 550.142 480V650C550.142 655.523 545.664 660 540.142 660H534.142C528.619 660 524.142 655.523 524.142 650V601C524.142 595.477 519.664 591 514.142 591H389.142C383.619 591 379.142 595.477 379.142 601C379.142 606.523 374.664 611 369.142 611H10.1416C4.61875 611 0.141602 606.523 0.141602 601V600C0.141602 594.477 4.61875 590 10.1416 590H71.1416C76.6645 590 81.1416 585.523 81.1416 580V578C81.1416 572.477 85.6188 568 91.1416 568H419.142C424.664 568 429.142 563.523 429.142 558V446.106C429.142 440.542 433.683 436.048 439.247 436.106L444.537 436.162C450.1 436.22 454.642 431.726 454.642 426.162V422.5V419C454.642 413.477 459.119 409 464.642 409H474.142C479.664 409 484.142 404.523 484.142 399V330C484.142 324.477 488.619 320 494.142 320H499.142C504.664 320 509.142 315.523 509.142 310V177.732C509.142 177.077 508.969 176.433 508.642 175.866C508.314 175.299 508.142 174.655 508.142 174V48C508.142 42.4772 512.619 38 518.142 38Z" fill="#FDD24F"/>
+</g>
+</g>
+<defs>
+<radialGradient id="paint0_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35836 -6.35834 -5.52178 475.012 55.9918)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint1_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35836 -6.35834 -5.52178 475.012 116.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint2_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35837 -6.35834 -5.52179 475.012 182.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint3_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35836 -6.35834 -5.52178 475.012 257.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint4_radial_38_3800" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(450.012 329.992) rotate(130.972) scale(8.42131)">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint5_radial_38_3800" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(387.868 471.19) rotate(130.972) scale(8.42131)">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint6_radial_38_3800" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(314.012 471.992) rotate(130.972) scale(8.42131)">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint7_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52178 6.35838 -6.35836 -5.52181 53.0119 621.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint8_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52179 6.35838 -6.35836 -5.52181 115.868 622.19)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint9_radial_38_3800" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(198.012 621.992) rotate(130.972) scale(8.42133)">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint10_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35838 -6.35834 -5.52181 270.012 621.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint11_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35836 -6.35834 -5.52179 345.012 621.993)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint12_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35836 -6.35834 -5.52179 488.012 607.993)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint13_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35838 -6.35838 -5.52181 614.012 670.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint14_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35835 -6.35838 -5.52177 620.012 374.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint15_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35835 -6.35838 -5.52177 620.012 311.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint16_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35837 -6.35838 -5.52179 620.012 240.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint17_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35837 -6.35838 -5.52179 620.012 177.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint18_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35836 -6.35838 -5.52178 620.012 115.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint19_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35836 -6.35838 -5.52178 611.012 44.9921)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint20_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35838 -6.35838 -5.52181 614.012 610.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint21_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35838 -6.35838 -5.52181 614.012 549.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint22_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.5218 6.35835 -6.35838 -5.52177 614.012 479.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint23_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52179 6.35835 -6.35836 -5.52177 234.012 471.992)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<radialGradient id="paint24_radial_38_3800" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52175 6.32509 -6.35839 -5.49284 161.012 479.96)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+<clipPath id="clip0_38_3800">
+<rect width="653" height="793" fill="white"/>
+</clipPath>
+</defs>
+</svg>

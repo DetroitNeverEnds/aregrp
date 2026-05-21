@@ -243,3 +243,25 @@ class InvestorSettings(SingletonModel):
 
     def __str__(self):
         return "Настройки для инвесторов (PDF)"
+
+
+class AgentSettings(SingletonModel):
+    """
+    Настройки для раздела «Агентам».
+    Ссылка на таблицу комиссий и прочие параметры страницы агентов.
+    """
+
+    table_link = models.CharField(
+        max_length=500,
+        verbose_name="Ссылка на таблицу",
+        help_text="Ссылка на таблицу комиссий для агентов",
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = "Настройки для агентов"
+        verbose_name_plural = "Настройки для агентов"
+        db_table = "agent_settings"
+
+    def __str__(self):
+        return "Настройки для агентов"
