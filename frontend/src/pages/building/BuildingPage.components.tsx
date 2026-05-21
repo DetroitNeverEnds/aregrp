@@ -168,7 +168,7 @@ const PremiseDetailsCardContent = ({
                     </Text>
 
                     <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.floor')}: {premise.floor}
+                        {t('pages.building.floor')}: {premise.floor_id}
                     </Text>
 
                     <Text variant="14-reg" color="gray-70">
