@@ -9,7 +9,14 @@ import {
 } from '@/lib/yamaps';
 import { YaMapsCustomization } from './customization';
 import classNames from 'classnames';
-import { useEffect, useMemo, useRef, useState, type PropsWithChildren } from 'react';
+import {
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+    type PropsWithChildren,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     getActiveBuildingMarkerUuid,
@@ -73,7 +80,10 @@ export const YandexMap = ({
     );
     const markerBaseZIndexRef = useRef<Record<string, number>>({});
     const activeMarkerKeyRef = useRef<string | null>(null);
-    markersRef.current = markers;
+
+    useLayoutEffect(() => {
+        markersRef.current = markers;
+    }, [markers]);
 
     const bounds = useMemo(() => {
         const rawBounds = {
@@ -122,10 +132,7 @@ export const YandexMap = ({
         }),
         [bounds],
     );
-    const initialMapLocationRef = useRef<{ bounds: [LngLat, LngLat] } | null>(null);
-    if (!initialMapLocationRef.current) {
-        initialMapLocationRef.current = boundsLocation;
-    }
+    const [initialMapLocation] = useState(boundsLocation);
     useEffect(() => {
         const currentMarkerKeys = new Set(
             markers.map((marker, index) => String(marker.key ?? index)),
@@ -176,7 +183,6 @@ export const YandexMap = ({
 
     useEffect(() => {
         if (staticMap) {
-            setMapActive(false);
             return;
         }
         const onPointerDown = (event: PointerEvent) => {
@@ -196,7 +202,7 @@ export const YandexMap = ({
         () => (
             <YMap
                 ref={mapRef}
-                location={initialMapLocationRef.current!}
+                location={initialMapLocation}
                 className={classNames(styles.map)}
                 key={apiKey}
                 behaviors={staticMap ? [] : undefined}
@@ -228,7 +234,7 @@ export const YandexMap = ({
                 })}
             </YMap>
         ),
-        [apiKey, markers, onMapClick, staticMap],
+        [apiKey, initialMapLocation, markers, onMapClick, staticMap],
     );
 
     return (

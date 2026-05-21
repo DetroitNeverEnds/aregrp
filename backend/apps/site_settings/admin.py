@@ -3,7 +3,7 @@
 """
 from django.contrib import admin
 
-from .models import ContactsSettings, InvestorSettings, MainSettings
+from .models import AgentSettings, ContactsSettings, InvestorSettings, MainSettings
 
 
 @admin.register(MainSettings)
@@ -126,3 +126,40 @@ class InvestorSettingsAdmin(admin.ModelAdmin):
 
         obj = InvestorSettings.load()
         return redirect(f'/admin/site_settings/investorsettings/{obj.pk}/change/')
+
+
+@admin.register(AgentSettings)
+class AgentSettingsAdmin(admin.ModelAdmin):
+    """
+    Админка для настроек агентов.
+    Singleton модель — один экземпляр, как MainSettings и ContactsSettings.
+    """
+
+    list_display = ('__str__',)
+    fieldsets = (
+        (
+            'Настройки для агентов',
+            {
+                'fields': ('table_link',),
+                'description': (
+                    'Ссылка на таблицу комиссий. '
+                    'API GET /api/v1/site-settings/agents — table_link: строка или null.'
+                ),
+            },
+        ),
+    )
+
+    def has_add_permission(self, request):
+        """Запрещаем создание второго экземпляра (Singleton)."""
+        return not AgentSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        """Запрещаем удаление единственного экземпляра."""
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        """Сразу открываем форму редактирования единственной записи."""
+        from django.shortcuts import redirect
+
+        obj = AgentSettings.load()
+        return redirect(f'/admin/site_settings/agentsettings/{obj.pk}/change/')

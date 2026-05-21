@@ -9,5 +9,6 @@ export {
 export { useUpdateProfileMutation, useChangePasswordMutation } from './profile';
 
 export { useCreateBookingMutation } from './bookings';
+export { useCreatePaymentMutation } from './payments';
 
 export { useSendFeedbackMutation } from './feedback';

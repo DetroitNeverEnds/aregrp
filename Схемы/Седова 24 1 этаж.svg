@@ -1,0 +1,214 @@
+<svg width="870" height="667" viewBox="0 0 870 667" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="&#208;&#161;&#208;&#181;&#208;&#180;&#208;&#190;&#208;&#178;&#208;&#176; 24 1 &#209;&#141;&#209;&#130;&#208;&#176;&#208;&#182;">
+<path id="Subtract" d="M195.105 6L200.638 7H205.667L210.508 7.99707L232.447 10.6533L276.326 15.9678L305.746 19.5303L364.084 26.5957L539.6 47.8506L661 47.7246V52H737V47.6455L868 47.5107L867.497 612H792.061L189.5 378.5L169 377L150.5 374.5L132 370L123.5 366.5L114 363.5L103 358.5L97.5 353.5L86.5 348L75 340L68.5 334L63 328.5L57 323L48.5 312L42.5 304.5L34 293.576L29.9766 285.914L25.5 278L21.5 270.5L18.0811 262.067L15.0645 253.565L12.5498 245.563L10.5381 237.401L8.02344 228.559L6.01172 218.396L5.00586 209.394L4 199.051V182.887L4.50293 176.545L6.51465 162.541L8.02344 153.039L10.5381 143.876L13.0527 134.374L16.0703 124.376L19.5898 116.529L25.1221 105.526L32.1631 93.8633L40.7129 81.3594L50.2676 69.3564L56.8057 61.8545L65.3555 53.3525L70.8867 48.3506L77.4248 43.3457L85.415 37.8467L93.4062 32.3467L101.564 27.8457L112.126 22.8447L120.675 18.8428L129.156 15.8428L138.78 12.8418L148.838 10.3408L158.394 8.34082L168.562 7L179.013 6H195.105Z" fill="#464646"/>
+<g id="Ellipse 4">
+<mask id="path-2-inside-1_2_3891" fill="white">
+<path d="M335 152.498C335 257.986 286.476 383 184.551 383C82.6263 383 0 297.486 0 191.999C0 86.5116 83.2485 1.99479 185.052 0C286.977 0 335 47.0113 335 152.498Z"/>
+</mask>
+<path d="M335 152.498C335 257.986 286.476 383 184.551 383C82.6263 383 0 297.486 0 191.999C0 86.5116 83.2485 1.99479 185.052 0C286.977 0 335 47.0113 335 152.498Z" stroke="black" stroke-width="14" mask="url(#path-2-inside-1_2_3891)"/>
+</g>
+<path id="Rectangle 652" d="M809 52.5H864V134H809V52.5Z" fill="black"/>
+<path id="Vector 1989" d="M786 90H789M786 90H799.5H809.001V133H785L785 90H786Z" stroke="black" stroke-width="2"/>
+<path id="Vector 1989_2" d="M789 87H785M761 46.5V59H765.5L769 59V53.5L808 53.5V87L798 87H785V74H738V138H869V46.5L809 46.5L738 46.5V59H746V46.5" stroke="black" stroke-width="2"/>
+<path id="Vector 2143" d="M767 137.5H762" stroke="black"/>
+<path id="Vector 2141" d="M862 221V138L763 138L763 101H742V146H736V161L741 161L741 221H862Z" fill="#4473C5"/>
+<path id="Vector 1988" d="M808 91H786V132H808V91Z" fill="white"/>
+<circle id="Ellipse 5" cx="192.5" cy="191.5" r="185.5" fill="#464646"/>
+<rect id="Rectangle 553" x="820" y="619" width="6" height="27" transform="rotate(-90 820 619)" fill="#8FB6F9"/>
+<path id="Rectangle 558" d="M837 49L837 43L857 43L857 49L837 49Z" fill="#8FB6F9"/>
+<path id="Rectangle 560" d="M802 49L802 43L822 43L822 49L802 49Z" fill="#8FB6F9"/>
+<rect id="Rectangle 554" x="794" y="616" width="6" height="26" transform="rotate(-90 794 616)" fill="black"/>
+<rect id="Rectangle 555" x="847" y="616" width="6" height="23" transform="rotate(-90 847 616)" fill="black"/>
+<path id="Rectangle 557" d="M862 137H870V222H862V137Z" fill="black"/>
+<line id="Line 83" x1="826" y1="603.5" x2="863" y2="603.5" stroke="white"/>
+<line id="Line 90" x1="816" y1="126.5" x2="858" y2="126.5" stroke="white"/>
+<line id="Line 97" x1="816" y1="91.5" x2="858" y2="91.5" stroke="white"/>
+<line id="Line 84" x1="826" y1="598.5" x2="863" y2="598.5" stroke="white"/>
+<line id="Line 91" x1="816" y1="121.5" x2="858" y2="121.5" stroke="white"/>
+<line id="Line 98" x1="816" y1="86.5" x2="858" y2="86.5" stroke="white"/>
+<line id="Line 85" x1="826" y1="593.5" x2="863" y2="593.5" stroke="white"/>
+<line id="Line 92" x1="816" y1="116.5" x2="858" y2="116.5" stroke="white"/>
+<line id="Line 99" x1="816" y1="81.5" x2="858" y2="81.5" stroke="white"/>
+<line id="Line 86" x1="826" y1="588.5" x2="863" y2="588.5" stroke="white"/>
+<line id="Line 93" x1="816" y1="111.5" x2="858" y2="111.5" stroke="white"/>
+<line id="Line 100" x1="816" y1="76.5" x2="858" y2="76.5" stroke="white"/>
+<line id="Line 87" x1="826" y1="583.5" x2="863" y2="583.5" stroke="white"/>
+<line id="Line 94" x1="816" y1="106.5" x2="858" y2="106.5" stroke="white"/>
+<line id="Line 101" x1="816" y1="71.5" x2="858" y2="71.5" stroke="white"/>
+<line id="Line 88" x1="826" y1="578.5" x2="863" y2="578.5" stroke="white"/>
+<line id="Line 95" x1="816" y1="101.5" x2="858" y2="101.5" stroke="white"/>
+<line id="Line 102" x1="816" y1="66.5" x2="858" y2="66.5" stroke="white"/>
+<line id="Line 89" x1="826" y1="573.5" x2="863" y2="573.5" stroke="white"/>
+<line id="Line 96" x1="816" y1="96.5" x2="858" y2="96.5" stroke="white"/>
+<line id="Line 103" x1="816" y1="61.5" x2="858" y2="61.5" stroke="white"/>
+<path id="Vector 2133" d="M770.5 222H868.5" stroke="black"/>
+<path id="Vector 2135" d="M659 126L660 51V48.5H543.5L253 14.5L303.5 47.5L355 106L414 111L528 122L659 126Z" fill="#DF4E4E" stroke="black" stroke-width="2"/>
+<rect id="Rectangle 534" x="425.632" y="100.715" width="11" height="11" transform="rotate(97.0276 425.632 100.715)" fill="black"/>
+<rect id="Rectangle 540" x="538" y="109" width="13" height="10" transform="rotate(90 538 109)" fill="black"/>
+<rect id="Rectangle 541" x="659" y="112" width="14" height="10" transform="rotate(90 659 112)" fill="black"/>
+<rect id="Rectangle 535" x="363.518" y="98.9473" width="10.758" height="9.87305" transform="rotate(143.613 363.518 98.9473)" fill="black"/>
+<rect id="Rectangle 536" x="318.771" y="46.5742" width="11" height="9.87305" transform="rotate(140.106 318.771 46.5742)" fill="black"/>
+<rect id="Rectangle 537" x="432.901" y="41.2715" width="11" height="5.85083" transform="rotate(-172.305 432.901 41.2715)" fill="black"/>
+<rect id="Rectangle 551" x="542.331" y="54.8008" width="10.4136" height="5.53893" transform="rotate(-172.796 542.331 54.8008)" fill="black"/>
+<rect id="Rectangle 552" x="659" y="54" width="10" height="5" transform="rotate(180 659 54)" fill="black"/>
+<path id="Vector 2136" d="M660 359L671 226V222H867.5V611.5H796L593.5 530L660 359Z" fill="#DF4E4E" stroke="black" stroke-width="2"/>
+<path id="Vector 2138" d="M273 403.499L225 384.5L311 186.5L341.277 195.941L365.5 199.5L273 403.499Z" fill="#DF4E4E"/>
+<path id="Vector 2137" d="M527.5 422.501L497.5 494.501L273 404.001L365.5 199.501C365.5 199.501 596.5 189.002 602.5 209.501C608.5 230 562 324.001 562 324.001L527.5 422.501Z" fill="#DF4E4E" stroke="black" stroke-width="2"/>
+<rect id="Rectangle 529" x="455.986" y="284.531" width="13.4142" height="10.0346" transform="rotate(111.45 455.986 284.531)" fill="black"/>
+<rect id="Rectangle 530" x="481.245" y="219.67" width="13.4142" height="10.0346" transform="rotate(111.45 481.245 219.67)" fill="black"/>
+<rect id="Rectangle 531" x="585.034" y="229" width="13.4142" height="10.0346" transform="rotate(90 585.034 229)" fill="black"/>
+<rect id="Rectangle 524" x="280.493" y="397" width="9" height="9" transform="rotate(22.8366 280.493 397)" fill="black"/>
+<rect id="Rectangle 525" x="304.011" y="336" width="9" height="9" transform="rotate(26.4656 304.011 336)" fill="black"/>
+<rect id="Rectangle 526" x="417.829" y="380.281" width="9" height="9" transform="rotate(108.23 417.829 380.281)" fill="black"/>
+<rect id="Rectangle 562" x="527.665" y="422.287" width="9" height="9" transform="rotate(111.416 527.665 422.287)" fill="black"/>
+<rect id="Rectangle 563" x="500.665" y="486.287" width="9" height="9" transform="rotate(111.416 500.665 486.287)" fill="black"/>
+<rect id="Rectangle 527" x="394.533" y="442.182" width="9" height="9" transform="rotate(111.853 394.533 442.182)" fill="black"/>
+<rect id="Rectangle 528" x="561.745" y="324.266" width="13.4142" height="10.0346" transform="rotate(108.23 561.745 324.266)" fill="black"/>
+<rect id="Rectangle 532" x="374.773" y="254.975" width="9" height="8" transform="rotate(111.832 374.773 254.975)" fill="black"/>
+<rect id="Rectangle 533" x="386.475" y="200.488" width="9" height="9" transform="rotate(93.1092 386.475 200.488)" fill="black"/>
+<path id="Vector 2139" d="M320.5 298.5L271 279L225 384.5L273 403L320.5 298.5Z" fill="black" stroke="black"/>
+<rect id="Rectangle 542" x="681" y="226" width="14" height="10" transform="rotate(90 681 226)" fill="black"/>
+<rect id="Rectangle 543" x="694.732" y="305.016" width="14" height="10" transform="rotate(120 694.732 305.016)" fill="black"/>
+<rect id="Rectangle 544" x="669.124" y="362.463" width="14" height="10" transform="rotate(110.861 669.124 362.463)" fill="black"/>
+<rect id="Rectangle 545" x="629.227" y="463.502" width="8.6401" height="8.38368" transform="rotate(114.693 629.227 463.502)" fill="black"/>
+<rect id="Rectangle 546" x="603.25" y="527.092" width="6.06055" height="8.16808" transform="rotate(110.921 603.25 527.092)" fill="black"/>
+<rect id="Rectangle 547" x="709.396" y="570.615" width="6.06055" height="8.65618" transform="rotate(114.693 709.396 570.615)" fill="black"/>
+<rect id="Rectangle 548" x="735.381" y="502.914" width="9.23595" height="9.43777" transform="rotate(113.38 735.381 502.914)" fill="black"/>
+<rect id="Rectangle 549" x="798.279" y="604.188" width="6.92599" height="9.29344" transform="rotate(113.38 798.279 604.188)" fill="black"/>
+<rect id="Rectangle 550" x="770.364" y="409.621" width="10.0574" height="9.12262" transform="rotate(113.38 770.364 409.621)" fill="black"/>
+<rect id="Rectangle 565" x="799.123" y="322" width="10.0574" height="9.12262" transform="rotate(90 799.123 322)" fill="black"/>
+<rect id="Rectangle 567" x="799.123" y="234" width="10.0574" height="9.12262" transform="rotate(90 799.123 234)" fill="black"/>
+<rect id="Rectangle 568" x="867.123" y="234" width="10.0574" height="9.12262" transform="rotate(90 867.123 234)" fill="black"/>
+<rect id="Rectangle 566" x="865.123" y="342" width="10.0574" height="9.12262" transform="rotate(90 865.123 342)" fill="black"/>
+<rect id="Rectangle 564" x="866.123" y="451" width="10.0574" height="9.12262" transform="rotate(90 866.123 451)" fill="black"/>
+<path id="Rectangle 556" d="M862 296.686V234.972V222H870V295.113V296.686V347H862V296.686Z" fill="black"/>
+<path id="Vector 1982" d="M870 527.5H820V613.134L870 613V527.5Z" fill="black"/>
+<path id="Vector 2003" d="M867 527.5V347" stroke="#8FB6F9" stroke-width="6"/>
+<line id="Line 104" x1="824" y1="606.5" x2="866" y2="606.5" stroke="white"/>
+<line id="Line 105" x1="824" y1="601.5" x2="866" y2="601.5" stroke="white"/>
+<line id="Line 106" x1="824" y1="596.5" x2="866" y2="596.5" stroke="white"/>
+<line id="Line 107" x1="824" y1="591.5" x2="866" y2="591.5" stroke="white"/>
+<line id="Line 108" x1="824" y1="586.5" x2="866" y2="586.5" stroke="white"/>
+<line id="Line 109" x1="824" y1="581.5" x2="866" y2="581.5" stroke="white"/>
+<rect id="Rectangle 627" x="235.165" y="16" width="50.7836" height="24" transform="rotate(30.4561 235.165 16)" fill="url(#paint0_linear_2_3891)"/>
+<rect id="Rectangle 629" x="508" y="477.82" width="50.7836" height="24" transform="rotate(-67.212 508 477.82)" fill="url(#paint1_linear_2_3891)"/>
+<rect id="Rectangle 647" x="634" y="613.266" width="50.7836" height="24" transform="rotate(-68.55 634 613.266)" fill="url(#paint2_linear_2_3891)"/>
+<rect id="Rectangle 648" x="661" y="624.266" width="50.7836" height="24" transform="rotate(-68.55 661 624.266)" fill="url(#paint3_linear_2_3891)"/>
+<rect id="Rectangle 649" x="688" y="635.266" width="50.7836" height="24" transform="rotate(-68.55 688 635.266)" fill="url(#paint4_linear_2_3891)"/>
+<rect id="Rectangle 650" x="715" y="646.266" width="50.7836" height="24" transform="rotate(-68.55 715 646.266)" fill="url(#paint5_linear_2_3891)"/>
+<rect id="Rectangle 651" x="742" y="657.266" width="50.7836" height="24" transform="rotate(-68.55 742 657.266)" fill="url(#paint6_linear_2_3891)"/>
+<rect id="Rectangle 628" x="165" y="15.9238" width="50.7836" height="24" transform="rotate(-6.6996 165 15.9238)" fill="url(#paint7_linear_2_3891)"/>
+<rect id="Rectangle 645" x="580" y="591.266" width="50.7836" height="24" transform="rotate(-68.5465 580 591.266)" fill="url(#paint8_linear_2_3891)"/>
+<rect id="Rectangle 646" x="607" y="602.266" width="50.7836" height="24" transform="rotate(-68.5465 607 602.266)" fill="url(#paint9_linear_2_3891)"/>
+<path id="Vector 2142" d="M740 137.5H745" stroke="black"/>
+<path id="Vector 2148" d="M760 138.5L862 138.5" stroke="black"/>
+<path id="Vector 2149" d="M741 138.5H745" stroke="black"/>
+<path id="Vector 2144" d="M760 137.5L764 137.5" stroke="black"/>
+<path id="Vector 2145" d="M701 29V69" stroke="black" stroke-width="2"/>
+<rect id="Rectangle 637" x="428" y="536.232" width="55.1626" height="26.0695" transform="rotate(-68.2414 428 536.232)" fill="url(#paint10_linear_2_3891)"/>
+<rect id="Rectangle 638" x="398" y="524.232" width="55.1626" height="26.0695" transform="rotate(-68.2414 398 524.232)" fill="url(#paint11_linear_2_3891)"/>
+<rect id="Rectangle 639" x="367" y="512.232" width="55.1626" height="26.0695" transform="rotate(-68.2414 367 512.232)" fill="url(#paint12_linear_2_3891)"/>
+<rect id="Rectangle 640" x="337" y="500.232" width="55.1626" height="26.0695" transform="rotate(-68.2414 337 500.232)" fill="url(#paint13_linear_2_3891)"/>
+<rect id="Rectangle 641" x="307" y="488.232" width="55.1626" height="26.0695" transform="rotate(-68.2414 307 488.232)" fill="url(#paint14_linear_2_3891)"/>
+<rect id="Rectangle 642" x="277" y="476.232" width="55.1626" height="26.0695" transform="rotate(-68.2414 277 476.232)" fill="url(#paint15_linear_2_3891)"/>
+<rect id="Rectangle 643" x="137" y="426" width="55.1626" height="26.0695" fill="url(#paint16_linear_2_3891)"/>
+<rect id="Rectangle 644" x="137" y="456" width="55.1626" height="26.0695" fill="url(#paint17_linear_2_3891)"/>
+<rect id="Rectangle 653" x="742.5" y="77.5" width="20" height="23" fill="black" stroke="black"/>
+<path id="Rectangle 654" d="M747 45H760V49.6295H747V45Z" fill="white"/>
+<path id="Vector 2150" d="M753.5 40L753.5 55" stroke="black" stroke-width="2"/>
+<g id="room_101">
+<path id="poly" d="M252 163.5L311 186.5L292 230.5L269 281.5L224.5 385L196 376.5C133.5 381.5 72.4996 343 53.9996 316.5L152 235C193.039 204.93 210.961 193.57 252 163.5Z" fill="#375A6D"/>
+<path id="label_lock" d="M171.8 301V298C171.8 297.489 171.834 296.989 171.9 296.5M186.2 301V298C186.2 296.172 185.755 294.387 184.923 292.884C184.092 291.38 182.914 290.228 181.545 289.581C180.177 288.935 178.684 288.825 177.265 289.265C175.846 289.706 174.567 290.676 173.6 292.047M177.8 319H174.2C170.806 319 169.108 319 168.055 317.682C167 316.365 167 314.242 167 310C167 305.758 167 303.636 168.055 302.319C169.108 301 170.806 301 174.2 301H183.8C187.194 301 188.892 301 189.945 302.319C191 303.636 191 305.758 191 310C191 314.242 191 316.365 189.945 317.682C188.892 319 187.194 319 183.8 319H182.6" stroke="#EADB5A" stroke-linecap="round"/>
+<text id="label_price" transform="translate(91 293)" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="16" letter-spacing="0em"><tspan x="0" y="15.736">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
+<text id="label_area" transform="translate(159 344)" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="14" letter-spacing="0em"><tspan x="0" y="13.519">00,00 &#x43c;&#xb2;</tspan></text>
+<text id="label_name" transform="translate(220 259.998)" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="18" letter-spacing="0em"><tspan x="0" y="17.453">101</tspan></text>
+<g id="label_busy">
+<path id="form" d="M203.608 263.391L212.392 263.391L216.785 270.999L212.392 278.606L203.608 278.606L199.215 270.999L203.608 263.391Z" fill="url(#paint18_radial_2_3891)"/>
+<text id="&#209;&#129;&#208;&#180;&#208;&#176;&#208;&#189;" transform="translate(200 265.999)" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="6" font-weight="500" letter-spacing="0em"><tspan x="0" y="5.651">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+</g>
+</g>
+<path id="Subtract_2" d="M800.649 610.813L797.351 619.187L589.191 537.174L592.35 528.745L800.649 610.813ZM499.056 491.988L495.814 500.384L198.351 383.187L201.649 374.813L499.056 491.988Z" fill="#8FB6F9"/>
+<path id="Vector 2146" d="M554.713 492.604L536.872 534.193" stroke="black" stroke-width="3"/>
+<path id="Vector 2151" d="M516.857 490L508 510.647" stroke="black" stroke-width="2"/>
+<circle id="Ellipse 2" cx="196.408" cy="191.389" r="61.5" transform="rotate(3.22461 196.408 191.389)" fill="#DF4E4E" stroke="black"/>
+<text id="WC" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="10" letter-spacing="0em"><tspan x="743" y="92.585">WC</tspan></text>
+</g>
+<defs>
+<linearGradient id="paint0_linear_2_3891" x1="289.298" y1="26.5119" x2="274.621" y2="18.3211" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint1_linear_2_3891" x1="562.133" y1="488.332" x2="547.456" y2="480.141" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint2_linear_2_3891" x1="688.133" y1="623.777" x2="673.456" y2="615.587" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint3_linear_2_3891" x1="715.133" y1="634.777" x2="700.456" y2="626.587" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint4_linear_2_3891" x1="742.133" y1="645.777" x2="727.456" y2="637.587" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint5_linear_2_3891" x1="769.133" y1="656.777" x2="754.456" y2="648.587" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint6_linear_2_3891" x1="796.133" y1="667.777" x2="781.456" y2="659.587" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint7_linear_2_3891" x1="191.885" y1="27.6366" x2="214.316" y2="42.4469" gradientUnits="userSpaceOnUse">
+<stop offset="0.5" stop-color="#FDD24F"/>
+<stop offset="0.5"/>
+</linearGradient>
+<linearGradient id="paint8_linear_2_3891" x1="606.885" y1="602.978" x2="629.316" y2="617.789" gradientUnits="userSpaceOnUse">
+<stop offset="0.5" stop-color="#FDD24F"/>
+<stop offset="0.5"/>
+</linearGradient>
+<linearGradient id="paint9_linear_2_3891" x1="633.885" y1="613.978" x2="656.316" y2="628.789" gradientUnits="userSpaceOnUse">
+<stop offset="0.5" stop-color="#FDD24F"/>
+<stop offset="0.5"/>
+</linearGradient>
+<linearGradient id="paint10_linear_2_3891" x1="486.8" y1="547.651" x2="470.858" y2="538.754" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint11_linear_2_3891" x1="456.8" y1="535.651" x2="440.858" y2="526.754" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint12_linear_2_3891" x1="425.8" y1="523.651" x2="409.858" y2="514.754" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint13_linear_2_3891" x1="395.8" y1="511.651" x2="379.858" y2="502.754" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint14_linear_2_3891" x1="365.8" y1="499.651" x2="349.858" y2="490.754" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint15_linear_2_3891" x1="335.8" y1="487.651" x2="319.858" y2="478.754" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint16_linear_2_3891" x1="195.8" y1="437.418" x2="179.858" y2="428.521" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<linearGradient id="paint17_linear_2_3891" x1="195.8" y1="467.418" x2="179.858" y2="458.521" gradientUnits="userSpaceOnUse">
+<stop offset="0.5"/>
+<stop offset="0.5" stop-color="#DF4E4E"/>
+</linearGradient>
+<radialGradient id="paint18_radial_2_3891" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(212.518 267.987) rotate(130.972) scale(12.632)">
+<stop stop-color="#03CF21"/>
+<stop offset="0.706731" stop-color="#20CDED"/>
+</radialGradient>
+</defs>
+</svg>

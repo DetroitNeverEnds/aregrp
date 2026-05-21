@@ -320,7 +320,19 @@ jobs:
                       echo "Образы compose (размер на диске после pull):"
                       docker compose images || true
 
-                      docker image prune -f
+                      echo ""
+                      echo "=== Docker disk usage (before cleanup) ==="
+                      docker system df || true
+
+                      # Чистим неиспользуемые ресурсы, оставляя актуальные запущенные контейнеры.
+                      docker image prune -af --filter "until=168h"
+                      docker builder prune -af --filter "until=168h"
+                      docker container prune -f
+                      docker volume prune -f
+
+                      echo ""
+                      echo "=== Docker disk usage (after cleanup) ==="
+                      docker system df || true
 
             - name: Параметры запуска (workflow)
               if: always()

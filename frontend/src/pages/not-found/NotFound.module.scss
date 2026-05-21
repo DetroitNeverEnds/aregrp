@@ -1,0 +1,16 @@
+.container {
+    min-height: 60vh;
+
+    .content {
+        max-width: 480px;
+        text-align: center;
+
+        &__code {
+            font-size: 160px;
+            line-height: 1;
+            font-weight: 700;
+            color: $gray-20;
+            user-select: none;
+        }
+    }
+}
