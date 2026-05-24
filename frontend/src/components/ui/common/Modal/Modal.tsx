@@ -49,11 +49,7 @@ export const Modal: React.FC<ModalProps> = ({
     }
 
     return createPortal(
-        <Flex
-            justify="center"
-            align="center"
-            className={classNames(styles.root, rootClassName)}
-        >
+        <Flex justify="center" align="center" className={classNames(styles.root, rootClassName)}>
             <div className={styles.backdrop} onClick={closeOnBackdropClick ? onClose : undefined} />
             <Flex className={classNames(styles.panel, panelClassName)}>
                 <Flex direction="row" justify="end" fullWidth className={styles.header}>
