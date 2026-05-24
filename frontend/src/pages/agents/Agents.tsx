@@ -93,15 +93,13 @@ const Welcome = ({ scrollToFeedback }: { scrollToFeedback: () => void }) => {
                                 )}
                             </Flex>
                         </Flex>
-                        {agentSettings?.table_link && (
-                            <Link
-                                to={agentSettings.table_link}
-                                leadingIcon="download-rounded"
-                                theme="light"
-                            >
-                                Таблица комиссий
-                            </Link>
-                        )}
+                        <Link
+                            to={agentSettings?.table_link || ''}
+                            leadingIcon="download-rounded"
+                            theme="light"
+                        >
+                            Таблица комиссий
+                        </Link>
                     </Flex>
                 </Flex>
                 <PercentageIcon />

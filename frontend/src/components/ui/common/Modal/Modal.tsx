@@ -5,6 +5,7 @@ import styles from './Modal.module.scss';
 import { Flex, type FlexProps } from '@/components/ui/common/Flex';
 import Icon from '@/components/ui/common/Icon';
 import FlatButton from '@/components/ui/common/FlatButton';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export interface ModalProps extends FlexProps {
     open: boolean;
@@ -41,23 +42,18 @@ export const Modal: React.FC<ModalProps> = ({
         return () => document.removeEventListener('keydown', onKeyDown);
     }, [open, onClose]);
 
-    useEffect(() => {
-        if (!open || !lockBodyScroll) {
-            return;
-        }
-        const previous = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = previous;
-        };
-    }, [open, lockBodyScroll]);
+    useBodyScrollLock(open && lockBodyScroll);
 
     if (!open) {
         return null;
     }
 
     return createPortal(
-        <Flex justify="center" align="center" className={classNames(styles.root, rootClassName)}>
+        <Flex
+            justify="center"
+            align="center"
+            className={classNames(styles.root, rootClassName)}
+        >
             <div className={styles.backdrop} onClick={closeOnBackdropClick ? onClose : undefined} />
             <Flex className={classNames(styles.panel, panelClassName)}>
                 <Flex direction="row" justify="end" fullWidth className={styles.header}>
