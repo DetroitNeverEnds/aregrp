@@ -214,6 +214,7 @@ jobs:
                   REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}
                   TAG: ${{ env.TAG }}
                   VITE_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
+                  VITE_YANDEX_METRIKA_ID: ${{ secrets.YANDEX_METRIKA_ID }}
               run: |
                   echo "🔨 Building from branch: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}"
                   echo "📦 Merged PRs:${{ needs.merge-prs.outputs.pr_list || '(нет)' }}"
@@ -304,6 +305,7 @@ jobs:
                       export REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
                       export TAG=${{ env.TAG }}
                       export VITE_YANDEX_MAPS_API_KEY=${{ secrets.YANDEX_MAPS_API_KEY }}
+                      export VITE_YANDEX_METRIKA_ID=${{ secrets.YANDEX_METRIKA_ID }}
 
                       PULL_UP_START=$(date +%s)
                       docker compose pull
