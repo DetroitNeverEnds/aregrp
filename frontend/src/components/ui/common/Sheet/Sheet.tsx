@@ -5,6 +5,7 @@ import styles from './Sheet.module.scss';
 import { Flex, type FlexProps } from '@/components/ui/common/Flex';
 import Icon from '@/components/ui/common/Icon';
 import FlatButton from '@/components/ui/common/FlatButton';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export interface SheetProps extends FlexProps {
     /** Открыт ли лист */
@@ -51,16 +52,7 @@ export const Sheet: React.FC<SheetProps> = ({
         return () => document.removeEventListener('keydown', onKeyDown);
     }, [open, onClose]);
 
-    useEffect(() => {
-        if (!open || !lockBodyScroll) {
-            return;
-        }
-        const previous = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = previous;
-        };
-    }, [open, lockBodyScroll]);
+    useBodyScrollLock(open && lockBodyScroll);
 
     if (!open) {
         return null;

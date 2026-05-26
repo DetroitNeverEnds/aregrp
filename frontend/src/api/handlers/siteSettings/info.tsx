@@ -11,6 +11,8 @@ export type InfoResponse = {
     inn?: string | null;
     org_name?: string | null;
     cases?: string | null;
+    privacy_pdf?: string | null;
+    oplata_pdf?: string | null;
 };
 
 export const siteInfo = api.get<void, InfoResponse>('/site-settings/main-info');

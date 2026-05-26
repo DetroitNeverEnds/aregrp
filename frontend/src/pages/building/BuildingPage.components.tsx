@@ -439,6 +439,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             )
                         }
                         gap={20}
+                        lockBodyScroll
                     >
                         <QueryBoundary
                             query={selectedPremiseQ}

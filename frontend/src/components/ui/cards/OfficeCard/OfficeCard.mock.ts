@@ -17,7 +17,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '150',
         floor_id: '2',
         has_tenant: false,
-        media: [{ type: 'photo', url: image1 }],
+        media: [{ type: 'photo', url: image1, full_url: image1 }],
     },
     {
         uuid: '2',
@@ -28,7 +28,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '85',
         floor_id: '1',
         has_tenant: false,
-        media: [{ type: 'photo', url: image2 }],
+        media: [{ type: 'photo', url: image2, full_url: image2 }],
     },
     {
         uuid: '3',
@@ -39,7 +39,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '200',
         floor_id: '3',
         has_tenant: false,
-        media: [{ type: 'photo', url: image3 }],
+        media: [{ type: 'photo', url: image3, full_url: image3 }],
     },
     {
         uuid: '4',
@@ -50,7 +50,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '120',
         floor_id: '1',
         has_tenant: false,
-        media: [{ type: 'photo', url: image4 }],
+        media: [{ type: 'photo', url: image4, full_url: image4 }],
     },
     {
         uuid: '5',
@@ -61,7 +61,7 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '180',
         floor_id: '2',
         has_tenant: false,
-        media: [{ type: 'photo', url: image5 }],
+        media: [{ type: 'photo', url: image5, full_url: image5 }],
     },
     {
         uuid: '6',
@@ -72,6 +72,6 @@ export const mockOfficeCards: PremiseListItem[] = [
         area: '95',
         floor_id: '1',
         has_tenant: false,
-        media: [{ type: 'photo', url: image5 }],
+        media: [{ type: 'photo', url: image5, full_url: image5 }],
     },
 ];

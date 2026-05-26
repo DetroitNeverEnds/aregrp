@@ -6,7 +6,7 @@ export interface BaseMediaItem {
     /** Превью для галереи */
     url: string;
     /** Полноразмерное фото или видео для полного просмотра */
-    full_url?: string;
+    full_url: string;
 }
 
 export type SaleType = 'sale' | 'rent';
