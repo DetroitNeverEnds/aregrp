@@ -248,12 +248,14 @@
             "generateLinkModal": {
                 "objectLabel": "Объект:",
                 "sectionTitle": "Создание ссылки",
-                "clientNamePlaceholder": "Имя клиента",
                 "phonePlaceholder": "Телефон",
                 "closeAria": "Закрыть",
+                "successTitle": "Ссылка создана",
+                "successHint": "Отправьте ссылку клиенту. При переходе по ней реферал будет учтён при бронировании.",
+                "copyLink": "Скопировать ссылку",
+                "copyDone": "Ссылка скопирована",
+                "errorGeneric": "Не удалось создать ссылку. Попробуйте позже.",
                 "validation": {
-                    "clientNameRequired": "Укажите имя клиента",
-                    "clientNameMin": "Минимум 2 символа",
                     "phoneRequired": "Укажите телефон",
                     "phoneMin": "Минимум 5 символов"
                 }

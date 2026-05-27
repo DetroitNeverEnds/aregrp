@@ -4,6 +4,7 @@ import { useI18nReady } from '@/i18n/hooks';
 import { queryClient } from '@/lib/queryClient';
 import '../../lib/apiClient';
 import { Loader } from '@/components/ui/common/Loader';
+import { ReferralCapture } from '@/components/ReferralCapture';
 import { YandexMetrika } from '@/components/YandexMetrika';
 import styles from './AppWrapper.module.scss';
 import { QueryWaiter } from './queryWaiter';
@@ -46,6 +47,7 @@ export const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
             <I18nReadyGuard>
                 <QueryClientProvider client={queryClient}>
                     <QueryWaiter>
+                        <ReferralCapture />
                         <YandexMetrika />
                         {children}
                     </QueryWaiter>

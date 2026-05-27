@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -9,16 +9,18 @@ import Form from '@/components/ui/common/Form';
 import { TextInput } from '@/components/ui/common/input/TextInput';
 import { Modal } from '@/components/ui/common/Modal';
 import Text from '@/components/ui/common/Text';
+import { useCreateReferralLinkMutation } from '@/mutations';
 
 import styles from './GenerateLinkModal.module.scss';
 
 export type GenerateLinkFormValues = {
-    clientName: string;
     phone: string;
 };
 
 type GenerateLinkModalContentProps = {
     premise: PremiseDetail;
+    generatedUrl: string | null;
+    onGeneratedUrl: (url: string) => void;
 };
 
 const formatRubles = (value: number | null | undefined) => {
@@ -33,21 +35,95 @@ const formatRubles = (value: number | null | undefined) => {
     }).format(value);
 };
 
-const GenerateLinkModalContent = ({ premise }: GenerateLinkModalContentProps) => {
+const copyToClipboard = async (text: string): Promise<boolean> => {
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
+const GenerateLinkModalContent = ({
+    premise,
+    generatedUrl,
+    onGeneratedUrl,
+}: GenerateLinkModalContentProps) => {
     const { t } = useTranslation();
+    const [copyDone, setCopyDone] = useState(false);
 
     const { control, handleSubmit } = useForm<GenerateLinkFormValues>({
-        defaultValues: { clientName: '', phone: '' },
+        defaultValues: { phone: '' },
         mode: 'onSubmit',
     });
 
+    const createReferralLinkM = useCreateReferralLinkMutation();
+
     const onSubmit = useCallback(
-        (data: GenerateLinkFormValues) => {
-            // TODO: вызов API генерации ссылки для агента
-            console.log({ data, premise });
+        async (data: GenerateLinkFormValues) => {
+            createReferralLinkM.reset();
+            setCopyDone(false);
+
+            try {
+                const result = await createReferralLinkM.mutateAsync({
+                    premise_uuid: premise.uuid,
+                    phone: data.phone,
+                });
+                onGeneratedUrl(result.url);
+            } catch {
+                return;
+            }
         },
-        [premise],
+        [createReferralLinkM, onGeneratedUrl, premise.uuid],
     );
+
+    const onCopyClick = useCallback(async () => {
+        if (!generatedUrl) {
+            return;
+        }
+        const ok = await copyToClipboard(generatedUrl);
+        if (ok) {
+            setCopyDone(true);
+        }
+    }, [generatedUrl]);
+
+    const errorMessage =
+        createReferralLinkM.error &&
+        t(`auth.errors.${createReferralLinkM.error.code}`, {
+            defaultValue: createReferralLinkM.error.detail,
+        });
+
+    if (generatedUrl) {
+        return (
+            <Flex direction="column" gap={20} fullWidth align="start" className={styles.content}>
+                <Text variant="24-med" color="gray-100">
+                    {t('pages.building.generateLinkModal.successTitle')}
+                </Text>
+                <Text variant="14-reg">{t('pages.building.generateLinkModal.successHint')}</Text>
+                <TextInput
+                    size="lg"
+                    width="max"
+                    value={generatedUrl}
+                    onChange={() => {}}
+                    readOnly
+                    clearable={false}
+                />
+                {copyDone && (
+                    <Text variant="14-reg">{t('pages.building.generateLinkModal.copyDone')}</Text>
+                )}
+                <Button
+                    variant="primary"
+                    theme="light"
+                    size="lg"
+                    width="max"
+                    type="button"
+                    onClick={onCopyClick}
+                >
+                    {t('pages.building.generateLinkModal.copyLink')}
+                </Button>
+            </Flex>
+        );
+    }
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)} className={styles.content}>
@@ -85,30 +161,6 @@ const GenerateLinkModalContent = ({ premise }: GenerateLinkModalContentProps) =>
             </Text>
             <Flex direction="column" gap={8} fullWidth>
                 <Controller
-                    name="clientName"
-                    control={control}
-                    rules={{
-                        required: t(
-                            'pages.building.generateLinkModal.validation.clientNameRequired',
-                        ),
-                        minLength: {
-                            value: 2,
-                            message: t('pages.building.generateLinkModal.validation.clientNameMin'),
-                        },
-                    }}
-                    render={({ field, fieldState }) => (
-                        <TextInput
-                            size="lg"
-                            width="max"
-                            placeholder={t(
-                                'pages.building.generateLinkModal.clientNamePlaceholder',
-                            )}
-                            {...field}
-                            errorMessage={fieldState.error?.message}
-                        />
-                    )}
-                />
-                <Controller
                     name="phone"
                     control={control}
                     rules={{
@@ -125,11 +177,24 @@ const GenerateLinkModalContent = ({ premise }: GenerateLinkModalContentProps) =>
                             placeholder={t('pages.building.generateLinkModal.phonePlaceholder')}
                             {...field}
                             errorMessage={fieldState.error?.message}
+                            disabled={createReferralLinkM.isPending}
                         />
                     )}
                 />
+                {errorMessage && (
+                    <Text variant="14-reg" color="error-default">
+                        {errorMessage}
+                    </Text>
+                )}
             </Flex>
-            <Button variant="primary" theme="light" size="lg" width="max" type="submit">
+            <Button
+                variant="primary"
+                theme="light"
+                size="lg"
+                width="max"
+                type="submit"
+                disabled={createReferralLinkM.isPending}
+            >
                 {t('pages.building.generateLink')}
             </Button>
         </Form>
@@ -144,10 +209,20 @@ export type GenerateLinkModalProps = {
 
 export const GenerateLinkModal = (props: GenerateLinkModalProps) => {
     const { open, onClose, premise } = props;
+    const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
+
+    const handleClose = useCallback(() => {
+        setGeneratedUrl(null);
+        onClose();
+    }, [onClose]);
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <GenerateLinkModalContent premise={premise} />
+        <Modal open={open} onClose={handleClose}>
+            <GenerateLinkModalContent
+                premise={premise}
+                generatedUrl={generatedUrl}
+                onGeneratedUrl={setGeneratedUrl}
+            />
         </Modal>
     );
 };

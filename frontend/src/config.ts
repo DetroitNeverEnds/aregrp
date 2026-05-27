@@ -15,6 +15,20 @@ const Config = {
          */
         boundRatio: 0.3,
     },
+
+    referral: {
+        /** Query-параметр реферального кода в URL */
+        searchParam: 'ref',
+        /** Имя cookie для передачи кода на бэкенд при оплате (совпадает с REFERRAL_CODE_COOKIE_NAME) */
+        cookieName: 'referral_code',
+        /** Срок жизни cookie реферала, дней */
+        cookieDays: 7,
+        /** Паттерн валидного UUID реферального кода */
+        codeUuidPattern:
+            '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+        cookiePath: '/',
+        cookieSameSite: 'lax' as const,
+    },
 };
 
 export default Config;

@@ -48,6 +48,7 @@ class ReferralLinkEndpointTests(TestCase):
         body = response.json()
         self.assertEqual(body['premise_uuid'], str(self.premise.uuid))
         self.assertIn('?ref=', body['url'])
+        self.assertIn(f'selectedPremise={self.premise.uuid}', body['url'])
 
         link = ReferralLink.objects.get(code=body['code'])
         self.assertEqual(link.referrer_id, self.user.id)
