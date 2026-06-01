@@ -253,3 +253,14 @@ PAYMENTS_ACCOUNT_ID = config('PAYMENTS_ACCOUNT_ID', default='')
 PAYMENTS_SECRET_KEY = config('PAYMENTS_SECRET_KEY', default='')
 PAYMENTS_REDIRECT_URL = config('PAYMENTS_REDIRECT_URL', default='https://www.example.com/return_url')
 PAYMENTS_BOOKING_AMOUNT = config('PAYMENTS_BOOKING_AMOUNT', cast=int, default=10000)
+# Чек 54-ФЗ (обязателен, если в ЛК ЮKassa включена онлайн-касса)
+PAYMENTS_RECEIPT_ENABLED = config('PAYMENTS_RECEIPT_ENABLED', cast=bool, default=True)
+PAYMENTS_RECEIPT_ITEM_DESCRIPTION = config(
+    'PAYMENTS_RECEIPT_ITEM_DESCRIPTION',
+    default='Оплата за бронирование помещения',
+)
+# УСН (доход): tax_system_code=2; НДС 5%: vat_code=7
+PAYMENTS_RECEIPT_VAT_CODE = config('PAYMENTS_RECEIPT_VAT_CODE', cast=int, default=7)
+PAYMENTS_RECEIPT_TAX_SYSTEM_CODE = config('PAYMENTS_RECEIPT_TAX_SYSTEM_CODE', cast=int, default=2)
+PAYMENTS_RECEIPT_PAYMENT_MODE = config('PAYMENTS_RECEIPT_PAYMENT_MODE', default='full_prepayment')
+PAYMENTS_RECEIPT_PAYMENT_SUBJECT = config('PAYMENTS_RECEIPT_PAYMENT_SUBJECT', default='service')

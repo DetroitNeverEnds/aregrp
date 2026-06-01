@@ -92,6 +92,15 @@ class PaymentsCreateEndpointTests(TestCase):
         self.assertEqual(payload['metadata']['premise_id'], str(self.premise.id))
         self.assertEqual(payload['metadata']['premise_uuid'], str(self.premise.uuid))
         self.assertIn('payment_token', payload['metadata'])
+        self.assertIn('receipt', payload)
+        self.assertEqual(payload['receipt']['customer']['email'], self.user.email)
+        self.assertEqual(payload['receipt']['tax_system_code'], 2)
+        item = payload['receipt']['items'][0]
+        self.assertEqual(item['description'], 'Оплата за бронирование помещения')
+        self.assertEqual(item['amount']['value'], '10000.00')
+        self.assertEqual(item['vat_code'], 7)
+        self.assertEqual(item['payment_subject'], 'service')
+        self.assertEqual(item['payment_mode'], 'full_prepayment')
 
     @patch('apps.payments.services.YooKassaPayment.create')
     def test_create_payment_yookassa_error(self, payment_create_mock):

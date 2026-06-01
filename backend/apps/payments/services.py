@@ -38,6 +38,29 @@ def _is_positive_int_string(value: str) -> bool:
     return value.isdigit() and int(value) > 0
 
 
+def _build_receipt(customer_email: str, amount_value: str) -> dict:
+    """Чек: email покупателя + одна позиция (название и сумма из настроек)."""
+    return {
+        'customer': {
+            'email': customer_email,
+        },
+        'items': [
+            {
+                'description': settings.PAYMENTS_RECEIPT_ITEM_DESCRIPTION,
+                'quantity': '1.00',
+                'amount': {
+                    'value': amount_value,
+                    'currency': 'RUB',
+                },
+                'vat_code': settings.PAYMENTS_RECEIPT_VAT_CODE,
+                'payment_mode': settings.PAYMENTS_RECEIPT_PAYMENT_MODE,
+                'payment_subject': settings.PAYMENTS_RECEIPT_PAYMENT_SUBJECT,
+            },
+        ],
+        'tax_system_code': settings.PAYMENTS_RECEIPT_TAX_SYSTEM_CODE,
+    }
+
+
 def _build_payment_description(premise: Premise) -> str:
     building_address = (premise.building.address or '').strip()
     premise_name = (premise.title or '').strip()
@@ -165,6 +188,19 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
             ),
         )
 
+    user = get_user_model().objects.filter(pk=user_id).first()
+    if user is None:
+        return None, (
+            502,
+            create_payments_error(
+                status=502,
+                code=PaymentsErrorCodes.CREATION_ERROR,
+                title='User not found',
+                detail='Authenticated user record is missing',
+                instance='/api/v1/payments/',
+            ),
+        )
+
     amount_value = _build_amount_value()
     description = _build_payment_description(premise)
     idempotence_key = uuid.uuid4()
@@ -175,21 +211,37 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
         'premise_uuid': str(premise.uuid),
     }
 
+    payment_payload: dict = {
+        'amount': {
+            'value': amount_value,
+            'currency': 'RUB',
+        },
+        'confirmation': {
+            'type': 'redirect',
+            'return_url': settings.PAYMENTS_REDIRECT_URL,
+        },
+        'capture': True,
+        'description': description,
+        'metadata': metadata,
+    }
+    if settings.PAYMENTS_RECEIPT_ENABLED:
+        customer_email = (user.email or '').strip()
+        if not customer_email:
+            return None, (
+                400,
+                create_payments_error(
+                    status=400,
+                    code=PaymentsErrorCodes.CREATION_ERROR,
+                    title='Receipt customer email required',
+                    detail='User email is required to create a fiscal receipt',
+                    instance='/api/v1/payments/',
+                ),
+            )
+        payment_payload['receipt'] = _build_receipt(customer_email, amount_value)
+
     try:
         payment = YooKassaPayment.create(
-            {
-                'amount': {
-                    'value': amount_value,
-                    'currency': 'RUB',
-                },
-                'confirmation': {
-                    'type': 'redirect',
-                    'return_url': settings.PAYMENTS_REDIRECT_URL,
-                },
-                'capture': True,
-                'description': description,
-                'metadata': metadata,
-            },
+            payment_payload,
             str(idempotence_key),
         )
     except Exception as exc:
