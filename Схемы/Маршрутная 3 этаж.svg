@@ -211,16 +211,16 @@
 <text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_13" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="351" y="650.907">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
 </g>
 </g>
-<g id="room_301_2">
+<g id="room_301_hall">
 <path id="poly_14" d="M392.516 790V648.67C392.516 643.147 396.993 638.67 402.516 638.67H461.934C467.456 638.67 471.934 643.147 471.934 648.67V790C471.934 795.523 467.456 800 461.934 800H402.516C396.993 800 392.516 795.523 392.516 790Z" fill="#375A6D"/>
 <path id="Rectangle 546" d="M419 803V797H404V803H419Z" fill="#8FB6F9"/>
 <path id="label_lock_14" d="M426 709V706.5C426 706.074 426.028 705.658 426.083 705.25M438 709V706.5C438 704.977 437.629 703.49 436.936 702.236C436.243 700.983 435.262 700.023 434.121 699.485C432.981 698.946 431.737 698.854 430.554 699.221C429.372 699.588 428.306 700.397 427.5 701.539M431 724H428C425.172 724 423.757 724 422.879 722.901C422 721.804 422 720.035 422 716.5C422 712.965 422 711.197 422.879 710.099C423.757 709 425.172 709 428 709H436C438.828 709 440.243 709 441.121 710.099C442 711.197 442 712.965 442 716.5C442 720.035 442 721.804 441.121 722.901C440.243 724 438.828 724 436 724H435" stroke="#EADB5A" stroke-linecap="round"/>
 <text id="label_price_14" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="11" letter-spacing="0em"><tspan x="398" y="716.886">&#x446;&#x435;&#x43d;&#x430;</tspan></text>
 <text id="label_area_14" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="417" y="793.604">00,00 &#x43c;&#xb2;</tspan></text>
-<text id="label_name_14" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="448" y="653.604">301</tspan></text>
+<text id="label_name_14" fill="white" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="12" letter-spacing="0em"><tspan x="417.856" y="652.802">301 &#x445;&#x43e;&#x43b;&#x43b;</tspan></text>
 <g id="label_busy_14">
-<path id="form_14" d="M437.072 644.969H442.928L445.856 650.04L442.928 655.112H437.072L434.144 650.04L437.072 644.969Z" fill="url(#paint13_radial_38_3498)"/>
-<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_14" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="435" y="650.909">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
+<path id="form_14" d="M406.928 644.167H412.784L415.712 649.238L412.784 654.31H406.928L404 649.238L406.928 644.167Z" fill="url(#paint13_radial_38_3498)"/>
+<text id="&#195;&#145;&#194;&#129;&#195;&#144;&#194;&#180;&#195;&#144;&#194;&#176;&#195;&#144;&#194;&#189;_14" fill="black" style="white-space: pre" xml:space="preserve" font-family="Montserrat" font-size="4" letter-spacing="0em"><tspan x="404.856" y="650.107">&#x441;&#x434;&#x430;&#x43d;</tspan></text>
 </g>
 </g>
 <g id="room_302_2">
@@ -410,7 +410,7 @@
 <stop stop-color="#03CF21"/>
 <stop offset="0.706731" stop-color="#20CDED"/>
 </radialGradient>
-<radialGradient id="paint13_radial_38_3498" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35836 -6.35834 -5.52179 443.012 648.032)" gradientUnits="userSpaceOnUse">
+<radialGradient id="paint13_radial_38_3498" cx="0" cy="0" r="1" gradientTransform="matrix(-5.52177 6.35836 -6.35834 -5.52179 412.868 647.23)" gradientUnits="userSpaceOnUse">
 <stop stop-color="#03CF21"/>
 <stop offset="0.706731" stop-color="#20CDED"/>
 </radialGradient>

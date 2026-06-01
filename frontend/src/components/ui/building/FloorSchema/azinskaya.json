@@ -1,0 +1,200 @@
+[
+    {
+        "uuid": "00000000-0000-0000-0000-103",
+        "id_area": "103",
+        "name": "103",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": false
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-104",
+        "id_area": "104",
+        "name": "104",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": false
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-105",
+        "id_area": "105",
+        "name": "105",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": true,
+        "is_available": false
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-106",
+        "id_area": "106",
+        "name": "106",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": false
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-107",
+        "id_area": "107",
+        "name": "107",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-108",
+        "id_area": "108",
+        "name": "108",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-109",
+        "id_area": "109",
+        "name": "109",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-110",
+        "id_area": "110",
+        "name": "110",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": true,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-111",
+        "id_area": "111",
+        "name": "111",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-112",
+        "id_area": "112",
+        "name": "112",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-113",
+        "id_area": "113",
+        "name": "113",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-114",
+        "id_area": "114",
+        "name": "114",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-115",
+        "id_area": "115",
+        "name": "115",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": true,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-116",
+        "id_area": "116",
+        "name": "116",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-117",
+        "id_area": "117",
+        "name": "117",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-118",
+        "id_area": "118",
+        "name": "118",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-119",
+        "id_area": "119",
+        "name": "119",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-120",
+        "id_area": "120",
+        "name": "120",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": true,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-121",
+        "id_area": "121",
+        "name": "121",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-122",
+        "id_area": "122",
+        "name": "122",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-123",
+        "id_area": "123",
+        "name": "123",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    },
+    {
+        "uuid": "00000000-0000-0000-0000-124",
+        "id_area": "124",
+        "name": "124",
+        "label_area": "00,00 м²",
+        "label_price": "цена",
+        "is_occupied": false,
+        "is_available": true
+    }
+]
