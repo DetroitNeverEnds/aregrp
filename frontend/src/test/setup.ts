@@ -6,6 +6,18 @@ import i18n from '@/i18n/config';
 // Расширяем expect с matchers от @testing-library/jest-dom
 expect.extend(matchers);
 
+// jsdom не реализует ResizeObserver; нужен для react-zoom-pan-pinch
+class ResizeObserverMock {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+}
+Object.defineProperty(window, 'ResizeObserver', {
+    writable: true,
+    configurable: true,
+    value: ResizeObserverMock,
+});
+
 // jsdom не реализует matchMedia; нужен для useViewportBreakpoint и компонентов вроде AuthForm
 function createMatchMediaMock() {
     Object.defineProperty(window, 'matchMedia', {

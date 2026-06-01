@@ -11,6 +11,7 @@ import { Flex } from '@/components/ui/common/Flex';
 import RadioButtons from '@/components/ui/common/input/RadioButtons';
 import { useRegisterMutation } from '@/mutations';
 import type { RegisterMutationData, UserType } from '@/mutations/auth';
+import { resolveAuthRedirect } from '@/lib/authRedirect';
 
 type RegisterFormData = RegisterMutationData;
 
@@ -18,6 +19,7 @@ export const Register: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const redirectTo = resolveAuthRedirect(searchParams.get('redirect'));
     const { handleSubmit, control, setValue, watch, setError, formState } =
         useForm<RegisterFormData>({
             defaultValues: {
@@ -35,8 +37,7 @@ export const Register: React.FC = () => {
 
     const { mutate: registerMutate, isPending } = useRegisterMutation({
         onSuccess: () => {
-            const redirect = searchParams.get('redirect');
-            navigate(redirect && redirect.startsWith('/') ? redirect : '/');
+            navigate(redirectTo);
         },
         onError: error => {
             console.error('Ошибка регистрации:', error);
@@ -135,8 +136,8 @@ export const Register: React.FC = () => {
                         {t('auth.common.hasAccount')}{' '}
                         <Link
                             to={
-                                searchParams.get('redirect')
-                                    ? `/auth/login?redirect=${encodeURIComponent(searchParams.get('redirect')!)}`
+                                redirectTo !== '/'
+                                    ? `/auth/login?redirect=${encodeURIComponent(redirectTo)}`
                                     : '/auth/login'
                             }
                             size="lg"

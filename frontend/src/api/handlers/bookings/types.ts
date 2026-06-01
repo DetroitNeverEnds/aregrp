@@ -12,6 +12,8 @@ export interface BookingOut {
     deal_type: string;
     expires_at: string;
     created_at: string;
+    source_payment_provider_id?: string | null;
+    referrer_id?: number | null;
 }
 
 export interface BookingCreateIn {

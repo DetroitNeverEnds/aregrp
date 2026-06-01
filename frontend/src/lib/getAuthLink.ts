@@ -2,11 +2,12 @@ import { useLocation } from 'react-router-dom';
 
 const useGetAuthLink = (page: string) => {
     const location = useLocation();
+    const redirectPath = location.pathname + location.search + location.hash;
     return (
         `/auth/${page}` +
         (location.pathname.startsWith('/auth')
             ? ''
-            : `?redirect=${encodeURIComponent(location.pathname + location.search)}`)
+            : `?redirect=${encodeURIComponent(redirectPath)}`)
     );
 };
 

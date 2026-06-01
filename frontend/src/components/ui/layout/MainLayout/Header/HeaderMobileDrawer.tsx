@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -16,6 +15,7 @@ import { useUser } from '@/queries/profile';
 import { useNavLinks } from './useNavLinks';
 import classNames from 'classnames';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 
 export type HeaderMobileDrawerProps = {
     open: boolean;
@@ -38,16 +38,7 @@ export const HeaderMobileDrawer = ({ open, onClose }: HeaderMobileDrawerProps) =
         ? '/auth/login'
         : `/auth/login?redirect=${encodeURIComponent(location.pathname + location.search)}`;
 
-    useEffect(() => {
-        if (!open) {
-            return;
-        }
-        const previousOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-        return () => {
-            document.body.style.overflow = previousOverflow;
-        };
-    }, [open]);
+    useBodyScrollLock(open);
 
     const navLinks = useNavLinks();
 

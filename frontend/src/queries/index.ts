@@ -1,6 +1,7 @@
 export { useSiteContacts } from './contacts';
 export { useInvestorSettings } from './investors';
 export { useSiteInfo } from './siteInfo';
+export { useAgentSettings } from './agentSettings';
 export {
     useBuildings,
     usePremises,

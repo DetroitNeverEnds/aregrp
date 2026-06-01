@@ -11,11 +11,11 @@ export type GetFloorQuery = {
  */
 export const getFloor = (
     buildingUuid: string,
-    floorNumber: number,
+    floorId: string,
     query?: GetFloorQuery,
 ): Promise<FloorResponseOut> => {
     const client = api.get<Record<string, string> | undefined, FloorResponseOut>(
-        `/floors/${buildingUuid}/${floorNumber}`,
+        `/floors/${buildingUuid}/${floorId}`,
     );
     return client(query?.sale_type ? { sale_type: query.sale_type } : undefined);
 };
@@ -25,10 +25,10 @@ export const getFloor = (
  */
 export const getFloorPremises = async (
     buildingUuid: string,
-    floorNumber: number,
+    floorId: string,
     query?: GetFloorQuery,
 ): Promise<FloorPremiseOut[]> => {
-    const floor = await getFloor(buildingUuid, floorNumber, query);
+    const floor = await getFloor(buildingUuid, floorId, query);
     return floor.premises;
 };
 

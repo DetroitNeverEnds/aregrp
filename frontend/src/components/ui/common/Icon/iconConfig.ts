@@ -27,6 +27,7 @@ import DotsTag from '@/icons/outlined/dots_tag.svg?react';
 import DownloadRounded from '@/icons/outlined/download-rounded.svg?react';
 import EyeSlash from '@/icons/outlined/eye-slash.svg?react';
 import Eye from '@/icons/outlined/eye.svg?react';
+import FitScreen from '@/icons/outlined/fit-screen.svg?react';
 import Loader from '@/icons/outlined/loader.svg?react';
 import MailSimple from '@/icons/outlined/mail-simple.svg?react';
 import MarkerPin from '@/icons/outlined/marker-pin.svg?react';
@@ -94,6 +95,7 @@ export const iconMap = {
     'download-rounded': DownloadRounded,
     'eye-slash': EyeSlash,
     eye: Eye,
+    'fit-screen': FitScreen,
     loader: Loader,
     'mail-simple': MailSimple,
     'marker-pin': MarkerPin,
