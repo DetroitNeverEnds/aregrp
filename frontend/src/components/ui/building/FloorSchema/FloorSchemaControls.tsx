@@ -65,7 +65,7 @@ export const FloorSchemaControls: React.FC<FloorSchemaControlsProps> = ({
                 onClick={handleFit}
                 aria-label="Вписать в экран"
             >
-                <Icon name="refresh" size={20} />
+                <Icon name="fit-screen" size={20} />
             </FlatButton>
         </div>
     );
