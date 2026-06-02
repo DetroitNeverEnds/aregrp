@@ -216,9 +216,10 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
                 maxScale={3}
                 centerOnInit
                 limitToBounds
-                centerZoomedOut
+                // centerZoomedOut
                 doubleClick={{ disabled: true }}
                 panning={{ velocityDisabled: true }}
+                autoAlignment={{ sizeX: 100, sizeY: 100 }}
             >
                 <TransformComponent wrapperClass={styles.floorSchema__canvas}>
                     <div
