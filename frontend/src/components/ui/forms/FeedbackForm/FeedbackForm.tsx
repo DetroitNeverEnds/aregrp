@@ -44,7 +44,7 @@ export const FeedbackForm = ({ originKey }: FeedbackFormProps) => {
         (data: FeedbackData) => {
             sendFeedbackM.mutate({
                 ...data,
-                subject: `Frredback from form '${originKey}'`,
+                subject: `Обратная связь со страницы '${originKey}'`,
                 origin: {
                     key: originKey,
                     url: window.location.href,

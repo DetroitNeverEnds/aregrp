@@ -100,8 +100,8 @@ export const Benefits = (props: BenefitsProps) => {
                 <Column gap={40}>
                     <Divider />
                     <Flex gap={20} fullWidth align="start">
-                        <Text variant="18-reg">{benefit.subtitle}</Text>
-                        <Text variant="20-med" color="primary-yellow">
+                        <Text variant="16-reg">{benefit.subtitle}</Text>
+                        <Text variant="18-med" color="primary-yellow">
                             {benefit.description}
                         </Text>
                     </Flex>
@@ -112,11 +112,11 @@ export const Benefits = (props: BenefitsProps) => {
                     <Column key={index} gap={20} align="start">
                         <Icon name={benefit.icon} size={32} color="primary-yellow" />
                         {benefit.subtitle && (
-                            <Text variant="20-reg" color="gray-50">
+                            <Text variant="18-reg" color="gray-50">
                                 {benefit.subtitle}
                             </Text>
                         )}
-                        <Text variant="20-reg">{benefit.title}</Text>
+                        <Text variant="18-reg">{benefit.title}</Text>
                     </Column>
                 ))}
             </Columns>

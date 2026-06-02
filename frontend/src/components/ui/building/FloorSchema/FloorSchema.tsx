@@ -164,7 +164,8 @@ export const FloorSchema: React.FC<FloorSchemaProps> = ({
                 const isAlreadySelected = room.uuid === selectedPremiseId;
                 onRoomSelect?.(room);
                 if (!isAlreadySelected) {
-                    transformRef.current?.zoomToElement(group as unknown as HTMLElement, 2.5);
+                    const zoomTarget = (roomGeometry ?? group) as unknown as HTMLElement;
+                    transformRef.current?.zoomToElement(zoomTarget);
                 }
             };
             group.addEventListener('click', onClick);

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import styles from './Sheet.module.scss';
@@ -54,6 +54,37 @@ export const Sheet: React.FC<SheetProps> = ({
 
     useBodyScrollLock(open && lockBodyScroll);
 
+    const panelRef = useRef<HTMLDivElement>(null);
+    const bodyRef = useRef<HTMLDivElement>(null);
+    const [panelHeight, setPanelHeight] = useState<number | undefined>(undefined);
+
+    useLayoutEffect(() => {
+        if (!open) {
+            setPanelHeight(undefined);
+            return;
+        }
+
+        const panel = panelRef.current;
+        const body = bodyRef.current;
+        if (!panel || !body) {
+            return;
+        }
+
+        const updateHeight = () => {
+            const { paddingTop, paddingBottom } = getComputedStyle(panel);
+            setPanelHeight(
+                body.offsetHeight + parseFloat(paddingTop) + parseFloat(paddingBottom),
+            );
+        };
+
+        updateHeight();
+
+        const observer = new ResizeObserver(updateHeight);
+        observer.observe(body);
+
+        return () => observer.disconnect();
+    }, [open, title, showCloseButton]);
+
     if (!open) {
         return null;
     }
@@ -72,35 +103,43 @@ export const Sheet: React.FC<SheetProps> = ({
                 onClick={closeOnBackdropClick ? onClose : undefined}
             />
             <Flex
+                ref={panelRef}
                 direction="column"
                 fullWidth
-                gap={showHeader ? 8 : 0}
+                gap={0}
                 className={classNames(styles.sheet__panel, panelClassName)}
+                style={panelHeight !== undefined ? { height: panelHeight } : undefined}
             >
-                {showHeader ? (
-                    <Flex
-                        direction="row"
-                        align="center"
-                        justify={headerJustify}
-                        fullWidth
-                        gap={12}
-                        className={styles.sheet__header}
-                    >
-                        {title ? <div className={styles.sheet__title}>{title}</div> : null}
-                        {showCloseButton ? (
-                            <FlatButton type="button" onClick={onClose} aria-label="Закрыть">
-                                <Icon name="x-close" size={32} />
-                            </FlatButton>
-                        ) : null}
-                    </Flex>
-                ) : null}
-                <Flex
-                    {...flexProps}
-                    fullWidth
-                    className={classNames(styles.sheet__content, flexProps.className)}
+                <div
+                    ref={bodyRef}
+                    className={styles.sheet__body}
+                    style={{ gap: showHeader ? 8 : 0 }}
                 >
-                    {children}
-                </Flex>
+                    {showHeader ? (
+                        <Flex
+                            direction="row"
+                            align="center"
+                            justify={headerJustify}
+                            fullWidth
+                            gap={12}
+                            className={styles.sheet__header}
+                        >
+                            {title ? <div className={styles.sheet__title}>{title}</div> : null}
+                            {showCloseButton ? (
+                                <FlatButton type="button" onClick={onClose} aria-label="Закрыть">
+                                    <Icon name="x-close" size={32} />
+                                </FlatButton>
+                            ) : null}
+                        </Flex>
+                    ) : null}
+                    <Flex
+                        {...flexProps}
+                        fullWidth
+                        className={classNames(styles.sheet__content, flexProps.className)}
+                    >
+                        {children}
+                    </Flex>
+                </div>
             </Flex>
         </div>,
         document.body,

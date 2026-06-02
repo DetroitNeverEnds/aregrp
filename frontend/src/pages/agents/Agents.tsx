@@ -251,7 +251,7 @@ export const Agents = () => {
                     </div>
                 </Columns>
 
-                <FeedbackFormRow ref={feedbackSectionRef} originKey="agents" />
+                <FeedbackFormRow ref={feedbackSectionRef} originKey="Агенты" />
             </VerticalMainContainer>
         </Page>
     );

@@ -211,7 +211,7 @@ export const Root = () => {
                 <BenifitsWorking variant="working" />
 
                 {/* Feedback form */}
-                <FeedbackFormRow originKey="main" />
+                <FeedbackFormRow originKey="Главная" />
             </VerticalMainContainer>
         </Page>
     );

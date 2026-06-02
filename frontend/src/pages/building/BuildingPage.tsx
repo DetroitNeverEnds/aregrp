@@ -36,7 +36,7 @@ export const BuildingPage = () => {
                     <ErrorLoading message={t('errors.somethingWrong')} />
                 )}
                 <Benefits variant="sale" />
-                <FeedbackFormRow originKey="building" />
+                <FeedbackFormRow originKey="Здания" />
             </VerticalMainContainer>
         </Page>
     );
