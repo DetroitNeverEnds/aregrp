@@ -96,7 +96,7 @@ export const HeaderMobileDrawer = ({ open, onClose }: HeaderMobileDrawerProps) =
                             {...linkProps}
                             theme="blue"
                             size="md"
-                            navigate={handleNavigate}
+                            navigate={linkProps.target === '_blank' ? undefined : handleNavigate}
                         >
                             {label}
                         </Link>

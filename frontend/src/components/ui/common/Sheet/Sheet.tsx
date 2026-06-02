@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import styles from './Sheet.module.scss';
@@ -56,34 +56,6 @@ export const Sheet: React.FC<SheetProps> = ({
 
     const panelRef = useRef<HTMLDivElement>(null);
     const bodyRef = useRef<HTMLDivElement>(null);
-    const [panelHeight, setPanelHeight] = useState<number | undefined>(undefined);
-
-    useLayoutEffect(() => {
-        if (!open) {
-            setPanelHeight(undefined);
-            return;
-        }
-
-        const panel = panelRef.current;
-        const body = bodyRef.current;
-        if (!panel || !body) {
-            return;
-        }
-
-        const updateHeight = () => {
-            const { paddingTop, paddingBottom } = getComputedStyle(panel);
-            setPanelHeight(
-                body.offsetHeight + parseFloat(paddingTop) + parseFloat(paddingBottom),
-            );
-        };
-
-        updateHeight();
-
-        const observer = new ResizeObserver(updateHeight);
-        observer.observe(body);
-
-        return () => observer.disconnect();
-    }, [open, title, showCloseButton]);
 
     if (!open) {
         return null;
@@ -108,7 +80,6 @@ export const Sheet: React.FC<SheetProps> = ({
                 fullWidth
                 gap={0}
                 className={classNames(styles.sheet__panel, panelClassName)}
-                style={panelHeight !== undefined ? { height: panelHeight } : undefined}
             >
                 <div
                     ref={bodyRef}
