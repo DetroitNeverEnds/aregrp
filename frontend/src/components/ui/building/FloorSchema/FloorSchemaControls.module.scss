@@ -3,7 +3,12 @@
     top: 16px;
     right: 16px;
     display: flex;
-    flex-direction: column;
+    @include mobile-only {
+        flex-direction: row;
+    }
+    @include desktop-only {
+        flex-direction: column;
+    }
     gap: 4px;
     background: $gray-0;
     border-radius: 8px;

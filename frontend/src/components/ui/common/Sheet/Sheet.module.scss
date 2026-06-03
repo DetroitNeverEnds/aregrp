@@ -43,7 +43,16 @@
         border-radius: 30px 30px 0 0;
         box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08);
         padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+        transition: height 0.28s cubic-bezier(0.32, 0.72, 0, 1);
         animation: sheet-panel-in 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     &__header {

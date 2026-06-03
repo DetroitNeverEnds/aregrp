@@ -16,6 +16,10 @@ COPY . .
 ARG VITE_YANDEX_MAPS_API_KEY
 ENV VITE_YANDEX_MAPS_API_KEY=$VITE_YANDEX_MAPS_API_KEY
 
+# Принимаем build argument для Yandex Metrika counter ID
+ARG VITE_YANDEX_METRIKA_ID
+ENV VITE_YANDEX_METRIKA_ID=$VITE_YANDEX_METRIKA_ID
+
 # Собираем приложение для production
 RUN npm run build
 

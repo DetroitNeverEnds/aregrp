@@ -23,7 +23,7 @@ def send_password_reset_email(user, token):
         bool: True если email отправлен успешно, False в случае ошибки
     """
     try:
-        reset_url = f"{settings.FRONTEND_AUTH_BASE_URL}/password-reset/confirm?token={token}"
+        reset_url = f"{settings.FRONTEND_AUTH_BASE_URL}/auth/restore-password?token={token}"
 
         subject = "Восстановление пароля — Aregrp.ru"
         message = f"""

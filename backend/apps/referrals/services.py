@@ -12,7 +12,10 @@ from .schemas import ReferralLinkOut
 
 def _build_referral_url(premise: Premise, referral_link: ReferralLink) -> str:
     frontend_referral_base_url = settings.FRONTEND_REFERRAL_BASE_URL.rstrip('/')
-    return f'{frontend_referral_base_url}/building/{premise.building.uuid}?ref={referral_link.code}'
+    return (
+        f'{frontend_referral_base_url}/building/{premise.building.uuid}'
+        f'?ref={referral_link.code}&selectedPremise={premise.uuid}'
+    )
 
 
 def create_referral_link(

@@ -29,16 +29,15 @@ export const NotFound = () => {
                     direction="column"
                     align="center"
                     justify="center"
+                    fullWidth
                 >
-                    <Flex className={styles.content} direction="column" align="center" gap={24}>
+                    <Flex className={styles.content} direction="column" gap={24}>
                         <Text className={styles.content__code} variant="h1" color="gray-20">
                             404
                         </Text>
-                        <Flex direction="column" align="center" gap={12}>
-                            <Text variant="h2" align="center">
-                                {t('pages.notFound.title')}
-                            </Text>
-                            <Text variant="20-reg" color="gray-50" align="center">
+                        <Flex direction="column" gap={12}>
+                            <Text variant="h2">{t('pages.notFound.title')}</Text>
+                            <Text variant="20-reg" color="gray-50">
                                 {t('pages.notFound.subtitle')}
                             </Text>
                         </Flex>

@@ -1,4 +1,4 @@
-@use '@/components/ui/building/FloorSchema/FloorSchema.module.scss' as *;
+@use '@/components/ui/building/FloorSchema/FloorSchema.variables.scss' as *;
 
 @keyframes officeCardEnter {
     from {
@@ -43,8 +43,6 @@
 }
 
 .floorSchema {
-    transition: width 1s ease;
-    transition: transform 1s ease;
     overflow: hidden;
     flex-grow: 1;
     min-height: 0;

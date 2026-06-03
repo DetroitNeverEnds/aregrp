@@ -6,6 +6,7 @@ services:
             context: frontend
             args:
                 VITE_YANDEX_MAPS_API_KEY: ${VITE_YANDEX_MAPS_API_KEY}
+                VITE_YANDEX_METRIKA_ID: ${VITE_YANDEX_METRIKA_ID}
         container_name: aregrp-frontend
         restart: unless-stopped
         networks:

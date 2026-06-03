@@ -262,7 +262,7 @@ export const Investors = () => {
                     />
                 </Container>
 
-                <FeedbackFormRow ref={feedbackSectionRef} originKey="investors" />
+                <FeedbackFormRow ref={feedbackSectionRef} originKey="Инвесторам" />
 
                 <Container gap="regular" fullWidth>
                     <Text variant="h2" color="gray-100">

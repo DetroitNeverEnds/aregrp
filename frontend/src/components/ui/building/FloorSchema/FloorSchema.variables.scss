@@ -1,0 +1,6 @@
+@use '@/styles/variables.scss' as *;
+
+$free-room-color: $primary-700;
+$free-room-color-hover: $primary-800;
+$unavailable-room-color: $error-default;
+$other-room-color: $primary-200;

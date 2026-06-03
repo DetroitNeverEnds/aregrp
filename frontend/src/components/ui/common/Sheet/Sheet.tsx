@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 import styles from './Sheet.module.scss';
@@ -54,6 +54,9 @@ export const Sheet: React.FC<SheetProps> = ({
 
     useBodyScrollLock(open && lockBodyScroll);
 
+    const panelRef = useRef<HTMLDivElement>(null);
+    const bodyRef = useRef<HTMLDivElement>(null);
+
     if (!open) {
         return null;
     }
@@ -72,35 +75,42 @@ export const Sheet: React.FC<SheetProps> = ({
                 onClick={closeOnBackdropClick ? onClose : undefined}
             />
             <Flex
+                ref={panelRef}
                 direction="column"
                 fullWidth
-                gap={showHeader ? 8 : 0}
+                gap={0}
                 className={classNames(styles.sheet__panel, panelClassName)}
             >
-                {showHeader ? (
-                    <Flex
-                        direction="row"
-                        align="center"
-                        justify={headerJustify}
-                        fullWidth
-                        gap={12}
-                        className={styles.sheet__header}
-                    >
-                        {title ? <div className={styles.sheet__title}>{title}</div> : null}
-                        {showCloseButton ? (
-                            <FlatButton type="button" onClick={onClose} aria-label="Закрыть">
-                                <Icon name="x-close" size={32} />
-                            </FlatButton>
-                        ) : null}
-                    </Flex>
-                ) : null}
-                <Flex
-                    {...flexProps}
-                    fullWidth
-                    className={classNames(styles.sheet__content, flexProps.className)}
+                <div
+                    ref={bodyRef}
+                    className={styles.sheet__body}
+                    style={{ gap: showHeader ? 8 : 0 }}
                 >
-                    {children}
-                </Flex>
+                    {showHeader ? (
+                        <Flex
+                            direction="row"
+                            align="center"
+                            justify={headerJustify}
+                            fullWidth
+                            gap={12}
+                            className={styles.sheet__header}
+                        >
+                            {title ? <div className={styles.sheet__title}>{title}</div> : null}
+                            {showCloseButton ? (
+                                <FlatButton type="button" onClick={onClose} aria-label="Закрыть">
+                                    <Icon name="x-close" size={32} />
+                                </FlatButton>
+                            ) : null}
+                        </Flex>
+                    ) : null}
+                    <Flex
+                        {...flexProps}
+                        fullWidth
+                        className={classNames(styles.sheet__content, flexProps.className)}
+                    >
+                        {children}
+                    </Flex>
+                </div>
             </Flex>
         </div>,
         document.body,

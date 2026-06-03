@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
                     },
                 },
             },
+            allowedHosts: ['aregrp.local.ru', 'localhost'],
         },
         test: {
             globals: true,
