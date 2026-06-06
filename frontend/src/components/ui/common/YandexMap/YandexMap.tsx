@@ -17,6 +17,7 @@ import {
     useState,
     type PropsWithChildren,
 } from 'react';
+import { useTapHandler } from '@/hooks';
 import { useTranslation } from 'react-i18next';
 import {
     getActiveBuildingMarkerUuid,
@@ -237,16 +238,13 @@ export const YandexMap = ({
         [apiKey, initialMapLocation, markers, onMapClick, staticMap],
     );
 
+    const activateTapHandlers = useTapHandler(() => setMapActive(true));
+
     return (
         <div className={classNames(styles.wrapper, className)} ref={wrapperRef}>
             {mapContent}
             {!staticMap && !mapActive && (
-                <div
-                    className={styles.interactionOverlay}
-                    onPointerDown={() => {
-                        setMapActive(true);
-                    }}
-                >
+                <div className={styles.interactionOverlay} {...activateTapHandlers}>
                     <Flex className={styles.interactionHint}>
                         <Text variant="12-reg">{t('components.YandexMap.interactionHint')}</Text>
                     </Flex>

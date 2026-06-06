@@ -10,6 +10,7 @@ import {
     setActiveBuildingMarkerUuid,
     subscribeActiveBuildingMarker,
 } from '@/lib/buildingMapMarkerActiveStore';
+import { useTapHandler } from '@/hooks';
 import PinIcon from './pin.svg?react';
 import styles from './BuildingMapMarker.module.scss';
 import type { SaleType } from '@/api/handlers/types';
@@ -64,14 +65,11 @@ export const BuildingMapMarker = ({
         }
     };
 
+    const markerTapHandlers = useTapHandler(handleMarkerClick);
+
     return (
         <div className={styles.root}>
-            <Flex
-                direction="row"
-                align="center"
-                className={styles.marker}
-                onClick={handleMarkerClick}
-            >
+            <Flex direction="row" align="center" className={styles.marker} {...markerTapHandlers}>
                 <Flex
                     align="center"
                     justify="center"
