@@ -1,21 +1,30 @@
 @use '@/styles/variables.scss' as *;
-
-$free-room-color: $primary-700;
-$free-room-color-hover: $primary-800;
-$unavailable-room-color: $error-default;
-$other-room-color: $primary-200;
+@use './FloorSchema.variables.scss' as *;
 
 .floorSchema {
-    max-width: 100%;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
     min-width: 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
+    position: relative;
+    overflow: hidden;
+
+    @include mobile-only {
+        border: solid 1.6px lightgray;
+        border-radius: 16px;
+    }
+
+    &__canvas {
+        width: 100% !important;
+        height: 100% !important;
+        cursor: grab;
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
 
     &__svgRoot {
-        width: max-content;
-        max-width: none;
-        margin-inline: auto;
         display: block;
 
         // 1:1 с натуральными размерами SVG (width/height / viewBox), без растягивания под контейнер

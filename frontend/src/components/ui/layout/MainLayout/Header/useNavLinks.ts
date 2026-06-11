@@ -9,7 +9,7 @@ export const useNavLinks = () => {
     const { getLinkToCatalogue } = useFilterSearchParams();
     const siteInfo = useSiteInfo().data?.data;
 
-    const navLinks: Partial<LinkProps> & { label: string; to: string }[] = useMemo(
+    const navLinks: (Partial<LinkProps> & { label: string; to: string })[] = useMemo(
         () => [
             {
                 to: getLinkToCatalogue({ sale_type: 'sale' }),

@@ -1,4 +1,4 @@
-@use '@/components/ui/building/FloorSchema/FloorSchema.module.scss' as *;
+@use '@/components/ui/building/FloorSchema/FloorSchema.variables.scss' as *;
 
 @keyframes officeCardEnter {
     from {
@@ -16,7 +16,7 @@
     flex-shrink: 0;
     transition: width 0.3s ease;
     width: 500px;
-    max-height: 720px;
+    max-height: 750px;
     overflow: hidden;
 
     &__content {
@@ -26,6 +26,10 @@
         overflow-x: hidden;
         overflow-y: auto;
         scrollbar-width: thin;
+
+        &__title {
+            margin-left: $border-radius-m;
+        }
     }
 }
 
@@ -33,11 +37,16 @@
     width: 100%;
 }
 
+.a {
+    flex: 1;
+    min-height: 0;
+}
+
 .floorSchema {
-    transition: width 1s ease;
-    transition: transform 1s ease;
     overflow: hidden;
     flex-grow: 1;
+    min-height: 0;
+    height: 750px;
 
     &__header {
         &__text {

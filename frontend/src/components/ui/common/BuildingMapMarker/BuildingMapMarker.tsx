@@ -5,7 +5,6 @@ import type { BuildingCatalogue } from '@/api';
 import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text';
 import { Link } from '@/components/ui/common/Link';
-import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 import {
     getActiveBuildingMarkerUuid,
     setActiveBuildingMarkerUuid,
@@ -37,7 +36,6 @@ export const BuildingMapMarker = ({
     showCatalogueLinks = true,
     onMarkerClick,
 }: BuildingMapMarkerProps) => {
-    const { getLinkToCatalogue } = useFilterSearchParams();
     const {
         uuid,
         title,
@@ -47,7 +45,8 @@ export const BuildingMapMarker = ({
         media,
     } = item;
     const previewUrl = media.find(m => m.type === 'photo')?.url;
-    const buildingLink = `/building/${uuid}?sale_type=${saleType}`;
+    const getBuildingLink = (type: SaleType) => `/building/${uuid}?sale_type=${type}`;
+    const buildingLink = getBuildingLink(saleType);
 
     const active = useSyncExternalStore(
         subscribeActiveBuildingMarker,
@@ -124,24 +123,14 @@ export const BuildingMapMarker = ({
                             </NavLink>
                         )}
                         {showCatalogueLinks && minSalePrice && (
-                            <Link
-                                to={getLinkToCatalogue({
-                                    sale_type: 'sale',
-                                    building_uuids: uuid,
-                                })}
-                            >
+                            <Link to={getBuildingLink('sale')}>
                                 <Text variant="12-med" color="primary-700">
                                     Каталог продажи
                                 </Text>
                             </Link>
                         )}
                         {showCatalogueLinks && minRentPrice && (
-                            <Link
-                                to={getLinkToCatalogue({
-                                    sale_type: 'rent',
-                                    building_uuids: uuid,
-                                })}
-                            >
+                            <Link to={getBuildingLink('rent')}>
                                 <Text variant="12-med" color="primary-700">
                                     Каталог аренды
                                 </Text>

@@ -14,6 +14,7 @@ from yookassa.domain.notification import WebhookNotification
 from apps.bookings.models import Booking
 from apps.re_objects.availability import premise_is_available_for_deal
 from apps.re_objects.models import Premise
+from apps.referrals.models import ReferralLink
 
 from .models import Payment
 from .errors import PaymentsErrorCodes, create_payments_error
@@ -38,6 +39,29 @@ def _is_positive_int_string(value: str) -> bool:
     return value.isdigit() and int(value) > 0
 
 
+def _build_receipt(customer_email: str, amount_value: str) -> dict:
+    """Чек: email покупателя + одна позиция (название и сумма из настроек)."""
+    return {
+        'customer': {
+            'email': customer_email,
+        },
+        'items': [
+            {
+                'description': settings.PAYMENTS_RECEIPT_ITEM_DESCRIPTION,
+                'quantity': '1.00',
+                'amount': {
+                    'value': amount_value,
+                    'currency': 'RUB',
+                },
+                'vat_code': settings.PAYMENTS_RECEIPT_VAT_CODE,
+                'payment_mode': settings.PAYMENTS_RECEIPT_PAYMENT_MODE,
+                'payment_subject': settings.PAYMENTS_RECEIPT_PAYMENT_SUBJECT,
+            },
+        ],
+        'tax_system_code': settings.PAYMENTS_RECEIPT_TAX_SYSTEM_CODE,
+    }
+
+
 def _build_payment_description(premise: Premise) -> str:
     building_address = (premise.building.address or '').strip()
     premise_name = (premise.title or '').strip()
@@ -49,6 +73,33 @@ def _build_payment_description(premise: Premise) -> str:
         building_address = 'Адрес не указан'
 
     return f'Бронирование: {building_address} — {premise_name}'
+
+
+def _resolve_referral_link_for_payment(premise_id: int, referral_code: str | None) -> ReferralLink | None:
+    if not isinstance(referral_code, str):
+        return None
+    normalized_referral_code = referral_code.strip()
+    if not normalized_referral_code:
+        return None
+
+    try:
+        referral_uuid = uuid.UUID(normalized_referral_code)
+    except ValueError:
+        return None
+
+    return ReferralLink.objects.select_related('referrer').filter(
+        code=referral_uuid,
+        is_active=True,
+        premise_id=premise_id,
+    ).first()
+
+
+def _resolve_referral_link_from_metadata(metadata: dict) -> ReferralLink | None:
+    referral_link_id = metadata.get('referral_link_id')
+    if not isinstance(referral_link_id, str) or not _is_positive_int_string(referral_link_id):
+        return None
+
+    return ReferralLink.objects.select_related('referrer').filter(pk=int(referral_link_id)).first()
 
 
 def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
@@ -72,6 +123,12 @@ def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
 
     now = timezone.now()
     expires_at = now + timedelta(days=3)
+    referrer = None
+    if local_payment is not None and local_payment.referral_link_id is not None:
+        referral_link = local_payment.referral_link
+        if referral_link is not None:
+            referrer = referral_link.referrer
+
     with transaction.atomic():
         active_booking_exists = Booking.objects.select_for_update().filter(
             premise=premise,
@@ -85,10 +142,15 @@ def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
             deal_type=Booking.DealType.SALE,
             expires_at=expires_at,
             source_payment=local_payment,
+            referrer=referrer,
         )
 
 
-def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreateOut | None, tuple[int, dict] | None]:
+def create_payment(
+    user_id: int,
+    premise_uuid: uuid.UUID,
+    referral_code: str | None = None,
+) -> tuple[PaymentCreateOut | None, tuple[int, dict] | None]:
     try:
         premise = Premise.objects.get(uuid=premise_uuid)
     except Premise.DoesNotExist:
@@ -165,31 +227,63 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
             ),
         )
 
+    user = get_user_model().objects.filter(pk=user_id).first()
+    if user is None:
+        return None, (
+            502,
+            create_payments_error(
+                status=502,
+                code=PaymentsErrorCodes.CREATION_ERROR,
+                title='User not found',
+                detail='Authenticated user record is missing',
+                instance='/api/v1/payments/',
+            ),
+        )
+
     amount_value = _build_amount_value()
     description = _build_payment_description(premise)
     idempotence_key = uuid.uuid4()
+    referral_link = _resolve_referral_link_for_payment(premise_id, referral_code)
     metadata = {
         'payment_token': str(idempotence_key),
         'user_id': str(user_id),
         'premise_id': str(premise_id),
         'premise_uuid': str(premise.uuid),
     }
+    if referral_link is not None:
+        metadata['referral_link_id'] = str(referral_link.id)
+
+    payment_payload: dict = {
+        'amount': {
+            'value': amount_value,
+            'currency': 'RUB',
+        },
+        'confirmation': {
+            'type': 'redirect',
+            'return_url': settings.PAYMENTS_REDIRECT_URL,
+        },
+        'capture': True,
+        'description': description,
+        'metadata': metadata,
+    }
+    if settings.PAYMENTS_RECEIPT_ENABLED:
+        customer_email = (user.email or '').strip()
+        if not customer_email:
+            return None, (
+                400,
+                create_payments_error(
+                    status=400,
+                    code=PaymentsErrorCodes.CREATION_ERROR,
+                    title='Receipt customer email required',
+                    detail='User email is required to create a fiscal receipt',
+                    instance='/api/v1/payments/',
+                ),
+            )
+        payment_payload['receipt'] = _build_receipt(customer_email, amount_value)
 
     try:
         payment = YooKassaPayment.create(
-            {
-                'amount': {
-                    'value': amount_value,
-                    'currency': 'RUB',
-                },
-                'confirmation': {
-                    'type': 'redirect',
-                    'return_url': settings.PAYMENTS_REDIRECT_URL,
-                },
-                'capture': True,
-                'description': description,
-                'metadata': metadata,
-            },
+            payment_payload,
             str(idempotence_key),
         )
     except Exception as exc:
@@ -215,6 +309,7 @@ def create_payment(user_id: int, premise_uuid: uuid.UUID) -> tuple[PaymentCreate
             'amount_currency': str(payment.amount.currency),
             'description': str(payment.description or ''),
             'metadata': metadata,
+            'referral_link': referral_link,
         },
     )
 
@@ -282,7 +377,7 @@ def handle_yookassa_webhook(raw_body: bytes) -> tuple[int, dict | None]:
         if isinstance(raw_metadata, dict):
             event_metadata = raw_metadata
 
-    local_payment = Payment.objects.filter(provider_payment_id=payment_id).first()
+    local_payment = Payment.objects.select_related('referral_link__referrer').filter(provider_payment_id=payment_id).first()
     if local_payment is None and event_metadata:
         payment_token = event_metadata.get('payment_token')
         if isinstance(payment_token, str):
@@ -291,7 +386,9 @@ def handle_yookassa_webhook(raw_body: bytes) -> tuple[int, dict | None]:
             except ValueError:
                 payment_token_uuid = None
             if payment_token_uuid is not None:
-                local_payment = Payment.objects.filter(idempotence_key=payment_token_uuid).first()
+                local_payment = Payment.objects.select_related('referral_link__referrer').filter(
+                    idempotence_key=payment_token_uuid
+                ).first()
 
     if local_payment is None:
         premise = None
@@ -318,6 +415,7 @@ def handle_yookassa_webhook(raw_body: bytes) -> tuple[int, dict | None]:
             amount_currency=payment_amount_currency,
             description=payment_description,
             metadata=event_metadata,
+            referral_link=_resolve_referral_link_from_metadata(event_metadata),
         )
     else:
         fields_to_update: list[str] = []

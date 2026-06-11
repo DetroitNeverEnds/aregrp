@@ -214,6 +214,7 @@ jobs:
                   REGISTRY_PREFIX: ${{ env.REGISTRY_PREFIX }}
                   TAG: ${{ env.TAG }}
                   VITE_YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
+                  VITE_YANDEX_METRIKA_ID: ${{ secrets.YANDEX_METRIKA_ID }}
               run: |
                   echo "🔨 Building from branch: ${{ needs.merge-prs.outputs.merge_branch || 'main' }}"
                   echo "📦 Merged PRs:${{ needs.merge-prs.outputs.pr_list || '(нет)' }}"
@@ -304,6 +305,7 @@ jobs:
                       export REGISTRY_PREFIX=${{ env.REGISTRY_PREFIX }}
                       export TAG=${{ env.TAG }}
                       export VITE_YANDEX_MAPS_API_KEY=${{ secrets.YANDEX_MAPS_API_KEY }}
+                      export VITE_YANDEX_METRIKA_ID=${{ secrets.YANDEX_METRIKA_ID }}
 
                       PULL_UP_START=$(date +%s)
                       docker compose pull
@@ -320,7 +322,19 @@ jobs:
                       echo "Образы compose (размер на диске после pull):"
                       docker compose images || true
 
-                      docker image prune -f
+                      echo ""
+                      echo "=== Docker disk usage (before cleanup) ==="
+                      docker system df || true
+
+                      # Чистим неиспользуемые ресурсы, оставляя актуальные запущенные контейнеры.
+                      docker image prune -af --filter "until=168h"
+                      docker builder prune -af --filter "until=168h"
+                      docker container prune -f
+                      docker volume prune -f
+
+                      echo ""
+                      echo "=== Docker disk usage (after cleanup) ==="
+                      docker system df || true
 
             - name: Параметры запуска (workflow)
               if: always()

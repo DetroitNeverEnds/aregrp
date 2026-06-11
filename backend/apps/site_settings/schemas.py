@@ -40,3 +40,9 @@ class InvestorSettingsOut(Schema):
     document_1: str | None = None
     document_2: str | None = None
     document_3: str | None = None
+
+
+class AgentSettingsOut(Schema):
+    """Настройки для раздела «Агентам»."""
+
+    table_link: str | None = None

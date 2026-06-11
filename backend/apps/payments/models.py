@@ -1,6 +1,7 @@
 from django.db import models
 
 from apps.re_objects.models import Premise
+from apps.referrals.models import ReferralLink
 
 
 class Payment(models.Model):
@@ -12,6 +13,13 @@ class Payment(models.Model):
 
     premise = models.ForeignKey(
         Premise,
+        on_delete=models.SET_NULL,
+        related_name='payments',
+        null=True,
+        blank=True,
+    )
+    referral_link = models.ForeignKey(
+        ReferralLink,
         on_delete=models.SET_NULL,
         related_name='payments',
         null=True,

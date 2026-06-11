@@ -20,6 +20,8 @@ import styles from './Agents.module.scss';
 import Container from '@/components/ui/layout/Container';
 import _ from 'lodash';
 import classNames from 'classnames';
+import { Link } from '@/components/ui/common/Link';
+import { useAgentSettings } from '@/queries';
 
 const BENEFITS_ICONS: IconName[] = [
     'benefit-9',
@@ -35,6 +37,7 @@ const BENEFITS_ICONS: IconName[] = [
 const Welcome = ({ scrollToFeedback }: { scrollToFeedback: () => void }) => {
     const { t } = useTranslation();
     const siteInfo = useSiteInfo().data?.data;
+    const agentSettings = useAgentSettings().data?.data;
 
     return (
         <>
@@ -53,41 +56,50 @@ const Welcome = ({ scrollToFeedback }: { scrollToFeedback: () => void }) => {
                             {t('pages.agents.hero.subtitle')}
                         </Text>
                     </Flex>
-                    <Flex direction="row" align="center" gap={40} wrap="wrap">
-                        <Button
-                            size="lg"
-                            variant="outlined"
-                            theme="dark"
-                            icon="phone"
-                            iconColor="primary-yellow"
-                            onClick={scrollToFeedback}
-                        >
-                            {t('pages.agents.hero.orderCall')}
-                        </Button>
-                        <Flex direction="row" align="center" gap={10}>
-                            {siteInfo?.max_link && (
-                                <Button
-                                    size="lg"
-                                    variant="outlined"
-                                    theme="dark"
-                                    onlyIcon
-                                    icon="max"
-                                    iconColor="primary-yellow"
-                                    to={siteInfo.max_link}
-                                />
-                            )}
-                            {siteInfo?.telegram_link && (
-                                <Button
-                                    size="lg"
-                                    variant="outlined"
-                                    theme="dark"
-                                    onlyIcon
-                                    icon="tg"
-                                    iconColor="primary-yellow"
-                                    to={siteInfo.telegram_link}
-                                />
-                            )}
+                    <Flex gap={16} align="start">
+                        <Flex direction="row" align="center" gap={40} wrap="wrap">
+                            <Button
+                                size="lg"
+                                variant="outlined"
+                                theme="dark"
+                                icon="phone"
+                                iconColor="primary-yellow"
+                                onClick={scrollToFeedback}
+                            >
+                                {t('pages.agents.hero.orderCall')}
+                            </Button>
+                            <Flex direction="row" align="center" gap={10}>
+                                {siteInfo?.max_link && (
+                                    <Button
+                                        size="lg"
+                                        variant="outlined"
+                                        theme="dark"
+                                        onlyIcon
+                                        icon="max"
+                                        iconColor="primary-yellow"
+                                        to={siteInfo.max_link}
+                                    />
+                                )}
+                                {siteInfo?.telegram_link && (
+                                    <Button
+                                        size="lg"
+                                        variant="outlined"
+                                        theme="dark"
+                                        onlyIcon
+                                        icon="tg"
+                                        iconColor="primary-yellow"
+                                        to={siteInfo.telegram_link}
+                                    />
+                                )}
+                            </Flex>
                         </Flex>
+                        <Link
+                            to={agentSettings?.table_link || ''}
+                            leadingIcon="download-rounded"
+                            theme="light"
+                        >
+                            Таблица комиссий
+                        </Link>
                     </Flex>
                 </Flex>
                 <PercentageIcon />
@@ -239,7 +251,7 @@ export const Agents = () => {
                     </div>
                 </Columns>
 
-                <FeedbackFormRow ref={feedbackSectionRef} originKey="agents" />
+                <FeedbackFormRow ref={feedbackSectionRef} originKey="Агенты" />
             </VerticalMainContainer>
         </Page>
     );

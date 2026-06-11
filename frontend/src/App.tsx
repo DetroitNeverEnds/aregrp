@@ -13,6 +13,7 @@ import { Agents } from './pages/agents';
 import { Cases } from './pages/cases';
 import { BuildingPage } from '@/pages/building';
 import { Profile } from '@/pages/profile';
+import { NotFound } from '@/pages/not-found';
 
 function App() {
     return (
@@ -32,6 +33,7 @@ function App() {
                 <Route path="/cases" element={<Cases />} />
                 <Route path="/building/:buildingUuid" element={<BuildingPage />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="*" element={<NotFound />} />
             </Route>
         </Routes>
     );

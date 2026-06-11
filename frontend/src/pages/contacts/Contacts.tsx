@@ -21,9 +21,11 @@ import { Card } from '@/components/ui/common/Card/Card';
 import { Page } from '@/components/ui/layout/Page/Page';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
 import Container from '@/components/ui/layout/Container';
-
+import { useDevice } from '@/hooks';
 export const Contacts = () => {
     const { t } = useTranslation();
+
+    const device = useDevice();
 
     const layoutSettings = useMemo<LayoutSettings>(
         () => ({
@@ -135,8 +137,20 @@ export const Contacts = () => {
                                                 lon: data.coordinates?.lng || 0,
                                             },
                                             content: (
-                                                <MapPin address={data.sales_center_address || '-'}>
-                                                    <Card align="start" gap={6} isPin>
+                                                <MapPin
+                                                    address={
+                                                        (device === 'desktop' &&
+                                                            data.sales_center_address) ||
+                                                        ''
+                                                    }
+                                                    tooltipClassName={styles.mapMarkerTooltip}
+                                                >
+                                                    <Card
+                                                        align="start"
+                                                        gap={6}
+                                                        isPin
+                                                        className={styles.mapMarker}
+                                                    >
                                                         <Text variant="14-med">
                                                             {t('pages.contacts.salesOffice')}
                                                         </Text>
@@ -211,7 +225,7 @@ export const Contacts = () => {
                 </Columns>
 
                 {/* Форма */}
-                <FeedbackFormRow originKey="contacts" />
+                <FeedbackFormRow originKey="Контакты" />
             </VerticalMainContainer>
         </Page>
     );

@@ -7,8 +7,14 @@ from ninja import Router
 from api.schemas import ProblemDetail
 
 from .errors import SiteSettingsErrorCodes, create_site_settings_error
-from .models import ContactsSettings, InvestorSettings, MainSettings
-from .schemas import ContactsSettingsOut, CoordinatesOut, InvestorSettingsOut, MainSettingsOut
+from .models import AgentSettings, ContactsSettings, InvestorSettings, MainSettings
+from .schemas import (
+    AgentSettingsOut,
+    ContactsSettingsOut,
+    CoordinatesOut,
+    InvestorSettingsOut,
+    MainSettingsOut,
+)
 
 site_settings_router = Router()
 
@@ -157,4 +163,32 @@ async def get_investor_settings(request):
                 f"Investor settings not found. Create them in admin panel. Error: {str(e)}"
             ),
             instance="/api/v1/site-settings/investors",
+        )
+
+
+@site_settings_router.get(
+    "/agents",
+    response={200: AgentSettingsOut, 404: ProblemDetail},
+    summary="Настройки для агентов",
+    description=(
+        "Возвращает настройки раздела «Агентам» из админки "
+        "(Настройки для агентов): table_link — ссылка на таблицу комиссий."
+    ),
+)
+async def get_agent_settings(request):
+    """
+    Публичный эндпоинт: ссылка на таблицу комиссий для страницы агентов.
+    """
+    try:
+        settings = await sync_to_async(AgentSettings.load)()
+        return 200, AgentSettingsOut(table_link=settings.table_link or None)
+    except Exception as e:
+        return 404, create_site_settings_error(
+            status=404,
+            code=SiteSettingsErrorCodes.NOT_FOUND,
+            title="Agent settings not found",
+            detail=(
+                f"Agent settings not found. Create them in admin panel. Error: {str(e)}"
+            ),
+            instance="/api/v1/site-settings/agents",
         )

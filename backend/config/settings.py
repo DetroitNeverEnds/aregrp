@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'apps.bookings',
     'apps.deals',
     "apps.payments.apps.PaymentsConfig",
+    'apps.referrals',
 ]
 
 MIDDLEWARE = [
@@ -209,8 +210,19 @@ EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER or 'noreply@localhost')
 
-# Frontend URL for password reset links
-FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+# Frontend URLs:
+# - FRONTEND_AUTH_BASE_URL: для auth-ссылок (например, reset password)
+# - FRONTEND_REFERRAL_BASE_URL: для публичных реферальных ссылок
+# Сохраняем обратную совместимость со старыми переменными FRONTEND_URL и FRONTEND_BASE_URL.
+_legacy_frontend_url = config('FRONTEND_URL', default='http://localhost:3000')
+_legacy_frontend_base_url = config('FRONTEND_BASE_URL', default=_legacy_frontend_url)
+
+FRONTEND_AUTH_BASE_URL = config('FRONTEND_AUTH_BASE_URL', default=_legacy_frontend_url)
+FRONTEND_REFERRAL_BASE_URL = config('FRONTEND_REFERRAL_BASE_URL', default=_legacy_frontend_base_url)
+REFERRAL_CODE_COOKIE_NAME = config(
+    'REFERRAL_CODE_COOKIE_NAME',
+    default=config('REFERRAL_COOKIE_NAME', default='referral_code'),
+)
 
 # Logging options
 LOG_LEVEL = config('LOG_LEVEL', default='INFO')
@@ -253,3 +265,14 @@ PAYMENTS_ACCOUNT_ID = config('PAYMENTS_ACCOUNT_ID', default='')
 PAYMENTS_SECRET_KEY = config('PAYMENTS_SECRET_KEY', default='')
 PAYMENTS_REDIRECT_URL = config('PAYMENTS_REDIRECT_URL', default='https://www.example.com/return_url')
 PAYMENTS_BOOKING_AMOUNT = config('PAYMENTS_BOOKING_AMOUNT', cast=int, default=10000)
+# Чек 54-ФЗ (обязателен, если в ЛК ЮKassa включена онлайн-касса)
+PAYMENTS_RECEIPT_ENABLED = config('PAYMENTS_RECEIPT_ENABLED', cast=bool, default=True)
+PAYMENTS_RECEIPT_ITEM_DESCRIPTION = config(
+    'PAYMENTS_RECEIPT_ITEM_DESCRIPTION',
+    default='Оплата за бронирование помещения',
+)
+# УСН (доход): tax_system_code=2; НДС 5%: vat_code=7
+PAYMENTS_RECEIPT_VAT_CODE = config('PAYMENTS_RECEIPT_VAT_CODE', cast=int, default=7)
+PAYMENTS_RECEIPT_TAX_SYSTEM_CODE = config('PAYMENTS_RECEIPT_TAX_SYSTEM_CODE', cast=int, default=2)
+PAYMENTS_RECEIPT_PAYMENT_MODE = config('PAYMENTS_RECEIPT_PAYMENT_MODE', default='full_prepayment')
+PAYMENTS_RECEIPT_PAYMENT_SUBJECT = config('PAYMENTS_RECEIPT_PAYMENT_SUBJECT', default='service')

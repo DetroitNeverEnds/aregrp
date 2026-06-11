@@ -91,10 +91,12 @@ buildings:
 # ───────────────────────────────────────────────────────────────────
 
 floors:
-  - GET /floors/<building_uuid>/<floor_number>
+  - GET /floors/<building_uuid>/<floor_id>
     данные этажа:
       building_uuid: string
-      floor_number: number
+      floor_id: string
+      title: string
+      floor_number: number   # deprecated
       schema_svg: string # содержимое SVG или null
       premises:
         - uuid: string
@@ -120,7 +122,7 @@ premises:
         name: string
         price: number
         address: string
-        floor: number      # optional
+        floor_id: string   # optional
         area: number
         has_tenant: boolean
         media: object
@@ -136,7 +138,7 @@ premises:
       name: string
       price: number
       address: string
-      floor: number
+      floor_id: string
       area: number
       has_tenant: boolean
       media: object
@@ -147,8 +149,22 @@ premises:
       has_parking: boolean
       is_furnished: boolean
 
-  - GET /premises/link?uuid=...
-    referral-ссылка
+  - POST /referrals/links
+    генерация реферальной ссылки для помещения
+    body:
+      premise_uuid: string
+      phone: string
+    response:
+      code: string
+      url: string
+      premise_uuid: string
+      created_at: string
+
+payments:
+  - POST /payments/
+    создание платежа
+    notes:
+      - если в cookie есть referral_code и код соответствует помещению, ссылка привязывается к платежу
 
 
 # ───────────────────────────────────────────────────────────────────

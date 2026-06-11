@@ -37,6 +37,7 @@ import { Link } from '@/components/ui/common/Link';
 import { useLoginLink } from '@/lib/getAuthLink';
 import { YandexMap } from '@/components/ui/common/YandexMap';
 import { MapPin } from '@/components/ui/common/MapPin';
+import { useCreatePaymentMutation } from '@/mutations';
 
 type BuildingInfo = BuildingDetailOut;
 
@@ -90,6 +91,23 @@ const PremiseDetailsCardContent = ({
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
+    const createPaymentM = useCreatePaymentMutation();
+
+    const onBookClick = useCallback(async () => {
+        createPaymentM.reset();
+
+        try {
+            const payment = await createPaymentM.mutateAsync({ premise_uuid: premise.uuid });
+            const confirmationUrl = payment.confirmation?.confirmation_url;
+
+            if (confirmationUrl) {
+                window.location.assign(confirmationUrl);
+                return;
+            }
+        } catch {
+            return;
+        }
+    }, [createPaymentM, premise.uuid]);
 
     return (
         <>
@@ -150,7 +168,7 @@ const PremiseDetailsCardContent = ({
                     </Text>
 
                     <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.floor')}: {premise.floor}
+                        {t('pages.building.floor')}: {premise.floor_id}
                     </Text>
 
                     <Text variant="14-reg" color="gray-70">
@@ -164,7 +182,12 @@ const PremiseDetailsCardContent = ({
             {canBook && (
                 <Flex direction="row" gap={6} align="stretch" fullWidth>
                     <Column gap={6} align="center">
-                        <Button variant="primary" width="max" disabled={!isAuthenticated}>
+                        <Button
+                            variant="primary"
+                            width="max"
+                            disabled={!isAuthenticated || createPaymentM.isPending}
+                            onClick={onBookClick}
+                        >
                             {t('pages.building.book')}
                         </Button>
                         {!isAuthenticated && (
@@ -173,6 +196,12 @@ const PremiseDetailsCardContent = ({
                                     {t('pages.building.authToBook.auth')}
                                 </Link>
                                 {t('pages.building.authToBook.toBook')}
+                            </Text>
+                        )}
+                        {isAuthenticated && createPaymentM.error && (
+                            <Text color="error-default" variant="12-reg">
+                                {/* {createPaymentM.error.detail || t('errors.somethingWrong')} */}
+                                {t(`errors.${createPaymentM.error.code}`)}
                             </Text>
                         )}
                     </Column>
@@ -319,14 +348,12 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     useEffect(() => {
-        if (
-            selectedPremiseQ.data?.data &&
-            String(selectedPremiseQ.data?.data.floor) !== String(currentFloor)
-        ) {
+        const premiseFloorId = selectedPremiseQ.data?.data?.floor_id;
+        if (premiseFloorId && premiseFloorId !== currentFloor) {
             setSearchParams(
                 toSearchParams({
                     ...params,
-                    floor: String(selectedPremiseQ.data?.data.floor),
+                    floor: premiseFloorId,
                     selectedPremise: undefined,
                 }),
             );
@@ -363,7 +390,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
             <Flex direction="row" gap={24} fullWidth align="start">
                 {device === 'desktop' && (selectedPremise || buildingMedia.length > 0) && (
                     <Card withShadow className={classNames(styles.officeCard)} align="start">
-                        <Flex gap={12} className={styles.officeCard__content}>
+                        <Flex gap={12} className={styles.officeCard__content} align="start">
                             {selectedPremise ? (
                                 <QueryBoundary
                                     query={selectedPremiseQ}
@@ -383,14 +410,22 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     onRetry="default"
                                 />
                             ) : (
-                                <Gallery
-                                    media={buildingMedia}
-                                    type="full"
-                                    size="m"
-                                    fit="cover"
-                                    orientation="vertical"
-                                    className={styles.buildingMediaSidebar}
-                                />
+                                <>
+                                    <Text
+                                        variant="20-med"
+                                        className={styles.officeCard__content__title}
+                                    >
+                                        Места общего пользования
+                                    </Text>
+                                    <Gallery
+                                        media={buildingMedia}
+                                        type="full"
+                                        size="m"
+                                        fit="cover"
+                                        orientation="vertical"
+                                        className={styles.buildingMediaSidebar}
+                                    />
+                                </>
                             )}
                         </Flex>
                     </Card>
@@ -404,6 +439,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             )
                         }
                         gap={20}
+                        lockBodyScroll
                     >
                         <QueryBoundary
                             query={selectedPremiseQ}
@@ -424,7 +460,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                         />
                     </Sheet>
                 )}
-                <Card size="xl" background="gray" className={styles.floorSchema} gap={65}>
+                <Card size="xl" background="gray" className={styles.floorSchema} gap={20}>
                     <>
                         <Flex
                             direction="row"
@@ -433,7 +469,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             fullWidth
                             className={breakpointStyles.desktopOnly}
                         >
-                            <Text variant="h2" className={styles.floorSchema__header__text}>
+                            <Text variant="h3" className={styles.floorSchema__header__text}>
                                 {buildingInfo?.title}
                             </Text>
                             <SingleSelect<SaleType>
@@ -465,7 +501,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                         </Flex>
                     </>
 
-                    <Flex gap={40} fullWidth className={styles.a}>
+                    <Flex gap={20} fullWidth className={styles.a}>
                         <Flex direction="row" gap={20} wrap="wrap">
                             {legend.map(({ title, style }) => (
                                 <Flex key={title} direction="row" gap={8}>
