@@ -123,6 +123,7 @@ premises:
         price: number
         address: string
         floor_id: string   # optional
+        floor_title: string   # optional
         area: number
         has_tenant: boolean
         media: object
@@ -139,6 +140,7 @@ premises:
       price: number
       address: string
       floor_id: string
+      floor_title: string   # optional
       area: number
       has_tenant: boolean
       media: object

@@ -2,7 +2,7 @@
 Схемы API для объектов недвижимости (помещения).
 
 Используются в GET /premises (список с фильтрами и пагинацией) и GET /premises/{uuid} (деталь).
-Поля ответа: uuid, name (название title, не room_number), price (legacy), sale_price, rent_price, адрес, floor_id, площадь, has_tenant, media.
+Поля ответа: uuid, name (название title, не room_number), price (legacy), sale_price, rent_price, адрес, floor_id, floor_title, площадь, has_tenant, media.
 """
 from decimal import Decimal
 from typing import Literal, Optional
@@ -44,6 +44,7 @@ class PremiseListOut(Schema):
     rent_price: Optional[int] = None
     address: str
     floor_id: Optional[str] = None
+    floor_title: Optional[str] = None
     area: Decimal
     has_tenant: bool
     media: list[BaseMediaItemOut]

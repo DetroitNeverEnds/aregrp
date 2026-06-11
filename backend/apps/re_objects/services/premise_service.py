@@ -511,6 +511,11 @@ def _premise_rent_price_for_api(p: Premise) -> Optional[int]:
     return p.price_per_month if p.available_for_rent else None
 
 
+def _premise_floor_title_for_api(p: Premise) -> Optional[str]:
+    """Название этажа (Floor.title), если этаж задан."""
+    return p.floor.title if p.floor else None
+
+
 def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseListOut:
     """Маппинг Premise -> PremiseListOut; price — full_sell_price или price_per_month по типу запроса."""
     return PremiseListOut(
@@ -522,6 +527,7 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
         floor_id=str(p.floor_id) if p.floor_id is not None else None,
+        floor_title=_premise_floor_title_for_api(p),
         area=p.area,
         has_tenant=has_tenant_value(available_for_rent=p.available_for_rent),
         media=_build_premise_media(p),
@@ -543,6 +549,7 @@ def premise_to_detail_out(
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
         floor_id=str(p.floor_id) if p.floor_id is not None else None,
+        floor_title=_premise_floor_title_for_api(p),
         area=p.area,
         has_tenant=tenant,
         media=_build_premise_media(p),
