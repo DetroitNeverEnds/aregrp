@@ -803,6 +803,7 @@ class TestPremisesList:
             assert "rent_price" in item
             assert "address" in item
             assert "floor_id" in item
+            assert "floor_title" in item
             assert "area" in item
             assert "has_tenant" in item
             assert "media" in item
@@ -967,6 +968,7 @@ class TestPremiseDetail:
         assert data["sale_price"] is None
         assert "address" in data
         assert data["floor_id"] == str(premise.floor_id)
+        assert data["floor_title"] == premise.floor.title
         assert "area" in data
         assert "description" in data
         assert "media" in data
