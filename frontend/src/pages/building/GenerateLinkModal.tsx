@@ -140,7 +140,7 @@ const GenerateLinkModalContent = ({
                     {t('pages.building.area')}: {premise.area} м²
                 </Text>
                 <Text variant="14-reg">
-                    {t('pages.building.floor')}: {premise.floor_id ?? '—'}
+                    {t('pages.building.floor')}: {premise.floor?.title ?? premise.floor?.id ?? '—'}
                 </Text>
                 <Text variant="14-reg">
                     {t('pages.building.tenant')}:{' '}

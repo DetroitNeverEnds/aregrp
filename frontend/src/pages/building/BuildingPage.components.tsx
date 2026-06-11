@@ -168,7 +168,7 @@ const PremiseDetailsCardContent = ({
                     </Text>
 
                     <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.floor')}: {premise.floor_id}
+                        {t('pages.building.floor')}: {premise.floor?.title ?? premise.floor?.id ?? '—'}
                     </Text>
 
                     <Text variant="14-reg" color="gray-70">
@@ -348,7 +348,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     const selectedPremiseQ = usePremiseDetail(selectedPremise);
 
     useEffect(() => {
-        const premiseFloorId = selectedPremiseQ.data?.data?.floor_id;
+        const premiseFloorId = selectedPremiseQ.data?.data?.floor?.id;
         if (premiseFloorId && premiseFloorId !== currentFloor) {
             setSearchParams(
                 toSearchParams({
