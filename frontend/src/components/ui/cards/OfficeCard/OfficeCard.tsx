@@ -58,7 +58,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
             search.sale_type = type;
         }
         return `/building/${building_uuid}?${new URLSearchParams(search)}`;
-    }, [building_uuid, floor?.id, type, uuid]);
+    }, [building_uuid, floor, type, uuid]);
     const navigateToOffice = () => {
         navigate(link);
         window.scrollTo({ top: 0 });
@@ -67,7 +67,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
     const traits = useMemo(() => {
         return [
             { label: 'Адрес', value: address },
-            { label: 'Этаж', value: floor?.title ?? floor?.id ?? '—' },
+            { label: '', value: floor?.title ?? floor?.id ?? '—' },
             { label: 'Площадь', value: `${area} м²` },
             {
                 label: 'Арендатор',

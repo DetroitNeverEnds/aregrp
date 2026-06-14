@@ -164,13 +164,11 @@ const PremiseDetailsCardContent = ({
                         {t('pages.building.address')}: {premise.address}
                     </Text>
                     <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.area')}: {premise.area}
+                        {premise.floor?.title ?? premise.floor?.id ?? '—'}
                     </Text>
-
                     <Text variant="14-reg" color="gray-70">
-                        {t('pages.building.floor')}: {premise.floor?.title ?? premise.floor?.id ?? '—'}
+                        {t('pages.building.area')}: {premise.area} м²
                     </Text>
-
                     <Text variant="14-reg" color="gray-70">
                         {t('pages.building.tenant')}:{' '}
                         {premise.has_tenant
