@@ -535,6 +535,20 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                 </Card>
             </Flex>
 
+            {device === 'mobile' && (
+                <Flex gap={8} align="start">
+                    <Text variant="20-med">Места общего пользования</Text>
+                    <Gallery
+                        media={buildingMedia}
+                        type="thumbs"
+                        size="m"
+                        fit="cover"
+                        orientation="horizontal"
+                        className={styles.buildingMediaSidebar}
+                    />
+                </Flex>
+            )}
+
             {/* Каталог других офисов */}
             <Container>
                 <BetweenRowLayout>
