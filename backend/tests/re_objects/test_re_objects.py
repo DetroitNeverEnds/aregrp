@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from asgiref.sync import sync_to_async
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 from apps.bookings.models import Booking
@@ -972,6 +973,54 @@ class TestPremiseDetail:
         assert "area" in data
         assert "description" in data
         assert "media" in data
+        assert data.get("presentation_url") is None
+
+    async def test_premise_detail_includes_video_and_presentation(self, client, city):
+        """Деталь помещения: video в media и presentation_url."""
+
+        @sync_to_async
+        def _create():
+            building = Building.objects.create(
+                name='БЦ Медиа',
+                address='ул. Медиа, 3',
+                city=city,
+                description='',
+            )
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
+            premise = Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('50'),
+                price_per_month=80_000,
+                available_for_rent=True,
+                room_number='M3',
+            )
+            from apps.re_objects.models import PremiseVideo
+
+            PremiseVideo.objects.bulk_create(
+                [
+                    PremiseVideo(
+                        premise=premise,
+                        file='premises/99/videos/1/clip.mp4',
+                        card='premises/99/videos/1/card.webp',
+                        order=1,
+                    ),
+                ]
+            )
+            pdf = SimpleUploadedFile('office.pptx', b'pptx-bytes', content_type='application/vnd.ms-powerpoint')
+            premise.presentation.save('office.pptx', pdf, save=True)
+            return premise
+
+        premise = await _create()
+        response = await client.get(f'/premises/{premise.uuid}')
+
+        assert response.status_code == 200
+        data = response.json()
+        video = next(m for m in data['media'] if m['type'] == 'video')
+        assert video['url'].endswith('card.webp')
+        assert video['full_url'].endswith('clip.mp4')
+        assert data['presentation_url'].endswith('.pptx')
 
     async def test_premise_detail_sale_type_uses_full_sell_price(self, client, city):
         """sale_type=sale: price равен full_sell_price."""

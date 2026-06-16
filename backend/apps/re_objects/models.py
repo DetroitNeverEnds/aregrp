@@ -242,6 +242,17 @@ class Floor(models.Model):
         super().save(*args, **kwargs)
 
 
+PRESENTATION_EXTENSIONS = ('pdf', 'ppt', 'pptx')
+
+
+def premise_presentation_upload_path(instance, filename):
+    """Путь для презентации помещения (pdf / ppt / pptx)."""
+    ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else 'pdf'
+    if ext not in PRESENTATION_EXTENSIONS:
+        ext = 'pdf'
+    return f'premises/{instance.pk}/presentation/{uuid.uuid4().hex}.{ext}'
+
+
 class Premise(models.Model):
     """
     Помещение (основная единица для поиска и аренды).
@@ -386,7 +397,18 @@ class Premise(models.Model):
         verbose_name="С мебелью",
         help_text="Помещение с мебелью"
     )
-    
+    presentation = models.FileField(
+        upload_to=premise_presentation_upload_path,
+        verbose_name='Презентация',
+        help_text='PDF, PPT или PPTX',
+        storage=None,
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf', 'ppt', 'pptx']),
+        ],
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -482,6 +504,16 @@ def premise_image_upload_path(instance, filename):
     return f'premises/{instance.premise_id}/images/{_media_slot_subdir(instance)}/{filename}'
 
 
+def premise_video_upload_path(instance, filename):
+    """Оригинальное видео помещения в слоте вместе с card.webp."""
+    return f'premises/{instance.premise_id}/videos/{_media_slot_subdir(instance)}/{filename}'
+
+
+def premise_video_card_upload_path(instance, filename):
+    """Превью видео помещения в том же слоте, что и файл ролика."""
+    return f'premises/{instance.premise_id}/videos/{_media_slot_subdir(instance)}/{filename}'
+
+
 def building_image_upload_path(instance, filename):
     """Генерирует путь для файлов изображения здания (original / card / detail)."""
     return f'buildings/{instance.building_id}/images/{_media_slot_subdir(instance)}/{filename}'
@@ -502,7 +534,7 @@ class MediaFilesMixin(models.Model):
     Миксин с общими полями для медиафайлов.
 
     PremiseImage / BuildingImage: original, card, detail.
-    BuildingVideo: file (оригинал ролика), card.
+    PremiseVideo / BuildingVideo: file (оригинал ролика), card.
     """
     title = models.CharField(
         max_length=200,
@@ -641,6 +673,109 @@ class PremiseImage(MediaFilesMixin, models.Model):
             self._maybe_build_image_derivatives()
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class PremiseVideo(MediaFilesMixin, models.Model):
+    """
+    Видео помещения: оригинал ролика + card.webp (первый кадр).
+    """
+    premise = models.ForeignKey(
+        Premise,
+        on_delete=models.CASCADE,
+        related_name='videos',
+        verbose_name='Помещение',
+        help_text='Помещение, к которому относится видео',
+    )
+    file = models.FileField(
+        upload_to=premise_video_upload_path,
+        verbose_name='Видео',
+        help_text='Оригинальный видеофайл',
+        storage=None,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=['mp4', 'mov', 'avi', 'webm'],
+            ),
+        ],
+    )
+    card = models.ImageField(
+        upload_to=premise_video_card_upload_path,
+        verbose_name='Превью карточки',
+        help_text='WebP с первого кадра (ffmpeg), вписано в 560×300 без обрезки',
+        storage=None,
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['webp'])],
+    )
+
+    class Meta:
+        verbose_name = 'Видео помещения'
+        verbose_name_plural = 'Видео помещений'
+        ordering = ['premise', 'order', 'created_at']
+        indexes = [
+            models.Index(fields=['premise']),
+        ]
+        db_table = 're_premise_videos'
+
+    def __str__(self):
+        return f'Видео для {self.premise} ({self.order})'
+
+    def clean(self):
+        if not self.premise_id:
+            return
+
+    def _needs_video_card(self, prev_file_name: str | None) -> bool:
+        if not self.file:
+            return False
+        if not self.card:
+            return True
+        if prev_file_name is None:
+            return True
+        return prev_file_name != self.file.name
+
+    def save(self, *args, **kwargs):
+        uf = kwargs.get('update_fields')
+        if uf is not None and set(uf) == {'card'}:
+            return super().save(*args, **kwargs)
+
+        update_fields = kwargs.get('update_fields')
+        skip_card = (
+            update_fields is not None
+            and 'file' not in update_fields
+            and self.card
+        )
+
+        prev_file_name = None
+        if self.pk:
+            prev_file_name = (
+                PremiseVideo.objects.filter(pk=self.pk).values_list('file', flat=True).first()
+            )
+
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+        if skip_card:
+            return
+
+        if not self._needs_video_card(prev_file_name):
+            return
+
+        from .services.media_processing import FFmpegNotFoundError, video_file_to_card_webp
+
+        try:
+            card_cf = video_file_to_card_webp(self.file)
+        except FFmpegNotFoundError as exc:
+            raise ValidationError(
+                {'file': 'Для загрузки видео нужен ffmpeg в PATH сервера.'},
+            ) from exc
+        except Exception as exc:
+            raise ValidationError(
+                {'file': f'Не удалось сделать превью видео: {exc}'},
+            ) from exc
+
+        if self.card:
+            self.card.delete(save=False)
+        self.card = card_cf
+        super().save(update_fields=['card'])
 
 
 class BuildingImage(MediaFilesMixin, models.Model):

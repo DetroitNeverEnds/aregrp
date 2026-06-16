@@ -8,7 +8,7 @@
 """
 from django.core.management.base import BaseCommand
 
-from apps.re_objects.models import BuildingImage, BuildingVideo, PremiseImage
+from apps.re_objects.models import BuildingImage, BuildingVideo, PremiseImage, PremiseVideo
 
 
 class Command(BaseCommand):
@@ -50,23 +50,25 @@ class Command(BaseCommand):
                     errors.append(f'{label} pk={obj.pk}: {exc}')
                     self.stderr.write(self.style.ERROR(f'{label} pk={obj.pk}: {exc}'))
 
-        for vid in BuildingVideo.objects.iterator():
-            if not vid.file:
-                continue
-            if dry_run:
-                self.stdout.write(f'BuildingVideo pk={vid.pk} (dry-run)')
-                n_vid_ok += 1
-                continue
-            try:
-                if vid.card:
-                    vid.card.delete(save=False)
-                vid.card = None
-                vid.save()
-                n_vid_ok += 1
-                self.stdout.write(f'BuildingVideo pk={vid.pk} OK')
-            except Exception as exc:
-                errors.append(f'BuildingVideo pk={vid.pk}: {exc}')
-                self.stderr.write(self.style.ERROR(f'BuildingVideo pk={vid.pk}: {exc}'))
+        for model in (BuildingVideo, PremiseVideo):
+            label = model.__name__
+            for vid in model.objects.iterator():
+                if not vid.file:
+                    continue
+                if dry_run:
+                    self.stdout.write(f'{label} pk={vid.pk} (dry-run)')
+                    n_vid_ok += 1
+                    continue
+                try:
+                    if vid.card:
+                        vid.card.delete(save=False)
+                    vid.card = None
+                    vid.save()
+                    n_vid_ok += 1
+                    self.stdout.write(f'{label} pk={vid.pk} OK')
+                except Exception as exc:
+                    errors.append(f'{label} pk={vid.pk}: {exc}')
+                    self.stderr.write(self.style.ERROR(f'{label} pk={vid.pk}: {exc}'))
 
         if dry_run:
             self.stdout.write(
