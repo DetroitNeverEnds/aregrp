@@ -45,6 +45,7 @@ from ..schemas import (
     FloorPremiseOut,
     FloorResponseOut,
     PremiseDetailOut,
+    PremiseFloorOut,
     PremiseListOut,
     PremiseListResponse,
 )
@@ -511,9 +512,11 @@ def _premise_rent_price_for_api(p: Premise) -> Optional[int]:
     return p.price_per_month if p.available_for_rent else None
 
 
-def _premise_floor_title_for_api(p: Premise) -> Optional[str]:
-    """Название этажа (Floor.title), если этаж задан."""
-    return p.floor.title if p.floor else None
+def _premise_floor_for_api(p: Premise) -> Optional[PremiseFloorOut]:
+    """Этаж помещения: id и title, если этаж задан."""
+    if not p.floor:
+        return None
+    return PremiseFloorOut(id=str(p.floor.id), title=p.floor.title)
 
 
 def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseListOut:
@@ -526,8 +529,7 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
-        floor_id=str(p.floor_id) if p.floor_id is not None else None,
-        floor_title=_premise_floor_title_for_api(p),
+        floor=_premise_floor_for_api(p),
         area=p.area,
         has_tenant=has_tenant_value(available_for_rent=p.available_for_rent),
         media=_build_premise_media(p),
@@ -548,8 +550,7 @@ def premise_to_detail_out(
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
-        floor_id=str(p.floor_id) if p.floor_id is not None else None,
-        floor_title=_premise_floor_title_for_api(p),
+        floor=_premise_floor_for_api(p),
         area=p.area,
         has_tenant=tenant,
         media=_build_premise_media(p),

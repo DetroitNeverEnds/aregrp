@@ -27,7 +27,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
         name,
         address,
         area,
-        floor_id,
+        floor,
         has_tenant,
         building_uuid,
         rent_price,
@@ -51,14 +51,14 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
         const search: Record<string, string> = {
             selectedPremise: uuid,
         };
-        if (floor_id) {
-            search.floor = floor_id;
+        if (floor?.id) {
+            search.floor = floor.id;
         }
         if (type === 'sale' || type === 'rent') {
             search.sale_type = type;
         }
         return `/building/${building_uuid}?${new URLSearchParams(search)}`;
-    }, [building_uuid, floor_id, type, uuid]);
+    }, [building_uuid, floor, type, uuid]);
     const navigateToOffice = () => {
         navigate(link);
         window.scrollTo({ top: 0 });
@@ -67,7 +67,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
     const traits = useMemo(() => {
         return [
             { label: 'Адрес', value: address },
-            { label: 'Этаж', value: floor_id ?? '—' },
+            { label: '', value: floor?.title ?? floor?.id ?? '—' },
             { label: 'Площадь', value: `${area} м²` },
             {
                 label: 'Арендатор',
@@ -76,7 +76,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                     : t(`components.OfficeCard.noTennant`),
             },
         ];
-    }, [address, area, floor_id, has_tenant, t]);
+    }, [address, area, floor?.id, floor?.title, has_tenant, t]);
 
     return (
         <div className={styles.officeCard}>
