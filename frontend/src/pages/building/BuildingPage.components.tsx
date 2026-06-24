@@ -258,6 +258,7 @@ type BuildingContentProps = {
 
 export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) => {
     const { t } = useTranslation();
+    const presentation = buildingInfo.presentation?.trim() || null;
 
     const [params, _rawParams, setSearchParams] = useTypedSearchParams(parseBuildingSearchParams);
     const setSaleType = useCallback(
@@ -470,14 +471,27 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             <Text variant="h3" className={styles.floorSchema__header__text}>
                                 {buildingInfo?.title}
                             </Text>
-                            <SingleSelect<SaleType>
-                                options={[
-                                    { label: { title: t('common.sale') }, value: 'sale' },
-                                    { label: { title: t('common.rent') }, value: 'rent' },
-                                ]}
-                                onChange={val => setSaleType(val || 'sale')}
-                                value={saleType}
-                            />
+                            <Flex direction="row" gap={16} align="center">
+                                {presentation && (
+                                    <Link
+                                        to={presentation}
+                                        variant="external"
+                                        target="_blank"
+                                        leadingIcon="download-rounded"
+                                        className={styles.floorSchema__header__link}
+                                    >
+                                        {t('pages.building.downloadPresentation')}
+                                    </Link>
+                                )}
+                                <SingleSelect<SaleType>
+                                    options={[
+                                        { label: { title: t('common.sale') }, value: 'sale' },
+                                        { label: { title: t('common.rent') }, value: 'rent' },
+                                    ]}
+                                    onChange={val => setSaleType(val || 'sale')}
+                                    value={saleType}
+                                />
+                            </Flex>
                         </Flex>
                         <Flex
                             align="start"
@@ -496,6 +510,17 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             <Text variant="h2" className={styles.floorSchema__header__text}>
                                 {buildingInfo?.title}
                             </Text>
+                            {presentation && (
+                                <Link
+                                    to={presentation}
+                                    variant="external"
+                                    target="_blank"
+                                    leadingIcon="download-rounded"
+                                    className={styles.floorSchema__header__link}
+                                >
+                                    {t('pages.building.downloadPresentation')}
+                                </Link>
+                            )}
                         </Flex>
                     </>
 

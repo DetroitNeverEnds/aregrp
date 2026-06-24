@@ -94,6 +94,13 @@ class City(models.Model):
         super().save(*args, **kwargs)
 
 
+def building_presentation_upload_path(instance, filename):
+    """Генерирует путь для файла презентации здания."""
+    safe_name = filename or 'presentation'
+    building_ref = instance.uuid or instance.pk or 'new'
+    return f'buildings/{building_ref}/presentation/{safe_name}'
+
+
 class Building(models.Model):
     """
     Здание.
@@ -160,6 +167,16 @@ class Building(models.Model):
         help_text="Географическая долгота (WGS-84), от −180 до 180",
         validators=[MinValueValidator(Decimal("-180")), MaxValueValidator(Decimal("180"))],
     )
+    presentation = models.FileField(
+        upload_to=building_presentation_upload_path,
+        verbose_name='Презентация',
+        help_text='Файл презентации здания (PDF, PPT, PPTX)',
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf', 'ppt', 'pptx']),
+        ],
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -171,7 +188,6 @@ class Building(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.city.name})"
-
 
 def floor_schema_svg_upload_path(instance, filename):
     """Генерирует путь для SVG-схемы этажа."""
