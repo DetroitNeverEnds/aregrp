@@ -547,8 +547,43 @@ class TestBuildingDetail:
         }
         assert "media_categories" in data
         assert "media" in data
+        assert "presentation" in data
+        assert data["presentation"] is None
         assert isinstance(data["media_categories"], list)
         assert isinstance(data["media"], list)
+
+    async def test_building_detail_returns_presentation_url(self, client, city):
+        """Если у здания есть презентация, API отдает её URL в поле presentation."""
+
+        @sync_to_async
+        def setup():
+            building = Building.objects.create(
+                name='БЦ С презентацией',
+                address='ул. Презентационная, 1',
+                city=city,
+                description='',
+                presentation='buildings/test/presentation/demo.pdf',
+            )
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('50'),
+                price_per_month=60_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='P-01',
+            )
+            return building
+
+        building = await setup()
+        response = await client.get(f'/buildings/{building.uuid}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['presentation'] is not None
+        assert data['presentation'].endswith('demo.pdf')
 
     async def test_building_detail_floors_availability_flags(self, client, city):
         """floors: has_sale/has_rent считаются только по флагам помещений на каждом этаже."""

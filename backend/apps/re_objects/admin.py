@@ -203,8 +203,30 @@ class BuildingAdmin(admin.ModelAdmin):
     search_fields = ('name', 'address', 'city__name')
     ordering = ('city', 'name')
     autocomplete_fields = ['city']
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'presentation_link')
     inlines = [BuildingImageInline, BuildingVideoInline]
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('name', 'address', 'city', 'description'),
+        }),
+        ('Параметры здания', {
+            'fields': ('total_floors', 'year_built', 'latitude', 'longitude'),
+        }),
+        ('Презентация', {
+            'fields': ('presentation', 'presentation_link'),
+        }),
+        ('Системная информация', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',),
+        }),
+    )
+
+    def presentation_link(self, obj):
+        if not obj.presentation:
+            return '-'
+        return format_html('<a href="{}" target="_blank">Открыть презентацию</a>', obj.presentation.url)
+
+    presentation_link.short_description = 'Ссылка на презентацию'
 
 
 @admin.register(Floor)
