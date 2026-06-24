@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
 import type { Viewer } from '@photo-sphere-viewer/core';
@@ -7,8 +7,8 @@ import { Modal } from '@/components/ui/common/Modal';
 import { Text } from '@/components/ui/common/Text';
 import styles from './PanoramaModal.module.scss';
 
-const SECOND_PANORAMA_URL =
-    'https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/cayley_interior.jpg';
+const SECOND_PANORAMA_URL = '/panoramas/panorama-2.jpg';
+const THIRD_PANORAMA_URL = '/panoramas/panorama-3.jpg';
 
 const HOTSPOT_HTML = (label: string) =>
     `<div style="
@@ -37,8 +37,14 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = ({
     panoramaUrl,
     title,
 }) => {
-    const viewerRef = useRef<Viewer | null>(null);
-    const [isSecond, setIsSecond] = useState(false);
+    const panoramaUrls = useMemo(() => [panoramaUrl, SECOND_PANORAMA_URL, THIRD_PANORAMA_URL], [panoramaUrl]);
+    const [activePanoramaIndex, setActivePanoramaIndex] = useState(0);
+
+    useEffect(() => {
+        if (open) {
+            setActivePanoramaIndex(0);
+        }
+    }, [open, panoramaUrl]);
 
     const plugins = useMemo(
         () => [
@@ -47,11 +53,18 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = ({
                 {
                     markers: [
                         {
-                            id: 'go-next',
+                            id: 'go-next-room',
                             position: { yaw: '20deg', pitch: '0deg' },
                             html: HOTSPOT_HTML('Следующая комната'),
                             anchor: 'center center',
                             tooltip: 'Перейти в следующую комнату',
+                        },
+                        {
+                            id: 'go-prev-room',
+                            position: { yaw: '200deg', pitch: '0deg' },
+                            html: HOTSPOT_HTML('Предыдущая комната'),
+                            anchor: 'center center',
+                            tooltip: 'Вернуться в предыдущую комнату',
                         },
                     ],
                 },
@@ -62,38 +75,24 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = ({
 
     const onReady = useCallback(
         (viewer: Viewer) => {
-            viewerRef.current = viewer;
             const markersPlugin = viewer.getPlugin<MarkersPlugin>(MarkersPlugin);
 
             markersPlugin.addEventListener('select-marker', ({ marker }) => {
-                if (marker.id === 'go-next') {
-                    setIsSecond(true);
-                    viewer.setPanorama(SECOND_PANORAMA_URL).then(() => {
-                        markersPlugin.clearMarkers();
-                        markersPlugin.addMarker({
-                            id: 'go-back',
-                            position: { yaw: '180deg', pitch: '0deg' },
-                            html: HOTSPOT_HTML('Вернуться назад'),
-                            anchor: 'center center',
-                            tooltip: 'Вернуться в предыдущую комнату',
-                        });
+                if (marker.id === 'go-next-room') {
+                    const nextIndex = (activePanoramaIndex + 1) % panoramaUrls.length;
+                    viewer.setPanorama(panoramaUrls[nextIndex]).then(() => {
+                        setActivePanoramaIndex(nextIndex);
                     });
-                } else if (marker.id === 'go-back') {
-                    setIsSecond(false);
-                    viewer.setPanorama(panoramaUrl).then(() => {
-                        markersPlugin.clearMarkers();
-                        markersPlugin.addMarker({
-                            id: 'go-next',
-                            position: { yaw: '20deg', pitch: '0deg' },
-                            html: HOTSPOT_HTML('Следующая комната'),
-                            anchor: 'center center',
-                            tooltip: 'Перейти в следующую комнату',
-                        });
+                } else if (marker.id === 'go-prev-room') {
+                    const prevIndex =
+                        (activePanoramaIndex - 1 + panoramaUrls.length) % panoramaUrls.length;
+                    viewer.setPanorama(panoramaUrls[prevIndex]).then(() => {
+                        setActivePanoramaIndex(prevIndex);
                     });
                 }
             });
         },
-        [panoramaUrl],
+        [activePanoramaIndex, panoramaUrls],
     );
 
     return (
@@ -106,12 +105,12 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = ({
             {title && (
                 <Text variant="20-med" className={styles.panoramaModal__title}>
                     {title}
-                    {isSecond && ' — Следующая комната'}
+                    {` — Комната ${activePanoramaIndex + 1} из ${panoramaUrls.length}`}
                 </Text>
             )}
             <div className={styles.panoramaModal__viewer}>
                 <ReactPhotoSphereViewer
-                    src={panoramaUrl}
+                    src={panoramaUrls[activePanoramaIndex]}
                     height="100%"
                     width="100%"
                     navbar={['zoom', 'fullscreen']}

@@ -28,8 +28,7 @@ import MedicalCrossIcon from './medical-cross.svg?react';
 import { GenerateLinkModal } from './GenerateLinkModal';
 import { PanoramaModal } from '@/components/ui/common/PanoramaModal';
 
-const DEMO_PANORAMA_URL =
-    'https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/large_corridor.jpg';
+const DEMO_PANORAMA_URL = '/panoramas/panorama-1.jpg';
 
 import styles from './BuildingPage.module.scss';
 import { SingleSelect } from '@/components/ui/common/input/Select';
