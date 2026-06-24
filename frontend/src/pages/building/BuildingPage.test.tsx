@@ -165,7 +165,7 @@ describe('BuildingPage', () => {
             wrapper: createWrapper(['/building/test-uuid']),
         });
 
-        const hasPresentationLink = screen.getAllByRole('link').some(link => {
+        const hasPresentationLink = screen.queryAllByRole('link').some(link => {
             const href = link.getAttribute('href') || '';
             return href.includes('presentation');
         });
