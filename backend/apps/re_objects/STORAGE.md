@@ -5,8 +5,11 @@
 ## Структура моделей
 
 - `PremiseImage` - изображения помещений
+- `PremiseVideo` - видео помещений
 - `BuildingImage` - изображения зданий
 - `BuildingVideo` - видео зданий
+
+На модели `Premise` также есть поле `presentation` (pdf / ppt / pptx) — один документ на помещение.
 
 Все модели наследуются от `MediaFilesMixin`, который содержит общие поля:
 - `title` - название файла
@@ -30,8 +33,12 @@ media/
   premises/
     {premise_id}/
       images/
-        image1.jpg
-        image2.png
+        {slot}/...
+      videos/
+        {slot}/video.mp4
+        {slot}/card.webp
+      presentation/
+        {uuid}.pdf
   buildings/
     {building_id}/
       images/

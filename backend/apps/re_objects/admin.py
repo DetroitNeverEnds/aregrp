@@ -13,6 +13,7 @@ from .models import (
     Floor,
     Premise,
     PremiseImage,
+    PremiseVideo,
     Region,
 )
 
@@ -56,6 +57,44 @@ class PremiseImageInline(admin.TabularInline):
         return mark_safe('&nbsp;'.join(str(p) for p in parts))
 
     file_preview.short_description = 'Превью / ссылки'
+
+
+class PremiseVideoInline(admin.TabularInline):
+    """Inline для видео помещений."""
+    model = PremiseVideo
+    extra = 1
+    fields = ('file', 'card', 'title', 'order', 'file_preview')
+    readonly_fields = ('card', 'file_preview')
+    verbose_name = 'Видео'
+    verbose_name_plural = 'Видео'
+
+    def file_preview(self, obj):
+        """Превью кадра и ссылка на ролик."""
+        if not obj.pk:
+            return '-'
+        parts = []
+        if obj.card:
+            parts.append(
+                format_html(
+                    '<img src="{}" style="max-width: 100px; max-height: 56px; border-radius: 4px; object-fit: contain; background: #f0f0f0;" />',
+                    obj.card.url,
+                )
+            )
+        if obj.file:
+            parts.append(
+                format_html(
+                    '<a href="{}" target="_blank" style="display: inline-block; padding: 4px 8px; '
+                    'background: #007cba; color: white; text-decoration: none; border-radius: 3px;">видео</a>',
+                    obj.file.url,
+                )
+            )
+        if not parts:
+            return '-'
+        if len(parts) == 1:
+            return parts[0]
+        return mark_safe('&nbsp;'.join(str(p) for p in parts))
+
+    file_preview.short_description = 'Превью / ссылка'
 
 
 @admin.register(Region)
@@ -197,8 +236,8 @@ class PremiseAdmin(admin.ModelAdmin):
         'description', 'building__address'
     )
     ordering = ('city', 'building', 'floor__number', 'room_number', 'title')
-    readonly_fields = ('created_at', 'updated_at', 'full_sell_price')
-    inlines = [PremiseImageInline]
+    readonly_fields = ('created_at', 'updated_at', 'full_sell_price', 'presentation_preview')
+    inlines = [PremiseImageInline, PremiseVideoInline]
 
     fieldsets = (
         ('Основная информация', {
@@ -219,11 +258,27 @@ class PremiseAdmin(admin.ModelAdmin):
         ('Описание', {
             'fields': ('description',)
         }),
+        ('Документы', {
+            'fields': ('presentation', 'presentation_preview'),
+        }),
         ('Системная информация', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
+
+    def presentation_preview(self, obj):
+        """Ссылка на загруженную презентацию."""
+        if not obj.pk or not obj.presentation:
+            return '-'
+        name = obj.presentation.name.rsplit('/', 1)[-1]
+        return format_html(
+            '<a href="{}" target="_blank">{}</a>',
+            obj.presentation.url,
+            name,
+        )
+
+    presentation_preview.short_description = 'Скачать презентацию'
     
     def floor_info(self, obj):
         """Информация об этаже."""
