@@ -26,6 +26,9 @@ import type { BuildingDetailOut, FloorResponseOut, PremiseDetail, PremiseListIte
 import type { SaleType } from '@/api/handlers/types';
 import MedicalCrossIcon from './medical-cross.svg?react';
 import { GenerateLinkModal } from './GenerateLinkModal';
+import { PanoramaModal } from '@/components/ui/common/PanoramaModal';
+
+const DEMO_PANORAMA_URL = '/panoramas/panorama-1.jpg';
 
 import styles from './BuildingPage.module.scss';
 import { SingleSelect } from '@/components/ui/common/input/Select';
@@ -91,6 +94,7 @@ const PremiseDetailsCardContent = ({
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
+    const [panoramaOpen, setPanoramaOpen] = useState(false);
     const createPaymentM = useCreatePaymentMutation();
 
     const onBookClick = useCallback(async () => {
@@ -177,6 +181,9 @@ const PremiseDetailsCardContent = ({
                     </Text>
                 </Flex>
             </Card>
+            <Button variant="outlined" size="md" onClick={() => setPanoramaOpen(true)} width="max">
+                Посмотреть панораму
+            </Button>
             {canBook && (
                 <Flex direction="row" gap={6} align="stretch" fullWidth>
                     <Column gap={6} align="center">
@@ -211,6 +218,12 @@ const PremiseDetailsCardContent = ({
                 open={generateLinkOpen}
                 onClose={() => setGenerateLinkOpen(false)}
                 premise={premise}
+            />
+            <PanoramaModal
+                open={panoramaOpen}
+                onClose={() => setPanoramaOpen(false)}
+                panoramaUrl={DEMO_PANORAMA_URL}
+                title="Панорама офиса"
             />
         </>
     );
