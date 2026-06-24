@@ -133,6 +133,7 @@ class BuildingDetailOut(Schema):
     geo_point: Optional[BuildingGeoPointOut] = None
     floors: list[BuildingFloorOut]
     year_built: Optional[int] = None
+    presentation: Optional[str] = None
     min_sale_price: Optional[int] = None
     min_rent_price: Optional[int] = None
     media_categories: list[str]

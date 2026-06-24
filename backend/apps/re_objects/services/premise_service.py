@@ -65,6 +65,10 @@ def _decimal_coord_to_float(value) -> Optional[float]:
     return float(value) if value is not None else None
 
 
+def _file_field_url(file_field) -> Optional[str]:
+    return file_field.url if file_field else None
+
+
 def _building_geo_point_out(b: Building) -> Optional[BuildingGeoPointOut]:
     lat = _decimal_coord_to_float(b.latitude)
     lon = _decimal_coord_to_float(b.longitude)
@@ -467,6 +471,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
         geo_point=_building_geo_point_out(b),
         floors=floors,
         year_built=b.year_built,
+        presentation=_file_field_url(b.presentation),
         min_sale_price=min_sale_val,
         min_rent_price=min_rent_val,
         media_categories=media_categories,
