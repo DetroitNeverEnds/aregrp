@@ -93,6 +93,26 @@ services:
                 max-size: "10m"
                 max-file: "5"
 
+    # Log aggregator: reads backend stdout (Docker API) + nginx files, writes to /var/log/aregrp/
+    # Built from vector/Dockerfile (vector + logrotate + dcron)
+    vector:
+        build: vector
+        container_name: aregrp-vector
+        restart: unless-stopped
+        volumes:
+            - ./vector/vector.toml:/etc/vector/vector.toml:ro
+            # Docker socket for reading backend container logs
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            # Nginx host-mounted log files (read-only source)
+            - ./nginx/logs:/var/log/nginx-src:ro
+            # Output directory for aggregated logs
+            - /var/log/aregrp:/var/log/aregrp
+        logging:
+            driver: json-file
+            options:
+                max-size: "5m"
+                max-file: "3"
+
 networks:
     frontend-network:
         driver: bridge
