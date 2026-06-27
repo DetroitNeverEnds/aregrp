@@ -97,10 +97,10 @@ services:
     # Built from vector/Dockerfile (vector + logrotate + dcron)
     vector:
         build: vector
+        image: ${REGISTRY_PREFIX:-}aregrp-vector:${TAG:-local}
         container_name: aregrp-vector
         restart: unless-stopped
         volumes:
-            - ./vector/vector.toml:/etc/vector/vector.toml:ro
             # Docker socket for reading backend container logs
             - /var/run/docker.sock:/var/run/docker.sock:ro
             # Nginx host-mounted log files (read-only source)

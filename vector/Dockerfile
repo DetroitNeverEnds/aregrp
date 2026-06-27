@@ -2,7 +2,8 @@ FROM timberio/vector:latest-alpine
 
 RUN apk add --no-cache logrotate dcron
 
-# Install logrotate config
+# Bake configs into the image
+COPY vector.toml /etc/vector/vector.toml
 COPY logrotate.conf /etc/logrotate.d/aregrp
 
 # Set up daily cron job at 02:00
