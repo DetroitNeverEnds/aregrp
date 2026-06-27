@@ -276,7 +276,7 @@ async def premise_list(
     response={200: PremiseDetailOut, 404: ProblemDetail},
     summary="Детальная информация о помещении",
     description=(
-        "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor_id, area, has_tenant, media, "
+        "Помещение по UUID: uuid, name, price (legacy), sale_price, rent_price, address, floor { id, title }, area, has_tenant, media, "
         "description, price_per_sqm, ceiling_height, has_windows, has_parking, is_furnished. Только AVAILABLE. "
         "sale_price / rent_price — всегда в ответе (null, если вид сделки не предлагается). "
         f"Параметр sale_type: price — как раньше ({settings.RE_OBJECTS_SALE_TYPE_SALE} — продажа, иначе аренда). "

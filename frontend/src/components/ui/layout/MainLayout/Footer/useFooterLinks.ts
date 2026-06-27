@@ -3,13 +3,24 @@ import { useTranslation } from 'react-i18next';
 import { useSiteInfo } from '@/queries/siteInfo';
 import { useFilterSearchParams } from '@/components/ui/forms/ObjectsFilter/useFilterSearchParams';
 
+type Link = {
+    to: string;
+    label: string;
+    external?: boolean;
+};
+
+type FooterSection = {
+    title: string;
+    links: Link[];
+};
+
 export const useFooterLinks = () => {
     const { t } = useTranslation();
     const siteInfo = useSiteInfo().data?.data;
     const { getLinkToCatalogue } = useFilterSearchParams();
 
     return useMemo(
-        () => [
+        (): FooterSection[] => [
             {
                 title: t('footer.navigation.title'),
                 links: [
@@ -30,8 +41,8 @@ export const useFooterLinks = () => {
             {
                 title: t('footer.legal.title'),
                 links: [
-                    { to: '/privacy.pdf', label: t('footer.legal.privacy') },
-                    { to: '/oplata.pdf', label: t('footer.legal.payment') },
+                    { to: '/privacy.pdf', label: t('footer.legal.privacy'), external: true },
+                    { to: '/oplata.pdf', label: t('footer.legal.payment'), external: true },
                 ],
             },
             {

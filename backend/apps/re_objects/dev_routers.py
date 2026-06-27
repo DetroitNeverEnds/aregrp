@@ -23,6 +23,8 @@ from .models import (
     Floor,
     Premise,
     PremiseImage,
+    PremiseVideo,
+    PRESENTATION_EXTENSIONS,
 )
 
 dev_router = Router(tags=["Dev / Test"])
@@ -32,6 +34,10 @@ IMAGE_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
 VIDEO_EXTENSIONS = {"mp4", "mov", "avi", "webm"}
 
 
+def _file_extension(name: str) -> str:
+    return name.rsplit(".", 1)[-1].lower() if "." in name else ""
+
+
 def _split_files_by_type(files: List[UploadedFile]) -> tuple[List[UploadedFile], List[UploadedFile]]:
     """Разделяет файлы на изображения и видео по расширению."""
     images = []
@@ -39,12 +45,23 @@ def _split_files_by_type(files: List[UploadedFile]) -> tuple[List[UploadedFile],
     for f in files or []:
         if not f or not f.name:
             continue
-        ext = f.name.rsplit(".", 1)[-1].lower() if "." in f.name else ""
+        ext = _file_extension(f.name)
         if ext in IMAGE_EXTENSIONS:
             images.append(f)
         elif ext in VIDEO_EXTENSIONS:
             videos.append(f)
     return images, videos
+
+
+def _validate_presentation_file(f: UploadedFile) -> Optional[str]:
+    """None если формат допустим, иначе текст ошибки."""
+    if not f or not f.name:
+        return None
+    ext = _file_extension(f.name)
+    if ext not in PRESENTATION_EXTENSIONS:
+        allowed = ', '.join(PRESENTATION_EXTENSIONS)
+        return f'Презентация: допустимы только {allowed}, получено .{ext or "?"}'
+    return None
 
 
 @dev_router.post(
@@ -204,11 +221,12 @@ def add_building_media(
 
 @dev_router.post(
     "/dev/premises/{building_uuid}",
-    summary="Создание помещения в здании с фото",
+    summary="Создание помещения в здании с фото, видео и презентацией",
     description=(
         "Создаёт помещение в здании по UUID. "
         "Этаж берётся по floor_number (по умолчанию 1). "
-        "Файлы: multipart/form-data, поле images или files — множественная загрузка фото."
+        "Файлы: multipart/form-data, поле images или files — фото и видео; "
+        "presentation — pdf/ppt/pptx."
     ),
 )
 def create_premise_in_building(
@@ -225,10 +243,11 @@ def create_premise_in_building(
     floor_number: int = Form(1, description="Номер этажа (должен существовать в здании)"),
     available_for_rent: bool = Form(True, description="Доступно для аренды"),
     available_for_sale: bool = Form(False, description="Доступно для продажи"),
-    images: Optional[List[UploadedFile]] = File(None, description="Фото помещения"),
-    files: Optional[List[UploadedFile]] = File(None, description="Фото помещения (альтернатива images)"),
+    images: Optional[List[UploadedFile]] = File(None, description="Фото и видео помещения"),
+    files: Optional[List[UploadedFile]] = File(None, description="Фото и видео (альтернатива images)"),
+    presentation: Optional[UploadedFile] = File(None, description="Презентация (pdf, ppt, pptx)"),
 ):
-    """Создаёт помещение в здании и привязывает фото."""
+    """Создаёт помещение в здании и привязывает медиа."""
     try:
         building = Building.objects.get(uuid=building_uuid)
     except Building.DoesNotExist:
@@ -242,10 +261,14 @@ def create_premise_in_building(
 
     city = building.city
 
-    all_imgs = list(images or []) + list(files or [])
-    img_files, _ = _split_files_by_type(all_imgs)
-    if not img_files and all_imgs:
-        img_files = all_imgs
+    pres_err = _validate_presentation_file(presentation) if presentation else None
+    if pres_err:
+        return 400, {"detail": pres_err}
+
+    all_files = list(images or []) + list(files or [])
+    img_files, vid_files = _split_files_by_type(all_files)
+    if not img_files and all_files and not vid_files:
+        img_files = all_files
 
     try:
         with transaction.atomic():
@@ -269,6 +292,14 @@ def create_premise_in_building(
                     order=i,
                     is_primary=(i == 1),
                 )
+            for i, f in enumerate(vid_files, start=1):
+                PremiseVideo.objects.create(
+                    premise=premise,
+                    file=f,
+                    order=i,
+                )
+            if presentation:
+                premise.presentation.save(presentation.name, presentation, save=True)
     except ValidationError as e:
         err = e.message_dict if getattr(e, 'message_dict', None) else {'__all__': list(e.messages)}
         return 400, {'detail': err}
@@ -282,4 +313,6 @@ def create_premise_in_building(
         "area": float(premise.area),
         "price_per_month": premise.price_per_month,
         "images_count": len(img_files),
+        "videos_count": len(vid_files),
+        "has_presentation": bool(premise.presentation),
     }

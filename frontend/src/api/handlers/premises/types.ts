@@ -4,6 +4,12 @@
 
 import type { BaseMediaItem, SaleType } from '@/api/handlers/types';
 
+/** Этаж помещения (OpenAPI: PremiseFloorOut) */
+export interface PremiseFloor {
+    id: string;
+    title: string;
+}
+
 /** Помещение в списке (OpenAPI: PremiseListOut) */
 export interface PremiseListItem {
     uuid: string;
@@ -13,7 +19,7 @@ export interface PremiseListItem {
     sale_price?: number | null;
     rent_price?: number | null;
     address: string;
-    floor_id?: string | null;
+    floor?: PremiseFloor | null;
     area: string;
     has_tenant: boolean;
     media: BaseMediaItem[];

@@ -45,6 +45,7 @@ from ..schemas import (
     FloorPremiseOut,
     FloorResponseOut,
     PremiseDetailOut,
+    PremiseFloorOut,
     PremiseListOut,
     PremiseListResponse,
 )
@@ -62,6 +63,10 @@ def _premise_label_for_floor_schema(p: Premise) -> str:
 
 def _decimal_coord_to_float(value) -> Optional[float]:
     return float(value) if value is not None else None
+
+
+def _file_field_url(file_field) -> Optional[str]:
+    return file_field.url if file_field else None
 
 
 def _building_geo_point_out(b: Building) -> Optional[BuildingGeoPointOut]:
@@ -155,7 +160,7 @@ def get_filtered_premise_queryset(params: PremiseFilterParams):
     Результат передаётся в async-методы (acount, async for).
     """
     qs = Premise.objects.select_related("building", "city", "floor").prefetch_related(
-        "images"
+        "images", "videos"
     )
     qs = annotate_premise_availability(qs)
 
@@ -466,6 +471,7 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
         geo_point=_building_geo_point_out(b),
         floors=floors,
         year_built=b.year_built,
+        presentation=_file_field_url(b.presentation),
         min_sale_price=min_sale_val,
         min_rent_price=min_rent_val,
         media_categories=media_categories,
@@ -474,16 +480,21 @@ async def get_building(building_uuid: UUID) -> Optional[BuildingDetailOut]:
 
 
 def _build_premise_media(p: Premise) -> list[BaseMediaItemOut]:
-    """Собирает медиа помещения: плоский список с type, url, full_url; основное фото первое. Видео в модели пока нет."""
-    out: list[BaseMediaItemOut] = []
-    for img in sorted(
-        p.images.all(),
-        key=lambda x: (0 if x.is_primary else 1, x.order, x.pk),
-    ):
+    """Собирает медиа помещения: фото и видео; основное фото первое, далее по order."""
+    items: list[tuple[int, int, int, str, str, str]] = []
+    for img in p.images.all():
         url, full_url = _photo_api_urls(img)
         if url and full_url:
-            out.append(BaseMediaItemOut(type="photo", url=url, full_url=full_url))
-    return out
+            primary_rank = 0 if img.is_primary else 1
+            items.append((primary_rank, img.order, img.pk, "photo", url, full_url))
+    for vid in p.videos.all():
+        url, full_url = _video_api_urls(vid)
+        if url and full_url:
+            items.append((1, vid.order, vid.pk, "video", url, full_url))
+    items.sort(key=lambda x: (x[0], x[1], x[2]))
+    return [
+        BaseMediaItemOut(type=t, url=u, full_url=fu) for _, _, _, t, u, fu in items
+    ]
 
 
 def _api_price_is_full_sell(p: Premise, sale_type: Optional[str]) -> bool:
@@ -511,9 +522,11 @@ def _premise_rent_price_for_api(p: Premise) -> Optional[int]:
     return p.price_per_month if p.available_for_rent else None
 
 
-def _premise_floor_title_for_api(p: Premise) -> Optional[str]:
-    """Название этажа (Floor.title), если этаж задан."""
-    return p.floor.title if p.floor else None
+def _premise_floor_for_api(p: Premise) -> Optional[PremiseFloorOut]:
+    """Этаж помещения: id и title, если этаж задан."""
+    if not p.floor:
+        return None
+    return PremiseFloorOut(id=str(p.floor.id), title=p.floor.title)
 
 
 def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseListOut:
@@ -526,8 +539,7 @@ def premise_to_list_out(p: Premise, sale_type: Optional[str] = None) -> PremiseL
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
-        floor_id=str(p.floor_id) if p.floor_id is not None else None,
-        floor_title=_premise_floor_title_for_api(p),
+        floor=_premise_floor_for_api(p),
         area=p.area,
         has_tenant=has_tenant_value(available_for_rent=p.available_for_rent),
         media=_build_premise_media(p),
@@ -548,8 +560,7 @@ def premise_to_detail_out(
         sale_price=_premise_sale_price_for_api(p),
         rent_price=_premise_rent_price_for_api(p),
         address=p.building.address,
-        floor_id=str(p.floor_id) if p.floor_id is not None else None,
-        floor_title=_premise_floor_title_for_api(p),
+        floor=_premise_floor_for_api(p),
         area=p.area,
         has_tenant=tenant,
         media=_build_premise_media(p),
@@ -559,6 +570,7 @@ def premise_to_detail_out(
         has_windows=p.has_windows,
         has_parking=p.has_parking,
         is_furnished=p.is_furnished,
+        presentation_url=p.presentation.url if p.presentation else None,
     )
 
 
@@ -585,13 +597,13 @@ async def get_premise_by_uuid(
     """
     Возвращает помещение по UUID в виде PremiseDetailOut или None.
 
-    Использует aget() и prefetch images.
+    Использует aget() и prefetch images, videos.
     has_tenant — по флагу available_for_rent (без сделок).
     """
     try:
         p = await Premise.objects.select_related(
             "building", "city", "floor"
-        ).prefetch_related("images").aget(uuid=premise_uuid)
+        ).prefetch_related("images", "videos").aget(uuid=premise_uuid)
     except Premise.DoesNotExist:
         return None
     return premise_to_detail_out(p, sale_type)

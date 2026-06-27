@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
             react(),
         ],
         server: {
+            port: 5174,
             proxy: {
                 '/api/v1': {
                     target: apiHost,

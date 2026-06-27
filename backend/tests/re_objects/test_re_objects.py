@@ -9,6 +9,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from asgiref.sync import sync_to_async
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils import timezone
 
 from apps.bookings.models import Booking
@@ -546,8 +547,43 @@ class TestBuildingDetail:
         }
         assert "media_categories" in data
         assert "media" in data
+        assert "presentation" in data
+        assert data["presentation"] is None
         assert isinstance(data["media_categories"], list)
         assert isinstance(data["media"], list)
+
+    async def test_building_detail_returns_presentation_url(self, client, city):
+        """Если у здания есть презентация, API отдает её URL в поле presentation."""
+
+        @sync_to_async
+        def setup():
+            building = Building.objects.create(
+                name='БЦ С презентацией',
+                address='ул. Презентационная, 1',
+                city=city,
+                description='',
+                presentation='buildings/test/presentation/demo.pdf',
+            )
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
+            Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('50'),
+                price_per_month=60_000,
+                available_for_rent=True,
+                available_for_sale=False,
+                room_number='P-01',
+            )
+            return building
+
+        building = await setup()
+        response = await client.get(f'/buildings/{building.uuid}')
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data['presentation'] is not None
+        assert data['presentation'].endswith('demo.pdf')
 
     async def test_building_detail_floors_availability_flags(self, client, city):
         """floors: has_sale/has_rent считаются только по флагам помещений на каждом этаже."""
@@ -802,8 +838,10 @@ class TestPremisesList:
             assert "sale_price" in item
             assert "rent_price" in item
             assert "address" in item
-            assert "floor_id" in item
-            assert "floor_title" in item
+            assert "floor" in item
+            if item["floor"] is not None:
+                assert "id" in item["floor"]
+                assert "title" in item["floor"]
             assert "area" in item
             assert "has_tenant" in item
             assert "media" in item
@@ -967,11 +1005,61 @@ class TestPremiseDetail:
         assert data["rent_price"] is not None
         assert data["sale_price"] is None
         assert "address" in data
-        assert data["floor_id"] == str(premise.floor_id)
-        assert data["floor_title"] == premise.floor.title
+        assert data["floor"] == {
+            "id": str(premise.floor_id),
+            "title": premise.floor.title,
+        }
         assert "area" in data
         assert "description" in data
         assert "media" in data
+        assert data.get("presentation_url") is None
+
+    async def test_premise_detail_includes_video_and_presentation(self, client, city):
+        """Деталь помещения: video в media и presentation_url."""
+
+        @sync_to_async
+        def _create():
+            building = Building.objects.create(
+                name='БЦ Медиа',
+                address='ул. Медиа, 3',
+                city=city,
+                description='',
+            )
+            floor = Floor.objects.create(building=building, number=1, title='Этаж 1')
+            premise = Premise.objects.create(
+                building=building,
+                city=city,
+                floor=floor,
+                area=Decimal('50'),
+                price_per_month=80_000,
+                available_for_rent=True,
+                room_number='M3',
+            )
+            from apps.re_objects.models import PremiseVideo
+
+            PremiseVideo.objects.bulk_create(
+                [
+                    PremiseVideo(
+                        premise=premise,
+                        file='premises/99/videos/1/clip.mp4',
+                        card='premises/99/videos/1/card.webp',
+                        order=1,
+                    ),
+                ]
+            )
+            pdf = SimpleUploadedFile('office.pptx', b'pptx-bytes', content_type='application/vnd.ms-powerpoint')
+            premise.presentation.save('office.pptx', pdf, save=True)
+            return premise
+
+        premise = await _create()
+        response = await client.get(f'/premises/{premise.uuid}')
+
+        assert response.status_code == 200
+        data = response.json()
+        video = next(m for m in data['media'] if m['type'] == 'video')
+        assert video['url'].endswith('card.webp')
+        assert video['full_url'].endswith('clip.mp4')
+        assert data['presentation_url'].endswith('.pptx')
 
     async def test_premise_detail_sale_type_uses_full_sell_price(self, client, city):
         """sale_type=sale: price равен full_sell_price."""

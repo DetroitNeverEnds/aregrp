@@ -22,18 +22,8 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const {
-        uuid,
-        name,
-        address,
-        area,
-        floor_id,
-        has_tenant,
-        building_uuid,
-        rent_price,
-        sale_price,
-        price,
-    } = item;
+    const { uuid, name, address, area, floor, has_tenant, building_uuid, rent_price, sale_price } =
+        item;
 
     const formatPrice = (value: number | null) => {
         if (value === null || value === undefined) {
@@ -51,14 +41,14 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
         const search: Record<string, string> = {
             selectedPremise: uuid,
         };
-        if (floor_id) {
-            search.floor = floor_id;
+        if (floor?.id) {
+            search.floor = floor.id;
         }
         if (type === 'sale' || type === 'rent') {
             search.sale_type = type;
         }
         return `/building/${building_uuid}?${new URLSearchParams(search)}`;
-    }, [building_uuid, floor_id, type, uuid]);
+    }, [building_uuid, floor, type, uuid]);
     const navigateToOffice = () => {
         navigate(link);
         window.scrollTo({ top: 0 });
@@ -67,7 +57,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
     const traits = useMemo(() => {
         return [
             { label: 'Адрес', value: address },
-            { label: 'Этаж', value: floor_id ?? '—' },
+            { label: '', value: floor?.title ?? floor?.id ?? '—' },
             { label: 'Площадь', value: `${area} м²` },
             {
                 label: 'Арендатор',
@@ -76,7 +66,7 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                     : t(`components.OfficeCard.noTennant`),
             },
         ];
-    }, [address, area, floor_id, has_tenant, t]);
+    }, [address, area, floor?.id, floor?.title, has_tenant, t]);
 
     return (
         <div className={styles.officeCard}>
@@ -103,13 +93,13 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                     <Flex align="end" gap={8}>
                         {(type === 'any' || type == 'sale') && sale_price && (
                             <Text variant="20-med" color="gray-70" align="right">
-                                {formatPrice(sale_price ?? price)}
+                                {formatPrice(sale_price)}
                             </Text>
                         )}
-                        {(type === 'any' || type == 'rent') && (
+                        {(type === 'any' || type == 'rent') && rent_price && (
                             <Text variant="20-med" color="gray-70" align="right">
                                 {type === 'any' && sale_price && 'или '}
-                                {formatPrice(rent_price ?? price)} / месяц
+                                {formatPrice(rent_price)} / месяц
                             </Text>
                         )}
                     </Flex>

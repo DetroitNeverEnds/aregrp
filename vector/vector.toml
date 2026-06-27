@@ -1,0 +1,86 @@
+# Vector log aggregation config
+# Sources: backend (Docker API) + nginx (host files)
+# Sinks: /var/log/aregrp/{backend,nginx}/ with daily rotation
+
+# ──────────────────────────────────────────────────────────────
+# Sources
+# ──────────────────────────────────────────────────────────────
+
+[sources.backend_docker]
+type = "docker_logs"
+include_containers = ["aregrp-backend"]
+
+[sources.nginx_access_file]
+type = "file"
+include = ["/var/log/nginx-src/access.log"]
+# Resume reading from the last position after restart
+data_dir = "/var/lib/vector"
+
+[sources.nginx_error_file]
+type = "file"
+include = ["/var/log/nginx-src/error.log"]
+data_dir = "/var/lib/vector"
+
+# ──────────────────────────────────────────────────────────────
+# Transforms
+# ──────────────────────────────────────────────────────────────
+
+[transforms.backend_enrich]
+type = "remap"
+inputs = ["backend_docker"]
+source = '''
+.service = "backend"
+# Normalize timestamp to RFC3339 string for readability
+.ts = format_timestamp!(now(), format: "%Y-%m-%dT%H:%M:%S%:z")
+'''
+
+[transforms.nginx_access_enrich]
+type = "remap"
+inputs = ["nginx_access_file"]
+source = '''
+.service = "nginx"
+.log_type = "access"
+'''
+
+[transforms.nginx_error_enrich]
+type = "remap"
+inputs = ["nginx_error_file"]
+source = '''
+.service = "nginx"
+.log_type = "error"
+'''
+
+# ──────────────────────────────────────────────────────────────
+# Sinks
+# ──────────────────────────────────────────────────────────────
+
+# Backend: write plain log lines (one per line) with daily rotation
+[sinks.backend_file]
+type = "file"
+inputs = ["backend_enrich"]
+path = "/var/log/aregrp/backend/app-%Y-%m-%d.log"
+# Rotate to a new file when the current one exceeds 50 MB
+max_size = 52428800
+
+[sinks.backend_file.encoding]
+codec = "text"
+
+# Nginx access log: pass through original lines with daily rotation
+[sinks.nginx_access_file_sink]
+type = "file"
+inputs = ["nginx_access_enrich"]
+path = "/var/log/aregrp/nginx/access-%Y-%m-%d.log"
+max_size = 52428800
+
+[sinks.nginx_access_file_sink.encoding]
+codec = "text"
+
+# Nginx error log: pass through original lines with daily rotation
+[sinks.nginx_error_file_sink]
+type = "file"
+inputs = ["nginx_error_enrich"]
+path = "/var/log/aregrp/nginx/error-%Y-%m-%d.log"
+max_size = 52428800
+
+[sinks.nginx_error_file_sink.encoding]
+codec = "text"

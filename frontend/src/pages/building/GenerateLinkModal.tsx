@@ -136,11 +136,9 @@ const GenerateLinkModalContent = ({
                 </Text>
             </Flex>
             <Flex direction="column" gap={8} fullWidth align="start">
+                <Text variant="14-reg">{premise.floor?.title ?? premise.floor?.id ?? '—'}</Text>
                 <Text variant="14-reg">
                     {t('pages.building.area')}: {premise.area} м²
-                </Text>
-                <Text variant="14-reg">
-                    {t('pages.building.floor')}: {premise.floor_id ?? '—'}
                 </Text>
                 <Text variant="14-reg">
                     {t('pages.building.tenant')}:{' '}

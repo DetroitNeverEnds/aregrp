@@ -54,6 +54,7 @@ const mockBuildingDetail = {
     uuid: 'test-uuid',
     title: 'Тестовое здание',
     address: 'ул. Тестовая 1',
+    presentation: null,
     total_floors: 3,
     floors: [
         { key: '1', title: '1 этаж', has_sale: true, has_rent: true },
@@ -128,6 +129,47 @@ describe('BuildingPage', () => {
 
         const nameEls = screen.getAllByText(/Тестовое здание/);
         expect(nameEls.length).toBeGreaterThan(0);
+    });
+
+    it('показывает кнопку скачивания презентации, если ссылка есть', () => {
+        mockUseBuildingDetail.mockReturnValue({
+            data: {
+                data: {
+                    ...mockBuildingDetail,
+                    presentation: 'https://example.com/presentation.pdf',
+                },
+            },
+            isPending: false,
+            error: null,
+        } as ReturnType<typeof queries.useBuildingDetail>);
+
+        render(<BuildingPage />, {
+            wrapper: createWrapper(['/building/test-uuid']),
+        });
+
+        const downloadLink = screen.getAllByRole('link').find(link => {
+            const href = link.getAttribute('href');
+            return href === 'https://example.com/presentation.pdf';
+        });
+        expect(downloadLink).toBeDefined();
+    });
+
+    it('не показывает кнопку скачивания презентации, если ссылки нет', () => {
+        mockUseBuildingDetail.mockReturnValue({
+            data: { data: { ...mockBuildingDetail, presentation: null } },
+            isPending: false,
+            error: null,
+        } as ReturnType<typeof queries.useBuildingDetail>);
+
+        render(<BuildingPage />, {
+            wrapper: createWrapper(['/building/test-uuid']),
+        });
+
+        const hasPresentationLink = screen.queryAllByRole('link').some(link => {
+            const href = link.getAttribute('href') || '';
+            return href.includes('presentation');
+        });
+        expect(hasPresentationLink).toBe(false);
     });
 
     it('показывает ErrorLoading при ошибке API', () => {

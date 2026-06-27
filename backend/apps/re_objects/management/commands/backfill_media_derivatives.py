@@ -7,7 +7,7 @@
 """
 from django.core.management.base import BaseCommand
 
-from apps.re_objects.models import BuildingImage, BuildingVideo, PremiseImage
+from apps.re_objects.models import BuildingImage, BuildingVideo, PremiseImage, PremiseVideo
 
 
 class Command(BaseCommand):
@@ -25,14 +25,14 @@ class Command(BaseCommand):
                 obj.save()
                 n_img += 1
                 self.stdout.write(f'{model.__name__} pk={obj.pk} OK')
-        for vid in BuildingVideo.objects.iterator():
+        for vid in list(BuildingVideo.objects.iterator()) + list(PremiseVideo.objects.iterator()):
             if not vid.file:
                 continue
             if vid.card:
                 continue
             vid.save()
             n_vid += 1
-            self.stdout.write(f'BuildingVideo pk={vid.pk} OK')
+            self.stdout.write(f'{vid.__class__.__name__} pk={vid.pk} OK')
         self.stdout.write(
             self.style.SUCCESS(f'Готово: изображений обновлено {n_img}, видео {n_vid}.')
         )
