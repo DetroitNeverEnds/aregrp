@@ -1,0 +1,22 @@
+.panoramaModal {
+    &__panel {
+        width: min(90vw, 1200px);
+    }
+
+    &__content {
+        padding: 0 !important;
+    }
+
+    &__title {
+        padding: 8px 20px 12px;
+    }
+
+    &__viewer {
+        width: 100%;
+        height: min(65vh, 700px);
+
+        :global(.psv-container) {
+            border-radius: 0 0 $border-radius-l $border-radius-l;
+        }
+    }
+}
