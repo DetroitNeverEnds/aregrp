@@ -1,3 +1,4 @@
+from typing import Literal
 from uuid import UUID
 
 from ninja import Schema
@@ -5,6 +6,7 @@ from ninja import Schema
 
 class PaymentCreateIn(Schema):
     premise_uuid: UUID
+    deal_type: Literal['sale', 'rent']
 
 
 class PaymentAmountOut(Schema):

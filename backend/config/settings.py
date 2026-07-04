@@ -265,6 +265,7 @@ PAYMENTS_ACCOUNT_ID = config('PAYMENTS_ACCOUNT_ID', default='')
 PAYMENTS_SECRET_KEY = config('PAYMENTS_SECRET_KEY', default='')
 PAYMENTS_REDIRECT_URL = config('PAYMENTS_REDIRECT_URL', default='https://www.example.com/return_url')
 PAYMENTS_BOOKING_AMOUNT = config('PAYMENTS_BOOKING_AMOUNT', cast=int, default=10000)
+PAYMENTS_RENT_BOOKING_AMOUNT = config('PAYMENTS_RENT_BOOKING_AMOUNT', cast=int, default=5000)
 # Чек 54-ФЗ (обязателен, если в ЛК ЮKassa включена онлайн-касса)
 PAYMENTS_RECEIPT_ENABLED = config('PAYMENTS_RECEIPT_ENABLED', cast=bool, default=True)
 PAYMENTS_RECEIPT_ITEM_DESCRIPTION = config(

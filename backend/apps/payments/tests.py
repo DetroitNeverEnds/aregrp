@@ -1,8 +1,8 @@
-from types import SimpleNamespace
-from unittest.mock import patch
+import uuid
 from datetime import timedelta
 from decimal import Decimal
-import uuid
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
@@ -19,6 +19,7 @@ from apps.referrals.models import ReferralLink
 @override_settings(
     PAYMENTS_REDIRECT_URL='https://www.example.com/return_url',
     PAYMENTS_BOOKING_AMOUNT=10000,
+    PAYMENTS_RENT_BOOKING_AMOUNT=5000,
 )
 class PaymentsCreateEndpointTests(TestCase):
     def setUp(self):
@@ -37,6 +38,8 @@ class PaymentsCreateEndpointTests(TestCase):
         self.url = '/api/v1/payments/'
         self.premise = self._create_sale_premise()
         self.other_premise = self._create_sale_premise(room_number='102', title='Офис 102')
+        self.rent_premise = self._create_rent_premise()
+        self.dual_premise = self._create_dual_premise()
         self.valid_referral_link = ReferralLink.objects.create(
             referrer=self.referrer,
             premise=self.premise,
@@ -64,6 +67,39 @@ class PaymentsCreateEndpointTests(TestCase):
             title=title,
         )
 
+    def _create_rent_premise(self, room_number: str = '201', title: str = 'Офис 201') -> Premise:
+        region, _ = Region.objects.get_or_create(name='Тестовый регион', defaults={'code': '16'})
+        city, _ = City.objects.get_or_create(name='Казань', region=region, defaults={'is_default': True})
+        building = Building.objects.create(name=f'БЦ Тест {room_number}', address='ул. Тестовая, 1', city=city)
+        return Premise.objects.create(
+            city=city,
+            building=building,
+            area=Decimal('45.00'),
+            price_per_month=70000,
+            available_for_sale=False,
+            available_for_rent=True,
+            premise_type=Premise.PremiseType.OFFICE,
+            room_number=room_number,
+            title=title,
+        )
+
+    def _create_dual_premise(self, room_number: str = '301', title: str = 'Офис 301') -> Premise:
+        region, _ = Region.objects.get_or_create(name='Тестовый регион', defaults={'code': '16'})
+        city, _ = City.objects.get_or_create(name='Казань', region=region, defaults={'is_default': True})
+        building = Building.objects.create(name=f'БЦ Тест {room_number}', address='ул. Тестовая, 1', city=city)
+        return Premise.objects.create(
+            city=city,
+            building=building,
+            area=Decimal('55.00'),
+            price_per_sqm=100000,
+            price_per_month=80000,
+            available_for_sale=True,
+            available_for_rent=True,
+            premise_type=Premise.PremiseType.OFFICE,
+            room_number=room_number,
+            title=title,
+        )
+
     @patch('apps.payments.services.YooKassaPayment.create')
     def test_create_payment_success(self, payment_create_mock):
         payment_create_mock.return_value = SimpleNamespace(
@@ -81,7 +117,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid)},
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -108,6 +144,7 @@ class PaymentsCreateEndpointTests(TestCase):
         self.assertEqual(payload['metadata']['user_id'], str(self.user.id))
         self.assertEqual(payload['metadata']['premise_id'], str(self.premise.id))
         self.assertEqual(payload['metadata']['premise_uuid'], str(self.premise.uuid))
+        self.assertEqual(payload['metadata']['deal_type'], 'sale')
         self.assertIn('payment_token', payload['metadata'])
         self.assertIn('receipt', payload)
         self.assertEqual(payload['receipt']['customer']['email'], self.user.email)
@@ -125,7 +162,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid)},
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -133,6 +170,47 @@ class PaymentsCreateEndpointTests(TestCase):
         self.assertEqual(response.status_code, 502)
         body = response.json()
         self.assertEqual(body['code'], 'PAYMENTS_CREATION_ERROR')
+
+    @patch('apps.payments.services.YooKassaPayment.create')
+    def test_create_rent_payment_success(self, payment_create_mock):
+        payment_create_mock.return_value = SimpleNamespace(
+            id='23d93cac-000f-5000-8000-126628f15188',
+            status='pending',
+            paid=False,
+            amount=SimpleNamespace(value='5000.00', currency='RUB'),
+            description='Бронирование помещения 201',
+            confirmation=SimpleNamespace(
+                type='redirect',
+                confirmation_url='https://yoomoney.ru/api-pages/v2/payment-confirm/example',
+            ),
+            created_at='2026-05-09T12:00:00+00:00',
+        )
+
+        response = self.client.post(
+            self.url,
+            data={'premise_uuid': str(self.rent_premise.uuid), 'deal_type': 'rent'},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=self.auth_header,
+        )
+
+        self.assertEqual(response.status_code, 201)
+        body = response.json()
+        self.assertEqual(body['amount']['value'], '5000.00')
+        payload = payment_create_mock.call_args.args[0]
+        self.assertEqual(payload['amount']['value'], '5000.00')
+        self.assertEqual(payload['metadata']['deal_type'], 'rent')
+        self.assertEqual(payload['metadata']['premise_id'], str(self.rent_premise.id))
+
+    def test_create_rent_payment_premise_unavailable_when_not_for_rent(self):
+        response = self.client.post(
+            self.url,
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'rent'},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=self.auth_header,
+        )
+        self.assertEqual(response.status_code, 400)
+        body = response.json()
+        self.assertEqual(body['code'], 'PAYMENTS_PREMISE_UNAVAILABLE')
 
     @patch('apps.payments.services.YooKassaPayment.create')
     def test_create_payment_sets_referral_link_from_cookie(self, payment_create_mock):
@@ -152,7 +230,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid)},
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -182,7 +260,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid)},
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -197,7 +275,7 @@ class PaymentsCreateEndpointTests(TestCase):
     def test_create_payment_premise_not_found(self):
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(uuid.uuid4())},
+            data={'premise_uuid': str(uuid.uuid4()), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -211,7 +289,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid)},
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -228,7 +306,7 @@ class PaymentsCreateEndpointTests(TestCase):
         )
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid)},
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -251,7 +329,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid)},
+            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -259,6 +337,40 @@ class PaymentsCreateEndpointTests(TestCase):
         self.assertEqual(response.status_code, 409)
         body = response.json()
         self.assertEqual(body['code'], 'PAYMENTS_PREMISE_UNAVAILABLE')
+
+    def test_create_rent_payment_blocked_by_active_sale_booking(self):
+        Booking.objects.create(
+            user=self.user,
+            premise=self.dual_premise,
+            deal_type=Booking.DealType.SALE,
+            expires_at=timezone.now() + timedelta(days=1),
+        )
+        response = self.client.post(
+            self.url,
+            data={'premise_uuid': str(self.dual_premise.uuid), 'deal_type': 'rent'},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=self.auth_header,
+        )
+        self.assertEqual(response.status_code, 409)
+        body = response.json()
+        self.assertEqual(body['code'], 'PAYMENTS_ACTIVE_BOOKING_EXISTS')
+
+    def test_create_sale_payment_blocked_by_active_rent_booking(self):
+        Booking.objects.create(
+            user=self.user,
+            premise=self.dual_premise,
+            deal_type=Booking.DealType.RENT,
+            expires_at=timezone.now() + timedelta(days=1),
+        )
+        response = self.client.post(
+            self.url,
+            data={'premise_uuid': str(self.dual_premise.uuid), 'deal_type': 'sale'},
+            content_type='application/json',
+            HTTP_AUTHORIZATION=self.auth_header,
+        )
+        self.assertEqual(response.status_code, 409)
+        body = response.json()
+        self.assertEqual(body['code'], 'PAYMENTS_ACTIVE_BOOKING_EXISTS')
 
 
 class PaymentsWebhookHandlerServiceTests(TestCase):
@@ -286,6 +398,17 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
             premise_type=Premise.PremiseType.OFFICE,
             room_number='201',
             title='Webhook Office',
+        )
+        self.rent_premise = Premise.objects.create(
+            city=city,
+            building=building,
+            area=Decimal('35.00'),
+            price_per_month=50000,
+            available_for_sale=False,
+            available_for_rent=True,
+            premise_type=Premise.PremiseType.OFFICE,
+            room_number='202',
+            title='Webhook Rent Office',
         )
         self.referral_link = ReferralLink.objects.create(
             referrer=self.referrer,
@@ -320,6 +443,31 @@ class PaymentsWebhookHandlerServiceTests(TestCase):
         payment = Payment.objects.get(provider_payment_id='payment-id')
         booking = Booking.objects.get(premise=self.premise, user=self.user)
         self.assertEqual(booking.source_payment_id, payment.pk)
+
+    @patch('apps.payments.services.WebhookNotification')
+    def test_handle_webhook_payment_succeeded_creates_rent_booking(self, webhook_notification_mock):
+        webhook_notification_mock.return_value = SimpleNamespace(
+            event='payment.succeeded',
+            object=SimpleNamespace(
+                id='rent-payment-id',
+                status='succeeded',
+                paid=True,
+                amount=SimpleNamespace(value='5000.00', currency='RUB'),
+                description='Webhook rent payment',
+            ),
+        )
+        payload = (
+            f'{{"event":"payment.succeeded","object":{{"id":"rent-payment-id","metadata":'
+            f'{{"payment_token":"3fa85f64-5717-4562-b3fc-2c963f66aaa2","user_id":"{self.user.id}",'
+            f'"premise_id":"{self.rent_premise.id}","deal_type":"rent"}}}}}}'
+        ).encode()
+
+        status, body = handle_yookassa_webhook(payload)
+
+        self.assertEqual(status, 200)
+        self.assertIsNone(body)
+        booking = Booking.objects.get(premise=self.rent_premise, user=self.user)
+        self.assertEqual(booking.deal_type, Booking.DealType.RENT)
 
     def test_handle_webhook_invalid_json_returns_400(self):
         status, body = handle_yookassa_webhook(b'{')
