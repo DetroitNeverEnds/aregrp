@@ -54,7 +54,8 @@ const mockBuildingDetail = {
     uuid: 'test-uuid',
     title: 'Тестовое здание',
     address: 'ул. Тестовая 1',
-    presentation: null,
+    presentation_rent: null,
+    presentation_sale: null,
     total_floors: 3,
     floors: [
         { key: '1', title: '1 этаж', has_sale: true, has_rent: true },
@@ -131,12 +132,13 @@ describe('BuildingPage', () => {
         expect(nameEls.length).toBeGreaterThan(0);
     });
 
-    it('показывает кнопку скачивания презентации, если ссылка есть', () => {
+    it('показывает кнопку скачивания презентации продажи по умолчанию', () => {
         mockUseBuildingDetail.mockReturnValue({
             data: {
                 data: {
                     ...mockBuildingDetail,
-                    presentation: 'https://example.com/presentation.pdf',
+                    presentation_rent: 'https://example.com/rent-presentation.pdf',
+                    presentation_sale: 'https://example.com/sale-presentation.pdf',
                 },
             },
             isPending: false,
@@ -149,14 +151,44 @@ describe('BuildingPage', () => {
 
         const downloadLink = screen.getAllByRole('link').find(link => {
             const href = link.getAttribute('href');
-            return href === 'https://example.com/presentation.pdf';
+            return href === 'https://example.com/sale-presentation.pdf';
         });
         expect(downloadLink).toBeDefined();
     });
 
-    it('не показывает кнопку скачивания презентации, если ссылки нет', () => {
+    it('показывает презентацию аренды при sale_type=rent', () => {
         mockUseBuildingDetail.mockReturnValue({
-            data: { data: { ...mockBuildingDetail, presentation: null } },
+            data: {
+                data: {
+                    ...mockBuildingDetail,
+                    presentation_rent: 'https://example.com/rent-presentation.pdf',
+                    presentation_sale: 'https://example.com/sale-presentation.pdf',
+                },
+            },
+            isPending: false,
+            error: null,
+        } as ReturnType<typeof queries.useBuildingDetail>);
+
+        render(<BuildingPage />, {
+            wrapper: createWrapper(['/building/test-uuid?sale_type=rent']),
+        });
+
+        const downloadLink = screen.getAllByRole('link').find(link => {
+            const href = link.getAttribute('href');
+            return href === 'https://example.com/rent-presentation.pdf';
+        });
+        expect(downloadLink).toBeDefined();
+    });
+
+    it('не показывает кнопку, если нет презентации для выбранного типа сделки', () => {
+        mockUseBuildingDetail.mockReturnValue({
+            data: {
+                data: {
+                    ...mockBuildingDetail,
+                    presentation_rent: 'https://example.com/rent-presentation.pdf',
+                    presentation_sale: null,
+                },
+            },
             isPending: false,
             error: null,
         } as ReturnType<typeof queries.useBuildingDetail>);
