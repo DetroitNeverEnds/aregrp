@@ -117,7 +117,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -162,7 +162,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -188,7 +188,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.rent_premise.uuid), 'deal_type': 'rent'},
+            data={'premise_uuid': str(self.rent_premise.uuid), 'sale_type': 'rent'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -204,7 +204,7 @@ class PaymentsCreateEndpointTests(TestCase):
     def test_create_rent_payment_premise_unavailable_when_not_for_rent(self):
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'rent'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'rent'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -230,7 +230,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -260,7 +260,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -275,7 +275,7 @@ class PaymentsCreateEndpointTests(TestCase):
     def test_create_payment_premise_not_found(self):
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(uuid.uuid4()), 'deal_type': 'sale'},
+            data={'premise_uuid': str(uuid.uuid4()), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -289,7 +289,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -306,7 +306,7 @@ class PaymentsCreateEndpointTests(TestCase):
         )
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -329,7 +329,7 @@ class PaymentsCreateEndpointTests(TestCase):
 
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -347,7 +347,7 @@ class PaymentsCreateEndpointTests(TestCase):
         )
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.dual_premise.uuid), 'deal_type': 'rent'},
+            data={'premise_uuid': str(self.dual_premise.uuid), 'sale_type': 'rent'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )
@@ -364,7 +364,7 @@ class PaymentsCreateEndpointTests(TestCase):
         )
         response = self.client.post(
             self.url,
-            data={'premise_uuid': str(self.dual_premise.uuid), 'deal_type': 'sale'},
+            data={'premise_uuid': str(self.dual_premise.uuid), 'sale_type': 'sale'},
             content_type='application/json',
             HTTP_AUTHORIZATION=self.auth_header,
         )

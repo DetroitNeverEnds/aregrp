@@ -30,7 +30,7 @@ async def create_payment_endpoint(request, data: PaymentCreateIn):
     out, err = await sync_to_async(create_payment, thread_sensitive=True)(
         request.auth.id,
         data.premise_uuid,
-        data.deal_type,
+        data.sale_type,
         request.COOKIES.get(settings.REFERRAL_CODE_COOKIE_NAME),
     )
     if err:

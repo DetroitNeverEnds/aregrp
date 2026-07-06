@@ -2762,18 +2762,18 @@
             "title": "Premise Uuid",
             "type": "string"
           },
-          "deal_type": {
+          "sale_type": {
             "enum": [
               "sale",
               "rent"
             ],
-            "title": "Deal Type",
+            "title": "Sale Type",
             "type": "string"
           }
         },
         "required": [
           "premise_uuid",
-          "deal_type"
+          "sale_type"
         ],
         "title": "PaymentCreateIn",
         "type": "object"

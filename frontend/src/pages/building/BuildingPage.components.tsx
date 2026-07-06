@@ -101,7 +101,7 @@ const PremiseDetailsCardContent = ({
         try {
             const payment = await createPaymentM.mutateAsync({
                 premise_uuid: premise.uuid,
-                deal_type: dealType,
+                sale_type: dealType,
             });
             const confirmationUrl = payment.confirmation?.confirmation_url;
 
@@ -402,10 +402,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                         <PremiseDetailsCardContent
                                             data={data}
                                             canBook={
-                                                (floorQ.data?.data?.premises?.find(
+                                                floorQ.data?.data?.premises?.find(
                                                     premise => premise.uuid === selectedPremise,
-                                                )?.is_available ??
-                                                    false)
+                                                )?.is_available ?? false
                                             }
                                             dealType={saleType}
                                             buildingTitle={buildingInfo.title}
@@ -451,10 +450,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                 <PremiseDetailsCardContent
                                     data={data}
                                     canBook={
-                                        (floorQ.data?.data?.premises?.find(
+                                        floorQ.data?.data?.premises?.find(
                                             premise => premise.uuid === selectedPremise,
-                                        )?.is_available ??
-                                            false)
+                                        )?.is_available ?? false
                                     }
                                     dealType={saleType}
                                     buildingTitle={buildingInfo.title}

@@ -6,7 +6,7 @@ from ninja import Schema
 
 class PaymentCreateIn(Schema):
     premise_uuid: UUID
-    deal_type: Literal['sale', 'rent']
+    sale_type: Literal['sale', 'rent']
 
 
 class PaymentAmountOut(Schema):
