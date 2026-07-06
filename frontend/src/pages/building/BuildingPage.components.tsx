@@ -263,7 +263,6 @@ type BuildingContentProps = {
 
 export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) => {
     const { t } = useTranslation();
-    const presentation = buildingInfo.presentation || undefined;
 
     const [params, _rawParams, setSearchParams] = useTypedSearchParams(parseBuildingSearchParams);
     const setSaleType = useCallback(
@@ -281,6 +280,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     const { floor: currentFloorRaw, selectedPremise, sale_type: saleTypeRaw } = params;
     const currentFloor = currentFloorRaw || buildingInfo.floors?.[0]?.key;
     const saleType = saleTypeRaw || 'sale';
+    const presentation =
+        (saleType === 'rent' ? buildingInfo.presentation_rent : buildingInfo.presentation_sale) ||
+        undefined;
 
     const legend = useMemo(
         () => [

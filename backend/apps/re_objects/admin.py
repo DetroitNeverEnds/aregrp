@@ -203,7 +203,7 @@ class BuildingAdmin(admin.ModelAdmin):
     search_fields = ('name', 'address', 'city__name')
     ordering = ('city', 'name')
     autocomplete_fields = ['city']
-    readonly_fields = ('created_at', 'updated_at', 'presentation_link')
+    readonly_fields = ('created_at', 'updated_at', 'presentation_rent_link', 'presentation_sale_link')
     inlines = [BuildingImageInline, BuildingVideoInline]
     fieldsets = (
         ('Основная информация', {
@@ -213,7 +213,12 @@ class BuildingAdmin(admin.ModelAdmin):
             'fields': ('total_floors', 'year_built', 'latitude', 'longitude'),
         }),
         ('Презентация', {
-            'fields': ('presentation', 'presentation_link'),
+            'fields': (
+                'presentation_rent',
+                'presentation_rent_link',
+                'presentation_sale',
+                'presentation_sale_link',
+            ),
         }),
         ('Системная информация', {
             'fields': ('created_at', 'updated_at'),
@@ -221,12 +226,20 @@ class BuildingAdmin(admin.ModelAdmin):
         }),
     )
 
-    def presentation_link(self, obj):
-        if not obj.presentation:
+    def _presentation_link(self, presentation):
+        if not presentation:
             return '-'
-        return format_html('<a href="{}" target="_blank">Открыть презентацию</a>', obj.presentation.url)
+        return format_html('<a href="{}" target="_blank">Открыть презентацию</a>', presentation.url)
 
-    presentation_link.short_description = 'Ссылка на презентацию'
+    def presentation_rent_link(self, obj):
+        return self._presentation_link(obj.presentation_rent)
+
+    presentation_rent_link.short_description = 'Ссылка на презентацию (аренда)'
+
+    def presentation_sale_link(self, obj):
+        return self._presentation_link(obj.presentation_sale)
+
+    presentation_sale_link.short_description = 'Ссылка на презентацию (продажа)'
 
 
 @admin.register(Floor)

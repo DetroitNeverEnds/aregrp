@@ -41,6 +41,11 @@ media/
         {uuid}.pdf
   buildings/
     {building_id}/
+      presentation/
+        rent/
+          deck-rent.pdf
+        sale/
+          deck-sale.pdf
       images/
         facade.jpg
         interior.jpg

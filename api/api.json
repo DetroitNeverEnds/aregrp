@@ -3577,7 +3577,7 @@
             ],
             "title": "Year Built"
           },
-          "presentation": {
+          "presentation_rent": {
             "anyOf": [
               {
                 "type": "string"
@@ -3586,7 +3586,18 @@
                 "type": "null"
               }
             ],
-            "title": "Presentation"
+            "title": "Presentation Rent"
+          },
+          "presentation_sale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presentation Sale"
           },
           "min_sale_price": {
             "anyOf": [
