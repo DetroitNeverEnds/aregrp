@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import styles from './MinMaxSelect.module.scss';
 import Text from '@/components/ui/common/Text/Text';
 import { Flex } from '@/components/ui/common/Flex';
@@ -30,6 +30,7 @@ export function MinMaxSelect({
 }: MinMaxSelectProps) {
     const { t } = useTranslation();
     const { min, max } = value || {};
+    const [isOpened, setIsOpened] = useState(false);
 
     const triggerContent = useMemo(() => {
         if (!min && !max) {
@@ -63,6 +64,8 @@ export function MinMaxSelect({
                 fullWidth
                 trigger={triggerContent}
                 disabled={disabled}
+                isOpened={isOpened}
+                onOpenChange={setIsOpened}
                 dropdownClassName={styles['from-to-select-dropdown']}
                 contentSameTriggerWidth={false}
             >

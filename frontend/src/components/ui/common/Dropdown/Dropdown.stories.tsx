@@ -1,9 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { Dropdown } from './Dropdown';
+import { Dropdown, type DropdownProps } from './Dropdown';
 import { useState } from 'react';
-import { Button } from '@/components/ui/common/Button';
 import { Flex } from '@/components/ui/common/Flex';
 import Text from '@/components/ui/common/Text/Text';
+
+function DropdownWithState({
+    defaultOpened = false,
+    ...props
+}: Omit<DropdownProps, 'isOpened' | 'onOpenChange'> & { defaultOpened?: boolean }) {
+    const [isOpened, setIsOpened] = useState(defaultOpened);
+
+    return <Dropdown {...props} isOpened={isOpened} onOpenChange={setIsOpened} />;
+}
+
+const menuItems = (
+    <Flex gap={8} align="start" direction="column">
+        <Text variant="14-reg">Пункт меню 1</Text>
+        <Text variant="14-reg">Пункт меню 2</Text>
+        <Text variant="14-reg">Пункт меню 3</Text>
+    </Flex>
+);
 
 const meta = {
     title: 'UI/Common/Dropdown',
@@ -14,27 +30,28 @@ const meta = {
             defaultViewport: 'responsive',
         },
     },
-    decorators: [
-        Story => (
-            <div
-                style={{
-                    height: '400px',
-                    width: '400px',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    justifyContent: 'center',
-                    padding: '20px',
-                }}
-            >
-                <Story />
-            </div>
-        ),
-    ],
     tags: ['autodocs'],
     argTypes: {
+        size: {
+            control: 'select',
+            options: ['lg', 'sm', 'tiny'],
+            description: 'Размер триггера',
+        },
         disabled: {
             control: 'boolean',
             description: 'Отключенное состояние',
+        },
+        fullWidth: {
+            control: 'boolean',
+            description: 'Растянуть на всю ширину контейнера',
+        },
+        isError: {
+            control: 'boolean',
+            description: 'Состояние ошибки',
+        },
+        maxHeight: {
+            control: 'number',
+            description: 'Максимальная высота выпадающего списка',
         },
     },
 } satisfies Meta<typeof Dropdown>;
@@ -42,234 +59,212 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/**
- * Базовый пример использования Dropdown с простым триггером и содержимым
- */
 export const Default: Story = {
-    args: {
-        trigger: <Button variant="primary">Открыть меню</Button>,
-        children: (
-            <Flex gap={8}>
-                <Text variant="14-reg">Пункт меню 1</Text>
-                <Text variant="14-reg">Пункт меню 2</Text>
-                <Text variant="14-reg">Пункт меню 3</Text>
-            </Flex>
-        ),
-    },
+    render: () => (
+        <DropdownWithState trigger={<Text variant="16-reg">Выберите значение</Text>}>
+            {menuItems}
+        </DropdownWithState>
+    ),
 };
 
-/**
- * Dropdown с render function для триггера, который меняется в зависимости от состояния
- */
-export const WithRenderTrigger: Story = {
+export const WithPlaceholder: Story = {
     render: () => (
-        <Dropdown
-            trigger={isOpen => (
-                <Button variant={isOpen ? 'secondary' : 'primary'}>
-                    {isOpen ? 'Закрыть' : 'Открыть'} меню
-                </Button>
-            )}
+        <DropdownWithState
+            trigger={
+                <Text variant="16-reg" color="gray-50">
+                    Выберите значение
+                </Text>
+            }
         >
-            <Flex gap={12}>
-                <Text variant="14-reg">Опция 1</Text>
-                <Text variant="14-reg">Опция 2</Text>
-                <Text variant="14-reg">Опция 3</Text>
-            </Flex>
-        </Dropdown>
+            {menuItems}
+        </DropdownWithState>
     ),
 };
 
-/**
- * Dropdown с render function для содержимого, которое получает функцию закрытия
- */
-export const WithRenderContent: Story = {
+export const Small: Story = {
     render: () => (
-        <Dropdown trigger={<Button variant="primary">Действия</Button>}>
-            {close => (
-                <Flex gap={8}>
-                    <Button
-                        variant="ghost"
-                        onClick={() => {
-                            alert('Действие 1');
-                            close();
-                        }}
-                    >
-                        Действие 1
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        onClick={() => {
-                            alert('Действие 2');
-                            close();
-                        }}
-                    >
-                        Действие 2
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        onClick={() => {
-                            alert('Действие 3');
-                            close();
-                        }}
-                    >
-                        Действие 3
-                    </Button>
-                </Flex>
-            )}
-        </Dropdown>
+        <DropdownWithState size="sm" trigger={<Text variant="14-reg">Компактный dropdown</Text>}>
+            {menuItems}
+        </DropdownWithState>
     ),
 };
 
-/**
- * Контролируемый режим - состояние управляется извне
- */
-export const Controlled: Story = {
-    render: () => {
-        const [isOpen, setIsOpen] = useState(false);
-
-        return (
-            <Flex gap={16}>
-                <Dropdown
-                    trigger={<Button variant="primary">Контролируемое меню</Button>}
-                    isOpen={isOpen}
-                    onOpenChange={setIsOpen}
-                >
-                    <Flex gap={8}>
-                        <Text variant="14-reg">Содержимое меню</Text>
-                        <Button variant="ghost" onClick={() => setIsOpen(false)}>
-                            Закрыть
-                        </Button>
-                    </Flex>
-                </Dropdown>
-
-                <Button variant="secondary" onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? 'Закрыть' : 'Открыть'} извне
-                </Button>
-            </Flex>
-        );
-    },
+export const FullWidth: Story = {
+    render: () => (
+        <DropdownWithState
+            fullWidth
+            trigger={
+                <Text variant="16-reg" ellipsis>
+                    Длинное значение в широком контейнере
+                </Text>
+            }
+        >
+            {menuItems}
+        </DropdownWithState>
+    ),
 };
 
-/**
- * Отключенное состояние
- */
 export const Disabled: Story = {
-    args: {
-        trigger: <Button variant="primary">Отключенное меню</Button>,
-        children: (
-            <Flex gap={8}>
-                <Text variant="14-reg">Это содержимое не будет показано</Text>
-            </Flex>
-        ),
-        disabled: true,
-    },
+    render: () => (
+        <DropdownWithState
+            disabled
+            trigger={
+                <Text variant="16-reg" color="gray-50">
+                    Недоступно
+                </Text>
+            }
+        >
+            {menuItems}
+        </DropdownWithState>
+    ),
 };
 
-/**
- * Dropdown с ограниченной высотой и прокруткой
- */
+export const WithError: Story = {
+    render: () => (
+        <DropdownWithState isError trigger={<Text variant="16-reg">Обязательное поле</Text>}>
+            {menuItems}
+        </DropdownWithState>
+    ),
+};
+
 export const WithMaxHeight: Story = {
-    args: {
-        trigger: <Button variant="primary">Меню с прокруткой</Button>,
-        children: (
-            <Flex gap={8}>
+    render: () => (
+        <DropdownWithState
+            maxHeight={200}
+            trigger={<Text variant="16-reg">Список с прокруткой</Text>}
+        >
+            <Flex gap={8} align="start" direction="column">
                 {Array.from({ length: 20 }, (_, i) => (
                     <Text key={i} variant="14-reg">
                         Пункт меню {i + 1}
                     </Text>
                 ))}
             </Flex>
-        ),
-        maxHeight: 200,
+        </DropdownWithState>
+    ),
+};
+
+export const WithoutMatchingWidth: Story = {
+    render: () => (
+        <DropdownWithState
+            contentSameTriggerWidth={false}
+            trigger={<Text variant="16-reg">Узкий триггер</Text>}
+        >
+            <Flex gap={8} align="start" direction="column" style={{ minWidth: '280px' }}>
+                <Text variant="14-reg">Широкое содержимое без привязки к ширине триггера</Text>
+                <Text variant="12-reg" color="gray-50">
+                    contentSameTriggerWidth=false
+                </Text>
+            </Flex>
+        </DropdownWithState>
+    ),
+};
+
+export const Controlled: Story = {
+    render: () => {
+        const [isOpened, setIsOpened] = useState(false);
+
+        return (
+            <Flex gap={16} align="start" direction="column">
+                <Dropdown
+                    isOpened={isOpened}
+                    onOpenChange={setIsOpened}
+                    trigger={<Text variant="16-reg">Контролируемый dropdown</Text>}
+                >
+                    <Flex gap={8} align="start" direction="column">
+                        <Text variant="14-reg">Содержимое меню</Text>
+                        <Text
+                            variant="14-reg"
+                            color="primary-700"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setIsOpened(false)}
+                        >
+                            Закрыть
+                        </Text>
+                    </Flex>
+                </Dropdown>
+
+                <Text
+                    variant="14-reg"
+                    color="primary-700"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setIsOpened(!isOpened)}
+                >
+                    {isOpened ? 'Закрыть' : 'Открыть'} извне
+                </Text>
+            </Flex>
+        );
     },
 };
 
-/**
- * Кастомный триггер - не кнопка
- */
-export const CustomTrigger: Story = {
-    render: () => (
-        <Dropdown
-            trigger={
-                <div
-                    style={{
-                        padding: '12px 20px',
-                        background: '#f0f0f0',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <Text variant="14-med">Кликните для открытия</Text>
-                </div>
-            }
-        >
-            <Flex gap={8}>
-                <Text variant="14-reg">Содержимое с кастомным триггером</Text>
-            </Flex>
-        </Dropdown>
-    ),
+export const WithSelectableItems: Story = {
+    render: () => {
+        const [isOpened, setIsOpened] = useState(false);
+        const [selected, setSelected] = useState('Пункт меню 1');
+
+        return (
+            <Dropdown
+                isOpened={isOpened}
+                onOpenChange={setIsOpened}
+                trigger={<Text variant="16-reg">{selected}</Text>}
+            >
+                <Flex gap={8} align="start" direction="column">
+                    {['Пункт меню 1', 'Пункт меню 2', 'Пункт меню 3'].map(item => (
+                        <Text
+                            key={item}
+                            variant="14-reg"
+                            color={selected === item ? 'primary-700' : undefined}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                                setSelected(item);
+                                setIsOpened(false);
+                            }}
+                        >
+                            {item}
+                        </Text>
+                    ))}
+                </Flex>
+            </Dropdown>
+        );
+    },
 };
 
-/**
- * Dropdown без привязки к ширине триггера
- */
-export const WithoutMatchingWidth: Story = {
-    render: () => (
-        <Dropdown
-            trigger={<Button variant="primary">Маленькая кнопка</Button>}
-            matchTriggerWidth={false}
-        >
-            <Flex gap={8} style={{ minWidth: '300px' }}>
-                <Text variant="14-reg">
-                    Это содержимое шире триггера, потому что matchTriggerWidth=false
-                </Text>
-                <Text variant="12-reg" color="gray-50">
-                    Dropdown может быть любой ширины
-                </Text>
-            </Flex>
-        </Dropdown>
-    ),
-};
-
-/**
- * Комплексное содержимое с различными элементами
- */
 export const ComplexContent: Story = {
-    render: () => (
-        <Dropdown trigger={<Button variant="primary">Профиль</Button>}>
-            {close => (
-                <Flex gap={16} style={{ minWidth: '250px' }}>
-                    <Flex gap={4}>
+    render: () => {
+        const [isOpened, setIsOpened] = useState(false);
+
+        return (
+            <Dropdown
+                isOpened={isOpened}
+                onOpenChange={setIsOpened}
+                trigger={<Text variant="16-reg">Иван Иванов</Text>}
+            >
+                <Flex gap={12} align="start" direction="column" style={{ minWidth: '240px' }}>
+                    <Flex gap={4} align="start" direction="column">
                         <Text variant="16-med">Иван Иванов</Text>
                         <Text variant="12-reg" color="gray-50">
                             ivan@example.com
                         </Text>
                     </Flex>
 
-                    <div style={{ height: '1px', background: '#e0e0e0' }} />
-
-                    <Flex gap={8}>
-                        <Button
-                            variant="ghost"
-                            onClick={() => {
-                                alert('Настройки');
-                                close();
-                            }}
+                    <Flex gap={8} align="start" direction="column">
+                        <Text
+                            variant="14-reg"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setIsOpened(false)}
                         >
                             Настройки
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            onClick={() => {
-                                alert('Выход');
-                                close();
-                            }}
+                        </Text>
+                        <Text
+                            variant="14-reg"
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setIsOpened(false)}
                         >
                             Выйти
-                        </Button>
+                        </Text>
                     </Flex>
                 </Flex>
-            )}
-        </Dropdown>
-    ),
+            </Dropdown>
+        );
+    },
 };

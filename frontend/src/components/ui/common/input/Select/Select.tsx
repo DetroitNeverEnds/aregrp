@@ -156,7 +156,7 @@ export function Select<T>(props: SelectProps<T>) {
                                 .map(optionIndex => options[optionIndex].label.title)
                                 .join(', ')}
                         </Text>
-                        {clearable && (
+                        {clearable && !disabled && (
                             <FlatButton onClick={handleClear}>
                                 <Icon name="x-close" />
                             </FlatButton>
