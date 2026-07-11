@@ -3,6 +3,7 @@
  */
 export interface PaymentCreateIn {
     premise_uuid: string;
+    sale_type: 'sale' | 'rent';
 }
 
 export interface PaymentAmountOut {

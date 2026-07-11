@@ -1,9 +1,7 @@
 from django.apps import AppConfig
 from django.conf import settings
-
 from yookassa import Configuration
 from yookassa.domain.common.user_agent import Version
-
 
 
 class PaymentsConfig(AppConfig):

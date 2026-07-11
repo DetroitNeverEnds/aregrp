@@ -64,6 +64,7 @@ const toSearchParams = (params: BuildingSearchParams): Record<string, string> =>
 type PremiseDetailsCardProps = {
     data: PremiseDetail;
     canBook: boolean;
+    dealType: SaleType;
     buildingTitle: string;
 };
 
@@ -82,6 +83,7 @@ const formatRubles = (value: number | null | undefined) => {
 const PremiseDetailsCardContent = ({
     data: premise,
     canBook,
+    dealType,
     buildingTitle,
 }: PremiseDetailsCardProps) => {
     const { t } = useTranslation();
@@ -97,7 +99,10 @@ const PremiseDetailsCardContent = ({
         createPaymentM.reset();
 
         try {
-            const payment = await createPaymentM.mutateAsync({ premise_uuid: premise.uuid });
+            const payment = await createPaymentM.mutateAsync({
+                premise_uuid: premise.uuid,
+                sale_type: dealType,
+            });
             const confirmationUrl = payment.confirmation?.confirmation_url;
 
             if (confirmationUrl) {
@@ -107,7 +112,7 @@ const PremiseDetailsCardContent = ({
         } catch {
             return;
         }
-    }, [createPaymentM, premise.uuid]);
+    }, [createPaymentM, dealType, premise.uuid]);
 
     return (
         <>
@@ -258,7 +263,6 @@ type BuildingContentProps = {
 
 export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) => {
     const { t } = useTranslation();
-    const presentation = buildingInfo.presentation || undefined;
 
     const [params, _rawParams, setSearchParams] = useTypedSearchParams(parseBuildingSearchParams);
     const setSaleType = useCallback(
@@ -276,6 +280,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     const { floor: currentFloorRaw, selectedPremise, sale_type: saleTypeRaw } = params;
     const currentFloor = currentFloorRaw || buildingInfo.floors?.[0]?.key;
     const saleType = saleTypeRaw || 'sale';
+    const presentation =
+        (saleType === 'rent' ? buildingInfo.presentation_rent : buildingInfo.presentation_sale) ||
+        undefined;
 
     const legend = useMemo(
         () => [
@@ -397,12 +404,11 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                         <PremiseDetailsCardContent
                                             data={data}
                                             canBook={
-                                                saleType === 'sale' &&
-                                                (floorQ.data?.data?.premises?.find(
+                                                floorQ.data?.data?.premises?.find(
                                                     premise => premise.uuid === selectedPremise,
-                                                )?.is_available ??
-                                                    false)
+                                                )?.is_available ?? false
                                             }
+                                            dealType={saleType}
                                             buildingTitle={buildingInfo.title}
                                         />
                                     )}
@@ -446,12 +452,11 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                 <PremiseDetailsCardContent
                                     data={data}
                                     canBook={
-                                        saleType === 'sale' &&
-                                        (floorQ.data?.data?.premises?.find(
+                                        floorQ.data?.data?.premises?.find(
                                             premise => premise.uuid === selectedPremise,
-                                        )?.is_available ??
-                                            false)
+                                        )?.is_available ?? false
                                     }
+                                    dealType={saleType}
                                     buildingTitle={buildingInfo.title}
                                 />
                             )}

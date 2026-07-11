@@ -94,11 +94,26 @@ class City(models.Model):
         super().save(*args, **kwargs)
 
 
+def _building_presentation_upload_path(instance, filename, deal_type):
+    """Генерирует путь для файла презентации здания по типу сделки."""
+    safe_name = filename or 'presentation'
+    building_ref = instance.uuid or instance.pk or 'new'
+    return f'buildings/{building_ref}/presentation/{deal_type}/{safe_name}'
+
+
 def building_presentation_upload_path(instance, filename):
-    """Генерирует путь для файла презентации здания."""
+    """Оставлено для совместимости со старыми миграциями."""
     safe_name = filename or 'presentation'
     building_ref = instance.uuid or instance.pk or 'new'
     return f'buildings/{building_ref}/presentation/{safe_name}'
+
+
+def building_presentation_rent_upload_path(instance, filename):
+    return _building_presentation_upload_path(instance, filename, 'rent')
+
+
+def building_presentation_sale_upload_path(instance, filename):
+    return _building_presentation_upload_path(instance, filename, 'sale')
 
 
 class Building(models.Model):
@@ -167,10 +182,20 @@ class Building(models.Model):
         help_text="Географическая долгота (WGS-84), от −180 до 180",
         validators=[MinValueValidator(Decimal("-180")), MaxValueValidator(Decimal("180"))],
     )
-    presentation = models.FileField(
-        upload_to=building_presentation_upload_path,
-        verbose_name='Презентация',
-        help_text='Файл презентации здания (PDF, PPT, PPTX)',
+    presentation_rent = models.FileField(
+        upload_to=building_presentation_rent_upload_path,
+        verbose_name='Презентация (аренда)',
+        help_text='Файл презентации здания для аренды (PDF, PPT, PPTX)',
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf', 'ppt', 'pptx']),
+        ],
+    )
+    presentation_sale = models.FileField(
+        upload_to=building_presentation_sale_upload_path,
+        verbose_name='Презентация (продажа)',
+        help_text='Файл презентации здания для продажи (PDF, PPT, PPTX)',
         blank=True,
         null=True,
         validators=[
