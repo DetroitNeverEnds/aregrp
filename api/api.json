@@ -2761,10 +2761,19 @@
             "format": "uuid",
             "title": "Premise Uuid",
             "type": "string"
+          },
+          "sale_type": {
+            "enum": [
+              "sale",
+              "rent"
+            ],
+            "title": "Sale Type",
+            "type": "string"
           }
         },
         "required": [
-          "premise_uuid"
+          "premise_uuid",
+          "sale_type"
         ],
         "title": "PaymentCreateIn",
         "type": "object"
