@@ -11,8 +11,10 @@ from .models import (
     BuildingVideo,
     City,
     Floor,
+    FloorPanorama,
     Premise,
     PremiseImage,
+    PremisePanorama,
     Region,
 )
 
@@ -156,6 +158,40 @@ class BuildingVideoInline(admin.TabularInline):
     file_preview.short_description = 'Превью / ссылка'
 
 
+class FloorPanoramaInline(admin.TabularInline):
+    """Inline для панорам этажа."""
+    model = FloorPanorama
+    extra = 1
+    fields = ('file', 'title', 'order', 'file_preview')
+    readonly_fields = ('file_preview',)
+    verbose_name = 'Панорама'
+    verbose_name_plural = 'Панорамы'
+
+    def file_preview(self, obj):
+        if not obj.pk or not obj.file:
+            return '-'
+        return format_html('<a href="{}" target="_blank">панорама</a>', obj.file.url)
+
+    file_preview.short_description = 'Ссылка'
+
+
+class PremisePanoramaInline(admin.TabularInline):
+    """Inline для панорам помещения."""
+    model = PremisePanorama
+    extra = 1
+    fields = ('file', 'title', 'order', 'file_preview')
+    readonly_fields = ('file_preview',)
+    verbose_name = 'Панорама'
+    verbose_name_plural = 'Панорамы'
+
+    def file_preview(self, obj):
+        if not obj.pk or not obj.file:
+            return '-'
+        return format_html('<a href="{}" target="_blank">панорама</a>', obj.file.url)
+
+    file_preview.short_description = 'Ссылка'
+
+
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
     """Админка для зданий."""
@@ -164,8 +200,40 @@ class BuildingAdmin(admin.ModelAdmin):
     search_fields = ('name', 'address', 'city__name')
     ordering = ('city', 'name')
     autocomplete_fields = ['city']
-    readonly_fields = ('created_at', 'updated_at')
+    readonly_fields = ('created_at', 'updated_at', 'presentation_rent_link', 'presentation_sale_link')
     inlines = [BuildingImageInline, BuildingVideoInline]
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'address', 'city', 'description', 'total_floors', 'year_built', 'latitude', 'longitude'),
+        }),
+        ('Презентации', {
+            'fields': (
+                'presentation_rent',
+                'presentation_rent_link',
+                'presentation_sale',
+                'presentation_sale_link',
+            ),
+        }),
+        ('Системная информация', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',),
+        }),
+    )
+
+    def _presentation_link(self, presentation):
+        if not presentation:
+            return '-'
+        return format_html('<a href="{}" target="_blank">Открыть презентацию</a>', presentation.url)
+
+    def presentation_rent_link(self, obj):
+        return self._presentation_link(obj.presentation_rent)
+
+    presentation_rent_link.short_description = 'Презентация (аренда)'
+
+    def presentation_sale_link(self, obj):
+        return self._presentation_link(obj.presentation_sale)
+
+    presentation_sale_link.short_description = 'Презентация (продажа)'
 
 
 @admin.register(Floor)
@@ -177,6 +245,7 @@ class FloorAdmin(admin.ModelAdmin):
     ordering = ('building', 'number')
     autocomplete_fields = ['building']
     readonly_fields = ('created_at', 'updated_at')
+    inlines = [FloorPanoramaInline]
 
 
 @admin.register(Premise)
@@ -198,7 +267,7 @@ class PremiseAdmin(admin.ModelAdmin):
     )
     ordering = ('city', 'building', 'floor__number', 'room_number', 'title')
     readonly_fields = ('created_at', 'updated_at', 'full_sell_price')
-    inlines = [PremiseImageInline]
+    inlines = [PremiseImageInline, PremisePanoramaInline]
 
     fieldsets = (
         ('Основная информация', {

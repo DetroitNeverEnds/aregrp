@@ -94,6 +94,21 @@ class City(models.Model):
         super().save(*args, **kwargs)
 
 
+def _building_presentation_upload_path(instance, filename, deal_type):
+    """Генерирует путь для файла презентации здания по типу сделки."""
+    safe_name = filename or 'presentation'
+    building_ref = instance.uuid or instance.pk or 'new'
+    return f'buildings/{building_ref}/presentation/{deal_type}/{safe_name}'
+
+
+def building_presentation_rent_upload_path(instance, filename):
+    return _building_presentation_upload_path(instance, filename, 'rent')
+
+
+def building_presentation_sale_upload_path(instance, filename):
+    return _building_presentation_upload_path(instance, filename, 'sale')
+
+
 class Building(models.Model):
     """
     Здание.
@@ -159,6 +174,26 @@ class Building(models.Model):
         verbose_name="Долгота",
         help_text="Географическая долгота (WGS-84), от −180 до 180",
         validators=[MinValueValidator(Decimal("-180")), MaxValueValidator(Decimal("180"))],
+    )
+    presentation_rent = models.FileField(
+        upload_to=building_presentation_rent_upload_path,
+        verbose_name='Презентация (аренда)',
+        help_text='Файл презентации здания для аренды (PDF, PPT, PPTX)',
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf', 'ppt', 'pptx']),
+        ],
+    )
+    presentation_sale = models.FileField(
+        upload_to=building_presentation_sale_upload_path,
+        verbose_name='Презентация (продажа)',
+        help_text='Файл презентации здания для продажи (PDF, PPT, PPTX)',
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf', 'ppt', 'pptx']),
+        ],
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -879,3 +914,92 @@ class BuildingVideo(MediaFilesMixin, models.Model):
             self.card.delete(save=False)
         self.card = card_cf
         super().save(update_fields=['card'])
+
+
+def floor_panorama_upload_path(instance, filename):
+    """Equirectangular JPG для 360°-тура этажа."""
+    safe_name = filename or 'panorama.jpg'
+    floor = instance.floor
+    return f'floors/{floor.building_id}/floor_{floor.number}/panoramas/{instance.order}_{safe_name}'
+
+
+def premise_panorama_upload_path(instance, filename):
+    """Equirectangular JPG для 360°-тура помещения."""
+    safe_name = filename or 'panorama.jpg'
+    return f'premises/{instance.premise_id}/panoramas/{instance.order}_{safe_name}'
+
+
+class FloorPanorama(models.Model):
+    """Панорама этажа (equirectangular JPG для 360° viewer)."""
+
+    floor = models.ForeignKey(
+        Floor,
+        on_delete=models.CASCADE,
+        related_name='panoramas',
+        verbose_name='Этаж',
+    )
+    file = models.FileField(
+        upload_to=floor_panorama_upload_path,
+        verbose_name='Файл панорамы',
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg'])],
+    )
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name='Название',
+        help_text='Только для админки',
+    )
+    order = models.PositiveIntegerField(
+        default=1,
+        verbose_name='Порядок',
+        help_text='Порядок комнат в viewer',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Панорама этажа'
+        verbose_name_plural = 'Панорамы этажа'
+        ordering = ['floor', 'order', 'id']
+        db_table = 're_floor_panoramas'
+
+    def __str__(self):
+        return f'Панорама этажа {self.floor} ({self.order})'
+
+
+class PremisePanorama(models.Model):
+    """Панорама помещения (equirectangular JPG для 360° viewer)."""
+
+    premise = models.ForeignKey(
+        Premise,
+        on_delete=models.CASCADE,
+        related_name='panoramas',
+        verbose_name='Помещение',
+    )
+    file = models.FileField(
+        upload_to=premise_panorama_upload_path,
+        verbose_name='Файл панорамы',
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg'])],
+    )
+    title = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name='Название',
+        help_text='Только для админки',
+    )
+    order = models.PositiveIntegerField(
+        default=1,
+        verbose_name='Порядок',
+        help_text='Порядок комнат в viewer',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Панорама помещения'
+        verbose_name_plural = 'Панорамы помещения'
+        ordering = ['premise', 'order', 'id']
+        db_table = 're_premise_panoramas'
+
+    def __str__(self):
+        return f'Панорама {self.premise} ({self.order})'

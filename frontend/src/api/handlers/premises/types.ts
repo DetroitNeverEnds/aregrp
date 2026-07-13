@@ -36,6 +36,7 @@ export interface PremiseDetail extends PremiseListItem {
     has_windows?: boolean;
     has_parking?: boolean;
     is_furnished?: boolean;
+    panoramas?: string[];
 }
 
 /**

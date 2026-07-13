@@ -3,12 +3,12 @@ import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
 import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
 import type { Viewer } from '@photo-sphere-viewer/core';
 import '@photo-sphere-viewer/markers-plugin/index.css';
+import type { BuildingFloorOut } from '@/api/handlers/buildings/types';
+import { Button } from '@/components/ui/common/Button';
+import { Flex } from '@/components/ui/common/Flex';
 import { Modal } from '@/components/ui/common/Modal';
 import { Text } from '@/components/ui/common/Text';
 import styles from './PanoramaModal.module.scss';
-
-const SECOND_PANORAMA_URL = '/panoramas/panorama-2.jpg';
-const THIRD_PANORAMA_URL = '/panoramas/panorama-3.jpg';
 
 const HOTSPOT_HTML = (label: string) =>
     `<div style="
@@ -24,57 +24,85 @@ const HOTSPOT_HTML = (label: string) =>
         backdrop-filter: blur(4px);
     ">➜ ${label}</div>`;
 
-export interface PanoramaModalProps {
+type PanoramaModalBaseProps = {
     open: boolean;
     onClose: () => void;
-    panoramaUrl: string;
     title?: string;
-}
+};
 
-export const PanoramaModal: React.FC<PanoramaModalProps> = ({
-    open,
-    onClose,
-    panoramaUrl,
-    title,
-}) => {
-    const panoramaUrls = useMemo(() => [panoramaUrl, SECOND_PANORAMA_URL, THIRD_PANORAMA_URL], [panoramaUrl]);
+export type PanoramaModalProps = PanoramaModalBaseProps &
+    (
+        | { mode: 'building'; floors: BuildingFloorOut[]; initialFloorKey: string }
+        | { mode: 'premise'; panoramas: string[] }
+    );
+
+export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
+    const { open, onClose, title, mode } = props;
+
+    const [activeFloorKey, setActiveFloorKey] = useState(
+        mode === 'building' ? props.initialFloorKey : '',
+    );
     const [activePanoramaIndex, setActivePanoramaIndex] = useState(0);
 
     useEffect(() => {
-        if (open) {
-            setActivePanoramaIndex(0);
+        if (!open) {
+            return;
         }
-    }, [open, panoramaUrl]);
+        if (mode === 'building') {
+            setActiveFloorKey(props.initialFloorKey);
+        }
+        setActivePanoramaIndex(0);
+    }, [open, mode, mode === 'building' ? props.initialFloorKey : null]);
+
+    const panoramaUrls = useMemo(() => {
+        if (mode === 'premise') {
+            return props.panoramas;
+        }
+        const floor = props.floors.find(item => item.key === activeFloorKey);
+        return floor?.panoramas ?? [];
+    }, [mode, props, activeFloorKey]);
+
+    const floorsWithPanoramas = useMemo(
+        () => (mode === 'building' ? props.floors.filter(f => f.panoramas.length > 0) : []),
+        [mode, props],
+    );
 
     const plugins = useMemo(
-        () => [
-            [
-                MarkersPlugin,
-                {
-                    markers: [
-                        {
-                            id: 'go-next-room',
-                            position: { yaw: '20deg', pitch: '0deg' },
-                            html: HOTSPOT_HTML('Следующая комната'),
-                            anchor: 'center center',
-                            tooltip: 'Перейти в следующую комнату',
-                        },
-                        {
-                            id: 'go-prev-room',
-                            position: { yaw: '200deg', pitch: '0deg' },
-                            html: HOTSPOT_HTML('Предыдущая комната'),
-                            anchor: 'center center',
-                            tooltip: 'Вернуться в предыдущую комнату',
-                        },
-                    ],
-                },
-            ],
-        ],
-        [],
+        () =>
+            panoramaUrls.length > 1
+                ? [
+                      [
+                          MarkersPlugin,
+                          {
+                              markers: [
+                                  {
+                                      id: 'go-next-room',
+                                      position: { yaw: '20deg', pitch: '0deg' },
+                                      html: HOTSPOT_HTML('Следующая комната'),
+                                      anchor: 'center center',
+                                      tooltip: 'Перейти в следующую комнату',
+                                  },
+                                  {
+                                      id: 'go-prev-room',
+                                      position: { yaw: '200deg', pitch: '0deg' },
+                                      html: HOTSPOT_HTML('Предыдущая комната'),
+                                      anchor: 'center center',
+                                      tooltip: 'Вернуться в предыдущую комнату',
+                                  },
+                              ],
+                          },
+                      ],
+                  ]
+                : [],
+        [panoramaUrls.length],
     );
 
     const onReady = useCallback(
         (viewer: Viewer) => {
+            if (panoramaUrls.length <= 1) {
+                return;
+            }
+
             const markersPlugin = viewer.getPlugin<MarkersPlugin>(MarkersPlugin);
 
             markersPlugin.addEventListener('select-marker', ({ marker }) => {
@@ -95,6 +123,13 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = ({
         [activePanoramaIndex, panoramaUrls],
     );
 
+    const onFloorSelect = useCallback((floorKey: string) => {
+        setActiveFloorKey(floorKey);
+        setActivePanoramaIndex(0);
+    }, []);
+
+    const currentPanoramaUrl = panoramaUrls[activePanoramaIndex];
+
     return (
         <Modal
             open={open}
@@ -102,21 +137,39 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = ({
             panelClassName={styles.panoramaModal__panel}
             className={styles.panoramaModal__content}
         >
-            {title && (
+            {mode === 'building' && floorsWithPanoramas.length > 0 && (
+                <Flex direction="row" gap={8} wrap="wrap" className={styles.panoramaModal__floors}>
+                    {floorsWithPanoramas.map(floor => (
+                        <Button
+                            key={floor.key}
+                            variant={activeFloorKey === floor.key ? 'primary' : 'secondary'}
+                            size="sm"
+                            onClick={() => onFloorSelect(floor.key)}
+                        >
+                            {floor.title}
+                        </Button>
+                    ))}
+                </Flex>
+            )}
+            {title && panoramaUrls.length > 0 && (
                 <Text variant="20-med" className={styles.panoramaModal__title}>
                     {title}
-                    {` — Комната ${activePanoramaIndex + 1} из ${panoramaUrls.length}`}
+                    {panoramaUrls.length > 1 &&
+                        ` — Комната ${activePanoramaIndex + 1} из ${panoramaUrls.length}`}
                 </Text>
             )}
             <div className={styles.panoramaModal__viewer}>
-                <ReactPhotoSphereViewer
-                    src={panoramaUrls[activePanoramaIndex]}
-                    height="100%"
-                    width="100%"
-                    navbar={['zoom', 'fullscreen']}
-                    plugins={plugins as never}
-                    onReady={onReady}
-                />
+                {currentPanoramaUrl ? (
+                    <ReactPhotoSphereViewer
+                        key={`${activeFloorKey}-${currentPanoramaUrl}`}
+                        src={currentPanoramaUrl}
+                        height="100%"
+                        width="100%"
+                        navbar={['zoom', 'fullscreen']}
+                        plugins={plugins as never}
+                        onReady={onReady}
+                    />
+                ) : null}
             </div>
         </Modal>
     );

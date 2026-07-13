@@ -1,6 +1,6 @@
 /** Медиа для галереи (самостоятельный контракт UI, без привязки к типам API). */
 export type GalleryMedia = {
-    type: 'photo' | 'video';
+    type: 'photo' | 'video' | 'panorama';
     url: string;
     full_url?: string;
 };

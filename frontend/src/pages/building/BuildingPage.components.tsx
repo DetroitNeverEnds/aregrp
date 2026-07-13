@@ -28,8 +28,6 @@ import MedicalCrossIcon from './medical-cross.svg?react';
 import { GenerateLinkModal } from './GenerateLinkModal';
 import { PanoramaModal } from '@/components/ui/common/PanoramaModal';
 
-const DEMO_PANORAMA_URL = '/panoramas/panorama-1.jpg';
-
 import styles from './BuildingPage.module.scss';
 import { SingleSelect } from '@/components/ui/common/input/Select';
 import breakpointStyles from '@/styles/breakpoint-utilities.module.scss';
@@ -67,6 +65,7 @@ const toSearchParams = (params: BuildingSearchParams): Record<string, string> =>
 type PremiseDetailsCardProps = {
     data: PremiseDetail;
     canBook: boolean;
+    dealType: SaleType;
     buildingTitle: string;
 };
 
@@ -85,6 +84,7 @@ const formatRubles = (value: number | null | undefined) => {
 const PremiseDetailsCardContent = ({
     data: premise,
     canBook,
+    dealType,
     buildingTitle,
 }: PremiseDetailsCardProps) => {
     const { t } = useTranslation();
@@ -95,13 +95,17 @@ const PremiseDetailsCardContent = ({
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
     const [panoramaOpen, setPanoramaOpen] = useState(false);
+    const hasPremisePanoramas = (premise.panoramas?.length ?? 0) > 0;
     const createPaymentM = useCreatePaymentMutation();
 
     const onBookClick = useCallback(async () => {
         createPaymentM.reset();
 
         try {
-            const payment = await createPaymentM.mutateAsync({ premise_uuid: premise.uuid });
+            const payment = await createPaymentM.mutateAsync({
+                premise_uuid: premise.uuid,
+                sale_type: dealType,
+            });
             const confirmationUrl = payment.confirmation?.confirmation_url;
 
             if (confirmationUrl) {
@@ -111,7 +115,7 @@ const PremiseDetailsCardContent = ({
         } catch {
             return;
         }
-    }, [createPaymentM, premise.uuid]);
+    }, [createPaymentM, dealType, premise.uuid]);
 
     return (
         <>
@@ -181,9 +185,6 @@ const PremiseDetailsCardContent = ({
                     </Text>
                 </Flex>
             </Card>
-            <Button variant="outlined" size="md" onClick={() => setPanoramaOpen(true)} width="max">
-                Посмотреть панораму
-            </Button>
             {canBook && (
                 <Flex direction="row" gap={6} align="stretch" fullWidth>
                     <Column gap={6} align="center">
@@ -212,19 +213,29 @@ const PremiseDetailsCardContent = ({
                     </Column>
                 </Flex>
             )}
-            <Gallery premise={premise} orientation="vertical" size="m" type="thumbs" />
+            <Gallery
+                premise={premise}
+                panoramas={hasPremisePanoramas ? premise.panoramas : undefined}
+                onPanoramaOpen={hasPremisePanoramas ? () => setPanoramaOpen(true) : undefined}
+                orientation="vertical"
+                size="m"
+                type="thumbs"
+            />
 
             <GenerateLinkModal
                 open={generateLinkOpen}
                 onClose={() => setGenerateLinkOpen(false)}
                 premise={premise}
             />
-            <PanoramaModal
-                open={panoramaOpen}
-                onClose={() => setPanoramaOpen(false)}
-                panoramaUrl={DEMO_PANORAMA_URL}
-                title="Панорама офиса"
-            />
+            {hasPremisePanoramas && (
+                <PanoramaModal
+                    open={panoramaOpen}
+                    onClose={() => setPanoramaOpen(false)}
+                    mode="premise"
+                    panoramas={premise.panoramas ?? []}
+                    title={`${premise.name} — ${t('pages.building.viewPremisePanorama')}`}
+                />
+            )}
         </>
     );
 };
@@ -288,6 +299,9 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     const { floor: currentFloorRaw, selectedPremise, sale_type: saleTypeRaw } = params;
     const currentFloor = currentFloorRaw || buildingInfo.floors?.[0]?.key;
     const saleType = saleTypeRaw || 'sale';
+    const presentation =
+        (saleType === 'rent' ? buildingInfo.presentation_rent : buildingInfo.presentation_sale) ||
+        undefined;
 
     const legend = useMemo(
         () => [
@@ -392,6 +406,11 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
     );
 
     const device = useDevice();
+    const [buildingPanoramaOpen, setBuildingPanoramaOpen] = useState(false);
+    const hasBuildingPanoramas = useMemo(
+        () => buildingInfo.floors?.some(floor => (floor.panoramas?.length ?? 0) > 0) ?? false,
+        [buildingInfo.floors],
+    );
 
     return (
         <>
@@ -409,12 +428,11 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                         <PremiseDetailsCardContent
                                             data={data}
                                             canBook={
-                                                saleType === 'sale' &&
-                                                (floorQ.data?.data?.premises?.find(
+                                                floorQ.data?.data?.premises?.find(
                                                     premise => premise.uuid === selectedPremise,
-                                                )?.is_available ??
-                                                    false)
+                                                )?.is_available ?? false
                                             }
+                                            dealType={saleType}
                                             buildingTitle={buildingInfo.title}
                                         />
                                     )}
@@ -458,12 +476,11 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                 <PremiseDetailsCardContent
                                     data={data}
                                     canBook={
-                                        saleType === 'sale' &&
-                                        (floorQ.data?.data?.premises?.find(
+                                        floorQ.data?.data?.premises?.find(
                                             premise => premise.uuid === selectedPremise,
-                                        )?.is_available ??
-                                            false)
+                                        )?.is_available ?? false
                                     }
+                                    dealType={saleType}
                                     buildingTitle={buildingInfo.title}
                                 />
                             )}
@@ -480,9 +497,32 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             fullWidth
                             className={breakpointStyles.desktopOnly}
                         >
-                            <Text variant="h3" className={styles.floorSchema__header__text}>
-                                {buildingInfo?.title}
-                            </Text>
+                            <Flex gap={8} align="start" wrap="wrap">
+                                <Text variant="h3" className={styles.floorSchema__header__text}>
+                                    {buildingInfo?.title}
+                                </Text>
+                                {presentation && (
+                                    <Link
+                                        to={presentation}
+                                        variant="external"
+                                        target="_blank"
+                                        leadingIcon="download-rounded"
+                                        className={styles.floorSchema__header__link}
+                                        theme="black"
+                                    >
+                                        {t('pages.building.downloadPresentation')}
+                                    </Link>
+                                )}
+                                {hasBuildingPanoramas && (
+                                    <Button
+                                        variant="outlined"
+                                        size="sm"
+                                        onClick={() => setBuildingPanoramaOpen(true)}
+                                    >
+                                        {t('pages.building.viewBuildingPanorama')}
+                                    </Button>
+                                )}
+                            </Flex>
                             <SingleSelect<SaleType>
                                 options={[
                                     { label: { title: t('common.sale') }, value: 'sale' },
@@ -509,6 +549,26 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             <Text variant="h2" className={styles.floorSchema__header__text}>
                                 {buildingInfo?.title}
                             </Text>
+                            {presentation && (
+                                <Link
+                                    to={presentation}
+                                    variant="external"
+                                    target="_blank"
+                                    leadingIcon="download-rounded"
+                                    className={styles.floorSchema__header__link}
+                                >
+                                    {t('pages.building.downloadPresentation')}
+                                </Link>
+                            )}
+                            {hasBuildingPanoramas && (
+                                <Button
+                                    variant="outlined"
+                                    size="sm"
+                                    onClick={() => setBuildingPanoramaOpen(true)}
+                                >
+                                    {t('pages.building.viewBuildingPanorama')}
+                                </Button>
+                            )}
                         </Flex>
                     </>
 
@@ -614,6 +674,16 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                         ]}
                     />
                 </Container>
+            )}
+            {hasBuildingPanoramas && currentFloor && (
+                <PanoramaModal
+                    open={buildingPanoramaOpen}
+                    onClose={() => setBuildingPanoramaOpen(false)}
+                    mode="building"
+                    floors={buildingInfo.floors ?? []}
+                    initialFloorKey={currentFloor}
+                    title={`${buildingInfo.title} — ${t('pages.building.viewBuildingPanorama')}`}
+                />
             )}
         </>
     );

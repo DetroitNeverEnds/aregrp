@@ -14,7 +14,7 @@ from django.utils import timezone
 from apps.bookings.models import Booking
 from apps.deals.models import Deal
 from apps.payments.models import Payment
-from apps.re_objects.models import Building, BuildingImage, BuildingVideo, Floor, Premise
+from apps.re_objects.models import Building, BuildingImage, BuildingVideo, Floor, FloorPanorama, Premise, PremisePanorama
 from apps.re_objects.services.premise_service import _build_building_detail_media
 
 
@@ -543,11 +543,40 @@ class TestBuildingDetail:
             "title": "Этаж 1",
             "has_sale": False,
             "has_rent": True,
+            "panoramas": [],
         }
         assert "media_categories" in data
         assert "media" in data
         assert isinstance(data["media_categories"], list)
         assert isinstance(data["media"], list)
+
+    async def test_building_detail_floor_panoramas(self, client, building_with_premise):
+        """floors[].panoramas — список URL, отсorted by order."""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        building, premise = building_with_premise
+        floor = premise.floor
+
+        @sync_to_async
+        def setup():
+            FloorPanorama.objects.create(
+                floor=floor,
+                file=SimpleUploadedFile('p1.jpg', b'jpg1', content_type='image/jpeg'),
+                order=2,
+            )
+            FloorPanorama.objects.create(
+                floor=floor,
+                file=SimpleUploadedFile('p2.jpg', b'jpg2', content_type='image/jpeg'),
+                order=1,
+            )
+
+        await setup()
+        response = await client.get(f"/buildings/{building.uuid}")
+
+        assert response.status_code == 200
+        floor_data = response.json()["floors"][0]
+        assert len(floor_data["panoramas"]) == 2
+        assert all('/media/' in url for url in floor_data["panoramas"])
 
     async def test_building_detail_floors_availability_flags(self, client, city):
         """floors: has_sale/has_rent считаются только по флагам помещений на каждом этаже."""
@@ -603,9 +632,9 @@ class TestBuildingDetail:
         assert response.status_code == 200
         data = response.json()
         assert data["floors"] == [
-            {"key": str(floor1.id), "title": "Офисы", "has_sale": False, "has_rent": True},
-            {"key": str(floor2.id), "title": "Продажа", "has_sale": True, "has_rent": False},
-            {"key": str(floor3.id), "title": "Микс", "has_sale": True, "has_rent": True},
+            {"key": str(floor1.id), "title": "Офисы", "has_sale": False, "has_rent": True, "panoramas": []},
+            {"key": str(floor2.id), "title": "Продажа", "has_sale": True, "has_rent": False, "panoramas": []},
+            {"key": str(floor3.id), "title": "Микс", "has_sale": True, "has_rent": True, "panoramas": []},
         ]
 
     async def test_building_detail_media_uses_preview_in_url(self, client, city):
@@ -976,6 +1005,29 @@ class TestPremiseDetail:
         assert "area" in data
         assert "description" in data
         assert "media" in data
+        assert data["panoramas"] == []
+
+    async def test_premise_detail_panoramas(self, client, building_with_premise):
+        """panoramas — список URL помещения."""
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        _, premise = building_with_premise
+
+        @sync_to_async
+        def setup():
+            PremisePanorama.objects.create(
+                premise=premise,
+                file=SimpleUploadedFile('room.jpg', b'jpg', content_type='image/jpeg'),
+                order=1,
+            )
+
+        await setup()
+        response = await client.get(f"/premises/{premise.uuid}")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["panoramas"]) == 1
+        assert data["panoramas"][0].startswith('/media/')
 
     async def test_premise_detail_sale_type_uses_full_sell_price(self, client, city):
         """sale_type=sale: price равен full_sell_price."""

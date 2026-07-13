@@ -270,6 +270,8 @@
             },
             "floor": "Этаж",
             "book": "Забронировать",
+            "viewBuildingPanorama": "3D-тур здания",
+            "viewPremisePanorama": "3D-тур помещения",
             "authToBook": {
                 "auth": "Авторизуйтесь",
                 "toBook": ", чтобы забронировать"
