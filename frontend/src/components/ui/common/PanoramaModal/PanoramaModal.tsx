@@ -44,7 +44,7 @@ export type PanoramaModalProps = PanoramaModalBaseProps &
 
 export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
     const { open, onClose, title, mode } = props;
-    const saleType = mode === 'building' ? props.saleType ?? 'sale' : 'sale';
+    const saleType = mode === 'building' ? (props.saleType ?? 'sale') : 'sale';
 
     const [activeFloorKey, setActiveFloorKey] = useState(
         mode === 'building' ? props.initialFloorKey : '',

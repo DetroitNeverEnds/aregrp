@@ -275,7 +275,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                 {hasBuildingPanoramas && (
                                     <Button
                                         variant="outlined"
-                                        size="sm"
+                                        size="md"
                                         onClick={() => setBuildingPanoramaOpen(true)}
                                     >
                                         {t('pages.building.viewBuildingPanorama')}
@@ -322,7 +322,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                             {hasBuildingPanoramas && (
                                 <Button
                                     variant="outlined"
-                                    size="sm"
+                                    size="md"
                                     onClick={() => setBuildingPanoramaOpen(true)}
                                 >
                                     {t('pages.building.viewBuildingPanorama')}
