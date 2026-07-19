@@ -1,0 +1,1 @@
+export { BuildingContent } from './BuildingContent';
