@@ -66,6 +66,8 @@ export interface BuildingDetailOut {
     title: string;
     address: string;
     description: string;
+    presentation_rent?: string | null;
+    presentation_sale?: string | null;
     total_floors?: number | null;
     floors?: BuildingFloorOut[];
     year_built?: number | null;

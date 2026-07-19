@@ -14,20 +14,6 @@ const meta = {
             viewports: [400],
         },
     },
-    decorators: [
-        Story => (
-            <div
-                style={{
-                    height: '400px',
-                    display: 'flex',
-                    // alignItems: 'center',
-                    // justifyContent: 'center',
-                }}
-            >
-                <Story />
-            </div>
-        ),
-    ],
     tags: ['autodocs'],
     argTypes: {
         size: {
@@ -80,26 +66,35 @@ const simpleOptions = [
     { value: '5', label: { title: 'Казань' } },
 ];
 
+function normalizeSelectValue(value: string | string[] | undefined): string[] {
+    if (!value) {
+        return [];
+    }
+    return Array.isArray(value) ? value : [value];
+}
+
 // Контролируемый компонент для интерактивных примеров
 const ControlledSelect = (args: SelectProps<string>) => {
-    const [value, setValue] = useState<string | undefined>(args.value);
+    const { value: argsValue, ...rest } = args;
+    const [value, setValue] = useState<string[]>(() => normalizeSelectValue(argsValue));
 
     return (
         <div style={{ width: '400px' }}>
-            <Select {...args} value={value} onChange={setValue} />
+            <Select {...rest} value={value} onChange={setValue} />
         </div>
     );
 };
 
 // Контролируемый компонент для мультиселекта
 const ControlledMultiSelect = (args: SelectProps<string>) => {
-    const [value, setValue] = useState<string[]>(
-        (args.multiple && Array.isArray(args.value) ? args.value : []) as string[],
+    const { value: argsValue, ...rest } = args;
+    const [value, setValue] = useState<string[]>(() =>
+        args.multiple ? normalizeSelectValue(argsValue) : [],
     );
 
     return (
         <div style={{ width: '400px' }}>
-            <Select {...args} multiple value={value} onChange={setValue} />
+            <Select {...rest} multiple value={value} onChange={setValue} />
         </div>
     );
 };
@@ -173,7 +168,7 @@ export const Disabled: Story = {
 
 export const DisabledWithValue: Story = {
     render: args => {
-        const [value] = useState<string | number>('2');
+        const [value] = useState<string[]>(['2']);
         return (
             <div style={{ width: '400px' }}>
                 <Select {...args} value={value} />
@@ -205,12 +200,12 @@ export const ManyOptions: Story = {
 
 export const InForm: Story = {
     render: () => {
-        const [city, setCity] = useState<string | undefined>(undefined);
-        const [country, setCountry] = useState<string | undefined>(undefined);
+        const [city, setCity] = useState<string[]>([]);
+        const [country, setCountry] = useState<string[]>([]);
 
         const handleSubmit = (e: React.FormEvent) => {
             e.preventDefault();
-            alert(`Город: ${city}, Страна: ${country}`);
+            alert(`Город: ${city[0] ?? ''}, Страна: ${country[0] ?? ''}`);
         };
 
         return (
@@ -314,8 +309,8 @@ export const AllStates: Story = {
         options: simpleOptions,
     },
     render: () => {
-        const [value1, setValue1] = useState<string | undefined>(undefined);
-        const [value2, setValue2] = useState<string | undefined>('2');
+        const [value1, setValue1] = useState<string[]>([]);
+        const [value2, setValue2] = useState<string[]>(['2']);
         const [multiValue1, setMultiValue1] = useState<string[]>([]);
         const [multiValue2, setMultiValue2] = useState<string[]>(['1', '3']);
 

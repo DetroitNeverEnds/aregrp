@@ -66,6 +66,7 @@ class PremiseDetailOut(PremiseListOut):
     has_parking: bool = False
     is_furnished: bool = False
     panoramas: list[str] = []
+    presentation_url: Optional[str] = None
 
 
 class PremiseListResponse(Schema):

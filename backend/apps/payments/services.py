@@ -1,8 +1,9 @@
 import json
 import logging
+import uuid
+from contextlib import suppress
 from datetime import timedelta
 from decimal import Decimal
-import uuid
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -16,8 +17,8 @@ from apps.re_objects.availability import premise_is_available_for_deal
 from apps.re_objects.models import Premise
 from apps.referrals.models import ReferralLink
 
-from .models import Payment
 from .errors import PaymentsErrorCodes, create_payments_error
+from .models import Payment
 from .schemas import PaymentAmountOut, PaymentConfirmationOut, PaymentCreateOut
 
 logger = logging.getLogger(__name__)
@@ -31,8 +32,12 @@ def _resolve_payment_status(raw_status: str) -> str:
     return Payment.Status.PENDING
 
 
-def _build_amount_value() -> str:
-    return str(Decimal(settings.PAYMENTS_BOOKING_AMOUNT).quantize(Decimal('0.00')))
+def _build_amount_value(deal_type: str) -> str:
+    if deal_type == settings.RE_OBJECTS_SALE_TYPE_RENT:
+        amount = settings.PAYMENTS_RENT_BOOKING_AMOUNT
+    else:
+        amount = settings.PAYMENTS_BOOKING_AMOUNT
+    return str(Decimal(amount).quantize(Decimal('0.00')))
 
 
 def _is_positive_int_string(value: str) -> bool:
@@ -102,9 +107,12 @@ def _resolve_referral_link_from_metadata(metadata: dict) -> ReferralLink | None:
     return ReferralLink.objects.select_related('referrer').filter(pk=int(referral_link_id)).first()
 
 
-def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
+def _ensure_booking(metadata: dict, local_payment: Payment | None) -> None:
     user_id_raw = metadata.get('user_id')
     premise_id_raw = metadata.get('premise_id')
+    rent = settings.RE_OBJECTS_SALE_TYPE_RENT
+    sale = settings.RE_OBJECTS_SALE_TYPE_SALE
+    deal_type_raw = metadata.get('deal_type')
 
     if not isinstance(user_id_raw, str) or not _is_positive_int_string(user_id_raw):
         return
@@ -136,10 +144,16 @@ def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
         ).exists()
         if active_booking_exists:
             return
+        if deal_type_raw == rent:
+            booking_deal_type = Booking.DealType.RENT
+        elif deal_type_raw == sale:
+            booking_deal_type = Booking.DealType.SALE
+        else:
+            booking_deal_type = Booking.DealType.SALE
         Booking.objects.create(
             user=user,
             premise=premise,
-            deal_type=Booking.DealType.SALE,
+            deal_type=booking_deal_type,
             expires_at=expires_at,
             source_payment=local_payment,
             referrer=referrer,
@@ -149,6 +163,7 @@ def _ensure_sale_booking(metadata: dict, local_payment: Payment | None) -> None:
 def create_payment(
     user_id: int,
     premise_uuid: uuid.UUID,
+    deal_type: str,
     referral_code: str | None = None,
 ) -> tuple[PaymentCreateOut | None, tuple[int, dict] | None]:
     try:
@@ -167,14 +182,19 @@ def create_payment(
 
     premise_id = premise.pk
 
-    if not premise.is_available_for_sale():
+    rent = settings.RE_OBJECTS_SALE_TYPE_RENT
+    is_available_for_requested_deal = (
+        premise.is_available_for_rent() if deal_type == rent else premise.is_available_for_sale()
+    )
+
+    if not is_available_for_requested_deal:
         return None, (
             400,
             create_payments_error(
                 status=400,
                 code=PaymentsErrorCodes.PREMISE_UNAVAILABLE,
                 title='Premise not available',
-                detail='This premise is not available for sale',
+                detail=f'This premise is not available for {deal_type}',
                 instance='/api/v1/payments/',
             ),
         )
@@ -188,7 +208,7 @@ def create_payment(
 
     if not premise_is_available_for_deal(
         premise=premise,
-        deal_type=settings.RE_OBJECTS_SALE_TYPE_SALE,
+        deal_type=deal_type,
         has_active_booking=has_active_booking,
         has_active_pending_payment=has_active_pending_payment,
     ):
@@ -240,7 +260,7 @@ def create_payment(
             ),
         )
 
-    amount_value = _build_amount_value()
+    amount_value = _build_amount_value(deal_type)
     description = _build_payment_description(premise)
     idempotence_key = uuid.uuid4()
     referral_link = _resolve_referral_link_for_payment(premise_id, referral_code)
@@ -249,6 +269,7 @@ def create_payment(
         'user_id': str(user_id),
         'premise_id': str(premise_id),
         'premise_uuid': str(premise.uuid),
+        'deal_type': deal_type,
     }
     if referral_link is not None:
         metadata['referral_link_id'] = str(referral_link.id)
@@ -322,10 +343,8 @@ def create_payment(
         pass
 
     created_at = None
-    try:
+    with suppress(AttributeError):
         created_at = payment.created_at
-    except AttributeError:
-        pass
 
     out = PaymentCreateOut(
         id=str(payment.id),
@@ -377,7 +396,11 @@ def handle_yookassa_webhook(raw_body: bytes) -> tuple[int, dict | None]:
         if isinstance(raw_metadata, dict):
             event_metadata = raw_metadata
 
-    local_payment = Payment.objects.select_related('referral_link__referrer').filter(provider_payment_id=payment_id).first()
+    local_payment = (
+        Payment.objects.select_related('referral_link__referrer')
+        .filter(provider_payment_id=payment_id)
+        .first()
+    )
     if local_payment is None and event_metadata:
         payment_token = event_metadata.get('payment_token')
         if isinstance(payment_token, str):
@@ -449,7 +472,7 @@ def handle_yookassa_webhook(raw_body: bytes) -> tuple[int, dict | None]:
         resolved_metadata.update(event_metadata)
 
     if event_name == 'payment.succeeded':
-        _ensure_sale_booking(resolved_metadata, local_payment)
+        _ensure_booking(resolved_metadata, local_payment)
     elif event_name == 'payment.canceled':
         pass
 

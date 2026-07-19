@@ -100,11 +100,11 @@ describe('Select', () => {
 
     it('применяет правильный размер', () => {
         const { container, rerender } = render(<Select options={mockOptions} size="lg" />);
-        const dropdownButton = container.querySelector('[class*="dropdown-button--lg"]');
+        const dropdownButton = container.querySelector('[class*="dropdown-container--lg"]');
         expect(dropdownButton).toBeInTheDocument();
 
         rerender(<Select options={mockOptions} size="sm" />);
-        const dropdownButtonSm = container.querySelector('[class*="dropdown-button--sm"]');
+        const dropdownButtonSm = container.querySelector('[class*="dropdown-container--sm"]');
         expect(dropdownButtonSm).toBeInTheDocument();
     });
 

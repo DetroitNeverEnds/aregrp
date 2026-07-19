@@ -22,18 +22,8 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    const {
-        uuid,
-        name,
-        address,
-        area,
-        floor,
-        has_tenant,
-        building_uuid,
-        rent_price,
-        sale_price,
-        price,
-    } = item;
+    const { uuid, name, address, area, floor, has_tenant, building_uuid, rent_price, sale_price } =
+        item;
 
     const formatPrice = (value: number | null) => {
         if (value === null || value === undefined) {
@@ -103,13 +93,13 @@ export const OfficeCard: React.FC<OfficeCardProps> = ({ item, type }) => {
                     <Flex align="end" gap={8}>
                         {(type === 'any' || type == 'sale') && sale_price && (
                             <Text variant="20-med" color="gray-70" align="right">
-                                {formatPrice(sale_price ?? price)}
+                                {formatPrice(sale_price)}
                             </Text>
                         )}
-                        {(type === 'any' || type == 'rent') && (
+                        {(type === 'any' || type == 'rent') && rent_price && (
                             <Text variant="20-med" color="gray-70" align="right">
                                 {type === 'any' && sale_price && 'или '}
-                                {formatPrice(rent_price ?? price)} / месяц
+                                {formatPrice(rent_price)} / месяц
                             </Text>
                         )}
                     </Flex>
