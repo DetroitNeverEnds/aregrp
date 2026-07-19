@@ -4,6 +4,7 @@ import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
 import type { Viewer } from '@photo-sphere-viewer/core';
 import '@photo-sphere-viewer/markers-plugin/index.css';
 import type { BuildingFloorOut } from '@/api/handlers/buildings/types';
+import type { SaleType } from '@/api/handlers/types';
 import { Button } from '@/components/ui/common/Button';
 import { Flex } from '@/components/ui/common/Flex';
 import { Modal } from '@/components/ui/common/Modal';
@@ -32,12 +33,18 @@ type PanoramaModalBaseProps = {
 
 export type PanoramaModalProps = PanoramaModalBaseProps &
     (
-        | { mode: 'building'; floors: BuildingFloorOut[]; initialFloorKey: string }
+        | {
+              mode: 'building';
+              floors: BuildingFloorOut[];
+              initialFloorKey: string;
+              saleType?: SaleType;
+          }
         | { mode: 'premise'; panoramas: string[] }
     );
 
 export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
     const { open, onClose, title, mode } = props;
+    const saleType = mode === 'building' ? props.saleType ?? 'sale' : 'sale';
 
     const [activeFloorKey, setActiveFloorKey] = useState(
         mode === 'building' ? props.initialFloorKey : '',
@@ -137,20 +144,6 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
             panelClassName={styles.panoramaModal__panel}
             className={styles.panoramaModal__content}
         >
-            {mode === 'building' && floorsWithPanoramas.length > 0 && (
-                <Flex direction="row" gap={8} wrap="wrap" className={styles.panoramaModal__floors}>
-                    {floorsWithPanoramas.map(floor => (
-                        <Button
-                            key={floor.key}
-                            variant={activeFloorKey === floor.key ? 'primary' : 'secondary'}
-                            size="sm"
-                            onClick={() => onFloorSelect(floor.key)}
-                        >
-                            {floor.title}
-                        </Button>
-                    ))}
-                </Flex>
-            )}
             {title && panoramaUrls.length > 0 && (
                 <Text variant="20-med" className={styles.panoramaModal__title}>
                     {title}
@@ -171,6 +164,23 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
                     />
                 ) : null}
             </div>
+            {mode === 'building' && floorsWithPanoramas.length > 0 && (
+                <Flex direction="row" gap={12} className={styles.panoramaModal__floors}>
+                    {floorsWithPanoramas.map(floor => (
+                        <Button
+                            key={floor.key}
+                            variant={activeFloorKey === floor.key ? 'primary' : 'secondary'}
+                            onClick={() => onFloorSelect(floor.key)}
+                            disabled={
+                                (saleType === 'sale' && !floor.has_sale) ||
+                                (saleType === 'rent' && !floor.has_rent)
+                            }
+                        >
+                            {floor.title}
+                        </Button>
+                    ))}
+                </Flex>
+            )}
         </Modal>
     );
 };

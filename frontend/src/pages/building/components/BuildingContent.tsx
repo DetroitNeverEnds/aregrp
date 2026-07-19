@@ -441,6 +441,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                     mode="building"
                     floors={buildingInfo.floors ?? []}
                     initialFloorKey={currentFloor}
+                    saleType={saleType}
                     title={`${buildingInfo.title} — ${t('pages.building.viewBuildingPanorama')}`}
                 />
             )}

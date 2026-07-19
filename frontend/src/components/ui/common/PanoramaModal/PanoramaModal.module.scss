@@ -4,23 +4,25 @@
     }
 
     &__content {
-        padding: 0 !important;
+        gap: 16px;
     }
 
     &__title {
-        padding: 8px 20px 12px;
-    }
-
-    &__floors {
-        padding: 16px 20px 0;
+        padding-top: 4px;
     }
 
     &__viewer {
         width: 100%;
         height: min(65vh, 700px);
+        border-radius: $border-radius-l;
+        overflow: hidden;
 
         :global(.psv-container) {
-            border-radius: 0 0 $border-radius-l $border-radius-l;
+            border-radius: $border-radius-l;
         }
+    }
+
+    &__floors {
+        flex-wrap: wrap;
     }
 }
