@@ -272,7 +272,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                         {t('pages.building.downloadPresentation')}
                                     </Link>
                                 )}
-                                {hasBuildingPanoramas && (
+                                {/* {hasBuildingPanoramas && (
                                     <Button
                                         variant="outlined"
                                         size="md"
@@ -280,7 +280,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     >
                                         {t('pages.building.viewBuildingPanorama')}
                                     </Button>
-                                )}
+                                )} */}
                             </Flex>
                             <SingleSelect<SaleType>
                                 options={[
@@ -319,7 +319,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     {t('pages.building.downloadPresentation')}
                                 </Link>
                             )}
-                            {hasBuildingPanoramas && (
+                            {/* {hasBuildingPanoramas && (
                                 <Button
                                     variant="outlined"
                                     size="md"
@@ -327,7 +327,7 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                 >
                                     {t('pages.building.viewBuildingPanorama')}
                                 </Button>
-                            )}
+                            )} */}
                         </Flex>
                     </>
 

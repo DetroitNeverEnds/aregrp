@@ -159,14 +159,7 @@ export const PremiseDetailsCardContent = ({
                     </Column>
                 </Flex>
             )}
-            <Gallery
-                premise={premise}
-                panoramas={hasPremisePanoramas ? premise.panoramas : undefined}
-                onPanoramaOpen={hasPremisePanoramas ? () => setPanoramaOpen(true) : undefined}
-                orientation="vertical"
-                size="m"
-                type="thumbs"
-            />
+            <Gallery premise={premise} orientation="vertical" size="m" type="thumbs" />
 
             <GenerateLinkModal
                 open={generateLinkOpen}

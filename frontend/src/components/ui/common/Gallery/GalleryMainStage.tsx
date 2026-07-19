@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import { useTranslation } from 'react-i18next';
 
 import styles from './GalleryMainStage.module.scss';
 import type { GalleryMedia } from './Gallery.types';
@@ -25,7 +24,6 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
     className,
     onClick,
 }) => {
-    const { t } = useTranslation();
     const mediaClass = classNames(styles.media, styles[`media__fit-${fit}`], className);
     const fullSrc = item.full_url ?? item.url;
 
@@ -39,7 +37,7 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
                     })}
                     onClick={onClick}
                 >
-                    {item.type !== 'panorama' && <img src={item.url} alt="" className={mediaClass} />}
+                    <img src={item.url} alt="" className={mediaClass} />
                     {item.type === 'video' && (
                         <div className={styles.videoPreviewOverlay} aria-hidden>
                             <Button
@@ -52,13 +50,6 @@ export const GalleryMainStage: React.FC<GalleryMainStageProps> = ({
                                     onClick?.();
                                 }}
                             />
-                        </div>
-                    )}
-                    {item.type === 'panorama' && (
-                        <div className={styles.panoramaPreview} aria-hidden>
-                            <span className={styles.panoramaPreview__label}>
-                                {t('pages.building.viewPremisePanorama')}
-                            </span>
                         </div>
                     )}
                 </div>

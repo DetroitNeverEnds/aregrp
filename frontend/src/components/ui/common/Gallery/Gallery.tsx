@@ -15,8 +15,6 @@ export type GalleryProps = {
     media?: GalleryMedia[];
     premise?: PremiseListItem;
     building?: BuildingCatalogue;
-    panoramas?: string[];
-    onPanoramaOpen?: () => void;
 
     type?: 'thumbs' | 'full';
     /** Только для `type="thumbs"`: либо открыть модалку, либо выполнить колбэк по клику на превью */
@@ -27,14 +25,11 @@ export type GalleryProps = {
     className?: string;
 };
 
-type GalleryBodyProps = Omit<GalleryProps, 'media' | 'premise' | 'building' | 'panoramas'> & {
+type GalleryBodyProps = Omit<GalleryProps, 'media' | 'premise' | 'building'> & {
     media: GalleryMedia[];
 };
 
-type VerticalGalleryBodyProps = Pick<
-    GalleryBodyProps,
-    'media' | 'size' | 'fit' | 'className' | 'onPanoramaOpen'
->;
+type VerticalGalleryBodyProps = Pick<GalleryBodyProps, 'media' | 'size' | 'fit' | 'className'>;
 
 const preloadedImageUrls = new Set<string>();
 
@@ -133,25 +128,14 @@ const VerticalGalleryBody = ({
     size = 'm',
     fit = 'cover',
     className,
-    onPanoramaOpen,
 }: VerticalGalleryBodyProps) => {
     const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
     const [modalOpen, setModalOpen] = useState(false);
 
-    const openMedia = useCallback(
-        (index: number) => {
-            const item = media[index];
-            if (item?.type === 'panorama') {
-                onPanoramaOpen?.();
-                return;
-            }
-            const photoVideoMedia = media.filter(mediaItem => mediaItem.type !== 'panorama');
-            const photoIndex = photoVideoMedia.findIndex(mediaItem => mediaItem === item);
-            setCurrentMediaIndex(photoIndex >= 0 ? photoIndex : 0);
-            setModalOpen(true);
-        },
-        [media, onPanoramaOpen],
-    );
+    const openMedia = useCallback((index: number) => {
+        setCurrentMediaIndex(index);
+        setModalOpen(true);
+    }, []);
 
     return (
         <>
@@ -184,7 +168,7 @@ const VerticalGalleryBody = ({
             <GalleryModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
-                media={media.filter(item => item.type !== 'panorama')}
+                media={media}
                 currentIndex={currentMediaIndex}
                 onIndexChange={setCurrentMediaIndex}
                 size={size}
@@ -202,8 +186,6 @@ export const Gallery = ({
     media: rawMedia,
     premise,
     building,
-    panoramas,
-    onPanoramaOpen,
     type = 'thumbs',
     onClick = 'openFull',
     size = 'm',
@@ -212,17 +194,8 @@ export const Gallery = ({
     className,
 }: GalleryProps) => {
     const media = useMemo((): GalleryMedia[] => {
-        const panoramaItems: GalleryMedia[] = (panoramas ?? []).map(url => ({
-            type: 'panorama',
-            url,
-        }));
-        return [
-            ...panoramaItems,
-            ...(rawMedia ?? []),
-            ...(premise?.media ?? []),
-            ...(building?.media ?? []),
-        ];
-    }, [panoramas, rawMedia, premise?.media, building?.media]);
+        return [...(rawMedia ?? []), ...(premise?.media ?? []), ...(building?.media ?? [])];
+    }, [rawMedia, premise?.media, building?.media]);
 
     if (media.length === 0) {
         return (
@@ -245,7 +218,6 @@ export const Gallery = ({
                     size={size}
                     fit={fit}
                     className={className}
-                    onPanoramaOpen={onPanoramaOpen}
                 />
             );
         case 'horizontal':
