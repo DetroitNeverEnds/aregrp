@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import Helmet from 'react-helmet';
 import { Button } from '@/components/ui/common/Button';
@@ -41,8 +41,6 @@ export const PremiseDetailsCardContent = ({
     const isAgent = user?.user_type === 'agent';
 
     const [generateLinkOpen, setGenerateLinkOpen] = useState(false);
-    const [panoramaOpen, setPanoramaOpen] = useState(false);
-    const hasPremisePanoramas = (premise.panoramas?.length ?? 0) > 0;
     const createPaymentM = useCreatePaymentMutation();
 
     const onBookClick = useCallback(async () => {
@@ -63,6 +61,18 @@ export const PremiseDetailsCardContent = ({
             return;
         }
     }, [createPaymentM, dealType, premise.uuid]);
+
+    const [panoramaOpen, setPanoramaOpen] = useState(false);
+    const panoramasData = useMemo(
+        () =>
+            premise.panoramas?.map(panorama => ({
+                url: panorama,
+                key: panorama,
+                title: panorama,
+            })) ?? [],
+        [premise.panoramas],
+    );
+    const hasPremisePanoramas = panoramasData.length > 0;
 
     return (
         <>
@@ -159,6 +169,17 @@ export const PremiseDetailsCardContent = ({
                     </Column>
                 </Flex>
             )}
+            {hasPremisePanoramas && (
+                <Button
+                    variant="outlined"
+                    size="md"
+                    onClick={() => setPanoramaOpen(true)}
+                    width="max"
+                    icon="panorama-360"
+                >
+                    {t('pages.building.viewPremisePanorama')}
+                </Button>
+            )}
             <Gallery premise={premise} orientation="vertical" size="m" type="thumbs" />
 
             <GenerateLinkModal
@@ -170,8 +191,7 @@ export const PremiseDetailsCardContent = ({
                 <PanoramaModal
                     open={panoramaOpen}
                     onClose={() => setPanoramaOpen(false)}
-                    mode="premise"
-                    panoramas={premise.panoramas ?? []}
+                    panoramas={panoramasData.slice(0, 1)}
                     title={`${premise.name} — ${t('pages.building.viewPremisePanorama')}`}
                 />
             )}

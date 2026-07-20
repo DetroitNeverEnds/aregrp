@@ -1,140 +1,72 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ReactPhotoSphereViewer } from 'react-photo-sphere-viewer';
-import { MarkersPlugin } from '@photo-sphere-viewer/markers-plugin';
-import type { Viewer } from '@photo-sphere-viewer/core';
 import '@photo-sphere-viewer/markers-plugin/index.css';
-import type { BuildingFloorOut } from '@/api/handlers/buildings/types';
-import type { SaleType } from '@/api/handlers/types';
 import { Button } from '@/components/ui/common/Button';
 import { Flex } from '@/components/ui/common/Flex';
-import { Modal } from '@/components/ui/common/Modal';
+import { Modal, type ModalProps } from '@/components/ui/common/Modal';
 import { Text } from '@/components/ui/common/Text';
 import styles from './PanoramaModal.module.scss';
 
-const HOTSPOT_HTML = (label: string) =>
-    `<div style="
-        background: rgba(0,0,0,0.6);
-        color: #fff;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-family: sans-serif;
-        cursor: pointer;
-        white-space: nowrap;
-        border: 1px solid rgba(255,255,255,0.4);
-        backdrop-filter: blur(4px);
-    ">➜ ${label}</div>`;
-
-type PanoramaModalBaseProps = {
-    open: boolean;
-    onClose: () => void;
+export type PanoramaModalProps = Pick<ModalProps, 'open' | 'onClose'> & {
     title?: string;
+    panoramas: {
+        url?: string;
+        key: string;
+        title: string;
+    }[];
+    initialPanoramaKey?: string;
+    forceShowNavigation?: boolean;
 };
 
-export type PanoramaModalProps = PanoramaModalBaseProps &
-    (
-        | {
-              mode: 'building';
-              floors: BuildingFloorOut[];
-              initialFloorKey: string;
-              saleType?: SaleType;
-          }
-        | { mode: 'premise'; panoramas: string[] }
+export const PanoramaModal = (props: PanoramaModalProps) => {
+    const { open, onClose, title } = props;
+    const initialPanorama = props.panoramas.find(
+        panorama => panorama.key === props.initialPanoramaKey,
+    );
+    const firstAvailablePanorama = props.panoramas.find(panorama => panorama.url);
+
+    const [activePanoramaKey, setActivePanoramaKey] = useState(
+        initialPanorama?.url ? initialPanorama.key : (firstAvailablePanorama?.key ?? ''),
+    );
+    const activePanoramaIndex = useMemo(
+        () => props.panoramas.findIndex(panorama => panorama.key === activePanoramaKey),
+        [props.panoramas, activePanoramaKey],
     );
 
-export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
-    const { open, onClose, title, mode } = props;
-    const saleType = mode === 'building' ? (props.saleType ?? 'sale') : 'sale';
-
-    const [activeFloorKey, setActiveFloorKey] = useState(
-        mode === 'building' ? props.initialFloorKey : '',
-    );
-    const [activePanoramaIndex, setActivePanoramaIndex] = useState(0);
-
-    useEffect(() => {
-        if (!open) {
-            return;
-        }
-        if (mode === 'building') {
-            setActiveFloorKey(props.initialFloorKey);
-        }
-        setActivePanoramaIndex(0);
-    }, [open, mode, mode === 'building' ? props.initialFloorKey : null]);
-
-    const panoramaUrls = useMemo(() => {
-        if (mode === 'premise') {
-            return props.panoramas;
-        }
-        const floor = props.floors.find(item => item.key === activeFloorKey);
-        return floor?.panoramas ?? [];
-    }, [mode, props, activeFloorKey]);
-
-    const floorsWithPanoramas = useMemo(
-        () => (mode === 'building' ? props.floors.filter(f => f.panoramas.length > 0) : []),
-        [mode, props],
+    const panoramaUrls = useMemo(
+        () => props.panoramas.map(panorama => panorama.url),
+        [props.panoramas],
     );
 
-    const plugins = useMemo(
-        () =>
-            panoramaUrls.length > 1
-                ? [
-                      [
-                          MarkersPlugin,
-                          {
-                              markers: [
-                                  {
-                                      id: 'go-next-room',
-                                      position: { yaw: '20deg', pitch: '0deg' },
-                                      html: HOTSPOT_HTML('Следующая комната'),
-                                      anchor: 'center center',
-                                      tooltip: 'Перейти в следующую комнату',
-                                  },
-                                  {
-                                      id: 'go-prev-room',
-                                      position: { yaw: '200deg', pitch: '0deg' },
-                                      html: HOTSPOT_HTML('Предыдущая комната'),
-                                      anchor: 'center center',
-                                      tooltip: 'Вернуться в предыдущую комнату',
-                                  },
-                              ],
-                          },
-                      ],
-                  ]
-                : [],
-        [panoramaUrls.length],
-    );
+    // const onReady = useCallback(
+    //     (viewer: Viewer) => {
+    //         if (panoramaUrls.length <= 1) {
+    //             return;
+    //         }
 
-    const onReady = useCallback(
-        (viewer: Viewer) => {
-            if (panoramaUrls.length <= 1) {
-                return;
-            }
+    //         const markersPlugin = viewer.getPlugin<MarkersPlugin>(MarkersPlugin);
 
-            const markersPlugin = viewer.getPlugin<MarkersPlugin>(MarkersPlugin);
+    //         markersPlugin.addEventListener('select-marker', ({ marker }) => {
+    //             if (marker.id === 'go-next-room') {
+    //                 const nextIndex = (activePanoramaIndex + 1) % panoramaUrls.length;
+    //                 viewer.setPanorama(panoramaUrls[nextIndex]).then(() => {
+    //                     setActivePanoramaIndex(nextIndex);
+    //                 });
+    //             } else if (marker.id === 'go-prev-room') {
+    //                 const prevIndex =
+    //                     (activePanoramaIndex - 1 + panoramaUrls.length) % panoramaUrls.length;
+    //                 viewer.setPanorama(panoramaUrls[prevIndex]).then(() => {
+    //                     setActivePanoramaIndex(prevIndex);
+    //                 });
+    //             }
+    //         });
+    //     },
+    //     [activePanoramaIndex, panoramaUrls],
+    // );
 
-            markersPlugin.addEventListener('select-marker', ({ marker }) => {
-                if (marker.id === 'go-next-room') {
-                    const nextIndex = (activePanoramaIndex + 1) % panoramaUrls.length;
-                    viewer.setPanorama(panoramaUrls[nextIndex]).then(() => {
-                        setActivePanoramaIndex(nextIndex);
-                    });
-                } else if (marker.id === 'go-prev-room') {
-                    const prevIndex =
-                        (activePanoramaIndex - 1 + panoramaUrls.length) % panoramaUrls.length;
-                    viewer.setPanorama(panoramaUrls[prevIndex]).then(() => {
-                        setActivePanoramaIndex(prevIndex);
-                    });
-                }
-            });
-        },
-        [activePanoramaIndex, panoramaUrls],
-    );
-
-    const onFloorSelect = useCallback((floorKey: string) => {
-        setActiveFloorKey(floorKey);
-        setActivePanoramaIndex(0);
+    const onPanoramaSelect = useCallback((floorKey: string) => {
+        setActivePanoramaKey(floorKey);
     }, []);
-
     const currentPanoramaUrl = panoramaUrls[activePanoramaIndex];
 
     return (
@@ -144,27 +76,30 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
             panelClassName={styles.panoramaModal__panel}
             className={styles.panoramaModal__content}
         >
-            {title && panoramaUrls.length > 0 && (
+            {title && (
                 <Text variant="20-med" className={styles.panoramaModal__title}>
                     {title}
-                    {panoramaUrls.length > 1 &&
-                        ` — Комната ${activePanoramaIndex + 1} из ${panoramaUrls.length}`}
                 </Text>
             )}
-            <div className={styles.panoramaModal__viewer}>
-                {currentPanoramaUrl ? (
-                    <ReactPhotoSphereViewer
-                        key={`${activeFloorKey}-${currentPanoramaUrl}`}
-                        src={currentPanoramaUrl}
-                        height="100%"
-                        width="100%"
-                        navbar={['zoom', 'fullscreen']}
-                        plugins={plugins as never}
-                        onReady={onReady}
-                    />
-                ) : null}
-            </div>
-            {mode === 'building' && floorsWithPanoramas.length > 0 && (
+
+            {firstAvailablePanorama?.url ? (
+                <div className={styles.panoramaModal__viewer}>
+                    {currentPanoramaUrl ? (
+                        <ReactPhotoSphereViewer
+                            key={`${activePanoramaKey}-${currentPanoramaUrl}`}
+                            src={currentPanoramaUrl}
+                            height="100%"
+                            width="100%"
+                            navbar={['zoom', 'fullscreen']}
+                            // onReady={onReady}
+                        />
+                    ) : null}
+                </div>
+            ) : (
+                <Text variant="20-med">Нет доступных панорам</Text>
+            )}
+
+            {/* {mode === 'building' && floorsWithPanoramas.length > 0 && (
                 <Flex direction="row" gap={12} className={styles.panoramaModal__floors}>
                     {floorsWithPanoramas.map(floor => (
                         <Button
@@ -177,6 +112,21 @@ export const PanoramaModal: React.FC<PanoramaModalProps> = props => {
                             }
                         >
                             {floor.title}
+                        </Button>
+                    ))}
+                </Flex>
+            )} */}
+
+            {(props.panoramas.length > 1 || props.forceShowNavigation) && (
+                <Flex direction="row" gap={12} className={styles.panoramaModal__floors}>
+                    {props.panoramas.map(panorama => (
+                        <Button
+                            key={panorama.key}
+                            variant={activePanoramaKey === panorama.key ? 'primary' : 'secondary'}
+                            onClick={() => onPanoramaSelect(panorama.key)}
+                            disabled={!panorama.url}
+                        >
+                            {panorama.title}
                         </Button>
                     ))}
                 </Flex>

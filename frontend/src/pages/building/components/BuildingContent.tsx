@@ -166,8 +166,17 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
 
     const device = useDevice();
     const [buildingPanoramaOpen, setBuildingPanoramaOpen] = useState(false);
-    const hasBuildingPanoramas = useMemo(
-        () => buildingInfo.floors?.some(floor => (floor.panoramas?.length ?? 0) > 0) ?? false,
+    const hasPanoramas = useMemo(
+        () => buildingInfo.floors?.some(floor => floor.panoramas.length > 0) ?? false,
+        [buildingInfo.floors],
+    );
+    const panoramasData = useMemo(
+        () =>
+            buildingInfo.floors?.map(floor => ({
+                url: floor.panoramas[0],
+                key: floor.key,
+                title: floor.title,
+            })),
         [buildingInfo.floors],
     );
 
@@ -205,6 +214,16 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     >
                                         Места общего пользования
                                     </Text>
+                                    {hasPanoramas && (
+                                        <Button
+                                            variant="outlined"
+                                            size="md"
+                                            onClick={() => setBuildingPanoramaOpen(true)}
+                                            width="max"
+                                        >
+                                            {t('pages.building.viewBuildingPanorama')}
+                                        </Button>
+                                    )}
                                     <Gallery
                                         media={buildingMedia}
                                         type="full"
@@ -272,15 +291,6 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                         {t('pages.building.downloadPresentation')}
                                     </Link>
                                 )}
-                                {/* {hasBuildingPanoramas && (
-                                    <Button
-                                        variant="outlined"
-                                        size="md"
-                                        onClick={() => setBuildingPanoramaOpen(true)}
-                                    >
-                                        {t('pages.building.viewBuildingPanorama')}
-                                    </Button>
-                                )} */}
                             </Flex>
                             <SingleSelect<SaleType>
                                 options={[
@@ -319,15 +329,6 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                                     {t('pages.building.downloadPresentation')}
                                 </Link>
                             )}
-                            {/* {hasBuildingPanoramas && (
-                                <Button
-                                    variant="outlined"
-                                    size="md"
-                                    onClick={() => setBuildingPanoramaOpen(true)}
-                                >
-                                    {t('pages.building.viewBuildingPanorama')}
-                                </Button>
-                            )} */}
                         </Flex>
                     </>
 
@@ -368,6 +369,16 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
             {device === 'mobile' && (
                 <Flex gap={8} align="start">
                     <Text variant="20-med">Места общего пользования</Text>
+                    {hasPanoramas && (
+                        <Button
+                            variant="outlined"
+                            size="md"
+                            onClick={() => setBuildingPanoramaOpen(true)}
+                            width="max"
+                        >
+                            {t('pages.building.viewBuildingPanorama')}
+                        </Button>
+                    )}
                     <Gallery
                         media={buildingMedia}
                         type="thumbs"
@@ -434,15 +445,14 @@ export const BuildingContent = ({ data: buildingInfo }: BuildingContentProps) =>
                 </Container>
             )}
 
-            {hasBuildingPanoramas && currentFloor && (
+            {hasPanoramas && currentFloor && (
                 <PanoramaModal
                     open={buildingPanoramaOpen}
                     onClose={() => setBuildingPanoramaOpen(false)}
-                    mode="building"
-                    floors={buildingInfo.floors ?? []}
-                    initialFloorKey={currentFloor}
-                    saleType={saleType}
+                    panoramas={panoramasData ?? []}
                     title={`${buildingInfo.title} — ${t('pages.building.viewBuildingPanorama')}`}
+                    initialPanoramaKey={currentFloor}
+                    forceShowNavigation={true}
                 />
             )}
         </>
