@@ -33,6 +33,7 @@ import MailSimple from '@/icons/outlined/mail-simple.svg?react';
 import MarkerPin from '@/icons/outlined/marker-pin.svg?react';
 import Menu from '@/icons/outlined/menu.svg?react';
 import Minus from '@/icons/outlined/minus.svg?react';
+import Panorama360 from '@/icons/outlined/panorama-360.svg?react';
 import Plus from '@/icons/outlined/plus.svg?react';
 import Refresh from '@/icons/outlined/refresh.svg?react';
 import Regulator from '@/icons/outlined/regulator.svg?react';
@@ -101,6 +102,7 @@ export const iconMap = {
     'marker-pin': MarkerPin,
     menu: Menu,
     minus: Minus,
+    'panorama-360': Panorama360,
     plus: Plus,
     refresh: Refresh,
     regulator: Regulator,

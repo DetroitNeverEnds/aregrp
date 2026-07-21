@@ -65,6 +65,7 @@ class PremiseDetailOut(PremiseListOut):
     has_windows: bool = True
     has_parking: bool = False
     is_furnished: bool = False
+    panoramas: list[str] = []
     presentation_url: Optional[str] = None
 
 
@@ -118,6 +119,7 @@ class BuildingFloorOut(Schema):
     title: str
     has_sale: bool
     has_rent: bool
+    panoramas: list[str] = []
 
 
 class BuildingDetailOut(Schema):

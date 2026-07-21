@@ -9,7 +9,7 @@ import { VerticalMainContainer } from '@/components/ui/layout/VerticalMainContai
 import { ErrorLoading } from '@/components/ui/layout/ErrorLoading/ErrorLoading';
 import { useBuildingDetail } from '@/queries';
 
-import { BuildingContent } from './BuildingPage.components';
+import { BuildingContent } from './components';
 import { useEffect } from 'react';
 
 type Params = { buildingUuid: string };

@@ -1,0 +1,16 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#F3F4F6"/>
+  <text x="24" y="32" fill="#374151" font-family="Montserrat, sans-serif" font-size="18" font-weight="600">1 MB06  45<></text>
+  <g id="room_101">
+    <path id="poly" d="M24 56 H300 V320 H24 Z" fill="#DF4E4E"/>
+    <text id="label_area" x="48" y="170" fill="white" font-family="Montserrat, sans-serif" font-size="16">45 <²</text>
+    <text id="label_price" x="48" y="200" fill="white" font-family="Montserrat, sans-serif" font-size="12">85 000 ½</text>
+    <text id="label_name" x="48" y="130" fill="white" font-family="Montserrat, sans-serif" font-size="20" font-weight="600">101</text>
+  </g>
+  <g id="room_102">
+    <path id="poly" d="M316 56 H616 V320 H316 Z" fill="#375A6D"/>
+    <text id="label_area" x="340" y="170" fill="white" font-family="Montserrat, sans-serif" font-size="16">32 <²</text>
+    <text id="label_price" x="340" y="200" fill="white" font-family="Montserrat, sans-serif" font-size="12">62 000 ½</text>
+    <text id="label_name" x="340" y="130" fill="white" font-family="Montserrat, sans-serif" font-size="20" font-weight="600">102</text>
+  </g>
+</svg>
