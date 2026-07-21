@@ -91,7 +91,7 @@ async def building_with_premise(city, db):
 async def test_user(db):
     """Тестовый пользователь (физлицо). Уникальные email и phone на каждый вызов."""
     suffix = _next_suffix()
-    email = f'test_{suffix}@example.com'
+    email = f'test_{suffix}@example.ru'
     phone = f'+79991234{suffix:04d}'
 
     def create():
@@ -110,7 +110,7 @@ async def test_user(db):
 async def test_agent_user(db):
     """Тестовый пользователь-агент. Уникальные email и phone на каждый вызов."""
     suffix = _next_suffix()
-    email = f'agent_{suffix}@example.com'
+    email = f'agent_{suffix}@example.ru'
     phone = f'+79991235{suffix:04d}'
 
     def create():

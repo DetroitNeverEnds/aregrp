@@ -32,6 +32,19 @@ PASSWORD_RESET_PUBLIC_MESSAGE = (
     "Если такой email зарегистрирован, на него отправлена ссылка для восстановления пароля."
 )
 
+NON_RU_EMAIL_MESSAGE = (
+    "Согласно Федеральному закону РФ № 149-ФЗ «Об информации, информационных технологиях "
+    "и о защите информации», для российских пользователей необходимо использовать вход "
+    "через отечественные сервисы авторизации"
+)
+
+
+def _is_ru_email(email: str) -> bool:
+    if "@" not in email:
+        return False
+    domain = email.rsplit("@", 1)[-1].lower()
+    return domain.endswith(".ru")
+
 auth_router = Router()
 
 
@@ -132,6 +145,15 @@ async def register(request, data: UserRegistrationIn):  # pylint: disable=unused
                     instance="/api/v1/auth/register"
                 )
         
+        if not _is_ru_email(data.email):
+            return 400, create_accounts_error(
+                status=400,
+                code=AccountsErrorCodes.NON_RU_EMAIL,
+                title="Non-RU email not allowed",
+                detail=NON_RU_EMAIL_MESSAGE,
+                instance="/api/v1/auth/register"
+            )
+
         # Валидация паролей
         if data.password1 != data.password2:
             return 400, create_accounts_error(
