@@ -71,8 +71,6 @@ export interface BuildingDetailOut {
     total_floors?: number | null;
     floors?: BuildingFloorOut[];
     year_built?: number | null;
-    presentation_rent?: string | null;
-    presentation_sale?: string | null;
     geo_point?: {
         lat: number;
         lon: number;
