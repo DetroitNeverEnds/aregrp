@@ -26,7 +26,7 @@ class TestRegistration:
             json={
                 "user_type": "individual",
                 "full_name": "Иван Иванов",
-                "email": "ivan@example.com",
+                "email": "ivan@example.ru",
                 "phone": "+79991234567",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -47,12 +47,12 @@ class TestRegistration:
         
         # Проверяем данные пользователя
         user_data = data["user"]
-        assert user_data["email"] == "ivan@example.com"
+        assert user_data["email"] == "ivan@example.ru"
         assert user_data["user_type"] == "individual"
         assert user_data["full_name"] == "Иван Иванов"
         assert user_data["phone"] == "+79991234567"
 
-        user = await sync_to_async(CustomUser.objects.get)(email="ivan@example.com")
+        user = await sync_to_async(CustomUser.objects.get)(email="ivan@example.ru")
         assert user.user_type == "individual"
         assert user.full_name == "Иван Иванов"
         assert user.phone == "+79991234567"
@@ -65,7 +65,7 @@ class TestRegistration:
             json={
                 "user_type": "agent",
                 "full_name": "Петр Петров",
-                "email": "agent@example.com",
+                "email": "agent@example.ru",
                 "phone": "+79991234568",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -128,7 +128,7 @@ class TestRegistration:
             json={
                 "user_type": "individual",
                 "full_name": "Другой Пользователь",
-                "email": "new@example.com",
+                "email": "new@example.ru",
                 "phone": test_user.phone,  # уже занят test_user
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -150,7 +150,7 @@ class TestRegistration:
             json={
                 "user_type": "individual",
                 "full_name": "Иван Иванов",
-                "email": "ivan2@example.com",
+                "email": "ivan2@example.ru",
                 "phone": "+79991234570",
                 "password1": "TestPassword123!",
                 "password2": "DifferentPassword123!",
@@ -172,7 +172,7 @@ class TestRegistration:
             json={
                 "user_type": "agent",
                 "full_name": "Петр Петров",
-                "email": "agent2@example.com",
+                "email": "agent2@example.ru",
                 "phone": "+79991234571",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -196,7 +196,7 @@ class TestRegistration:
             json={
                 "user_type": "agent",
                 "full_name": "Петр Петров",
-                "email": "agent-no-inn@example.com",
+                "email": "agent-no-inn@example.ru",
                 "phone": "+79991234572",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -212,7 +212,7 @@ class TestRegistration:
         assert user_data["organization_name"] == "ООО Тест"
         assert user_data.get("inn") in ("", None)
 
-        user = await sync_to_async(CustomUser.objects.get)(email="agent-no-inn@example.com")
+        user = await sync_to_async(CustomUser.objects.get)(email="agent-no-inn@example.ru")
         assert user.user_type == "agent"
         assert user.organization_name == "ООО Тест"
         assert user.inn == ""
@@ -224,7 +224,7 @@ class TestRegistration:
             json={
                 "user_type": "invalid_type",
                 "full_name": "Иван Иванов",
-                "email": "ivan3@example.com",
+                "email": "ivan3@example.ru",
                 "phone": "+79991234573",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -237,6 +237,28 @@ class TestRegistration:
         
         assert data["status"] == 400
         assert data["code"] == "ACCOUNTS_INVALID_USER_TYPE"
+
+    async def test_register_non_ru_email(self, client):
+        """Тест регистрации с email не в домене .ru."""
+        response = await client.post(
+            "/auth/register",
+            json={
+                "user_type": "individual",
+                "full_name": "Иван Иванов",
+                "email": "ivan@gmail.com",
+                "phone": "+79991234576",
+                "password1": "TestPassword123!",
+                "password2": "TestPassword123!",
+                "use_cookies": False
+            }
+        )
+
+        assert response.status_code == 400
+        data = response.json()
+
+        assert data["status"] == 400
+        assert data["code"] == "ACCOUNTS_NON_RU_EMAIL"
+        assert "149-ФЗ" in data["detail"]
     
     async def test_register_weak_password(self, client):
         """Тест регистрации со слабым паролем."""
@@ -245,7 +267,7 @@ class TestRegistration:
             json={
                 "user_type": "individual",
                 "full_name": "Иван Иванов",
-                "email": "ivan4@example.com",
+                "email": "ivan4@example.ru",
                 "phone": "+79991234574",
                 "password1": "123",  # Слишком короткий
                 "password2": "123",
@@ -266,7 +288,7 @@ class TestRegistration:
             json={
                 "user_type": "individual",
                 "full_name": "Иван Иванов",
-                "email": "ivan5@example.com",
+                "email": "ivan5@example.ru",
                 "phone": "+79991234575",
                 "password1": "TestPassword123!",
                 "password2": "TestPassword123!",
@@ -319,7 +341,7 @@ class TestLogin:
         response = await client.post(
             "/auth/login",
             json={
-                "email": "nonexistent@example.com",
+                "email": "nonexistent@example.ru",
                 "password": "TestPassword123!",
                 "use_cookies": False
             }
@@ -511,7 +533,7 @@ class TestPasswordReset:
         """Для несуществующего email возвращается 200 (без раскрытия факта)."""
         response = await client.post(
             "/auth/password-reset",
-            json={"email": "nonexistent@example.com"},
+            json={"email": "nonexistent@example.ru"},
         )
 
         assert response.status_code == 200
