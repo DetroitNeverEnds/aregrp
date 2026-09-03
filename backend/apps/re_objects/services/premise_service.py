@@ -255,6 +255,19 @@ async def get_buildings_for_filter(
     ]
 
 
+def _file_field_url(file_field) -> Optional[str]:
+    return file_field.url if file_field else None
+
+
+def _panorama_urls(panoramas) -> list[str]:
+    """Абсолютные URL панорам, отсортированные по order."""
+    urls: list[str] = []
+    for pano in panoramas:
+        if pano.file:
+            urls.append(pano.file.url)
+    return urls
+
+
 def _photo_api_urls(img) -> tuple[Optional[str], Optional[str]]:
     """url = card (или оригинал), full_url = detail (или оригинал) — fallback до бэкфилла."""
     if img.card and img.detail:
@@ -316,8 +329,18 @@ def building_to_list_out(b: Building, sale_type: Optional[str] = None) -> dict:
 
 @sync_to_async
 def _get_building_floor_items(building_id: int) -> list[BuildingFloorOut]:
-    floors = Floor.objects.filter(building_id=building_id).order_by('number')
-    return [BuildingFloorOut(**floor.to_building_floor_payload()) for floor in floors]
+    floors = (
+        Floor.objects.filter(building_id=building_id)
+        .prefetch_related('panoramas')
+        .order_by('number')
+    )
+    return [
+        BuildingFloorOut(
+            **floor.to_building_floor_payload(),
+            panoramas=_panorama_urls(floor.panoramas.all()),
+        )
+        for floor in floors
+    ]
 
 
 def get_buildings_queryset(sale_type: Optional[str] = None):
@@ -571,6 +594,7 @@ def premise_to_detail_out(
         has_windows=p.has_windows,
         has_parking=p.has_parking,
         is_furnished=p.is_furnished,
+        panoramas=_panorama_urls(p.panoramas.all()),
         presentation_url=p.presentation.url if p.presentation else None,
     )
 
@@ -604,7 +628,7 @@ async def get_premise_by_uuid(
     try:
         p = await Premise.objects.select_related(
             "building", "city", "floor"
-        ).prefetch_related("images", "videos").aget(uuid=premise_uuid)
+        ).prefetch_related("images", "videos", "panoramas").aget(uuid=premise_uuid)
     except Premise.DoesNotExist:
         return None
     return premise_to_detail_out(p, sale_type)

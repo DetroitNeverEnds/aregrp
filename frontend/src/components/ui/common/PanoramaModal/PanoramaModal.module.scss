@@ -1,0 +1,28 @@
+.panoramaModal {
+    &__panel {
+        width: min(90vw, 1200px);
+    }
+
+    &__content {
+        gap: 16px;
+    }
+
+    &__title {
+        padding-top: 4px;
+    }
+
+    &__viewer {
+        width: 100%;
+        height: min(65vh, 700px);
+        border-radius: $border-radius-l;
+        overflow: hidden;
+
+        :global(.psv-container) {
+            border-radius: $border-radius-l;
+        }
+    }
+
+    &__floors {
+        flex-wrap: wrap;
+    }
+}

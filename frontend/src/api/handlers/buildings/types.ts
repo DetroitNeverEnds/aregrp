@@ -58,6 +58,7 @@ export type BuildingFloorOut = {
     title: string;
     has_sale: boolean;
     has_rent: boolean;
+    panoramas: string[];
 };
 
 export interface BuildingDetailOut {
