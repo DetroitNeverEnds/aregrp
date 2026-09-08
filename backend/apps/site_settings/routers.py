@@ -9,6 +9,7 @@ from api.schemas import ProblemDetail
 from .errors import SiteSettingsErrorCodes, create_site_settings_error
 from .models import AgentSettings, ContactsSettings, InvestorSettings, MainSettings
 from .schemas import (
+    AgentPartnerOut,
     AgentSettingsOut,
     ContactsSettingsOut,
     CoordinatesOut,
@@ -31,6 +32,11 @@ def _canonical_public_pdf_path(field_file, path: str) -> str | None:
     if not field_file or not getattr(field_file, "name", None):
         return None
     return path
+
+
+def _lines(value: str) -> list[str]:
+    """Текстовое поле «пункт на строку» → список пунктов без пустых строк."""
+    return [line.strip() for line in (value or "").splitlines() if line.strip()]
 
 
 @site_settings_router.get(
@@ -171,17 +177,36 @@ async def get_investor_settings(request):
     response={200: AgentSettingsOut, 404: ProblemDetail},
     summary="Настройки для агентов",
     description=(
-        "Возвращает настройки раздела «Агентам» из админки "
-        "(Настройки для агентов): table_link — ссылка на таблицу комиссий."
+        "Возвращает настройки раздела «Агентам» из админки (Настройки для агентов): "
+        "table_link — ссылка на таблицу комиссий; partners — до 10 карточек партнёров "
+        "(full_name, photo — URL из storage или null, deals_count) по возрастанию порядка; "
+        "dealer_advantages и dealer_duties — списки пунктов (одна строка админки = один пункт)."
     ),
 )
 async def get_agent_settings(request):
     """
-    Публичный эндпоинт: ссылка на таблицу комиссий для страницы агентов.
+    Публичный эндпоинт: контент страницы агентов — ссылка на таблицу комиссий,
+    карточки партнёров и два списка (преимущества дилера, что нужно делать).
     """
     try:
         settings = await sync_to_async(AgentSettings.load)()
-        return 200, AgentSettingsOut(table_link=settings.table_link or None)
+
+        def build_out():
+            return AgentSettingsOut(
+                table_link=settings.table_link or None,
+                partners=[
+                    AgentPartnerOut(
+                        full_name=partner.full_name,
+                        photo=_file_field_url(partner.photo),
+                        deals_count=partner.deals_count,
+                    )
+                    for partner in settings.partners.all()[:10]
+                ],
+                dealer_advantages=_lines(settings.dealer_advantages),
+                dealer_duties=_lines(settings.dealer_duties),
+            )
+
+        return 200, await sync_to_async(build_out)()
     except Exception as e:
         return 404, create_site_settings_error(
             status=404,

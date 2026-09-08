@@ -42,7 +42,18 @@ class InvestorSettingsOut(Schema):
     document_3: str | None = None
 
 
+class AgentPartnerOut(Schema):
+    """Карточка партнёра для блока «Лучшие партнеры»."""
+
+    full_name: str
+    photo: str | None = None
+    deals_count: int
+
+
 class AgentSettingsOut(Schema):
     """Настройки для раздела «Агентам»."""
 
     table_link: str | None = None
+    partners: list[AgentPartnerOut] = []
+    dealer_advantages: list[str] = []
+    dealer_duties: list[str] = []
