@@ -1,5 +1,6 @@
+@use '@/styles/mixins/colors';
+
 .divider {
-    background-color: $gray-50;
     border: none;
 
     &__horizontal {
@@ -11,4 +12,6 @@
         width: 1px;
         height: 100%;
     }
+
+    @include colors.color-variants('color', background-color);
 }

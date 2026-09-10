@@ -1,4 +1,8 @@
 .container {
+    &__size-m {
+        border-radius: $border-radius-l;
+        padding: 10px;
+    }
     &__size-l {
         border-radius: $border-radius-l;
         padding: 20px;

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { Flex, type FlexProps } from '@/components/ui/common/Flex';
 
 export interface CardProps extends FlexProps {
-    size?: 'l' | 'xl';
+    size?: 'm' | 'l' | 'xl';
     background?: 'white' | 'gray';
     withShadow?: boolean;
     isPin?: boolean;

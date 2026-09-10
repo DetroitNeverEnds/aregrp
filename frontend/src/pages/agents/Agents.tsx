@@ -22,6 +22,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import { Link } from '@/components/ui/common/Link';
 import { useAgentSettings } from '@/queries';
+import { TopPartnersSection } from './components/TopPartnersSection';
 
 const BENEFITS_ICONS: IconName[] = [
     'benefit-9',
@@ -250,6 +251,8 @@ export const Agents = () => {
                         ))}
                     </div>
                 </Columns>
+
+                <TopPartnersSection />
 
                 <FeedbackFormRow ref={feedbackSectionRef} originKey="Агенты" />
             </VerticalMainContainer>

@@ -8,7 +8,6 @@ export type DividerOrientation = 'horizontal' | 'vertical';
 export interface DividerProps {
     /** Ориентация разделителя */
     orientation?: DividerOrientation;
-    // NOT WORKING
     color?: ColorVariant;
     /** Дополнительный CSS класс */
     className?: string;
@@ -22,7 +21,7 @@ export const Divider: React.FC<DividerProps> = ({
     const dividerClassNames = classNames(
         styles.divider,
         styles[`divider__${orientation}`],
-        color && styles[`divider__color-${color}`],
+        color && styles[`divider--color-${color}`],
         className,
     );
 

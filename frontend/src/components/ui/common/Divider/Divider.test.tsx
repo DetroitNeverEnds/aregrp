@@ -26,4 +26,16 @@ describe('Divider', () => {
         const divider = container.firstChild as HTMLElement;
         expect(divider).toHaveClass('custom-class');
     });
+
+    it('применяет цвет по умолчанию', () => {
+        const { container } = render(<Divider />);
+        const divider = container.firstChild as HTMLElement;
+        expect(divider).toHaveClass(styles['divider--color-gray-100']);
+    });
+
+    it('применяет переданный цвет', () => {
+        const { container } = render(<Divider color="gray-10" />);
+        const divider = container.firstChild as HTMLElement;
+        expect(divider).toHaveClass(styles['divider--color-gray-10']);
+    });
 });
