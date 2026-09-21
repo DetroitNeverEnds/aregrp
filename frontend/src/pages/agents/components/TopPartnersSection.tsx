@@ -42,16 +42,10 @@ const TopPartnersContent = ({ data }: { data: AgentSettingsOut }) => {
         [data.dealer_advantages, data.dealer_duties, t],
     );
 
-    if (!isDesktop) {
-        return null;
-    }
-
     return (
         <Container gap="secondary" fullWidth className={styles.topPartners} align="start">
             <Flex direction="column" gap={16} fullWidth align="start">
-                <Text variant="h2" align="center">
-                    {t('pages.agents.topPartners.title')}
-                </Text>
+                <Text variant="h2">{t('pages.agents.topPartners.title')}</Text>
                 {/* <Text variant="20-reg" color="gray-50">
                     {t('pages.agents.topPartners.subtitle')}
                 </Text> */}
@@ -71,7 +65,7 @@ const TopPartnersContent = ({ data }: { data: AgentSettingsOut }) => {
 
             <Columns columnssNum={2} className={styles.topPartners__infoBlocks}>
                 {cardsData.map(card => (
-                    <Card withShadow gap={30} size="xl" fullWidth align="start">
+                    <Card key={card.title} withShadow gap={30} size="xl" fullWidth align="start">
                         <Flex align="center" direction="row" gap={20}>
                             <Icon name={card.icon} size={50} color="primary-700" />
                             <Text variant={isDesktop ? 'h3' : 'h4'} color="primary-700">
