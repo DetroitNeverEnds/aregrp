@@ -1,11 +1,13 @@
 """
 Тесты для эндпоинтов настроек сайта (site-settings).
 """
+import base64
+
 import pytest
 from asgiref.sync import sync_to_async
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from apps.site_settings.models import AgentSettings, ContactsSettings, MainSettings
+from apps.site_settings.models import AgentPartner, AgentSettings, ContactsSettings, MainSettings
 
 
 def _create_main_settings():
@@ -190,3 +192,72 @@ class TestAgents:
         assert response.status_code == 200
         data = response.json()
         assert data["table_link"] is None
+
+    async def test_agents_returns_partners_and_lists(self, api_client, db):
+        """Списки режутся по строкам без пустых, партнёры — по возрастанию order."""
+        def create():
+            AgentPartner.objects.all().delete()
+            settings = AgentSettings(
+                table_link="https://docs.google.com/spreadsheets/d/test",
+                dealer_advantages="  +20 % к комиссии  \n\n  включение в чат ARE GROUP\n   \n",
+                dealer_duties="продавать 2-3 объекта в месяц\nпосещать мероприятия\n\n",
+            )
+            settings.save()
+            AgentPartner.objects.create(settings=settings, full_name="Игорь Петров", deals_count=9, order=3)
+            AgentPartner.objects.create(settings=settings, full_name="Алексей Смирнов", deals_count=12, order=1)
+            AgentPartner.objects.create(settings=settings, full_name="Мария Иванова", deals_count=10, order=2)
+
+        await sync_to_async(create)()
+        response = await api_client.get("/site-settings/agents")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["dealer_advantages"] == ["+20 % к комиссии", "включение в чат ARE GROUP"]
+        assert data["dealer_duties"] == ["продавать 2-3 объекта в месяц", "посещать мероприятия"]
+        assert [p["full_name"] for p in data["partners"]] == [
+            "Алексей Смирнов",
+            "Мария Иванова",
+            "Игорь Петров",
+        ]
+        assert data["partners"][0]["deals_count"] == 12
+        assert data["partners"][0]["photo"] is None
+
+    async def test_agents_partner_photo_url(self, api_client, db):
+        """photo — URL из storage, если фото загружено, иначе null."""
+        # Минимальный валидный PNG 1x1 (ImageField проверяет содержимое через Pillow).
+        png_bytes = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+        )
+
+        def create():
+            AgentPartner.objects.all().delete()
+            settings = AgentSettings()
+            settings.save()
+            with_photo = AgentPartner(settings=settings, full_name="С фото", deals_count=5, order=1)
+            with_photo.photo.save(
+                "avatar.png",
+                SimpleUploadedFile("avatar.png", png_bytes, content_type="image/png"),
+            )
+            AgentPartner.objects.create(settings=settings, full_name="Без фото", deals_count=4, order=2)
+
+        await sync_to_async(create)()
+        response = await api_client.get("/site-settings/agents")
+
+        assert response.status_code == 200
+        partners = response.json()["partners"]
+        assert partners[0]["photo"] is not None
+        assert "agents/partners/" in partners[0]["photo"]
+        assert partners[0]["photo"].endswith(".png")
+        assert partners[1]["photo"] is None
+
+    async def test_agents_lists_empty_when_not_filled(self, api_client, agent_settings_empty):
+        """Новые поля не ломают ответ, если контент не заполнен."""
+        await sync_to_async(AgentPartner.objects.all().delete)()
+
+        response = await api_client.get("/site-settings/agents")
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["partners"] == []
+        assert data["dealer_advantages"] == []
+        assert data["dealer_duties"] == []

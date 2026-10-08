@@ -2,8 +2,32 @@
 Админка для моделей настроек сайта.
 """
 from django.contrib import admin
+from django.utils.html import format_html
 
-from .models import AgentSettings, ContactsSettings, InvestorSettings, MainSettings
+from .models import AgentPartner, AgentSettings, ContactsSettings, InvestorSettings, MainSettings
+
+
+class AgentPartnerInline(admin.TabularInline):
+    """Карточки партнёров внутри настроек для агентов (не более 10)."""
+
+    model = AgentPartner
+    extra = 1
+    max_num = 10
+    fields = ('full_name', 'photo', 'deals_count', 'order', 'photo_preview')
+    readonly_fields = ('photo_preview',)
+    ordering = ('order', 'id')
+    verbose_name = 'Партнёр'
+    verbose_name_plural = 'Партнёры (максимум 10)'
+
+    def photo_preview(self, obj):
+        """Превью загруженного фото."""
+        if not obj.pk or not obj.photo:
+            return '-'
+        return format_html(
+            '<img src="{}" style="max-width:80px; max-height:80px; object-fit:cover;" />',
+            obj.photo.url,
+        )
+    photo_preview.short_description = 'Превью'
 
 
 @admin.register(MainSettings)
@@ -136,6 +160,7 @@ class AgentSettingsAdmin(admin.ModelAdmin):
     """
 
     list_display = ('__str__',)
+    inlines = [AgentPartnerInline]
     fieldsets = (
         (
             'Настройки для агентов',
@@ -144,6 +169,17 @@ class AgentSettingsAdmin(admin.ModelAdmin):
                 'description': (
                     'Ссылка на таблицу комиссий. '
                     'API GET /api/v1/site-settings/agents — table_link: строка или null.'
+                ),
+            },
+        ),
+        (
+            'Списки на странице «Агентам»',
+            {
+                'fields': ('dealer_advantages', 'dealer_duties'),
+                'description': (
+                    'Один пункт на строку, порядок строк = порядок вывода; пустые строки игнорируются. '
+                    'API GET /api/v1/site-settings/agents — dealer_advantages и dealer_duties: '
+                    'массивы строк. Заголовки блоков и иконки заданы на фронте.'
                 ),
             },
         ),

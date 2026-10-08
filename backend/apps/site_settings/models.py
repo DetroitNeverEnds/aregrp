@@ -3,6 +3,7 @@
 Каждая модель может иметь только один экземпляр в базе данных.
 """
 import uuid
+from pathlib import Path
 
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
@@ -65,6 +66,12 @@ def main_settings_cases_pdf_upload_path(_instance, _filename):
 def investor_settings_pdf_upload_path(_instance, _filename):
     """Путь загрузки PDF для раздела «Инвесторам» (нейтральный префикс в media)."""
     return f"documents/investors/{uuid.uuid4().hex}.pdf"
+
+
+def agent_partner_photo_upload_path(_instance, filename):
+    """Фото партнёра: уникальное имя, расширение из исходного файла."""
+    ext = Path(filename).suffix.lower() or ".jpg"
+    return f"agents/partners/{uuid.uuid4().hex}{ext}"
 
 
 class MainSettings(SingletonModel):
@@ -257,6 +264,16 @@ class AgentSettings(SingletonModel):
         help_text="Ссылка на таблицу комиссий для агентов",
         blank=True,
     )
+    dealer_advantages = models.TextField(
+        verbose_name="Преимущества дилера",
+        help_text="Один пункт на строку. Пустые строки игнорируются.",
+        blank=True,
+    )
+    dealer_duties = models.TextField(
+        verbose_name="Что нужно делать",
+        help_text="Один пункт на строку. Пустые строки игнорируются.",
+        blank=True,
+    )
 
     class Meta:
         verbose_name = "Настройки для агентов"
@@ -265,3 +282,50 @@ class AgentSettings(SingletonModel):
 
     def __str__(self):
         return "Настройки для агентов"
+
+
+class AgentPartner(models.Model):
+    """
+    Карточка партнёра в блоке «Лучшие партнеры» на странице «Агентам».
+    Редактируется инлайном внутри настроек для агентов (не более 10 штук).
+    """
+
+    settings = models.ForeignKey(
+        AgentSettings,
+        on_delete=models.CASCADE,
+        related_name="partners",
+        default=1,
+        verbose_name="Настройки для агентов",
+    )
+    full_name = models.CharField(
+        max_length=200,
+        verbose_name="ФИО",
+        help_text="ФИО партнёра для карточки",
+    )
+    photo = models.ImageField(
+        upload_to=agent_partner_photo_upload_path,
+        verbose_name="Фото",
+        help_text="Фото партнёра (jpg, png, webp)",
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png", "webp"])],
+    )
+    deals_count = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Количество сделок",
+        help_text="Число сделок для подписи под ФИО",
+    )
+    order = models.PositiveIntegerField(
+        default=1,
+        verbose_name="Порядок",
+        help_text="Порядок вывода на странице (по возрастанию)",
+    )
+
+    class Meta:
+        verbose_name = "Партнёр"
+        verbose_name_plural = "Партнёры"
+        db_table = "agent_partner"
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.full_name
