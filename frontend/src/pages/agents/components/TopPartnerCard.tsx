@@ -1,11 +1,8 @@
-import { useTranslation } from 'react-i18next';
 import type { AgentPartnerOut } from '@/api/handlers/siteSettings/agents';
 import { Card } from '@/components/ui/common/Card/Card';
-import { Divider } from '@/components/ui/common/Divider';
 import { Flex } from '@/components/ui/common/Flex';
 import { Icon } from '@/components/ui/common/Icon';
 import Text from '@/components/ui/common/Text';
-import { formatDealsCount } from './formatDealsCount';
 import styles from './TopPartnerCard.module.scss';
 
 export type TopPartnerCardProps = {
@@ -14,8 +11,6 @@ export type TopPartnerCardProps = {
 };
 
 export const TopPartnerCard = ({ partner, rank }: TopPartnerCardProps) => {
-    const { t } = useTranslation();
-
     return (
         <Card
             size="m"
@@ -50,7 +45,6 @@ export const TopPartnerCard = ({ partner, rank }: TopPartnerCardProps) => {
 
             <Flex
                 direction="column"
-                gap={8}
                 className={styles.partnerCard__content}
                 fullWidth
                 align="start"
@@ -58,10 +52,6 @@ export const TopPartnerCard = ({ partner, rank }: TopPartnerCardProps) => {
                 <Text variant="16-med" color="primary-700">
                     {partner.full_name}
                 </Text>
-                <Flex gap={8} className={styles.partnerCard__footer} fullWidth align="start">
-                    <Divider color="gray-30" />
-                    <Text variant="14-reg">{formatDealsCount(partner.deals_count, t)}</Text>
-                </Flex>
             </Flex>
         </Card>
     );
